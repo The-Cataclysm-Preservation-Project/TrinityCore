@@ -97,6 +97,7 @@ enum DruidSpells
     SPELL_DRUID_RIP                         = 1079,
     SPELL_DRUID_SURVIVAL_INSTINCTS          = 50322,
     SPELL_DRUID_SAVAGE_ROAR                 = 62071,
+    SPELL_DRUID_RESTORATION_T10_2P_BONUS    = 70658,
     SPELL_DRUID_SKULL_BASH_CHARGE           = 93983,
     SPELL_DRUID_SKULL_BASH_INTERRUPT        = 93985,
     SPELL_DRUID_SKULL_BASH_COST_INCREASE_R1 = 82364,
@@ -1146,8 +1147,39 @@ class spell_dru_wild_growth : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_dru_wild_growth::SetTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
     }
 
-private:
     std::list<WorldObject*> _targets;
+};
+
+class spell_dru_wild_growth_AuraScript : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DRUID_RESTORATION_T10_2P_BONUS });
+    }
+
+    void HandleTickUpdate(AuraEffect* aurEff)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        // calculate from base damage, not from aurEff->GetAmount() (already modified)
+        float damage = caster->CalculateSpellDamage(GetUnitOwner(), GetSpellInfo(), aurEff->GetEffIndex());
+
+        // Wild Growth = first tick gains a 6% bonus, reduced by 2% each tick
+        float reduction = 2.f;
+        if (AuraEffect* bonus = caster->GetAuraEffect(SPELL_DRUID_RESTORATION_T10_2P_BONUS, EFFECT_0))
+            reduction -= CalculatePct(reduction, bonus->GetAmount());
+        reduction *= (aurEff->GetTickNumber() - 1);
+
+        AddPct(damage, 6.f - reduction);
+        aurEff->SetAmount(int32(damage));
+    }
+
+    void Register() override
+    {
+        OnEffectUpdatePeriodic.Register(&spell_dru_wild_growth_AuraScript::HandleTickUpdate, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
+    }
 };
 
 // 78675 - Solar Beam
@@ -2035,7 +2067,7 @@ void AddSC_druid_spell_scripts()
     RegisterSpellScript(spell_dru_typhoon);
     RegisterSpellScript(spell_dru_t10_restoration_4p_bonus);
     RegisterSpellScript(spell_dru_item_t11_feral_4p_bonus);
-    RegisterSpellScript(spell_dru_wild_growth);
+    RegisterSpellAndAuraScriptPair(spell_dru_wild_growth, spell_dru_wild_growth_AuraScript);
     RegisterSpellScript(spell_dru_wild_mushroom);
     RegisterSpellScript(spell_dru_wild_mushroom_detonate);
     RegisterSpellScript(spell_dru_stampeding_roar);
