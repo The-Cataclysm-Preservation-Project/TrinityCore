@@ -211,7 +211,7 @@ void SmartAI::EndPath(bool fail)
     {
         if (targets->size() == 1 && GetScript()->IsPlayer((*targets->begin())))
         {
-            Player* player = (*targets->begin())->ToPlayer();
+            Player* player = targets->front()->ToPlayer();
             if (!fail && player->IsAtGroupRewardDistance(me) && !player->HasCorpse())
                 player->GroupEventHappens(mEscortQuestID, me);
 

@@ -229,7 +229,7 @@ void SmartScript::ProcessEventsFor(SMART_EVENT e, Unit* unit, uint32 var0, uint3
 
 void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, uint32 var1, bool bvar, SpellInfo const* spell, GameObject* gob)
 {
-    //calc random
+    // calc random
     if (e.GetEventType() != SMART_EVENT_LINK && e.event.event_chance < 100 && e.event.event_chance)
     {
         if (!roll_chance_i(e.event.event_chance))
@@ -417,30 +417,30 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         {
             for (WorldObject* target : targets)
             {
-                if (Player* pTarget = target->ToPlayer())
+                if (Player* player = target->ToPlayer())
                 {
                     if (Quest const* q = sObjectMgr->GetQuestTemplate(e.action.questOffer.questID))
                     {
                         if (me && e.action.questOffer.directAdd == 0)
                         {
-                            if (pTarget->CanTakeQuest(q, true))
+                            if (player->CanTakeQuest(q, true))
                             {
-                                pTarget->SetPopupQuestId(0);
-                                pTarget->PlayerTalkClass->SendQuestGiverQuestDetails(q, pTarget->GetGUID(), true, false);
+                                player->SetPopupQuestId(0);
+                                player->PlayerTalkClass->SendQuestGiverQuestDetails(q, player->GetGUID(), true, false);
                                 TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_OFFER_QUEST: Player guidLow %u - offered quest %u",
-                                    pTarget->GetGUID().GetCounter(), e.action.questOffer.questID);
+                                    player->GetGUID().GetCounter(), e.action.questOffer.questID);
                             }
                         }
                         else
                         {
-                            pTarget->AddQuestAndCheckCompletion(q, nullptr);
+                            player->AddQuestAndCheckCompletion(q, nullptr);
                             if (q->IsAutoAccept())
                             {
-                                pTarget->SetPopupQuestId(0);
-                                pTarget->PlayerTalkClass->SendQuestGiverQuestDetails(q, pTarget->GetGUID(), true, true);
+                                player->SetPopupQuestId(0);
+                                player->PlayerTalkClass->SendQuestGiverQuestDetails(q, player->GetGUID(), true, true);
                             }
                             TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_OFFER_QUEST: Player guidLow %u - quest %u added",
-                                pTarget->GetGUID().GetCounter(), e.action.questOffer.questID);
+                                player->GetGUID().GetCounter(), e.action.questOffer.questID);
                         }
                     }
                 }
@@ -460,32 +460,15 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_RANDOM_EMOTE:
         {
-            uint32 emotes[SMART_ACTION_PARAM_COUNT];
-            emotes[0] = e.action.randomEmote.emote1;
-            emotes[1] = e.action.randomEmote.emote2;
-            emotes[2] = e.action.randomEmote.emote3;
-            emotes[3] = e.action.randomEmote.emote4;
-            emotes[4] = e.action.randomEmote.emote5;
-            emotes[5] = e.action.randomEmote.emote6;
-            uint32 temp[SMART_ACTION_PARAM_COUNT];
-            uint32 count = 0;
-            for (uint8 i = 0; i < SMART_ACTION_PARAM_COUNT; i++)
-            {
-                if (emotes[i])
-                {
-                    temp[count] = emotes[i];
-                    ++count;
-                }
-            }
-
-            if (count == 0)
-                break;
+            std::vector<uint32> emotes;
+            std::copy_if(std::begin(e.action.randomEmote.emotes), std::end(e.action.randomEmote.emotes),
+                std::back_inserter(emotes), [](uint32 emote) { return emote != 0; });
 
             for (WorldObject* target : targets)
             {
                 if (IsUnit(target))
                 {
-                    uint32 emote = temp[urand(0, count - 1)];
+                    uint32 emote = Trinity::Containers::SelectRandomContainerElement(emotes);
                     target->ToUnit()->HandleEmoteCommand(emote);
                     TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_RANDOM_EMOTE: Creature guidLow %u handle random emote %u",
                         target->GetGUID().GetCounter(), emote);
@@ -581,7 +564,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                             // If cast flag SMARTCAST_COMBAT_MOVE is set combat movement will not be allowed
                             // unless target is outside spell range, out of mana, or LOS.
 
-                            bool _allowMove = false;
+                            bool allowMove = false;
                             SpellInfo const* spellInfo = sSpellMgr->AssertSpellInfo(e.action.cast.spell);
                             int32 mana = me->GetPower(POWER_MANA);
 
@@ -589,9 +572,9 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                                 me->GetDistance(target) < spellInfo->GetMinRange(true) ||
                                 !me->IsWithinLOSInMap(target) ||
                                 mana < spellInfo->CalcPowerCost(me, spellInfo->GetSchoolMask()))
-                                _allowMove = true;
+                                allowMove = true;
 
-                            ENSURE_AI(SmartAI, me->AI())->SetCombatMove(_allowMove);
+                            ENSURE_AI(SmartAI, me->AI())->SetCombatMove(allowMove);
                         }
 
                         me->CastSpell(target->ToUnit(), e.action.cast.spell, triggerFlag);
@@ -766,13 +749,13 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     {
                         target->ToUnit()->RemoveFlag(UNIT_FIELD_FLAGS, e.action.unitFlag.flag);
                         TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_REMOVE_UNIT_FLAG. Unit %u removed flag %u to UNIT_FIELD_FLAGS",
-                            target->GetGUID().GetCounter(), e.action.unitFlag.flag);
+                        target->GetGUID().GetCounter(), e.action.unitFlag.flag);
                     }
                     else
                     {
                         target->ToUnit()->RemoveFlag(UNIT_FIELD_FLAGS_2, e.action.unitFlag.flag);
                         TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_REMOVE_UNIT_FLAG. Unit %u removed flag %u to UNIT_FIELD_FLAGS_2",
-                            target->GetGUID().GetCounter(), e.action.unitFlag.flag);
+                        target->GetGUID().GetCounter(), e.action.unitFlag.flag);
                     }
                 }
             }
@@ -1557,34 +1540,26 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             {
                 if (Creature* npc = target->ToCreature())
                 {
-                    uint32 slot[3];
-                    int8 equipId = (int8)e.action.equip.entry;
-                    if (equipId)
+                    std::array<uint32, MAX_EQUIPMENT_ITEMS> slot;
+                    if (int8 equipId = static_cast<int8>(e.action.equip.entry))
                     {
-                        EquipmentInfo const* einfo = sObjectMgr->GetEquipmentInfo(npc->GetEntry(), equipId);
-                        if (!einfo)
+                        EquipmentInfo const* eInfo = sObjectMgr->GetEquipmentInfo(npc->GetEntry(), equipId);
+                        if (!eInfo)
                         {
                             TC_LOG_ERROR("sql.sql", "SmartScript: SMART_ACTION_EQUIP uses non-existent equipment info id %u for creature %u", equipId, npc->GetEntry());
                             break;
                         }
 
                         npc->SetCurrentEquipmentId(equipId);
-                        slot[0] = einfo->ItemEntry[0];
-                        slot[1] = einfo->ItemEntry[1];
-                        slot[2] = einfo->ItemEntry[2];
+
+                        std::copy(std::begin(eInfo->ItemEntry), std::end(eInfo->ItemEntry), std::begin(slot));
                     }
                     else
-                    {
-                        slot[0] = e.action.equip.slot1;
-                        slot[1] = e.action.equip.slot2;
-                        slot[2] = e.action.equip.slot3;
-                    }
-                    if (!e.action.equip.mask || (e.action.equip.mask & 1))
-                        npc->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 0, slot[0]);
-                    if (!e.action.equip.mask || (e.action.equip.mask & 2))
-                        npc->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, slot[1]);
-                    if (!e.action.equip.mask || (e.action.equip.mask & 4))
-                        npc->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, slot[2]);
+                        std::copy(std::begin(e.action.equip.slots), std::end(e.action.equip.slots), std::begin(slot));
+
+                    for (uint32 i = 0; i < MAX_EQUIPMENT_ITEMS; ++i)
+                        if (!e.action.equip.mask || (e.action.equip.mask & (1 << i)))
+                            npc->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, slot[i]);
                 }
             }
             break;
@@ -2466,11 +2441,12 @@ void SmartScript::InstallTemplate(SmartScriptHolder const& e)
 {
     if (!GetBaseObject())
         return;
-    if (mTemplate)
+    if (mTemplate != SMARTAI_TEMPLATE_BASIC)
     {
         TC_LOG_ERROR("sql.sql", "SmartScript::InstallTemplate: Entry %d SourceType %u AI Template can not be set more then once, skipped.", e.entryOrGuid, e.GetScriptType());
         return;
     }
+
     mTemplate = (SMARTAI_TEMPLATE)e.action.installTtemplate.id;
     switch ((SMARTAI_TEMPLATE)e.action.installTtemplate.id)
     {
@@ -3047,26 +3023,26 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
             if (!me || !me->IsEngaged())
                 return;
 
-            std::list<Creature*> pList;
-            DoFindFriendlyCC(pList, (float)e.event.friendlyCC.radius);
-            if (pList.empty())
+            std::vector<Creature*> creatures;
+            DoFindFriendlyCC(creatures, float(e.event.friendlyCC.radius));
+            if (creatures.empty())
             {
                 // if there are at least two same npcs, they will perform the same action immediately even if this is useless...
                 RecalcTimer(e, 1000, 3000);
                 return;
             }
-            ProcessTimedAction(e, e.event.friendlyCC.repeatMin, e.event.friendlyCC.repeatMax, Trinity::Containers::SelectRandomContainerElement(pList));
+            ProcessTimedAction(e, e.event.friendlyCC.repeatMin, e.event.friendlyCC.repeatMax, Trinity::Containers::SelectRandomContainerElement(creatures));
             break;
         }
         case SMART_EVENT_FRIENDLY_MISSING_BUFF:
         {
-            std::list<Creature*> pList;
-            DoFindFriendlyMissingBuff(pList, (float)e.event.missingBuff.radius, e.event.missingBuff.spell);
+            std::vector<Creature*> creatures;
+            DoFindFriendlyMissingBuff(creatures, float(e.event.missingBuff.radius), e.event.missingBuff.spell);
 
-            if (pList.empty())
+            if (creatures.empty())
                 return;
 
-            ProcessTimedAction(e, e.event.missingBuff.repeatMin, e.event.missingBuff.repeatMax, Trinity::Containers::SelectRandomContainerElement(pList));
+            ProcessTimedAction(e, e.event.missingBuff.repeatMin, e.event.missingBuff.repeatMax, Trinity::Containers::SelectRandomContainerElement(creatures));
             break;
         }
         case SMART_EVENT_HAS_AURA:
@@ -3817,7 +3793,7 @@ void SmartScript::OnMoveInLineOfSight(Unit* who)
 }
 // SmartScript end
 
-Unit* SmartScript::DoSelectLowestHpFriendly(float range, uint32 MinHPDiff)
+Unit* SmartScript::DoSelectLowestHpFriendly(float range, uint32 MinHPDiff) const
 {
     if (!me)
         return nullptr;
@@ -3843,27 +3819,27 @@ Unit* SmartScript::DoSelectLowestHpPctFriendly(float range, uint8 hpPctMin, uint
     return unit;
 }
 
-void SmartScript::DoFindFriendlyCC(std::list<Creature*>& _list, float range)
+void SmartScript::DoFindFriendlyCC(std::vector<Creature*>& creatures, float range) const
 {
     if (!me)
         return;
 
     Trinity::FriendlyCCedInRange u_check(me, range);
-    Trinity::CreatureListSearcher<Trinity::FriendlyCCedInRange> searcher(me, _list, u_check);
+    Trinity::CreatureListSearcher<Trinity::FriendlyCCedInRange> searcher(me, creatures, u_check);
     Cell::VisitGridObjects(me, searcher, range);
 }
 
-void SmartScript::DoFindFriendlyMissingBuff(std::list<Creature*>& list, float range, uint32 spellid)
+void SmartScript::DoFindFriendlyMissingBuff(std::vector<Creature*>& creatures, float range, uint32 spellid) const
 {
     if (!me)
         return;
 
     Trinity::FriendlyMissingBuffInRange u_check(me, range, spellid);
-    Trinity::CreatureListSearcher<Trinity::FriendlyMissingBuffInRange> searcher(me, list, u_check);
+    Trinity::CreatureListSearcher<Trinity::FriendlyMissingBuffInRange> searcher(me, creatures, u_check);
     Cell::VisitGridObjects(me, searcher, range);
 }
 
-Unit* SmartScript::DoFindClosestFriendlyInRange(float range, bool playerOnly)
+Unit* SmartScript::DoFindClosestFriendlyInRange(float range, bool playerOnly) const
 {
     if (!me)
         return nullptr;
@@ -3908,7 +3884,7 @@ void SmartScript::SetScript9(SmartScriptHolder& e, uint32 entry)
     }
 }
 
-Unit* SmartScript::GetLastInvoker(Unit* invoker)
+Unit* SmartScript::GetLastInvoker(Unit* invoker) const
 {
     // Look for invoker only on map of base object... Prevents multithreaded crashes
     if (WorldObject* baseObject = GetBaseObject())

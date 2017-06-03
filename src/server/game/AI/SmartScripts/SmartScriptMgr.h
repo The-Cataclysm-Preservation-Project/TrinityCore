@@ -24,6 +24,7 @@
 #include <map>
 #include <string>
 #include <unordered_map>
+#include "UnitDefines.h"
 
 class WorldObject;
 enum SpellEffIndex : uint8;
@@ -651,12 +652,7 @@ struct SmartAction
 
         struct
         {
-            uint32 emote1;
-            uint32 emote2;
-            uint32 emote3;
-            uint32 emote4;
-            uint32 emote5;
-            uint32 emote6;
+            uint32 emotes[SMART_ACTION_PARAM_COUNT];
         } randomEmote;
 
         struct
@@ -954,9 +950,7 @@ struct SmartAction
         {
             uint32 entry;
             uint32 mask;
-            uint32 slot1;
-            uint32 slot2;
-            uint32 slot3;
+            uint32 slots[MAX_EQUIPMENT_ITEMS];
         } equip;
 
         struct

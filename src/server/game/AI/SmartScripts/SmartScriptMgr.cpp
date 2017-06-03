@@ -1133,24 +1133,39 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                 break;
             }
         case SMART_ACTION_RANDOM_EMOTE:
-            if (e.action.randomEmote.emote1 && !IsEmoteValid(e, e.action.randomEmote.emote1))
+        {
+            if (std::all_of(std::begin(e.action.randomEmote.emotes), std::end(e.action.randomEmote.emotes), [](uint32 emote) { return emote == 0; }))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry %d SourceType %u Event %u Action %u does not have any non-zero emote",
+                    e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
                 return false;
+            }
 
-            if (e.action.randomEmote.emote2 && !IsEmoteValid(e, e.action.randomEmote.emote2))
-                return false;
-
-            if (e.action.randomEmote.emote3 && !IsEmoteValid(e, e.action.randomEmote.emote3))
-                return false;
-
-            if (e.action.randomEmote.emote4 && !IsEmoteValid(e, e.action.randomEmote.emote4))
-                return false;
-
-            if (e.action.randomEmote.emote5 && !IsEmoteValid(e, e.action.randomEmote.emote5))
-                return false;
-
-            if (e.action.randomEmote.emote6 && !IsEmoteValid(e, e.action.randomEmote.emote6))
-                return false;
+            for (uint32 emote : e.action.randomEmote.emotes)
+                if (emote && !IsEmoteValid(e, emote))
+                    return false;
             break;
+        }
+        case SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST:
+        {
+            if (std::all_of(std::begin(e.action.randTimedActionList.actionLists), std::end(e.action.randTimedActionList.actionLists), [](uint32 actionList) { return actionList == 0; }))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry %d SourceType %u Event %u Action %u does not have any non-zero action list",
+                    e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
+                return false;
+            }
+            break;
+        }
+        case SMART_ACTION_START_CLOSEST_WAYPOINT:
+        {
+            if (std::all_of(std::begin(e.action.closestWaypointFromList.wps), std::end(e.action.closestWaypointFromList.wps), [](uint32 wp) { return wp == 0; }))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry %d SourceType %u Event %u Action %u does not have any non-zero waypoint id",
+                    e.entryOrGuid, e.GetScriptType(), e.event_id, e.GetActionType());
+                return false;
+            }
+            break;
+        }
         case SMART_ACTION_RANDOM_SOUND:
         {
             if (std::all_of(std::begin(e.action.randomSound.sounds), std::end(e.action.randomSound.sounds), [](uint32 sound) { return sound == 0; }))
@@ -1456,12 +1471,10 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         {
             if (e.GetScriptType() == SMART_SCRIPT_TYPE_CREATURE)
             {
-                int8 equipId = (int8)e.action.equip.entry;
-
-                if (equipId)
+                if (int8 equipId = static_cast<int8>(e.action.equip.entry))
                 {
-                    EquipmentInfo const* einfo = sObjectMgr->GetEquipmentInfo(e.entryOrGuid, equipId);
-                    if (!einfo)
+                    EquipmentInfo const* eInfo = sObjectMgr->GetEquipmentInfo(e.entryOrGuid, equipId);
+                    if (!eInfo)
                     {
                         TC_LOG_ERROR("sql.sql", "SmartScript: SMART_ACTION_EQUIP uses non-existent equipment info id %u for creature %u, skipped.", equipId, e.entryOrGuid);
                         return false;
@@ -1622,7 +1635,6 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                 return false;
             }
             break;
-        case SMART_ACTION_START_CLOSEST_WAYPOINT:
         case SMART_ACTION_FOLLOW:
         case SMART_ACTION_SET_ORIENTATION:
         case SMART_ACTION_STORE_TARGET_LIST:
@@ -1668,7 +1680,6 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_SET_NPC_FLAG:
         case SMART_ACTION_ADD_NPC_FLAG:
         case SMART_ACTION_REMOVE_NPC_FLAG:
-        case SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST:
         case SMART_ACTION_RANDOM_MOVE:
         case SMART_ACTION_SET_UNIT_FIELD_BYTES_1:
         case SMART_ACTION_REMOVE_UNIT_FIELD_BYTES_1:
