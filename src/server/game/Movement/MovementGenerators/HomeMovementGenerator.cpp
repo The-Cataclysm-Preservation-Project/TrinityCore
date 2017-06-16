@@ -91,7 +91,11 @@ void HomeMovementGenerator<Creature>::DoFinalize(Creature* owner)
         if (owner->IsVehicle())
             owner->GetVehicleKit()->Reset(true);
         owner->AI()->JustReachedHome();
-        owner->SetSpawnHealth();
+        if (owner->isRegeneratingHealth() && (owner->IsDungeonBoss() || owner->isWorldBoss()))
+        {
+            owner->SetFullHealth();
+            owner->SetPower(POWER_MANA, owner->GetMaxPower(POWER_MANA));
+        }
     }
 }
 
