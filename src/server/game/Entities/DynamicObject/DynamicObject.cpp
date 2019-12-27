@@ -195,14 +195,13 @@ void DynamicObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player
             {
                 if (Unit* caster = GetCaster())
                 {
-                    SpellInfo const* spellInfo = GetSpellInfo();
-                    if (spellInfo)
+                    if (SpellInfo const* spellInfo = GetSpellInfo())
                     {
                         SpellVisualEntry const* rootVisual = sSpellVisualStore.LookupEntry(spellInfo->SpellVisual[0]);
-                        if (rootVisual != nullptr && rootVisual->AlternativeVisualID != 0)
+                        if (rootVisual && rootVisual->AlternativeVisualID)
                         {
                             SpellVisualEntry const* alternativeVisual = sSpellVisualStore.LookupEntry(rootVisual->AlternativeVisualID);
-                            if (alternativeVisual != nullptr && !caster->IsFriendlyTo(target))
+                            if (alternativeVisual && !caster->IsFriendlyTo(target))
                             {
                                 fieldBuffer << (rootVisual->AlternativeVisualID | (DYNAMIC_OBJECT_AREA_SPELL << 28));
                                 continue;
