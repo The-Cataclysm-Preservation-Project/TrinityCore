@@ -7541,13 +7541,12 @@ void ObjectMgr::LoadGameObjectTemplateAddons()
         for (uint32& artKitID : gameObjectAddon.artKits)
         {
             ++artKitIndex;
-            if (artKitID == 0)
+            if (!artKitID)
                 continue;
 
-            if (sGameObjectArtKitStore.LookupEntry(artKitID) == nullptr)
+            if (!sGameObjectArtKitStore.LookupEntry(artKitID))
             {
                 TC_LOG_ERROR("sql.sql", "GameObject (Entry: %u) has invalid `artkit%d` (%d) defined, set to zero instead.", entry, artKitIndex - 1, artKitID);
-
                 artKitID = 0;
             }
         }
