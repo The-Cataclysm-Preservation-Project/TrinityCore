@@ -301,7 +301,7 @@ class boss_lady_deathwhisper : public CreatureScript
                 instance->SetBossState(DATA_LADY_DEATHWHISPER, IN_PROGRESS);
             }
 
-            void JustDied(Unit* killer) override
+            void JustDied(Unit* /*killer*/) override
             {
                 Talk(SAY_DEATH);
 
