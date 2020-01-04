@@ -1198,8 +1198,8 @@ struct FactionTemplateEntry
 struct GameObjectArtKitEntry
 {
     uint32 ID;                                              // 0
-                                                            // 1-3 m_textureVariations[3]
-                                                            // 4-8 m_attachModels[4]
+    //char* TextureVariation[3]                             // 1-3 m_textureVariations[3]
+    //char* AttachModel[4]                                  // 4-8 m_attachModels[4]
 };
 
 struct GameObjectDisplayInfoEntry
