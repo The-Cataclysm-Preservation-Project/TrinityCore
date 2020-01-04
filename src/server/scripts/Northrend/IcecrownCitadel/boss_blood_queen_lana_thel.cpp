@@ -187,7 +187,7 @@ class boss_blood_queen_lana_thel : public CreatureScript
                 DoCast(me, SPELL_FRENZIED_BLOODTHIRST_VISUAL, true);
             }
 
-            void JustDied(Unit* killer) override
+            void JustDied(Unit* /*killer*/) override
             {
                 _JustDied();
                 Talk(SAY_DEATH);
