@@ -53,23 +53,23 @@ namespace WorldPackets
 
                 ObjectGuid Guid;
                 std::string Name;
-                uint8 ListPosition       = 0; ///< Order of the characters in list
-                uint8 RaceID             = 0;
-                uint8 ClassID            = 0;
-                uint8 SexID              = 0;
-                uint8 SkinID             = 0;
-                uint8 FaceID             = 0;
-                uint8 HairStyle          = 0;
-                uint8 HairColor          = 0;
-                uint8 FacialHair         = 0;
-                uint8 ExperienceLevel    = 0;
-                int32 ZoneID             = 0;
-                int32 MapID              = 0;
+                uint8 ListPosition    = 0; ///< Order of the characters in list
+                uint8 RaceID          = 0;
+                uint8 ClassID         = 0;
+                uint8 SexID           = 0;
+                uint8 SkinID          = 0;
+                uint8 FaceID          = 0;
+                uint8 HairStyle       = 0;
+                uint8 HairColor       = 0;
+                uint8 FacialHair      = 0;
+                uint8 ExperienceLevel = 0;
+                int32 ZoneID          = 0;
+                int32 MapID           = 0;
                 TaggedPosition<Position::XYZ> PreloadPos;
                 ObjectGuid GuildGUID;
-                uint32 Flags             = 0; ///< Character flag @see enum CharacterFlags
-                uint32 Flags2            = 0; ///< Character customization flags @see enum CharacterCustomizeFlags
-                bool FirstLogin      = false;
+                uint32 Flags          = 0; ///< Character flag @see enum CharacterFlags
+                uint32 Flags2         = 0; ///< Character customization flags @see enum CharacterCustomizeFlags
+                bool FirstLogin       = false;
 
                 uint32 PetCreatureDisplayID = 0;
                 uint32 PetExperienceLevel   = 0;
@@ -98,7 +98,7 @@ namespace WorldPackets
 
             WorldPacket const* Write() override;
 
-            bool Success                          = false; ///<
+            bool Success = false; ///<
 
             std::vector<CharacterInfo> Characters; ///< all characters on the list
             std::vector<RestrictedFactionChangeRuleInfo> FactionChangeRestrictions; ///< @todo: research
