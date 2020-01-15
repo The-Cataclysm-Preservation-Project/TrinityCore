@@ -58,7 +58,7 @@ namespace WorldPackets
                     uint8 InvType = 0;
                 };
 
-                TaggedPosition<Position::XYZ> PreloadPos;
+                Position PreloadPos;
                 ObjectGuid Guid;
                 ObjectGuid GuildGUID;
                 uint32 Flags = 0;       ///< Character flag @see enum CharacterFlags

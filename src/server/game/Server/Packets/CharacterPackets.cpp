@@ -174,11 +174,11 @@ WorldPacket const* WorldPackets::Character::EnumCharactersResult::Write()
         _worldPacket.WriteByteSeq(charInfo.Guid[4]);
         _worldPacket << int32(charInfo.MapID);
         _worldPacket.WriteByteSeq(charInfo.GuildGUID[5]);
-        _worldPacket << float(charInfo.PreloadPos.Pos.GetPositionZ());
+        _worldPacket << float(charInfo.PreloadPos.GetPositionZ());
         _worldPacket.WriteByteSeq(charInfo.GuildGUID[6]);
         _worldPacket << uint32(charInfo.PetExperienceLevel);
         _worldPacket.WriteByteSeq(charInfo.Guid[3]);
-        _worldPacket << float(charInfo.PreloadPos.Pos.GetPositionY());
+        _worldPacket << float(charInfo.PreloadPos.GetPositionY());
         _worldPacket << uint32(charInfo.Flags2);
         _worldPacket << uint8(charInfo.FacialHair);
         _worldPacket.WriteByteSeq(charInfo.Guid[7]);
@@ -189,7 +189,7 @@ WorldPacket const* WorldPackets::Character::EnumCharactersResult::Write()
         _worldPacket.WriteByteSeq(charInfo.Guid[2]);
         _worldPacket.WriteByteSeq(charInfo.GuildGUID[1]);
         _worldPacket.WriteByteSeq(charInfo.GuildGUID[7]);
-        _worldPacket << float(charInfo.PreloadPos.Pos.GetPositionX());
+        _worldPacket << float(charInfo.PreloadPos.GetPositionX());
         _worldPacket << uint8(charInfo.SkinID);
         _worldPacket << uint8(charInfo.RaceID);
         _worldPacket << uint8(charInfo.ExperienceLevel);
