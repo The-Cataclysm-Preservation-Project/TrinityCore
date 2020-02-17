@@ -252,11 +252,11 @@ enum HoboAction
 
 struct npc_westfall_hobo_witness : public ScriptedAI
 {
-    npc_westfall_hobo_witness(Creature* creature) : ScriptedAI(creature), bribeFailed(false), hoboRage(false), flee(false) { }
+    npc_westfall_hobo_witness(Creature* creature) : ScriptedAI(creature), _bribeFailed(false), _hoboRage(false), _flee(false) { }
 
     bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
     {
-        int32 clueGainChance = 0;
+        uint8 clueGainChance = 0;
         switch (gossipListId)
         {
            case OPTION_QUESTION:
@@ -267,7 +267,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
            case OPTION_PAY:
            {
                clueGainChance = 75;
-               bribeFailed = true;
+               _bribeFailed = true;
                break;
            }
            default:
@@ -296,6 +296,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
         me->SetFacingToObject(player);
 
         uint16 slot = player->FindQuestSlot(QUEST_MURDER_WAS_THE_CASE_THAT_THEY_GAVE_ME);
+        
         if (player->GetQuestSlotCounter(slot, CLUE1) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_1);
@@ -303,6 +304,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             me->DespawnOrUnsummon(12s);
             return;
         }
+        
         if (player->GetQuestSlotCounter(slot, CLUE2) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_2);
@@ -310,6 +312,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             me->DespawnOrUnsummon(12s);
             return;
         }
+        
         if (player->GetQuestSlotCounter(slot, CLUE3) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_3);
@@ -317,6 +320,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             me->DespawnOrUnsummon(12s);
             return;
         }
+        
         if (player->GetQuestSlotCounter(slot, CLUE4) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_4);
@@ -334,17 +338,14 @@ struct npc_westfall_hobo_witness : public ScriptedAI
         if (!who->IsPlayer())
             return;
 
-        if (bribeFailed)
-            Talk(SAY_AGGRO_BRIBE, who);
-        else
-            Talk(SAY_AGGRO_CONVINCE, who);
+        Talk(_bribeFailed ? SAY_AGGRO_BRIBE : SAY_AGGRO_CONVINCE, who);
     }
 
     void DamageTaken(Unit* /*attacker*/, uint32& damage) override
     {
-        if (!flee && me->HealthBelowPctDamaged(20, damage))
+        if (!_flee && me->HealthBelowPctDamaged(20, damage))
         {
-            flee = true;
+            _flee = true;
             me->DoFleeToGetAssistance();
             Talk(SAY_FLEE);
         }
@@ -356,19 +357,14 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             who->ToCreature()->AI()->DoAction(ACTION_AGGRO_HOBO_DONE);
         me->CastSpell(me, SPELL_SUMMON_RAGAMUFFIN_LOOTER);
     }
-
-    void EnterEvadeMode(EvadeReason why) override
-    {
-        ScriptedAI::EnterEvadeMode(why);
-    }
-
+   
     void Reset() override
     {
         ScriptedAI::Reset();
         _events.Reset();
-        bribeFailed = false;
-        hoboRage = false;
-        flee = false;
+        _bribeFailed = false;
+        _hoboRage = false;
+        _flee = false;
         me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         _events.ScheduleEvent(EVENT_RESUME_MOVE, 0, EVENT_GROUP_OOC);
@@ -378,23 +374,21 @@ struct npc_westfall_hobo_witness : public ScriptedAI
     {
         switch (action)
         {
-        case ACTION_AGGRO_HOBO:
-        {
-            if (Unit* target = ObjectAccessor::GetUnit(*me, _targetGUID))
-            {
-                hoboRage = true;
-                me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                me->PauseMovement();
-                me->SetFacingToObject(target);
-                AttackStart(target);
-            }
-            break;
-        }
-        case ACTION_AGGRO_HOBO_DONE:
-            hoboRage = false;
-            break;
-        default:
-            return;
+            case ACTION_AGGRO_HOBO:
+                if (Unit* target = ObjectAccessor::GetUnit(*me, _targetGUID))
+                {
+                    _hoboRage = true;
+                    me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    me->PauseMovement();
+                    me->SetFacingToObject(target);
+                    AttackStart(target);
+                }
+                break;
+            case ACTION_AGGRO_HOBO_DONE:
+                _hoboRage = false;
+                break;
+            default:
+                return;
         }
     }
 
@@ -411,81 +405,69 @@ struct npc_westfall_hobo_witness : public ScriptedAI
         {
             switch (eventId)
             {
-            case EVENT_TALK:
-            {
-                me->PauseMovement();
-                Talk(SAY_EVENT);
-                _events.ScheduleEvent(EVENT_RESUME_MOVE, 6s, EVENT_GROUP_OOC);
-                break;
-            }
-            case EVENT_JACKPOT_INTRO:
-            {
-                me->PauseMovement();
-                Talk(SAY_JACKPOT_INTRO);
-                _events.ScheduleEvent(EVENT_JACKPOT_MIDDLE, 2500, EVENT_GROUP_OOC);
-                break;
-            }
-            case EVENT_JACKPOT_MIDDLE:
-            {
-                me->SetAIAnimKitId(648);
-                Talk(SAY_JACKPOT_END);
-                _events.ScheduleEvent(EVENT_JACKPOT_END, 6s, EVENT_GROUP_OOC);
-                break;
-            }
-            case EVENT_JACKPOT_END:
-            {
-                me->SetAIAnimKitId(0);
-                _events.ScheduleEvent(EVENT_RESUME_MOVE, 4s, EVENT_GROUP_OOC);
-                break;
-            }
-            case EVENT_CRY:
-            {
-                me->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
-                me->PauseMovement();
-                _events.ScheduleEvent(EVENT_RESUME_MOVE, 2s, EVENT_GROUP_OOC);
-                break;
-            }
-            case EVENT_PROPERTY_RAGE:
-            {
-                uint32 creatureId = RAND(NPC_HOMELESS_STORMWIND_CITIZEN_1, NPC_HOMELESS_STORMWIND_CITIZEN_2, NPC_WEST_PLAINS_DRIFTER, NPC_TRANSIENT);
-                if (Creature* creature = GetClosestCreatureWithEntry(me, creatureId, 25.0f))
-                {
-                    if (!creature->IsAlive() || creature->IsInCombat())
-                    {
-                        _events.ScheduleEvent(EVENT_RESUME_MOVE, 0, EVENT_GROUP_OOC);
-                        return;
-                    }
-                    hoboRage = true;
-                    Talk(SAY_PROPERTY_RAGE);
-                    me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                case EVENT_TALK:
                     me->PauseMovement();
-                    me->CastSpell(creature, SPELL_AGGRO_HOBO, true);
-                    me->SetFacingToObject(creature);
-                }
-                else
-                    _events.ScheduleEvent(EVENT_RESUME_MOVE, 0, EVENT_GROUP_OOC);
-                break;
-            }
-            case EVENT_RESUME_MOVE:
-            {
-                me->ResumeMovement();
-                if (roll_chance_i(50)) // prevent spam
+                    Talk(SAY_EVENT);
+                    _events.ScheduleEvent(EVENT_RESUME_MOVE, 6s, EVENT_GROUP_OOC);
+                    break;
+                case EVENT_JACKPOT_INTRO:
+                    me->PauseMovement();
+                    Talk(SAY_JACKPOT_INTRO);
+                    _events.ScheduleEvent(EVENT_JACKPOT_MIDDLE, 2s + 500ms, EVENT_GROUP_OOC);
+                    break;
+                case EVENT_JACKPOT_MIDDLE:
+                    me->SetAIAnimKitId(648);
+                    Talk(SAY_JACKPOT_END);
+                    _events.ScheduleEvent(EVENT_JACKPOT_END, 6s, EVENT_GROUP_OOC);
+                    break;
+                case EVENT_JACKPOT_END:
+                    me->SetAIAnimKitId(0);
+                    _events.ScheduleEvent(EVENT_RESUME_MOVE, 4s, EVENT_GROUP_OOC);
+                    break;
+                case EVENT_CRY:
+                    me->HandleEmoteCommand(EMOTE_ONESHOT_CRY);
+                    me->PauseMovement();
+                    _events.ScheduleEvent(EVENT_RESUME_MOVE, 2s, EVENT_GROUP_OOC);
+                    break;
+                case EVENT_PROPERTY_RAGE:
                 {
-                    if (roll_chance_i(70)) // chance to trigger simple talk event
-                        _events.ScheduleEvent(EVENT_TALK, 30s, 80s, EVENT_GROUP_OOC);
+                    uint32 creatureId = RAND(NPC_HOMELESS_STORMWIND_CITIZEN_1, NPC_HOMELESS_STORMWIND_CITIZEN_2, NPC_WEST_PLAINS_DRIFTER, NPC_TRANSIENT);
+                    if (Creature* creature = GetClosestCreatureWithEntry(me, creatureId, 25.0f))
+                    {
+                        if (!creature->IsAlive() || creature->IsInCombat())
+                        {
+                            _events.ScheduleEvent(EVENT_RESUME_MOVE, 0, EVENT_GROUP_OOC);
+                            return;
+                        }
+                        _hoboRage = true;
+                        Talk(SAY_PROPERTY_RAGE);
+                        me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                        me->PauseMovement();
+                        me->CastSpell(creature, SPELL_AGGRO_HOBO, true);
+                        me->SetFacingToObject(creature);
+                    }
                     else
-                        _events.ScheduleEvent(urand(EVENT_JACKPOT_INTRO, EVENT_PROPERTY_RAGE), 30s, 80s, EVENT_GROUP_OOC);
+                        _events.ScheduleEvent(EVENT_RESUME_MOVE, 0, EVENT_GROUP_OOC);
+                    break;
                 }
-                else
-                    _events.Repeat(30s, 80s);
-                break;
-            }
-            default:
-                break;
+                case EVENT_RESUME_MOVE:
+                    me->ResumeMovement();
+                    if (roll_chance_i(50)) // prevent spam
+                    {
+                        if (roll_chance_i(70)) // chance to trigger simple talk event
+                            _events.ScheduleEvent(EVENT_TALK, 30s, 80s, EVENT_GROUP_OOC);
+                        else
+                            _events.ScheduleEvent(urand(EVENT_JACKPOT_INTRO, EVENT_PROPERTY_RAGE), 30s, 80s, EVENT_GROUP_OOC);
+                    }
+                    else
+                        _events.Repeat(30s, 80s);
+                    break;
+                default:
+                    break;
             }
         }
 
-        if (!hoboRage)
+        if (!_hoboRage)
             if(!UpdateVictim())
                 return;
 
@@ -495,9 +477,9 @@ struct npc_westfall_hobo_witness : public ScriptedAI
 private:
     EventMap _events;
     ObjectGuid _targetGUID;
-    bool bribeFailed;
-    bool hoboRage;
-    bool flee;
+    bool _bribeFailed;
+    bool _hoboRage;
+    bool _flee;
 };
 
 class spell_westfall_summon_ragamuffin_looter : public SpellScript
