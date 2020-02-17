@@ -398,7 +398,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
         }
     }
 
-    void SetGUID(ObjectGuid const& guid, int32 id) override
+    void SetGUID(ObjectGuid const& guid, int32 /*id*/) override
     {
         _targetGUID = guid;
         DoAction(ACTION_AGGRO_HOBO);
