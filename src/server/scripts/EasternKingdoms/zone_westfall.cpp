@@ -468,7 +468,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
         }
 
         if (!_hoboRage)
-            if(!UpdateVictim())
+            if (!UpdateVictim())
                 return;
 
         DoMeleeAttackIfReady();
@@ -490,10 +490,10 @@ class spell_westfall_summon_ragamuffin_looter : public SpellScript
     {
         return ValidateSpellInfo(
             {
-            SPELL_SUMMON_RAGAMUFFIN_LOOTER_1,
-            SPELL_SUMMON_RAGAMUFFIN_LOOTER_2,
-            SPELL_SUMMON_RAGAMUFFIN_LOOTER_3,
-            SPELL_SUMMON_RAGAMUFFIN_LOOTER_4
+                SPELL_SUMMON_RAGAMUFFIN_LOOTER_1,
+                SPELL_SUMMON_RAGAMUFFIN_LOOTER_2,
+                SPELL_SUMMON_RAGAMUFFIN_LOOTER_3,
+                SPELL_SUMMON_RAGAMUFFIN_LOOTER_4
             });
     }
 
@@ -518,9 +518,9 @@ class spell_westfall_aggro_hobo : public SpellScript
 
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
-        Creature* creature = GetHitUnit()->ToCreature();
-        if (creature->IsAIEnabled)
-            creature->AI()->SetGUID(GetCaster()->GetGUID(), 0);
+        if (Creature* creature = GetHitCreature())
+            if (creature->IsAIEnabled)
+                creature->AI()->SetGUID(GetCaster()->GetGUID(), 0);
     }
 
     void Register() override
