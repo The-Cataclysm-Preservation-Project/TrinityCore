@@ -144,7 +144,7 @@ class boss_sinestra : public CreatureScript
                 Initialize();
             }
 
-            void JustEngagedWith(Unit* who) override
+            void JustEngagedWith(Unit* /*who*/) override
             {
                 _JustEngagedWith();
 
@@ -277,11 +277,11 @@ class boss_sinestra : public CreatureScript
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0.0f, 100.0f, true, 0))
                                 DoCast(target, SPELL_WRACK, true);
 
-                            events.ScheduleEvent(EVENT_WRACK, 75s, phase);
+                            events.ScheduleEvent(EVENT_WRACK, 75s);
                             break;
                         case EVENT_FLAME_BREATH:
                             DoCastAOE(SPELL_FLAME_BREATH);
-                            events.ScheduleEvent(EVENT_FLAME_BREATH, 20s, phase);
+                            events.ScheduleEvent(EVENT_FLAME_BREATH, 20s);
                             break;
                         case EVENT_TWILIGHT_SLICER:
                             for (uint8 i = 0; i < 2; i++)
@@ -362,7 +362,7 @@ class boss_sinestra : public CreatureScript
                             }
 
                             me->Yell(YELL_SUMMON, LANG_UNIVERSAL, 0);
-                            events.ScheduleEvent(EVENT_WHELP, 55s, phase);
+                            events.ScheduleEvent(EVENT_WHELP, 55s);
                             break;
                         case EVENT_TWILIGHT_DRAKE:
                             me->SummonCreature(55636, spawnPos[urand(0, 8)]);
@@ -534,7 +534,7 @@ class npc_sinestra_add : public CreatureScript
                 events.Reset();
             }
 
-            void JustEngagedWith(Unit* who) override
+            void JustEngagedWith(Unit* /*who*/) override
             {
                 if (me->GetEntry() == 55636)
                     events.ScheduleEvent(EVENT_TWILIGHT_BREATH, urand(7000, 10000));
