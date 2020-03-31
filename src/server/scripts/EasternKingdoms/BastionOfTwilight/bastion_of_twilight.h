@@ -46,6 +46,8 @@ enum BoTDataTypes
     DATA_ELEMENTIUM_MONSTROSITY         = 12,
     DATA_ASCENDANT_COUNCIL_CONTROLLER   = 13,
     DATA_CORRUPTION                     = 14,
+    DATA_ORB_0                          = 22,
+    DATA_ORB_1                          = 23,
 
     // GameObject Types
     DATA_GRIM_BATOL_RAID_TRAP_DOOR      = 15,
