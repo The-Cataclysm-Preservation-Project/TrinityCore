@@ -68,7 +68,7 @@ enum sharedDatas
     DATA_PRIVATE_ORB0 = 0,
 };
 
-enum phases
+enum Phases
 {
     PHASE_NONE = 0,
     PHASE_ONE = 1,
@@ -103,7 +103,7 @@ class boss_sinestra : public CreatureScript
         {
             boss_sinestraAI(Creature * creature) : BossAI(creature, DATA_SINESTRA), summons(me)
             {
-                instance = me->GetInstanceScript();
+                Initialize();
             }
 
             InstanceScript* instance;
@@ -111,28 +111,24 @@ class boss_sinestra : public CreatureScript
             Creature* orbs[2];
             Creature* eggs[2];
             SummonList summons;
-            uint8 phase;
             uint8 killedEggs;
 
-            void Reset() override
+            void Initialize()
             {
-                if (instance)
-                {
-                    instance->SetData(DATA_SINESTRA, NOT_STARTED);
-                    instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
-                    instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_ESSENCE_OF_THE_RED);
-                }
-
-                events.Reset();
-                summons.DespawnAll();
-
-
                 orbs[0] = NULL;
                 orbs[1] = NULL;
                 eggs[0] = NULL;
                 eggs[1] = NULL;
-                phase = PHASE_NONE;
                 killedEggs = 0;
+                events.SetPhase(PHASE_NONE);
+            }
+
+            void Reset() override
+            {
+                _Reset();
+
+                summons.DespawnAll();
+
                 std::list<Creature*> unitList;
                 me->GetCreatureListWithEntryInGrid(unitList, 48050, 250.0f);
                 for (std::list<Creature*>::const_iterator itr = unitList.begin(); itr != unitList.end(); ++itr)
@@ -144,22 +140,19 @@ class boss_sinestra : public CreatureScript
                 {// despawn twilight essence
                     (*itr)->DespawnOrUnsummon();
                 }
+
+                Initialize();
             }
 
-            void EnterCombat(Unit* /*who*/)
+            void JustEngagedWith(Unit* who) override
             {
-                DoZoneInCombat(me);
+                _JustEngagedWith();
 
-                if (instance)
-                {
-                    instance->SetData(DATA_SINESTRA, IN_PROGRESS);
-                    instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
-                }
+                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
 
                 // Sinestra begin fight with 60 % hp
-                phase = PHASE_ONE;
-                me->SetHealth(me->GetMaxHealth() * 0.60f);
-
+                events.SetPhase(PHASE_ONE);
+                me->SetHealth(me->CountPctFromMaxHealth(60));
                 // Sinestra damage is reduced by 40% in first phase
                 me->AddAura(SPELL_DRAINED, me);
 
@@ -187,11 +180,11 @@ class boss_sinestra : public CreatureScript
                     me->AddAura(SPELL_TWILIGHT_CARAPACE, egg);
                 }
 
-                events.ScheduleEvent(EVENT_WRACK, 15000, PHASE_ONE);
-                events.ScheduleEvent(EVENT_FLAME_BREATH, 20000, PHASE_ONE);
-                events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28000, PHASE_ONE);
-                events.ScheduleEvent(EVENT_CHECK_MELEE, 2000, PHASE_ONE);
-                events.ScheduleEvent(EVENT_WHELP, urand(20000, 25000), PHASE_ONE);
+                events.ScheduleEvent(EVENT_WRACK, 15s, PHASE_ONE);
+                events.ScheduleEvent(EVENT_FLAME_BREATH, 20s, PHASE_ONE);
+                events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28s, PHASE_ONE);
+                events.ScheduleEvent(EVENT_CHECK_MELEE, 2s, PHASE_ONE);
+                events.ScheduleEvent(EVENT_WHELP, 22s, PHASE_ONE);
             }
 
             void JustSummoned(Creature* summon) override
@@ -203,11 +196,9 @@ class boss_sinestra : public CreatureScript
 
             void JustDied(Unit* /*killer*/) override
             {
-                if (instance)
-                {
-                    instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_ESSENCE_OF_THE_RED);
-                    instance->SetData(DATA_SINESTRA, DONE);
-                }
+                _JustDied();
+                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
+                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_ESSENCE_OF_THE_RED);
             }
 
             void KilledUnit(Unit* /*victim*/) override
@@ -215,17 +206,16 @@ class boss_sinestra : public CreatureScript
                 me->Yell(urand(0, 1) == 1 ? YELL_KILL_0 : YELL_KILL_1, LANG_UNIVERSAL, 0);
             }
 
-            void DamageTaken(Unit* /*who*/, uint32& /*damage*/) override
+            void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/) override
             {
-                if (me->GetHealthPct() <= 30.0f && phase == PHASE_ONE)
+                if (me->GetHealthPct() <= 30.0f && events.IsInPhase(PHASE_ONE))
                 {
-                    phase = PHASE_TWO;
-                    events.CancelEventGroup(PHASE_ONE);
+                    events.SetPhase(PHASE_TWO);
                     me->RemoveAura(SPELL_DRAINED);
                     DoCast(SPELL_MANA_BARRIER);
-                    events.ScheduleEvent(EVENT_START_MAGIC_FIGHT, 2000, PHASE_TWO);
-                    events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, urand(18000, 30000), PHASE_TWO);
-                    events.ScheduleEvent(EVENT_SPITECALLER, urand(18000, 35000), PHASE_TWO);
+                    events.ScheduleEvent(EVENT_START_MAGIC_FIGHT, 2s, PHASE_TWO);
+                    events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, 24s, PHASE_TWO);
+                    events.ScheduleEvent(EVENT_SPITECALLER, 24s, PHASE_TWO);
                 }
             }
 
@@ -248,10 +238,9 @@ class boss_sinestra : public CreatureScript
                 {
                     killedEggs++;
 
-                    if (killedEggs >= 2 && phase == PHASE_TWO)
+                    if (killedEggs >= 2 && events.IsInPhase(PHASE_TWO))
                     {
-                        phase = PHASE_THREE;
-                        events.CancelEventGroup(PHASE_TWO);
+                        events.SetPhase(PHASE_THREE);
                         me->CastStop();
                         me->RemoveAura(SPELL_MANA_BARRIER);
 
@@ -263,11 +252,11 @@ class boss_sinestra : public CreatureScript
                             calen->DisappearAndDie();
                         }
 
-                        events.ScheduleEvent(EVENT_WRACK, 15000, PHASE_THREE);
-                        events.ScheduleEvent(EVENT_FLAME_BREATH, 20000, PHASE_THREE);
-                        events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28000, PHASE_THREE);
-                        events.ScheduleEvent(EVENT_CHECK_MELEE, 2000, PHASE_THREE);
-                        events.ScheduleEvent(EVENT_WHELP, urand(15000, 25000), PHASE_THREE);
+                        events.ScheduleEvent(EVENT_WRACK, 15s, PHASE_THREE);
+                        events.ScheduleEvent(EVENT_FLAME_BREATH, 20s, PHASE_THREE);
+                        events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28s, PHASE_THREE);
+                        events.ScheduleEvent(EVENT_CHECK_MELEE, 2s, PHASE_THREE);
+                        events.ScheduleEvent(EVENT_WHELP, 20s, PHASE_THREE);
                     }
                 }
             }
@@ -275,7 +264,7 @@ class boss_sinestra : public CreatureScript
             void UpdateAI(uint32 diff) override
 
             {
-                if (!UpdateVictim() || (me->HasUnitState(UNIT_STATE_CASTING) && phase != PHASE_TWO))
+                if (!UpdateVictim() || (me->HasUnitState(UNIT_STATE_CASTING) && !events.IsInPhase(PHASE_TWO)))
                     return;
 
                 events.Update(diff);
@@ -288,11 +277,11 @@ class boss_sinestra : public CreatureScript
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0.0f, 100.0f, true, 0))
                                 DoCast(target, SPELL_WRACK, true);
 
-                            events.ScheduleEvent(EVENT_WRACK, urand(75000, 80000), phase);
+                            events.ScheduleEvent(EVENT_WRACK, 75s, phase);
                             break;
                         case EVENT_FLAME_BREATH:
                             DoCastAOE(SPELL_FLAME_BREATH);
-                            events.ScheduleEvent(EVENT_FLAME_BREATH, 20000, phase);
+                            events.ScheduleEvent(EVENT_FLAME_BREATH, 20s, phase);
                             break;
                         case EVENT_TWILIGHT_SLICER:
                             for (uint8 i = 0; i < 2; i++)
@@ -303,7 +292,7 @@ class boss_sinestra : public CreatureScript
                                     float width = frand(5, 20);
                                     float degree = frand(0, 6.28f);
                                     pos.Relocate(pos.GetPositionX() + cos(degree)*width, pos.GetPositionY() + sin(degree)*width);
-                                    if (Creature* orb = me->SummonCreature(49863, pos, TEMPSUMMON_TIMED_DESPAWN, 15000, 0))
+                                    if (Creature* orb = me->SummonCreature(49863, pos, TEMPSUMMON_TIMED_DESPAWN, 15s, 0))
                                     {
                                         if (!orbs[0])
                                         {
@@ -331,9 +320,9 @@ class boss_sinestra : public CreatureScript
                                     }
                                 }
                             }
-                            events.ScheduleEvent(EVENT_RESET_ORBS, 18000, phase);
-                            events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28000, phase);
-                            events.ScheduleEvent(EVENT_ORB_START_CHANNEL, 3500, phase);
+                            events.ScheduleEvent(EVENT_RESET_ORBS, 18s);
+                            events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28s);
+                            events.ScheduleEvent(EVENT_ORB_START_CHANNEL, 35s);
                             break;
                         case EVENT_ORB_START_CHANNEL:
                             if (orbs[0] && orbs[1])
@@ -363,7 +352,7 @@ class boss_sinestra : public CreatureScript
                                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0.0f, 100.0f, true, 0))
                                     me->CastSpell(target, SPELL_SIN_TWILIGHT_BLAST, false);
                             }
-                            events.ScheduleEvent(EVENT_CHECK_MELEE, 2000, phase);
+                            events.ScheduleEvent(EVENT_CHECK_MELEE, 2s);
                             break;
                         case EVENT_WHELP:
                             for (uint8 i = 0; i < 5; i++)
@@ -373,15 +362,15 @@ class boss_sinestra : public CreatureScript
                             }
 
                             me->Yell(YELL_SUMMON, LANG_UNIVERSAL, 0);
-                            events.ScheduleEvent(EVENT_WHELP, urand(50000, 60000), phase);
+                            events.ScheduleEvent(EVENT_WHELP, 55s, phase);
                             break;
                         case EVENT_TWILIGHT_DRAKE:
                             me->SummonCreature(55636, spawnPos[urand(0, 8)]);
-                            events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, urand(18000, 30000), PHASE_TWO);
+                            events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, 24s, PHASE_TWO);
                             break;
                         case EVENT_SPITECALLER:
                             me->SummonCreature(48415, spawnPos[urand(0, 8)]);
-                            events.ScheduleEvent(EVENT_SPITECALLER, urand(18000, 35000), PHASE_TWO);
+                            events.ScheduleEvent(EVENT_SPITECALLER, 30s, PHASE_TWO);
                             break;
                         case EVENT_START_MAGIC_FIGHT:
                             if (Creature* calen = me->SummonCreature(46277, -1009.35f, -801.97f, 438.59f, 0.81f))
@@ -545,7 +534,7 @@ class npc_sinestra_add : public CreatureScript
                 events.Reset();
             }
 
-            void EnterCombat(Unit* /*who*/)
+            void JustEngagedWith(Unit* who) override
             {
                 if (me->GetEntry() == 55636)
                     events.ScheduleEvent(EVENT_TWILIGHT_BREATH, urand(7000, 10000));
