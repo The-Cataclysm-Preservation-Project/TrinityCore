@@ -16,10 +16,26 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ObjectMgr.h"
 #include "ScriptMgr.h"
-#include "Spell.h"
-#include "SpellAuras.h"
+#include "ScriptedCreature.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
+#include "SpellMgr.h"
+#include "Player.h"
+#include "PhasingHandler.h"
+#include "PassiveAI.h"
+#include "InstanceScript.h"
+#include "MotionMaster.h"
+#include "ObjectAccessor.h"
+#include "TemporarySummon.h"
+#include "Map.h"
+#include "Unit.h"
+#include "Creature.h"
 #include "bastion_of_twilight.h"
+#include "SpellAuras.h"
+#include "GameObject.h"
+#include "GameObjectAI.h"
 
 #define YELL_AGGRO  "We were fools to entrust an imbecile like Cho'gall with such a sacred duty. I will deal with you intruders myself!"
 #define YELL_KILL_0 "My brood will feed on your bones!"
@@ -61,6 +77,7 @@ enum events
     EVENT_START_MAGIC_FIGHT,
     EVENT_TWILIGHT_DRAKE,
     EVENT_SPITECALLER,
+    EVENT_FLAMES_TRIGGER,
 };
 
 enum sharedDatas
@@ -92,6 +109,17 @@ Position const spawnPos[9] =
     {-1005.45f, -746.29f, 438.59f, 5.51f},
     {-1018.57f, -760.42f, 438.59f, 5.71f},
     {-1029.42f, -774.76f, 438.59f, 0.22f},
+};
+
+Position const flamesPos[7] =
+{
+    {-895.89f, -765.88f, 442.16f, 0},
+    {-912.87f, -770.63f, 440.43f, 0},
+    {-994.33f, -665.81f, 440.45f, 0},
+    {-999.33f, -693.72f, 440.87f, 0},
+    {-932.12f, -774.44f, 439.78f, 0},
+    {-998.55f, -711.15f, 439.33f, 2.84f},
+    {-996.73f, -731.15f, 438.30f, 0},
 };
 
 class boss_sinestra : public CreatureScript
@@ -130,12 +158,12 @@ class boss_sinestra : public CreatureScript
                 summons.DespawnAll();
 
                 std::list<Creature*> unitList;
-                me->GetCreatureListWithEntryInGrid(unitList, 48050, 250.0f);
+                me->GetCreatureListWithEntryInGrid(unitList, NPC_TWILIGHT_WHELP, 250.0f);
                 for (std::list<Creature*>::const_iterator itr = unitList.begin(); itr != unitList.end(); ++itr)
                 {// despawn twilight whelps
                     (*itr)->DespawnOrUnsummon();
                 }
-                me->GetCreatureListWithEntryInGrid(unitList, 48018, 250.0f);
+                me->GetCreatureListWithEntryInGrid(unitList, NPC_ESSENCE, 250.0f);
                 for (std::list<Creature*>::const_iterator itr = unitList.begin(); itr != unitList.end(); ++itr)
                 {// despawn twilight essence
                     (*itr)->DespawnOrUnsummon();
@@ -148,8 +176,6 @@ class boss_sinestra : public CreatureScript
             {
                 _JustEngagedWith();
 
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
-
                 // Sinestra begin fight with 60 % hp
                 events.SetPhase(PHASE_ONE);
                 me->SetHealth(me->CountPctFromMaxHealth(60));
@@ -159,7 +185,7 @@ class boss_sinestra : public CreatureScript
                 me->Yell(YELL_AGGRO, LANG_UNIVERSAL, 0);
 
                 // Summon first egg
-                if (Creature* egg = me->SummonCreature(46842, -993.72f, -669.54f, 440.20f, 4.57f, TEMPSUMMON_CORPSE_DESPAWN))
+                if (Creature* egg = me->SummonCreature(NPC_PULSING_TWILIGHT_EGG, -993.72f, -669.54f, 440.20f, 4.57f, TEMPSUMMON_CORPSE_DESPAWN))
                 {
                     eggs[0] = egg;
                     egg->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
@@ -170,7 +196,7 @@ class boss_sinestra : public CreatureScript
                 }
 
                 // Summon second egg
-                if (Creature* egg = me->SummonCreature(46842, -901.25f, -768.70f, 441.35f, 3.33f, TEMPSUMMON_CORPSE_DESPAWN))
+                if (Creature* egg = me->SummonCreature(NPC_PULSING_TWILIGHT_EGG, -901.25f, -768.70f, 441.35f, 3.33f, TEMPSUMMON_CORPSE_DESPAWN))
                 {
                     eggs[1] = egg;
                     egg->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
@@ -184,7 +210,7 @@ class boss_sinestra : public CreatureScript
                 events.ScheduleEvent(EVENT_FLAME_BREATH, 20s, PHASE_ONE);
                 events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28s, PHASE_ONE);
                 events.ScheduleEvent(EVENT_CHECK_MELEE, 2s, PHASE_ONE);
-                events.ScheduleEvent(EVENT_WHELP, 22s, PHASE_ONE);
+                events.ScheduleEvent(EVENT_WHELP, 45s, PHASE_ONE);
             }
 
             void JustSummoned(Creature* summon) override
@@ -197,8 +223,10 @@ class boss_sinestra : public CreatureScript
             void JustDied(Unit* /*killer*/) override
             {
                 _JustDied();
-                instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
-                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_ESSENCE_OF_THE_RED);
+
+                // Summon the loot chest
+                if (GameObject* chest = me->SummonGameObject(GO_SINESTRA_CHEST, -962.91f, -749.71f, 438.59f, 0, GO_SUMMON_TIMED_DESPAWN))
+                    chest->DespawnOrUnsummon(60m);
             }
 
             void KilledUnit(Unit* /*victim*/) override
@@ -214,8 +242,9 @@ class boss_sinestra : public CreatureScript
                     me->RemoveAura(SPELL_DRAINED);
                     DoCast(SPELL_MANA_BARRIER);
                     events.ScheduleEvent(EVENT_START_MAGIC_FIGHT, 2s, PHASE_TWO);
-                    events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, 24s, PHASE_TWO);
-                    events.ScheduleEvent(EVENT_SPITECALLER, 24s, PHASE_TWO);
+                    events.ScheduleEvent(EVENT_FLAMES_TRIGGER, 5s, PHASE_TWO);
+                    events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, urand(18000,30000), PHASE_TWO);
+                    events.ScheduleEvent(EVENT_SPITECALLER, urand(18000,35000), PHASE_TWO);
                 }
             }
 
@@ -234,7 +263,7 @@ class boss_sinestra : public CreatureScript
 
             void SummonedCreatureDespawn(Creature* summon) override
             {
-                if (summon->GetEntry() == 46842)
+                if (summon->GetEntry() == NPC_PULSING_TWILIGHT_EGG)
                 {
                     killedEggs++;
 
@@ -244,7 +273,7 @@ class boss_sinestra : public CreatureScript
                         me->CastStop();
                         me->RemoveAura(SPELL_MANA_BARRIER);
 
-                        if (Creature* calen = me->FindNearestCreature(46277, 100.0f, true))
+                        if (Creature* calen = me->FindNearestCreature(NPC_CALEN, 100.0f, true))
                         {
                             calen->CastStop();
                             if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0))
@@ -256,7 +285,7 @@ class boss_sinestra : public CreatureScript
                         events.ScheduleEvent(EVENT_FLAME_BREATH, 20s, PHASE_THREE);
                         events.ScheduleEvent(EVENT_TWILIGHT_SLICER, 28s, PHASE_THREE);
                         events.ScheduleEvent(EVENT_CHECK_MELEE, 2s, PHASE_THREE);
-                        events.ScheduleEvent(EVENT_WHELP, 20s, PHASE_THREE);
+                        events.ScheduleEvent(EVENT_WHELP, 45s, PHASE_THREE);
                     }
                 }
             }
@@ -292,7 +321,7 @@ class boss_sinestra : public CreatureScript
                                     float width = frand(5, 20);
                                     float degree = frand(0, 6.28f);
                                     pos.Relocate(pos.GetPositionX() + cos(degree)*width, pos.GetPositionY() + sin(degree)*width);
-                                    if (Creature* orb = me->SummonCreature(49863, pos, TEMPSUMMON_TIMED_DESPAWN, 15s, 0))
+                                    if (Creature* orb = me->SummonCreature(NPC_SHADOW_ORB, pos, TEMPSUMMON_TIMED_DESPAWN, 15s, 0))
                                     {
                                         if (!orbs[0])
                                         {
@@ -358,37 +387,39 @@ class boss_sinestra : public CreatureScript
                             for (uint8 i = 0; i < 5; i++)
                             {
                                 uint8 posId = urand(0, 8);
-                                me->SummonCreature(48050, spawnPos[posId]);
+                                me->SummonCreature(NPC_TWILIGHT_WHELP, spawnPos[posId]);
                             }
 
                             me->Yell(YELL_SUMMON, LANG_UNIVERSAL, 0);
                             events.ScheduleEvent(EVENT_WHELP, 55s);
                             break;
+                        case EVENT_FLAMES_TRIGGER:
+                            for (uint8 i = 0; i < 6; i++)
+                            {
+                                me->SummonCreature(NPC_FLAME_TRIGGER, flamesPos[i]);
+                            }
+                            break;
                         case EVENT_TWILIGHT_DRAKE:
-                            me->SummonCreature(55636, spawnPos[urand(0, 8)]);
+                            me->SummonCreature(NPC_TWILIGHT_DRAKE, spawnPos[urand(0, 8)]);
                             events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, 24s, PHASE_TWO);
                             break;
                         case EVENT_SPITECALLER:
-                            me->SummonCreature(48415, spawnPos[urand(0, 8)]);
+                            me->SummonCreature(NPC_SPITCALLER, spawnPos[urand(0, 8)]);
                             events.ScheduleEvent(EVENT_SPITECALLER, 30s, PHASE_TWO);
                             break;
                         case EVENT_START_MAGIC_FIGHT:
-                            if (Creature* calen = me->SummonCreature(46277, -1009.35f, -801.97f, 438.59f, 0.81f))
+                            if (Creature* calen = me->SummonCreature(NPC_CALEN, -1009.35f, -801.97f, 438.59f, 0.81f))
                             {
                                 calen->CastSpell(calen, SPELL_PYRRHIC_FOCUS, true);
                                 calen->Yell("Sintharia! Your master owes me a great debt... one that I intend to extract from his consort's hide!", LANG_UNIVERSAL, 0);
 
-                                if (Creature* target = me->SummonCreature(46288, -988.828f, -787.879f, 449.618f, 0.49f))
+                                if (Creature* target = me->FindNearestCreature(NPC_LASER_TRIGGER, 100.0f, true))
                                 {
-                                    target->SetHover(true);
-                                    target->SetDisableGravity(true);
-                                    target->SetCanFly(true);
-
                                     target->SetFlag(UNIT_FIELD_FLAGS, UnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE));
                                     target->GetMotionMaster()->MoveTakeoff(0, target->GetHomePosition());
 
                                     calen->CastSpell(target, SPELL_FIERY_RESOLVE, false);
-                                    DoCastVictim(SPELL_TWILIGHT_POWER, false);
+                                    me->CastSpell(target, SPELL_TWILIGHT_POWER, false);
 
                                     calen->setRegeneratingHealth(false);
                                 }
@@ -470,10 +501,10 @@ class npc_sinestra_twilight_whelp : public CreatureScript
                     return;
 
                 Position pos = me->GetPosition();
-                if (Creature* essence = me->SummonCreature(48018, pos, TEMPSUMMON_MANUAL_DESPAWN, 0, 0))
+                if (Creature* essence = me->SummonCreature(NPC_ESSENCE, pos, TEMPSUMMON_MANUAL_DESPAWN, 0, 0))
                 {
                     DoZoneInCombat(essence);
-                    essence->SetFlag(UNIT_FIELD_FLAGS, UnitFlags(UNIT_FLAG_REMOVE_CLIENT_CONTROL | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE));
+                    essence->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                     essence->SetReactState(REACT_PASSIVE);
                     essence->AttackStop();
                     essence->StopMoving();
@@ -531,7 +562,7 @@ class npc_sinestra_add : public CreatureScript
 
             void JustEngagedWith(Unit* /*who*/) override
             {
-                if (me->GetEntry() == 55636)
+                if (me->GetEntry() == NPC_TWILIGHT_DRAKE)
                     events.ScheduleEvent(EVENT_TWILIGHT_BREATH, urand(7000, 10000));
                 else
                     events.ScheduleEvent(EVENT_UNLEASH_ESSENCE, urand(22000, 30000));
@@ -578,7 +609,7 @@ class spell_sinestra_wreck : public SpellScriptLoader
         {
             PrepareAuraScript(spell_sinestra_wreck_AuraScript);
 
-            void HandleShareBuff (AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            void Apply (AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 if (!GetTargetApplication())
                     return;
@@ -600,7 +631,7 @@ class spell_sinestra_wreck : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove += AuraEffectRemoveFn(spell_sinestra_wreck_AuraScript::HandleShareBuff, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove += AuraEffectRemoveFn(spell_sinestra_wreck_AuraScript::Apply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -620,7 +651,7 @@ class spell_sinestra_wrack_jump : public SpellScriptLoader
         {
             PrepareSpellScript(spell_sinestra_wrack_jump_SpellScript);
 
-            void SelectTarget(std::list<WorldObject*>& targets)
+            void FilterTargets(std::list<WorldObject*>& targets)
             {
                 targets.remove(GetCaster());
                 targets.sort(Trinity::ObjectDistanceOrderPred(GetCaster()));
@@ -631,7 +662,7 @@ class spell_sinestra_wrack_jump : public SpellScriptLoader
                 targets.resize(2);
             }
 
-            void Hit(SpellEffIndex /*effIndex*/)
+            void HandleBeforeHit()
             {
                 if (!GetHitUnit())
                     return;
@@ -643,20 +674,15 @@ class spell_sinestra_wrack_jump : public SpellScriptLoader
                     return;
 
                 if (Aura* debuff = GetOriginalCaster()->AddAura(89421, GetHitUnit()))
-                {
-                    if (!GetSpellValue())
-                        return;
-
-                    int32 duration = GetSpellValue()->EffectBasePoints[1];
-                    debuff->SetDuration(duration, false);
-                }
+                    if (Aura* aura = GetExplTargetUnit()->GetAura(89421, GetCaster()->GetGUID()))
+                        debuff->SetDuration(aura->GetDuration());
             }
 
             void Register() override
             {
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_wrack_jump_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_wrack_jump_SpellScript::SelectTarget, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget += SpellEffectFn(spell_sinestra_wrack_jump_SpellScript::Hit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_wrack_jump_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_wrack_jump_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+                BeforeHit += SpellHitFn(spell_sinestra_wrack_jump_SpellScript::HandleBeforeHit);
             }
         };
 
@@ -689,7 +715,7 @@ class spell_sinestra_twilight_slicer : public SpellScriptLoader
         {
             PrepareSpellScript(spell_sinestra_twilight_slicer_SpellScript);
 
-            void SelectTarget(std::list<WorldObject*>& targets)
+            void FilterTargets(std::list<WorldObject*>& targets)
             {
                 // Select Other orb, and filter targets between twos
                 if (InstanceScript* instance = GetCaster()->GetInstanceScript())
@@ -706,7 +732,7 @@ class spell_sinestra_twilight_slicer : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_twilight_slicer_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_twilight_slicer_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -754,7 +780,7 @@ class spell_sinestra_twilight_essence : public SpellScriptLoader
                 targets.remove_if(ExactDistanceCheck(GetCaster(), 5.0f * GetCaster()->GetObjectScale()));
             }
 
-            void Hit(SpellEffIndex /*effIndex*/)
+            void HandleHit(SpellEffIndex /*effIndex*/)
             {
                 if (!GetHitUnit())
                     return;
@@ -762,7 +788,7 @@ class spell_sinestra_twilight_essence : public SpellScriptLoader
                 if (!GetHitUnit()->ToCreature())
                     return;
 
-                if (GetHitUnit()->GetEntry() == 48050)
+                if (GetHitUnit()->GetEntry() == NPC_TWILIGHT_WHELP)
                 {
                     if (GetHitUnit()->IsAlive())
                         return;
@@ -779,7 +805,7 @@ class spell_sinestra_twilight_essence : public SpellScriptLoader
                     return;
                 }
 
-                if (GetHitUnit()->GetEntry() == 55636)
+                if (GetHitUnit()->GetEntry() == NPC_TWILIGHT_DRAKE)
                 {
                     // Remove two stack of aura
                     if (GetCaster())
@@ -807,7 +833,7 @@ class spell_sinestra_twilight_essence : public SpellScriptLoader
             {
                 OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_twilight_essence_SpellScript::CorrectRange1, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
                 OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sinestra_twilight_essence_SpellScript::CorrectRange2, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectHitTarget += SpellEffectFn(spell_sinestra_twilight_essence_SpellScript::Hit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget += SpellEffectFn(spell_sinestra_twilight_essence_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
