@@ -37,6 +37,7 @@
 #include "GameObject.h"
 #include "GameObjectAI.h"
 
+
 #define YELL_AGGRO  "We were fools to entrust an imbecile like Cho'gall with such a sacred duty. I will deal with you intruders myself!"
 #define YELL_KILL_0 "My brood will feed on your bones!"
 #define YELL_KILL_1 "Powerless..."
@@ -225,8 +226,8 @@ class boss_sinestra : public CreatureScript
                 _JustDied();
 
                 // Summon the loot chest
-                if (GameObject* chest = me->SummonGameObject(GO_SINESTRA_CHEST, -962.91f, -749.71f, 438.59f, 0, GO_SUMMON_TIMED_DESPAWN))
-                    chest->DespawnOrUnsummon(60m);
+                if (GameObject* chest = me->SummonGameObject(GO_SINESTRA_CHEST, Position(-962.91f, -749.71f, 438.59f, 0.f), QuaternionData(), GO_SUMMON_TIMED_DESPAWN))
+                    chest->DespawnOrUnsummon(Seconds(3600));
             }
 
             void KilledUnit(Unit* /*victim*/) override
