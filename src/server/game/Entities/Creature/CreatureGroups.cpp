@@ -238,7 +238,7 @@ void CreatureGroup::LeaderStartedMoving()
         if (member == m_leader || !member->IsAlive() || member->GetVictim() || !(itr->second->groupAI & FLAG_IDLE_IN_FORMATION))
             continue;
 
-        float angle = itr->second->follow_angle;
+        float angle = itr->second->follow_angle + float(M_PI);
         float dist = itr->second->follow_dist;
 
         MovementGenerator const* moveGen = member->GetMotionMaster()->GetMotionSlot(MOTION_SLOT_IDLE);

@@ -25,8 +25,7 @@
 class FormationMovementGenerator : public MovementGeneratorMedium<Creature, FormationMovementGenerator>, public AbstractFollower
 {
     public:
-        explicit FormationMovementGenerator(Unit* leader, float range, float angle, uint32 point1, uint32 point2) : AbstractFollower(ASSERT_NOTNULL(leader)),
-            _range(range), _angle(angle), _point1(point1), _point2(point2), _lastLeaderSplineID(0) { }
+        explicit FormationMovementGenerator(Unit* leader, float range, float angle, uint32 point1, uint32 point2);
 
         MovementGeneratorType GetMovementGeneratorType() const override { return FORMATION_MOTION_TYPE; }
 
@@ -42,10 +41,11 @@ class FormationMovementGenerator : public MovementGeneratorMedium<Creature, Form
 
         static constexpr uint32 FORMATION_MOVEMENT_INTERVAL = 1200; // sniffed (3 batch update cycles)
         float const _range;
-        float const _angle;
+        float _angle;
         uint32 const _point1;
         uint32 const _point2;
         uint32 _lastLeaderSplineID;
+        bool _hasPredictedDestination;
 
         Position _lastLeaderPosition;
         TimeTrackerSmall _nextMoveTimer;
