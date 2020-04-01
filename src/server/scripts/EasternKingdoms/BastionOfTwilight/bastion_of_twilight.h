@@ -175,6 +175,7 @@ enum BoTGameObjects
     GO_WHELP_CAGE                       = 205087,
     GO_WHELP_CAGE_BASE                  = 205088,
     GO_GRIM_BATOL_RAID_TRAP_DOOR        = 205898,
+    GO_SINESTRA_FIREDOOR                = 211104,
     GO_SINESTRA_CHEST                   = 208045
 };
 

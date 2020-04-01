@@ -79,6 +79,8 @@ enum events
     EVENT_TWILIGHT_DRAKE,
     EVENT_SPITECALLER,
     EVENT_FLAMES_TRIGGER,
+    EVENT_EXPOSE_EGG,
+    EVENT_BLOCK_EGG,
 };
 
 enum sharedDatas
@@ -114,13 +116,13 @@ Position const spawnPos[9] =
 
 Position const flamesPos[7] =
 {
-    {-895.89f, -765.88f, 442.16f, 0},
-    {-912.87f, -770.63f, 440.43f, 0},
-    {-994.33f, -665.81f, 440.45f, 0},
-    {-999.33f, -693.72f, 440.87f, 0},
-    {-932.12f, -774.44f, 439.78f, 0},
-    {-998.55f, -711.15f, 439.33f, 2.84f},
-    {-996.73f, -731.15f, 438.30f, 0},
+    {-895.89f, -765.88f, 442.16f, 0.22f},
+    {-912.87f, -770.63f, 440.43f, 0.22f},
+    {-994.33f, -665.81f, 440.45f, 0.22f},
+    {-999.33f, -693.72f, 440.87f, 0.22f},
+    {-932.12f, -774.44f, 439.78f, 0.22f},
+    {-998.55f, -711.15f, 439.33f, 0.22f},
+    {-996.73f, -731.15f, 438.30f, 0.22f},
 };
 
 class boss_sinestra : public CreatureScript
@@ -226,8 +228,7 @@ class boss_sinestra : public CreatureScript
                 _JustDied();
 
                 // Summon the loot chest
-                if (GameObject* chest = me->SummonGameObject(GO_SINESTRA_CHEST, Position(-962.91f, -749.71f, 438.59f, 0.f), QuaternionData(), GO_SUMMON_TIMED_DESPAWN))
-                    chest->DespawnOrUnsummon(Seconds(3600));
+                 me->SummonGameObject(GO_SINESTRA_CHEST, Position(-962.91f, -749.71f, 438.59f, 0.f), QuaternionData(), DAY);
             }
 
             void KilledUnit(Unit* /*victim*/) override
@@ -244,6 +245,8 @@ class boss_sinestra : public CreatureScript
                     DoCast(SPELL_MANA_BARRIER);
                     events.ScheduleEvent(EVENT_START_MAGIC_FIGHT, 2s, PHASE_TWO);
                     events.ScheduleEvent(EVENT_FLAMES_TRIGGER, 5s, PHASE_TWO);
+                    events.ScheduleEvent(EVENT_EXPOSE_EGG, 10s, PHASE_TWO);
+                    events.ScheduleEvent(EVENT_EXPOSE_EGG, 32s, PHASE_TWO);
                     events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, urand(18000,30000), PHASE_TWO);
                     events.ScheduleEvent(EVENT_SPITECALLER, urand(18000,35000), PHASE_TWO);
                 }
@@ -292,12 +295,14 @@ class boss_sinestra : public CreatureScript
             }
 
             void UpdateAI(uint32 diff) override
-
             {
-                if (!UpdateVictim() || (me->HasUnitState(UNIT_STATE_CASTING) && !events.IsInPhase(PHASE_TWO)))
+                if (!UpdateVictim())
                     return;
 
                 events.Update(diff);
+
+                if (me->HasUnitState(UNIT_STATE_CASTING) && !events.IsInPhase(PHASE_TWO))
+                    return;
 
                 while (uint32 eventId = events.ExecuteEvent())
                 {
@@ -372,15 +377,14 @@ class boss_sinestra : public CreatureScript
                         case EVENT_RESET_ORBS:
                             orbs[0] = NULL;
                             orbs[1] = NULL;
-
-                            if (instance)
-                                instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_PURPLE_BEAM);
                             break;
                         case EVENT_CHECK_MELEE:
-                            if (me->GetDistance2d(me->GetVictim()) >= 5.0f)
+                            if(Unit* victim = me->GetVictim())
                             {
-                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0.0f, 100.0f, true, 0))
-                                    DoCastVictim(SPELL_SIN_TWILIGHT_BLAST, false);
+                                if (me->GetDistance2d(victim) >= 5.0f) {
+                                    if (Unit * target = SelectTarget(SELECT_TARGET_RANDOM, 0.0f, 100.0f, true, 0))
+                                        DoCast(target, SPELL_SIN_TWILIGHT_BLAST, false);
+                                }
                             }
                             events.ScheduleEvent(EVENT_CHECK_MELEE, 2s);
                             break;
@@ -392,53 +396,60 @@ class boss_sinestra : public CreatureScript
                             }
 
                             me->Yell(YELL_SUMMON, LANG_UNIVERSAL, 0);
-                            events.ScheduleEvent(EVENT_WHELP, 55s);
+                            events.ScheduleEvent(EVENT_WHELP, 45s);
                             break;
                         case EVENT_FLAMES_TRIGGER:
-                            for (uint8 i = 0; i < 6; i++)
+                            for (uint8 i = 0; i < 7; i++)
                             {
-                                me->SummonCreature(NPC_FLAME_TRIGGER, flamesPos[i]);
+                                uint8 posId = i;
+                                me->SummonCreature(NPC_FLAME_TRIGGER, flamesPos[posId]);
                             }
                             break;
                         case EVENT_TWILIGHT_DRAKE:
                             me->SummonCreature(NPC_TWILIGHT_DRAKE, spawnPos[urand(0, 8)]);
-                            events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, 24s, PHASE_TWO);
+                            events.ScheduleEvent(EVENT_TWILIGHT_DRAKE, urand(18000,30000), PHASE_TWO);
                             break;
                         case EVENT_SPITECALLER:
                             me->SummonCreature(NPC_SPITCALLER, spawnPos[urand(0, 8)]);
-                            events.ScheduleEvent(EVENT_SPITECALLER, 30s, PHASE_TWO);
+                            events.ScheduleEvent(EVENT_SPITECALLER, urand(18000,30000), PHASE_TWO);
                             break;
                         case EVENT_START_MAGIC_FIGHT:
                             if (Creature* calen = me->SummonCreature(NPC_CALEN, -1009.35f, -801.97f, 438.59f, 0.81f))
                             {
-                                calen->CastSpell(calen, SPELL_PYRRHIC_FOCUS, true);
                                 calen->Yell("Sintharia! Your master owes me a great debt... one that I intend to extract from his consort's hide!", LANG_UNIVERSAL, 0);
+                                // calen->CastSpell(calen, SPELL_PYRRHIC_FOCUS, true);
+                                calen->AddAura(SPELL_PYRRHIC_FOCUS, calen);
 
                                 if (Creature* target = me->FindNearestCreature(NPC_LASER_TRIGGER, 100.0f, true))
                                 {
-                                    target->SetFlag(UNIT_FIELD_FLAGS, UnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE));
-                                    target->GetMotionMaster()->MoveTakeoff(0, target->GetHomePosition());
-
-                                    calen->CastSpell(target, SPELL_FIERY_RESOLVE, false);
-                                    me->CastSpell(target, SPELL_TWILIGHT_POWER, false);
-
+                                    // target->GetMotionMaster()->MoveTakeoff(0, target->GetHomePosition());
                                     calen->setRegeneratingHealth(false);
+                                    me->CastSpell(target, SPELL_TWILIGHT_POWER, false);
+                                    calen->CastSpell(target, SPELL_FIERY_RESOLVE, false);
                                 }
                             }
-
                             me->Yell("This will be your tomb as well as theirs!", LANG_UNIVERSAL, 0);
-
+                            break;
+                        case EVENT_EXPOSE_EGG:
                             // Expose eggs!
-                            if (eggs[0])
+                            if(eggs[0])
                                 eggs[0]->RemoveAura(SPELL_TWILIGHT_CARAPACE);
-                            if (eggs[1])
+                            if(eggs[1])
                                 eggs[1]->RemoveAura(SPELL_TWILIGHT_CARAPACE);
+                            events.ScheduleEvent(EVENT_EXPOSE_EGG, 60s, PHASE_TWO);
+                            break;
+                        case EVENT_BLOCK_EGG:
+                            //Reblock eggs
+                            if(eggs[0])
+                                eggs[0]->AddAura(SPELL_TWILIGHT_CARAPACE, eggs[0]);
+                            if(eggs[1])
+                                eggs[1]->AddAura(SPELL_TWILIGHT_CARAPACE, eggs[1]);
+                            events.ScheduleEvent(EVENT_BLOCK_EGG, 60s, PHASE_TWO);
                             break;
                         default:
                             break;
                     }
                 }
-
                 DoMeleeAttackIfReady();
             }
         };
