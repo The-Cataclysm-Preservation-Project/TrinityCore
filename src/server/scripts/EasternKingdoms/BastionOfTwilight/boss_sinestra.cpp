@@ -314,7 +314,7 @@ class boss_sinestra : public CreatureScript
                                         orb->Attack(target, true);
 
                                         // Twilight pulse!
-                                        orb->CastSpell(orb, SPELL_TWILIGHT_PULSE, true);
+                                        orb->DoCastSelf(SPELL_TWILIGHT_PULSE, true);
                                         if (Aura* aur = orb->AddAura(SPELL_PURPLE_BEAM, target))
                                             aur->SetDuration(60000);
                                     }
@@ -350,7 +350,7 @@ class boss_sinestra : public CreatureScript
                             if (me->GetDistance2d(me->GetVictim()) >= 5.0f)
                             {
                                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0.0f, 100.0f, true, 0))
-                                    me->CastSpell(target, SPELL_SIN_TWILIGHT_BLAST, false);
+                                    me->DoCastVictim(SPELL_SIN_TWILIGHT_BLAST, false);
                             }
                             events.ScheduleEvent(EVENT_CHECK_MELEE, 2s);
                             break;
@@ -375,7 +375,7 @@ class boss_sinestra : public CreatureScript
                         case EVENT_START_MAGIC_FIGHT:
                             if (Creature* calen = me->SummonCreature(46277, -1009.35f, -801.97f, 438.59f, 0.81f))
                             {
-                                calen->CastSpell(calen, SPELL_PYRRHIC_FOCUS, true);
+                                calen->DoCastSelf(calen, SPELL_PYRRHIC_FOCUS, true);
                                 calen->Yell("Sintharia! Your master owes me a great debt... one that I intend to extract from his consort's hide!", LANG_UNIVERSAL, 0);
 
                                 if (Creature* target = me->SummonCreature(46288, -988.828f, -787.879f, 449.618f, 0.49f))
@@ -387,8 +387,8 @@ class boss_sinestra : public CreatureScript
                                     target->SetFlag(UNIT_FIELD_FLAGS, UnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE));
                                     target->GetMotionMaster()->MoveTakeoff(0, target->GetHomePosition());
 
-                                    calen->CastSpell(target, SPELL_FIERY_RESOLVE, false);
-                                    me->CastSpell(target, SPELL_TWILIGHT_POWER, false);
+                                    calen->DoCastVictim(SPELL_FIERY_RESOLVE, false);
+                                    me->DoCastVictim(SPELL_TWILIGHT_POWER, false);
 
                                     calen->setRegeneratingHealth(false);
                                 }
@@ -437,16 +437,15 @@ class npc_sinestra_twilight_whelp : public CreatureScript
         {
             npc_sinestra_twilight_whelpAI(Creature * creature) : ScriptedAI(creature)
             {
-                pInstance = (InstanceScript*)creature->GetInstanceScript();
+                Initialize();
             }
 
             InstanceScript* pInstance;
             EventMap events;
             bool respawned;
 
-            void Reset() override
+            void Initialize() override
             {
-                events.Reset();
                 events.ScheduleEvent(EVENT_SPIT, urand(10000, 35000));
             }
 
@@ -491,7 +490,6 @@ class npc_sinestra_twilight_whelp : public CreatureScript
                     {
                         case EVENT_SPIT:
                             DoCastVictim(SPELL_TWILIGHT_SPIT);
-
                             events.ScheduleEvent(EVENT_SPIT, urand(35000, 50000));
                             break;
                     }
@@ -520,10 +518,7 @@ class npc_sinestra_add : public CreatureScript
 
         struct npc_sinestra_addAI : public ScriptedAI
         {
-            npc_sinestra_addAI(Creature * creature) : ScriptedAI(creature)
-            {
-                instance = (InstanceScript*)creature->GetInstanceScript();
-            }
+            npc_sinestra_addAI(Creature * creature) : ScriptedAI(creature) {}
 
             InstanceScript* instance;
             EventMap events;
