@@ -46,8 +46,6 @@ enum BoTDataTypes
     DATA_ELEMENTIUM_MONSTROSITY         = 12,
     DATA_ASCENDANT_COUNCIL_CONTROLLER   = 13,
     DATA_CORRUPTION                     = 14,
-    DATA_ORB_0                          = 22,
-    DATA_ORB_1                          = 23,
 
     // GameObject Types
     DATA_GRIM_BATOL_RAID_TRAP_DOOR      = 15,
@@ -59,6 +57,10 @@ enum BoTDataTypes
     DATA_AT_ASCENDANT_COUNCIL_INTRO_2   = 19,
     DATA_AT_ASCENDANT_COUNCIL_INTRO_3   = 20,
     DATA_AT_CHOGALL_INTRO               = 21,
+
+    //Sinestra Orbs
+    DATA_ORB_0                          = 22,
+    DATA_ORB_1                          = 23,
 
     // Encounter Related
     /*Halfus Wyrmbreaker*/

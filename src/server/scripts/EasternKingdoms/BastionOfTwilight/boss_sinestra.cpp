@@ -444,7 +444,7 @@ class npc_sinestra_twilight_whelp : public CreatureScript
             EventMap events;
             bool respawned;
 
-            void Initialize() override
+            void Initialize()
             {
                 events.ScheduleEvent(EVENT_SPIT, urand(10000, 35000));
             }
