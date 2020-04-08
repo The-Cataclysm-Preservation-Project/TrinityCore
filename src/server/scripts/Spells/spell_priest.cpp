@@ -90,6 +90,7 @@ enum PriestSpells
     SPELL_PRIEST_SHADOWFORM_VISUAL_WITHOUT_GLYPH    = 107903,
     SPELL_PRIEST_SHADOWFORM_VISUAL_WITH_GLYPH       = 107904,
     SPELL_PRIEST_SHADOW_WORD_DEATH                  = 32409,
+    SPELL_PRIEST_SHADOWY_APPARITION_SUMMON          = 87426,
     SPELL_PRIEST_SPIRIT_OF_REDEMPTION_TRIGGERED     = 27827,
     SPELL_PRIEST_STRENGTH_OF_SOUL_R1                = 89488,
     SPELL_PRIEST_STRENGTH_OF_SOUL_TRIGGERED_R1      = 96266,
@@ -1818,6 +1819,50 @@ class spell_pri_harnessed_shadows : public AuraScript
     }
 };
 
+// -78202 - Shadowy Apparition
+class spell_pri_shadowy_apparition : public AuraScript
+{
+    PrepareAuraScript(spell_pri_shadowy_apparition);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_PRIEST_SHADOWY_APPARITION_SUMMON });
+    }
+
+    bool CheckProc(ProcEventInfo& /*eventInfo*/)
+    {
+        if (AuraEffect const* effect = GetEffect(EFFECT_0))
+        {
+            int32 chance = effect->GetAmount();
+            if (GetTarget()->isMoving())
+                chance *= 5;
+
+            return roll_chance_i(chance);
+        }
+
+        return false;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        Unit* target = GetTarget();
+        std::list<Creature*> apparitions;
+        target->GetAllMinionsByEntry(apparitions, ENTRY_SHADOWY_APPARITION);
+
+        int32 maxSummons = sSpellMgr->AssertSpellInfo(SPELL_PRIEST_SHADOWY_APPARITION_SUMMON)->Effects[EFFECT_0].CalcValue();
+        if (apparitions.size() < maxSummons)
+            target->CastCustomSpell(SPELL_PRIEST_SHADOWY_APPARITION_SUMMON, SPELLVALUE_BASE_POINT0, 1, target, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_pri_shadowy_apparition::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_pri_shadowy_apparition::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 void AddSC_priest_spell_scripts()
 {
     RegisterSpellScript(spell_pri_archangel);
@@ -1859,6 +1904,7 @@ void AddSC_priest_spell_scripts()
     RegisterAuraScript(spell_pri_shadow_orb);
     RegisterAuraScript(spell_pri_shadow_orbs);
     RegisterAuraScript(spell_pri_shadow_orb_power);
+    RegisterAuraScript(spell_pri_shadowy_apparition);
     RegisterAuraScript(spell_pri_strength_of_soul);
     RegisterSpellScript(spell_pri_strength_of_soul_script);
     RegisterAuraScript(spell_pri_spirit_of_redemption);

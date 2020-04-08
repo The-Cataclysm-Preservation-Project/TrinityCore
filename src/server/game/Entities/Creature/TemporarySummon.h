@@ -54,7 +54,10 @@ enum PetEntries
 
     // Hunter Trap Adds
     ENTRY_VENOMOUS_SNAKE            = 19833,
-    ENTRY_VIPER                     = 19921
+    ENTRY_VIPER                     = 19921,
+
+    // Priest Minions
+    ENTRY_SHADOWY_APPARITION        = 46954
 };
 
 enum PlayerPetSpells
