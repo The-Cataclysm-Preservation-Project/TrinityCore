@@ -36,27 +36,29 @@ enum BoTDataTypes
     DATA_SINESTRA                       = 4,
 
     // Creature Types
-    DATA_PROTO_BEHEMOTH                 = 5,
-    DATA_THERALION                      = 6,
-    DATA_VALIONA                        = 7,
-    DATA_IGNACIOUS                      = 8,
-    DATA_FELUDIUS                       = 9,
-    DATA_TERRASTRA                      = 10,
-    DATA_ARION                          = 11,
-    DATA_ELEMENTIUM_MONSTROSITY         = 12,
-    DATA_ASCENDANT_COUNCIL_CONTROLLER   = 13,
-    DATA_CORRUPTION                     = 14,
+    DATA_PROTO_BEHEMOTH,
+    DATA_THERALION,
+    DATA_VALIONA,
+    DATA_IGNACIOUS,
+    DATA_FELUDIUS,
+    DATA_TERRASTRA,
+    DATA_ARION,
+    DATA_ELEMENTIUM_MONSTROSITY,
+    DATA_ASCENDANT_COUNCIL_CONTROLLER,
+    DATA_CORRUPTION,
+    DATA_INVISIBLE_STALKER_LAVA_VISUAL,
 
     // GameObject Types
-    DATA_GRIM_BATOL_RAID_TRAP_DOOR      = 15,
+    DATA_GRIM_BATOL_RAID_TRAP_DOOR,
 
     // Areatriggers
-    DATA_AT_HALFUS_INTRO                = 16,
-    DATA_AT_THERALION_AND_VALIONA_INTRO = 17,
-    DATA_AT_ASCENDANT_COUNCIL_INTRO_1   = 18,
-    DATA_AT_ASCENDANT_COUNCIL_INTRO_2   = 19,
-    DATA_AT_ASCENDANT_COUNCIL_INTRO_3   = 20,
-    DATA_AT_CHOGALL_INTRO               = 21,
+    DATA_AT_HALFUS_INTRO,
+    DATA_AT_THERALION_AND_VALIONA_INTRO,
+    DATA_AT_ASCENDANT_COUNCIL_INTRO_1,
+    DATA_AT_ASCENDANT_COUNCIL_INTRO_2,
+    DATA_AT_ASCENDANT_COUNCIL_INTRO_3,
+    DATA_AT_CHOGALL_INTRO,
+    DATA_AT_SINESTRA_INTRO,
 
     // Encounter Related
     /*Halfus Wyrmbreaker*/
@@ -72,7 +74,10 @@ enum BoTDataTypes
     DATA_VALIONA_AURA_DUMMY,
 
     /*Cho'Gall*/
-    DATA_FULL_HEROIC_ID
+    DATA_FULL_HEROIC_ID,
+
+    /*Sinestra*/
+
 };
 
 enum BoTDataStates
@@ -89,6 +94,7 @@ enum BoTAreatriggerIndex
     AT_INDEX_ASCENDANT_COUNCIL_INTRO_2      = 4,
     AT_INDEX_ASCENDANT_COUNCIL_INTRO_3      = 5,
     AT_INDEX_CHOGALL_INTRO                  = 6,
+    AT_INDEX_SINESTRA_INTRO                 = 7
 };
 
 enum BoTCreatures
@@ -144,6 +150,11 @@ enum BoTCreatures
     NPC_MALFORMATION                    = 43888,
     NPC_SPIKED_TENTACLE_TRIGGER         = 50265,
 
+    /*Sinestra*/
+    NPC_INVISIBLE_STALKER_LAVA          = 36737,
+    NPC_SHADOW_ORB_PITCHER              = 49863,
+    NPC_SHADOW_ORB_CATCHER              = 49862,
+
     // Generic Creatures
     NPC_INVISIBLE_STALKER               = 42098
 };
@@ -192,6 +203,7 @@ enum BoTEvents
 {
     EVENT_CAST_DANCING_FLAMES = 1,
     EVENT_CHOGALL_TALK_THERALION_AND_VALIONA_DEAD,
+    EVENT_RESPAWN_SINESTRA_SETUP
 };
 
 enum BoTSpells

@@ -41,6 +41,7 @@ ObjectData const creatureData[] =
     { NPC_PROTO_BEHEMOTH,               DATA_PROTO_BEHEMOTH                 },
     { NPC_ASCENDANT_COUNCIL_CONTROLLER, DATA_ASCENDANT_COUNCIL_CONTROLLER   },
     { NPC_CORRUPTION,                   DATA_CORRUPTION                     },
+    { NPC_INVISIBLE_STALKER_LAVA,       DATA_INVISIBLE_STALKER_LAVA_VISUAL  },
     { 0,                                0                                   } // END
 };
 
@@ -71,7 +72,12 @@ uint32 HalfusDragonEntries[] =
     NPC_ORPHANED_EMERALD_WELP
 };
 
-Position const BreathFlightTargetStalkerSortPos = { -740.677f, -592.328f, 859.455f };
+enum SpawnGroups
+{
+    SPAWN_GROUP_ID_SINESTRA         = 412,
+    SPAWN_GROUP_ID_SINESTRA_SETUP   = 413
+
+};
 
 class instance_bastion_of_twilight : public InstanceMapScript
 {
@@ -262,6 +268,14 @@ class instance_bastion_of_twilight : public InstanceMapScript
                             events.ScheduleEvent(EVENT_CHOGALL_TALK_THERALION_AND_VALIONA_DEAD, 6s);
                         }
                         break;
+                    case DATA_SINESTRA:
+                        if (state == FAIL || state == DONE)
+                        {
+                            instance->SpawnGroupDespawn(SPAWN_GROUP_ID_SINESTRA_SETUP);
+                            if (state == FAIL)
+                                events.ScheduleEvent(EVENT_RESPAWN_SINESTRA_SETUP, 30s);
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -388,6 +402,16 @@ class instance_bastion_of_twilight : public InstanceMapScript
                             SaveToDB();
                         }
                         break;
+                    case DATA_AT_SINESTRA_INTRO:
+                        if (_lastAreatriggerIndex < AT_INDEX_SINESTRA_INTRO)
+                        {
+                            if (_fullHeroicId)
+                                instance->SpawnGroupSpawn(SPAWN_GROUP_ID_SINESTRA, true);
+
+                            _lastAreatriggerIndex = AT_INDEX_SINESTRA_INTRO;
+                            SaveToDB();
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -453,10 +477,19 @@ class instance_bastion_of_twilight : public InstanceMapScript
                             if (Creature* chogall = GetCreature(DATA_CHOGALL))
                                 chogall->AI()->DoAction(ACTION_TALK_THERALION_AND_VALIONA_DEAD);
                             break;
+                        case EVENT_RESPAWN_SINESTRA_SETUP:
+                            instance->SpawnGroupSpawn(SPAWN_GROUP_ID_SINESTRA_SETUP, true);
+                            break;
                         default:
                             break;
                     }
                 }
+            }
+
+            void Create() override
+            {
+                if (instance->IsHeroic())
+                    instance->SpawnGroupSpawn(SPAWN_GROUP_ID_SINESTRA_SETUP, true);
             }
 
             void WriteSaveDataMore(std::ostringstream& data) override
@@ -484,6 +517,12 @@ class instance_bastion_of_twilight : public InstanceMapScript
                     _activeDragonEntries.erase(_unresponsiveDragonEntryFirst);
                     _activeDragonEntries.erase(_unresponsiveDragonEntrySecond);
                 }
+
+                if (instance->IsHeroic())
+                    instance->SpawnGroupSpawn(SPAWN_GROUP_ID_SINESTRA_SETUP, true);
+
+                if (_lastAreatriggerIndex >= AT_INDEX_SINESTRA_INTRO && _fullHeroicId)
+                    instance->SpawnGroupSpawn(SPAWN_GROUP_ID_SINESTRA, true);
             }
 
             bool HasActiveOrphanedEmeraldWhelps() const
