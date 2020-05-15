@@ -38,6 +38,8 @@ enum DruidSpells
     SPELL_DRUID_ASTRAL_ALIGNMENT            = 90164,
     SPELL_DRUID_BLOOD_IN_THE_WATER_SCRIPT   = 80863,
     SPELL_DRUID_BLOOM                       = 90159,
+    SPELL_DRUID_BRUTAL_IMPACT_RANK_1        = 16940,
+    SPELL_DRUID_BRUTAL_IMPACT_RANK_2        = 16941,
     SPELL_DRUID_WRATH                       = 5176,
     SPELL_DRUID_STARFIRE                    = 2912,
     SPELL_DRUID_STARSURGE                   = 78674,
@@ -98,6 +100,10 @@ enum DruidSpells
     SPELL_DRUID_RIP                         = 1079,
     SPELL_DRUID_SURVIVAL_INSTINCTS          = 50322,
     SPELL_DRUID_SAVAGE_ROAR                 = 62071,
+    SPELL_DRUID_SKULL_BASH_CHARGE           = 93983,
+    SPELL_DRUID_SKULL_BASH_INTERRUPT        = 93985,
+    SPELL_DRUID_SKULL_BASH_DEBUFF_1         = 82364, // Increases the mana cost of all spells by 5%
+    SPELL_DRUID_SKULL_BASH_DEBUFF_2         = 82364, // Increases the mana cost of all spells by 10%
     SPELL_DRUID_STAMPEDE_BAER_RANK_1        = 81016,
     SPELL_DRUID_STAMPEDE_CAT_RANK_1         = 81021,
     SPELL_DRUID_STAMPEDE_CAT_STATE          = 109881,
@@ -875,6 +881,55 @@ class spell_dru_savage_roar_AuraScript : public AuraScript
     {
         AfterEffectApply += AuraEffectApplyFn(spell_dru_savage_roar_AuraScript::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         AfterEffectRemove += AuraEffectRemoveFn(spell_dru_savage_roar_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Skull Bash
+class spell_dru_skull_bash : public SpellScript
+{
+    PrepareSpellScript(spell_dru_skull_bash);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo(
+            {
+                SPELL_DRUID_BRUTAL_IMPACT_RANK_1,
+                SPELL_DRUID_BRUTAL_IMPACT_RANK_2,
+                SPELL_DRUID_SKULL_BASH_DEBUFF_1,
+                SPELL_DRUID_SKULL_BASH_DEBUFF_2,
+                SPELL_DRUID_SKULL_BASH_CHARGE,
+                SPELL_DRUID_SKULL_BASH_INTERRUPT
+            });
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* caster = GetCaster())
+        {
+            caster->CastSpell(GetHitUnit(), SPELL_DRUID_SKULL_BASH_CHARGE, true);
+            caster->CastSpell(GetHitUnit(), SPELL_DRUID_SKULL_BASH_INTERRUPT, true);
+        }
+
+        // Brutal Impact (Talent)
+        if (AuraEffect* aurEff = GetCaster()->GetAuraEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELLFAMILY_DRUID, 473, EFFECT_0))
+        {
+            uint32 triggeredId = 0;
+            switch (aurEff->GetId())
+            {
+            case SPELL_DRUID_BRUTAL_IMPACT_RANK_1:
+                triggeredId = SPELL_DRUID_SKULL_BASH_DEBUFF_1;
+                break;
+            case SPELL_DRUID_BRUTAL_IMPACT_RANK_2:
+                triggeredId = SPELL_DRUID_SKULL_BASH_DEBUFF_2;
+                break;
+            }
+            GetCaster()->CastSpell(GetHitUnit(), triggeredId, true);
+        }
+    }
+
+    void Register()
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_dru_skull_bash::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
