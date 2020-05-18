@@ -1444,12 +1444,9 @@ void Spell::SelectImplicitTargetDestTargets(SpellEffIndex effIndex, SpellImplici
         default:
         {
             float angle = targetType.CalcDirectionAngle();
-            float objSize = target->GetCombatReach();
-            float dist = m_spellInfo->Effects[effIndex].CalcRadius(m_caster);
-            if (dist < objSize)
-                dist = objSize;
-            else if (targetType.GetTarget() == TARGET_DEST_TARGET_RANDOM)
-                dist = objSize + (dist - objSize) * float(rand_norm());
+            float dist = m_spellInfo->Effects[effIndex].CalcRadius(nullptr);
+            if (targetType.GetTarget() == TARGET_DEST_TARGET_RANDOM)
+                dist *= float(rand_norm());
 
             Position pos = dest._position;
             target->MovePositionToFirstCollision(pos, dist, angle);
@@ -5804,7 +5801,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                     m_preGeneratedPath->SetPathLengthLimit(range);
 
                     // first try with raycast, if it fails fall back to normal path
-                    bool result = m_preGeneratedPath->CalculatePath(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), false, false);
+                    bool result = m_preGeneratedPath->CalculatePath(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), false);
                     if (m_preGeneratedPath->GetPathType() & PATHFIND_SHORT)
                         return SPELL_FAILED_NOPATH;
                     else if (!result || m_preGeneratedPath->GetPathType() & (PATHFIND_NOPATH | PATHFIND_INCOMPLETE))
