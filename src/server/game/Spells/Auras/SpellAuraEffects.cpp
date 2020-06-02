@@ -621,8 +621,6 @@ int32 AuraEffect::CalculateAmount(Unit* caster)
 
 void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= true*/, bool load /*= false*/)
 {
-    m_effectPeriodicTimer = m_spellInfo->Effects[m_effIndex].AuraPeriod;
-
     // prepare periodics
     switch (GetAuraType())
     {
@@ -638,39 +636,20 @@ void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= tru
         case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
         case SPELL_AURA_POWER_BURN:
         case SPELL_AURA_PERIODIC_DUMMY:
-        case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
-            // If no periodic timer is set, fall back to a 1 second interval to match client function
-            if (!m_effectPeriodicTimer)
-                m_effectPeriodicTimer = 1 * IN_MILLISECONDS;
-
             m_isPeriodic = true;
             break;
         default:
             break;
     }
 
-    GetBase()->CallScriptEffectCalcPeriodicHandlers(this, m_isPeriodic, m_effectPeriodicTimer);
+    int32_t newPeriod = m_spellInfo->Effects[m_effIndex].CalcPeriod(caster, nullptr);
+
+    GetBase()->CallScriptEffectCalcPeriodicHandlers(this, m_isPeriodic, newPeriod);
 
     if (!m_isPeriodic)
         return;
 
-    Player* modOwner = caster ? caster->GetSpellModOwner() : nullptr;
-    // Apply casting time mods
-    if (m_effectPeriodicTimer)
-    {
-        // Apply periodic time mod
-        if (modOwner)
-            modOwner->ApplySpellMod(GetId(), SPELLMOD_ACTIVATION_TIME, m_effectPeriodicTimer);
-
-        if (caster)
-        {
-            // Haste modifies periodic time of channeled spells
-            if (m_spellInfo->IsChanneled())
-                caster->ModSpellDurationTime(m_spellInfo, m_effectPeriodicTimer);
-            else if (m_spellInfo->HasAttribute(SPELL_ATTR5_HASTE_AFFECT_DURATION))
-                m_effectPeriodicTimer = int32(m_effectPeriodicTimer * caster->GetFloatValue(UNIT_MOD_CAST_SPEED));
-        }
-    }
+    m_effectPeriodicTimer = newPeriod;
 
     if (load) // aura loaded from db
     {
@@ -691,6 +670,11 @@ void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= tru
             // Start periodic on next tick or at aura apply
             if (m_effectPeriodicTimer && !m_spellInfo->HasAttribute(SPELL_ATTR5_START_PERIODIC_AT_APPLY))
                 m_periodicTimer += m_effectPeriodicTimer;
+
+            // If the aura was rolled over, use that timer as the first one to ensure ticks connect properly
+            // in case of a haste proc between this cast and the previous one.
+            if (GetBase()->GetRolledOverDuration())
+                m_periodicTimer = GetBase()->GetRolledOverDuration();
         }
     }
 }

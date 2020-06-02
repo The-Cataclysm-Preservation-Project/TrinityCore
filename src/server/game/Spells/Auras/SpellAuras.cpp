@@ -260,7 +260,7 @@ uint8 Aura::BuildEffectMaskForOwner(SpellInfo const* spellProto, uint8 available
     return effMask & availableEffectMask;
 }
 
-Aura* Aura::TryRefreshStackOrCreate(SpellInfo const* spellproto, uint8 tryEffMask, WorldObject* owner, Unit* caster, int32* baseAmount /*= nullptr*/, Item* castItem /*= nullptr*/, ObjectGuid casterGUID /*= ObjectGuid::Empty*/, bool* refresh /*= nullptr*/, bool resetPeriodicTimer /*= true*/)
+Aura* Aura::TryRefreshStackOrCreate(SpellInfo const* spellproto, uint8 tryEffMask, WorldObject* owner, Unit* caster, int32* baseAmount /*= nullptr*/, Item* castItem /*= nullptr*/, ObjectGuid casterGUID /*= ObjectGuid::Empty*/, bool* refresh /*= nullptr*/)
 {
     ASSERT(spellproto);
     ASSERT(owner);
@@ -273,7 +273,7 @@ Aura* Aura::TryRefreshStackOrCreate(SpellInfo const* spellproto, uint8 tryEffMas
     if (!effMask)
         return nullptr;
 
-    if (Aura* foundAura = owner->ToUnit()->_TryStackingOrRefreshingExistingAura(spellproto, effMask, caster, baseAmount, castItem, casterGUID, resetPeriodicTimer))
+    if (Aura* foundAura = owner->ToUnit()->_TryStackingOrRefreshingExistingAura(spellproto, effMask, caster, baseAmount, castItem, casterGUID))
     {
         // we've here aura, which script triggered removal after modding stack amount
         // check the state here, so we won't create new Aura object
@@ -361,6 +361,8 @@ m_procCooldown(std::chrono::steady_clock::time_point::min())
 
     m_maxDuration = CalcMaxDuration(caster);
     m_duration = m_maxDuration;
+    m_rolledOverDuration = 0;
+
     m_procCharges = CalcMaxCharges(caster);
     m_isUsingCharges = m_procCharges != 0;
     memset(m_effects, 0, sizeof(m_effects));
@@ -722,25 +724,7 @@ void Aura::Update(uint32 diff, Unit* caster)
 
 int32 Aura::CalcMaxDuration(Unit* caster) const
 {
-    Player* modOwner = nullptr;
-    int32 maxDuration;
-
-    if (caster)
-    {
-        modOwner = caster->GetSpellModOwner();
-        maxDuration = caster->CalcSpellDuration(m_spellInfo);
-    }
-    else
-        maxDuration = m_spellInfo->GetDuration();
-
-    if (IsPassive() && !m_spellInfo->DurationEntry)
-        maxDuration = -1;
-
-    // IsPermanent() checks max duration (which we are supposed to calculate here)
-    if (maxDuration != -1 && modOwner)
-        modOwner->ApplySpellMod(GetId(), SPELLMOD_DURATION, maxDuration);
-
-    return maxDuration;
+    return m_spellInfo->CalcDuration(caster);
 }
 
 void Aura::SetDuration(int32 duration, bool withMods)
@@ -774,23 +758,22 @@ void Aura::RefreshDuration(bool withMods)
         m_timeCla = 1 * IN_MILLISECONDS;
 }
 
-void Aura::RefreshTimers(bool resetPeriodicTimer)
+void Aura::RefreshTimers()
 {
     m_maxDuration = CalcMaxDuration();
-    if (m_spellInfo->HasAttribute(SPELL_ATTR8_DONT_RESET_PERIODIC_TIMER))
+
+    bool resetPeriodicTimer = !m_spellInfo->HasAttribute(SPELL_ATTR8_DONT_RESET_PERIODIC_TIMER);
+    if (!resetPeriodicTimer)
     {
-        int32 periodic = m_maxDuration;
+        int32 minAmplitude = m_maxDuration;
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             if (AuraEffect const* eff = GetEffect(i))
                 if (int32 ampl = eff->GetPeriodic())
-                    periodic = std::min(ampl, periodic);
+                    minAmplitude = std::min(ampl, minAmplitude);
 
-        // If only one tick remaining, roll it over into new duration
-        if (GetDuration() <= periodic)
-        {
-            m_maxDuration += GetDuration();
-            resetPeriodicTimer = false;
-        }
+        // Roll over the time to next tick into the new duration
+        m_rolledOverDuration = GetDuration() % minAmplitude;
+        m_maxDuration += m_rolledOverDuration;
     }
 
     RefreshDuration();
@@ -890,7 +873,7 @@ void Aura::SetStackAmount(uint8 stackAmount)
     SetNeedClientUpdateForTargets();
 }
 
-bool Aura::ModStackAmount(int32 num, AuraRemoveMode removeMode /*= AURA_REMOVE_BY_DEFAULT*/, bool resetPeriodicTimer /*= true*/)
+bool Aura::ModStackAmount(int32 num, AuraRemoveMode removeMode /*= AURA_REMOVE_BY_DEFAULT*/)
 {
     int32 stackAmount = m_stackAmount + num;
 
@@ -917,7 +900,7 @@ bool Aura::ModStackAmount(int32 num, AuraRemoveMode removeMode /*= AURA_REMOVE_B
 
     if (refresh)
     {
-        RefreshTimers(resetPeriodicTimer);
+        RefreshTimers();
 
         // reset charges
         SetCharges(CalcMaxCharges());
