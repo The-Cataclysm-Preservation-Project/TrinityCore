@@ -388,7 +388,7 @@ class spell_anhuur_reverberating_hymn : public AuraScript
 
     void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+        if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
             if (Creature * anhuur = GetCaster()->ToCreature())
                 if (anhuur->IsAIEnabled)
                     anhuur->AI()->DoAction(ACTION_HYMN_EXPIRED);

@@ -1915,7 +1915,7 @@ void Unit::CalcAbsorbResist(DamageInfo& damageInfo)
             absorbAurEff->SetAmount(absorbAurEff->GetAmount() - currentAbsorb);
             // Aura cannot absorb anything more - remove it
             if (absorbAurEff->GetAmount() <= 0)
-                absorbAurEff->GetBase()->Remove(AURA_REMOVE_BY_ENEMY_SPELL);
+                absorbAurEff->GetBase()->Remove(AuraRemoveFlags::ByEnemySpell);
         }
     }
 
@@ -1972,7 +1972,7 @@ void Unit::CalcAbsorbResist(DamageInfo& damageInfo)
         {
             absorbAurEff->SetAmount(absorbAurEff->GetAmount() - currentAbsorb);
             if ((absorbAurEff->GetAmount() <= 0))
-                absorbAurEff->GetBase()->Remove(AURA_REMOVE_BY_ENEMY_SPELL);
+                absorbAurEff->GetBase()->Remove(AuraRemoveFlags::ByEnemySpell);
         }
     }
 
@@ -2095,7 +2095,7 @@ void Unit::CalcHealAbsorb(HealInfo& healInfo) const
             if (auraEff->GetAmount() <= 0)
             {
                 uint32 removedAuras = healInfo.GetTarget()->m_removedAurasCount;
-                auraEff->GetBase()->Remove(AURA_REMOVE_BY_ENEMY_SPELL);
+                auraEff->GetBase()->Remove(AuraRemoveFlags::ByEnemySpell);
                 if (removedAuras + 1 < healInfo.GetTarget()->m_removedAurasCount)
                     i = vHealAbsorb.begin();
             }
@@ -3048,7 +3048,7 @@ void Unit::_UpdateSpells(uint32 time)
     for (AuraMap::iterator i = m_ownedAuras.begin(); i != m_ownedAuras.end();)
     {
         if (i->second->IsExpired())
-            RemoveOwnedAura(i, AURA_REMOVE_BY_EXPIRE);
+            RemoveOwnedAura(i, AuraRemoveFlags::Expired);
         else
             ++i;
     }
@@ -3433,7 +3433,7 @@ Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint8
             }
 
             // try to increase stack amount
-            foundAura->ModStackAmount(1, AURA_REMOVE_BY_DEFAULT);
+            foundAura->ModStackAmount(1, AuraRemoveFlags::ByDefault);
             return foundAura;
         }
     }
@@ -3551,14 +3551,14 @@ void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask)
 
     _RemoveNoStackAurasDueToAura(aura);
 
-    if (aurApp->GetRemoveMode())
+    if (aurApp->GetRemoveMode() == AuraRemoveFlags::None)
         return;
 
     // Update target aura state flag
     if (AuraStateType aState = aura->GetSpellInfo()->GetAuraState())
         ModifyAuraState(aState, true);
 
-    if (aurApp->GetRemoveMode())
+    if (aurApp->GetRemoveMode() == AuraRemoveFlags::None)
         return;
 
     // Sitdown on apply aura req seated
@@ -3567,7 +3567,7 @@ void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask)
 
     Unit* caster = aura->GetCaster();
 
-    if (aurApp->GetRemoveMode())
+    if (aurApp->GetRemoveMode() == AuraRemoveFlags::None)
         return;
 
     aura->HandleAuraSpecificMods(aurApp, caster, true, false);
@@ -3575,7 +3575,7 @@ void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask)
     // apply effects of the aura
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (effMask & 1 << i && (!aurApp->GetRemoveMode()))
+        if (effMask & 1 << i && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
             aurApp->_HandleEffect(i, true);
     }
 
@@ -3585,16 +3585,16 @@ void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask)
 }
 
 // removes aura application from lists and unapplies effects
-void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMode)
+void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveFlags removeMode)
 {
     AuraApplication * aurApp = i->second;
     ASSERT(aurApp);
-    ASSERT(!aurApp->GetRemoveMode());
+    ASSERT(aurApp->GetRemoveMode() == AuraRemoveFlags::None);
     ASSERT(aurApp->GetTarget() == this);
 
     aurApp->SetRemoveMode(removeMode);
     Aura* aura = aurApp->GetBase();
-    TC_LOG_DEBUG("spells", "Aura %u now is remove mode %d", aura->GetId(), removeMode);
+    TC_LOG_DEBUG("spells", "Aura %u now is remove mode %u", aura->GetId(), static_cast<uint32>(removeMode));
 
     // dead loop is killing the server probably
     ASSERT(m_removedAurasCount < 0xFFFFFFFF);
@@ -3646,7 +3646,7 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMo
     ASSERT(!aurApp->GetEffectMask());
 
     // Remove totem at next update if totem loses its aura
-    if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE && GetTypeId() == TYPEID_UNIT && IsTotem())
+    if (aurApp->HasRemoveMode(AuraRemoveFlags::Expired) && GetTypeId() == TYPEID_UNIT && IsTotem())
     {
         if (ToTotem()->GetSpell() == aura->GetId() && ToTotem()->GetTotemType() == TOTEM_PASSIVE)
             ToTotem()->setDeathState(JUST_DIED);
@@ -3667,7 +3667,7 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMo
         i = m_appliedAuras.begin();
 }
 
-void Unit::_UnapplyAura(AuraApplication * aurApp, AuraRemoveMode removeMode)
+void Unit::_UnapplyAura(AuraApplication * aurApp, AuraRemoveFlags removeMode)
 {
     // aura can be removed from unit only if it's applied on it, shouldn't happen
     ASSERT(aurApp->GetBase()->GetApplicationOfTarget(GetGUID()) == aurApp);
@@ -3721,7 +3721,7 @@ void Unit::_RemoveNoStackAurasDueToAura(Aura* aura)
         if (aura->CanStackWith(i->second->GetBase()))
             continue;
 
-        RemoveAura(i, AURA_REMOVE_BY_DEFAULT);
+        RemoveAura(i, AuraRemoveFlags::ByDefault);
         if (i == m_appliedAuras.end())
             break;
         remove = true;
@@ -3737,7 +3737,7 @@ void Unit::_RegisterAuraEffect(AuraEffect* aurEff, bool apply)
 }
 
 // All aura base removes should go threw this function!
-void Unit::RemoveOwnedAura(AuraMap::iterator &i, AuraRemoveMode removeMode)
+void Unit::RemoveOwnedAura(AuraMap::iterator &i, AuraRemoveFlags removeMode)
 {
     Aura* aura = i->second;
     ASSERT(!aura->IsRemoved());
@@ -3758,7 +3758,7 @@ void Unit::RemoveOwnedAura(AuraMap::iterator &i, AuraRemoveMode removeMode)
     i = m_ownedAuras.begin();
 }
 
-void Unit::RemoveOwnedAura(uint32 spellId, ObjectGuid casterGUID, uint8 reqEffMask, AuraRemoveMode removeMode)
+void Unit::RemoveOwnedAura(uint32 spellId, ObjectGuid casterGUID, uint8 reqEffMask, AuraRemoveFlags removeMode)
 {
     for (AuraMap::iterator itr = m_ownedAuras.lower_bound(spellId); itr != m_ownedAuras.upper_bound(spellId);)
         if (((itr->second->GetEffectMask() & reqEffMask) == reqEffMask) && (!casterGUID || itr->second->GetCasterGUID() == casterGUID))
@@ -3770,16 +3770,16 @@ void Unit::RemoveOwnedAura(uint32 spellId, ObjectGuid casterGUID, uint8 reqEffMa
             ++itr;
 }
 
-void Unit::RemoveOwnedAura(Aura* aura, AuraRemoveMode removeMode)
+void Unit::RemoveOwnedAura(Aura* aura, AuraRemoveFlags removeMode)
 {
     if (aura->IsRemoved())
         return;
 
     ASSERT(aura->GetOwner() == this);
 
-    if (removeMode == AURA_REMOVE_NONE)
+    if (removeMode == AuraRemoveFlags::None)
     {
-        TC_LOG_ERROR("spells", "Unit::RemoveOwnedAura() called with unallowed removeMode AURA_REMOVE_NONE, spellId %u", aura->GetId());
+        TC_LOG_ERROR("spells", "Unit::RemoveOwnedAura() called with unallowed removeMode AuraRemoveFlags::None, spellId %u", aura->GetId());
         return;
     }
 
@@ -3814,11 +3814,11 @@ Aura* Unit::GetOwnedAura(uint32 spellId, ObjectGuid casterGUID, ObjectGuid itemC
     return nullptr;
 }
 
-void Unit::RemoveAura(AuraApplicationMap::iterator &i, AuraRemoveMode mode)
+void Unit::RemoveAura(AuraApplicationMap::iterator &i, AuraRemoveFlags mode)
 {
     AuraApplication * aurApp = i->second;
     // Do not remove aura which is already being removed
-    if (aurApp->GetRemoveMode())
+    if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
         return;
     Aura* aura = aurApp->GetBase();
     _UnapplyAura(i, mode);
@@ -3827,7 +3827,7 @@ void Unit::RemoveAura(AuraApplicationMap::iterator &i, AuraRemoveMode mode)
         aura->Remove(mode);
 }
 
-void Unit::RemoveAura(uint32 spellId, ObjectGuid caster, uint8 reqEffMask, AuraRemoveMode removeMode)
+void Unit::RemoveAura(uint32 spellId, ObjectGuid caster, uint8 reqEffMask, AuraRemoveFlags removeMode)
 {
     AuraApplicationMapBoundsNonConst range = m_appliedAuras.equal_range(spellId);
     for (AuraApplicationMap::iterator iter = range.first; iter != range.second;)
@@ -3844,13 +3844,13 @@ void Unit::RemoveAura(uint32 spellId, ObjectGuid caster, uint8 reqEffMask, AuraR
     }
 }
 
-void Unit::RemoveAura(AuraApplication * aurApp, AuraRemoveMode mode)
+void Unit::RemoveAura(AuraApplication * aurApp, AuraRemoveFlags mode)
 {
     // we've special situation here, RemoveAura called while during aura removal
     // this kind of call is needed only when aura effect removal handler
     // or event triggered by it expects to remove
     // not yet removed effects of an aura
-    if (aurApp->GetRemoveMode())
+    if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
     {
         // remove remaining effects of an aura
         for (uint8 itr = 0; itr < MAX_SPELL_EFFECTS; ++itr)
@@ -3879,7 +3879,7 @@ void Unit::RemoveAura(AuraApplication * aurApp, AuraRemoveMode mode)
     }
 }
 
-void Unit::RemoveAura(Aura* aura, AuraRemoveMode mode)
+void Unit::RemoveAura(Aura* aura, AuraRemoveFlags mode)
 {
     if (aura->IsRemoved())
         return;
@@ -3958,7 +3958,7 @@ void Unit::RemoveAurasByType(AuraType auraType, std::function<bool(AuraApplicati
     }
 }
 
-void Unit::RemoveAurasDueToSpell(uint32 spellId, ObjectGuid casterGUID, uint8 reqEffMask, AuraRemoveMode removeMode)
+void Unit::RemoveAurasDueToSpell(uint32 spellId, ObjectGuid casterGUID, uint8 reqEffMask, AuraRemoveFlags removeMode)
 {
     for (AuraApplicationMap::iterator iter = m_appliedAuras.lower_bound(spellId); iter != m_appliedAuras.upper_bound(spellId);)
     {
@@ -3974,7 +3974,7 @@ void Unit::RemoveAurasDueToSpell(uint32 spellId, ObjectGuid casterGUID, uint8 re
     }
 }
 
-void Unit::RemoveAuraFromStack(uint32 spellId, ObjectGuid casterGUID, AuraRemoveMode removeMode)
+void Unit::RemoveAuraFromStack(uint32 spellId, ObjectGuid casterGUID, AuraRemoveFlags removeMode)
 {
     AuraMapBoundsNonConst range = m_ownedAuras.equal_range(spellId);
     for (AuraMap::iterator iter = range.first; iter != range.second;)
@@ -4005,9 +4005,9 @@ void Unit::RemoveAurasDueToSpellByDispel(uint32 spellId, uint32 dispellerSpellId
             aura->CallScriptDispel(&dispelInfo);
 
             if (aura->GetSpellInfo()->HasAttribute(SPELL_ATTR7_DISPEL_CHARGES))
-                aura->ModCharges(-dispelInfo.GetRemovedCharges(), AURA_REMOVE_BY_ENEMY_SPELL);
+                aura->ModCharges(-dispelInfo.GetRemovedCharges(), AuraRemoveFlags::ByEnemySpell);
             else
-                aura->ModStackAmount(-dispelInfo.GetRemovedCharges(), AURA_REMOVE_BY_ENEMY_SPELL);
+                aura->ModStackAmount(-dispelInfo.GetRemovedCharges(), AuraRemoveFlags::ByEnemySpell);
 
             // Call AfterDispel hook on AuraScript
             aura->CallScriptAfterDispel(&dispelInfo);
@@ -4084,9 +4084,9 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, ObjectGuid casterGUID, U
             }
 
             if (stealCharge)
-                aura->ModCharges(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                aura->ModCharges(-1, AuraRemoveFlags::ByEnemySpell);
             else
-                aura->ModStackAmount(-1, AURA_REMOVE_BY_ENEMY_SPELL);
+                aura->ModStackAmount(-1, AuraRemoveFlags::ByEnemySpell);
 
             return;
         }
@@ -4246,7 +4246,7 @@ void Unit::RemoveMovementImpairingAuras()
     RemoveAurasWithMechanic((1<<MECHANIC_SNARE)|(1<<MECHANIC_ROOT));
 }
 
-void Unit::RemoveAurasWithMechanic(uint32 mechanic_mask, AuraRemoveMode removemode, uint32 except)
+void Unit::RemoveAurasWithMechanic(uint32 mechanic_mask, AuraRemoveFlags removemode, uint32 except)
 {
     for (AuraApplicationMap::iterator iter = m_appliedAuras.begin(); iter != m_appliedAuras.end();)
     {
@@ -4304,7 +4304,7 @@ void Unit::RemoveAllAuras()
     {
         AuraApplicationMap::iterator aurAppIter;
         for (aurAppIter = m_appliedAuras.begin(); aurAppIter != m_appliedAuras.end();)
-            _UnapplyAura(aurAppIter, AURA_REMOVE_BY_DEFAULT);
+            _UnapplyAura(aurAppIter, AuraRemoveFlags::ByDefault);
 
         AuraMap::iterator aurIter;
         for (aurIter = m_ownedAuras.begin(); aurIter != m_ownedAuras.end();)
@@ -4344,7 +4344,7 @@ void Unit::RemoveAllAurasOnDeath()
     {
         Aura const* aura = iter->second->GetBase();
         if (!aura->IsPassive() && !aura->IsDeathPersistent())
-            _UnapplyAura(iter, AURA_REMOVE_BY_DEATH);
+            _UnapplyAura(iter, AuraRemoveFlags::ByDeath);
         else
             ++iter;
     }
@@ -4353,7 +4353,7 @@ void Unit::RemoveAllAurasOnDeath()
     {
         Aura* aura = iter->second;
         if (!aura->IsPassive() && !aura->IsDeathPersistent())
-            RemoveOwnedAura(iter, AURA_REMOVE_BY_DEATH);
+            RemoveOwnedAura(iter, AuraRemoveFlags::ByDeath);
         else
             ++iter;
     }
@@ -4365,7 +4365,7 @@ void Unit::RemoveAllAurasRequiringDeadTarget()
     {
         Aura const* aura = iter->second->GetBase();
         if (!aura->IsPassive() && aura->GetSpellInfo()->IsRequiringDeadTarget())
-            _UnapplyAura(iter, AURA_REMOVE_BY_DEFAULT);
+            _UnapplyAura(iter, AuraRemoveFlags::ByDefault);
         else
             ++iter;
     }
@@ -4374,7 +4374,7 @@ void Unit::RemoveAllAurasRequiringDeadTarget()
     {
         Aura* aura = iter->second;
         if (!aura->IsPassive() && aura->GetSpellInfo()->IsRequiringDeadTarget())
-            RemoveOwnedAura(iter, AURA_REMOVE_BY_DEFAULT);
+            RemoveOwnedAura(iter, AuraRemoveFlags::ByDefault);
         else
             ++iter;
     }
@@ -4388,7 +4388,7 @@ void Unit::RemoveAllAurasExceptType(AuraType type)
         if (aura->GetSpellInfo()->HasAura(type))
             ++iter;
         else
-            _UnapplyAura(iter, AURA_REMOVE_BY_DEFAULT);
+            _UnapplyAura(iter, AuraRemoveFlags::ByDefault);
     }
 
     for (AuraMap::iterator iter = m_ownedAuras.begin(); iter != m_ownedAuras.end();)
@@ -4397,7 +4397,7 @@ void Unit::RemoveAllAurasExceptType(AuraType type)
         if (aura->GetSpellInfo()->HasAura(type))
             ++iter;
         else
-            RemoveOwnedAura(iter, AURA_REMOVE_BY_DEFAULT);
+            RemoveOwnedAura(iter, AuraRemoveFlags::ByDefault);
     }
 }
 
@@ -4409,7 +4409,7 @@ void Unit::RemoveAllAurasExceptType(AuraType type1, AuraType type2)
         if (aura->GetSpellInfo()->HasAura(type1) || aura->GetSpellInfo()->HasAura(type2))
             ++iter;
         else
-            _UnapplyAura(iter, AURA_REMOVE_BY_DEFAULT);
+            _UnapplyAura(iter, AuraRemoveFlags::ByDefault);
     }
 
     for (AuraMap::iterator iter = m_ownedAuras.begin(); iter != m_ownedAuras.end();)
@@ -4418,7 +4418,7 @@ void Unit::RemoveAllAurasExceptType(AuraType type1, AuraType type2)
         if (aura->GetSpellInfo()->HasAura(type1) || aura->GetSpellInfo()->HasAura(type2))
             ++iter;
         else
-            RemoveOwnedAura(iter, AURA_REMOVE_BY_DEFAULT);
+            RemoveOwnedAura(iter, AuraRemoveFlags::ByDefault);
     }
 }
 
@@ -6425,10 +6425,10 @@ Unit* Unit::GetMagicHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo)
                     // Set up missile speed based delay
                     uint32 delay = uint32(std::floor(std::max<float>(victim->GetDistance(this), 5.0f) / spellInfo->Speed * 1000.0f));
                     // Schedule charge drop
-                    (*itr)->GetBase()->DropChargeDelayed(delay, AURA_REMOVE_BY_EXPIRE);
+                    (*itr)->GetBase()->DropChargeDelayed(delay, AuraRemoveFlags::Expired);
                 }
                 else
-                    (*itr)->GetBase()->DropCharge(AURA_REMOVE_BY_EXPIRE);
+                    (*itr)->GetBase()->DropCharge(AuraRemoveFlags::Expired);
 
                 return magnet;
             }
@@ -6447,7 +6447,7 @@ Unit* Unit::GetMeleeHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo)
                 && spellInfo->CheckTarget(this, magnet, false) == SPELL_CAST_OK)))
                 if (roll_chance_i((*i)->GetAmount()))
                 {
-                    (*i)->GetBase()->DropCharge(AURA_REMOVE_BY_EXPIRE);
+                    (*i)->GetBase()->DropCharge(AuraRemoveFlags::Expired);
                     return magnet;
                 }
     }
@@ -11024,7 +11024,7 @@ void Unit::TriggerAurasProcOnEvent(ProcEventInfo& eventInfo, AuraApplicationProc
         uint8 procEffectMask;
         std::tie(procEffectMask, aurApp) = aurAppProc;
 
-        if (aurApp->GetRemoveMode())
+        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
             continue;
 
         SpellInfo const* spellInfo = aurApp->GetBase()->GetSpellInfo();
@@ -12268,7 +12268,7 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
 
     // charm is set by aura, and aura effect remove handler was called during apply handler execution
     // prevent undefined behaviour
-    if (aurApp && aurApp->GetRemoveMode())
+    if (aurApp && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
         return false;
 
     _oldFactionId = GetFaction();
@@ -12303,7 +12303,7 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
 
     // charm is set by aura, and aura effect remove handler was called during apply handler execution
     // prevent undefined behaviour
-    if (aurApp && aurApp->GetRemoveMode())
+    if (aurApp && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
         return false;
 
     // Pets already have a properly initialized CharmInfo, don't overwrite it.
@@ -13483,7 +13483,7 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
         }
     }
 
-    if (aurApp->GetRemoveMode())
+    if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
         return;
 
     if (Player* player = ToPlayer())

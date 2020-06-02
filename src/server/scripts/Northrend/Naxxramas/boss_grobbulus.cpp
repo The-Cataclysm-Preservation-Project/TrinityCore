@@ -156,8 +156,8 @@ class spell_grobbulus_mutating_injection : public SpellScriptLoader
 
             void HandleRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
-                AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();
-                if (removeMode != AURA_REMOVE_BY_ENEMY_SPELL && removeMode != AURA_REMOVE_BY_EXPIRE)
+                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell)
+                    && !GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
                     return;
 
                 if (Unit* caster = GetCaster())

@@ -41,14 +41,14 @@ class ChargeDropEvent;
 class TC_GAME_API AuraApplication
 {
     friend void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask);
-    friend void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMode);
+    friend void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveFlags removeMode);
     friend void Unit::_ApplyAuraEffect(Aura* aura, uint8 effIndex);
-    friend void Unit::RemoveAura(AuraApplication * aurApp, AuraRemoveMode mode);
+    friend void Unit::RemoveAura(AuraApplication * aurApp, AuraRemoveFlags mode);
     friend AuraApplication * Unit::_CreateAuraApplication(Aura* aura, uint8 effMask);
     private:
         Unit* const _target;
         Aura* const _base;
-        AuraRemoveMode _removeMode:8;                  // Store info for know remove aura reason
+        AuraRemoveFlags _removeMode;                  // Store info for know remove aura reason
         uint8 _slot;                                   // Aura slot on unit
         uint8 _flags;                                  // Aura info flag
         uint8 _effectsToApply;                         // Used only at spell hit to determine which effect should be applied
@@ -72,8 +72,11 @@ class TC_GAME_API AuraApplication
         bool IsSelfcast() const { return (_flags & AFLAG_CASTER) != 0; }
         uint8 GetEffectsToApply() const { return _effectsToApply; }
 
-        void SetRemoveMode(AuraRemoveMode mode) { _removeMode = mode; }
-        AuraRemoveMode GetRemoveMode() const {return _removeMode;}
+        void SetRemoveMode(AuraRemoveFlags mode) { _removeMode = mode; }
+        AuraRemoveFlags GetRemoveMode() const { return _removeMode; }
+
+        bool HasRemoveMode(AuraRemoveFlags mode) const;
+        bool HasAllRemoveModes(AuraRemoveFlags mode) const;
 
         void SetNeedClientUpdate() { _needClientUpdate = true;}
         bool IsNeedClientUpdate() const { return _needClientUpdate;}
@@ -109,8 +112,8 @@ class TC_GAME_API Aura
 
         virtual void _ApplyForTarget(Unit* target, Unit* caster, AuraApplication * auraApp);
         virtual void _UnapplyForTarget(Unit* target, Unit* caster, AuraApplication * auraApp);
-        void _Remove(AuraRemoveMode removeMode);
-        virtual void Remove(AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT) = 0;
+        void _Remove(AuraRemoveFlags removeMode);
+        virtual void Remove(AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault) = 0;
 
         virtual void FillTargetMap(std::unordered_map<Unit*, uint8>& targets, Unit* caster) = 0;
         void UpdateTargetMap(Unit* caster, bool apply = true);
@@ -139,14 +142,14 @@ class TC_GAME_API Aura
         void SetCharges(uint8 charges);
         uint8 CalcMaxCharges(Unit* caster) const;
         uint8 CalcMaxCharges() const { return CalcMaxCharges(GetCaster()); }
-        bool ModCharges(int32 num, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
-        bool DropCharge(AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT) { return ModCharges(-1, removeMode); }
-        void ModChargesDelayed(int32 num, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
-        void DropChargeDelayed(uint32 delay, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
+        bool ModCharges(int32 num, AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault);
+        bool DropCharge(AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault) { return ModCharges(-1, removeMode); }
+        void ModChargesDelayed(int32 num, AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault);
+        void DropChargeDelayed(uint32 delay, AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault);
 
         uint8 GetStackAmount() const { return m_stackAmount; }
         void SetStackAmount(uint8 num);
-        bool ModStackAmount(int32 num, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
+        bool ModStackAmount(int32 num, AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault);
 
         uint8 GetCasterLevel() const { return m_casterLevel; }
 
@@ -288,7 +291,7 @@ class TC_GAME_API UnitAura : public Aura
         void _ApplyForTarget(Unit* target, Unit* caster, AuraApplication * aurApp) override;
         void _UnapplyForTarget(Unit* target, Unit* caster, AuraApplication * aurApp) override;
 
-        void Remove(AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT) override;
+        void Remove(AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault) override;
 
         void FillTargetMap(std::unordered_map<Unit*, uint8>& targets, Unit* caster) override;
 
@@ -306,7 +309,7 @@ class TC_GAME_API DynObjAura : public Aura
     protected:
         explicit DynObjAura(SpellInfo const* spellproto, uint8 effMask, WorldObject* owner, Unit* caster, int32 *baseAmount, Item* castItem, ObjectGuid casterGUID);
     public:
-        void Remove(AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT) override;
+        void Remove(AuraRemoveFlags removeMode = AuraRemoveFlags::ByDefault) override;
 
         void FillTargetMap(std::unordered_map<Unit*, uint8>& targets, Unit* caster) override;
 };
@@ -315,11 +318,11 @@ class TC_GAME_API ChargeDropEvent : public BasicEvent
 {
     friend class Aura;
     protected:
-        ChargeDropEvent(Aura* base, AuraRemoveMode mode) : _base(base), _mode(mode) { }
+        ChargeDropEvent(Aura* base, AuraRemoveFlags mode) : _base(base), _mode(mode) { }
         bool Execute(uint64 /*e_time*/, uint32 /*p_time*/) override;
 
     private:
         Aura* _base;
-        AuraRemoveMode _mode;
+        AuraRemoveFlags _mode;
 };
 #endif

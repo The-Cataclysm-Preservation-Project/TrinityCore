@@ -1678,7 +1678,7 @@ class npc_strangulate_vehicle : public CreatureScript
                                     else
                                     {
                                         summoner->CastSpell(summoner, SPELL_HARVEST_SOULS_TELEPORT, true);
-                                        summoner->RemoveAurasDueToSpell(HARVEST_SOUL, ObjectGuid::Empty, 0, AURA_REMOVE_BY_EXPIRE);
+                                        summoner->RemoveAurasDueToSpell(HARVEST_SOUL, ObjectGuid::Empty, 0, AuraRemoveFlags::Expired);
                                     }
                                 }
                             }
@@ -2066,7 +2066,7 @@ class spell_the_lich_king_infest : public SpellScriptLoader
                 if (GetUnitOwner()->HealthAbovePct(90))
                 {
                     PreventDefaultAction();
-                    Remove(AURA_REMOVE_BY_ENEMY_SPELL);
+                    Remove(AuraRemoveFlags::ByEnemySpell);
                 }
             }
 
@@ -2108,15 +2108,8 @@ class spell_the_lich_king_necrotic_plague : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                switch (GetTargetApplication()->GetRemoveMode())
-                {
-                    case AURA_REMOVE_BY_ENEMY_SPELL:
-                    case AURA_REMOVE_BY_EXPIRE:
-                    case AURA_REMOVE_BY_DEATH:
-                        break;
-                    default:
-                        return;
-                }
+                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell | AuraRemoveFlags::Expired | AuraRemoveFlags::ByDeath))
+                    return;
 
                 CustomSpellValues values;
                 //values.AddSpellMod(SPELLVALUE_AURA_STACK, 2);
@@ -2171,7 +2164,7 @@ class spell_the_lich_king_necrotic_plague_jump : public SpellScriptLoader
 
             void AddMissingStack()
             {
-                if (GetHitAura() && !_hadAura && GetSpellValue()->EffectBasePoints[EFFECT_1] != AURA_REMOVE_BY_ENEMY_SPELL)
+                if (GetHitAura() && !_hadAura && GetSpellValue()->EffectBasePoints[EFFECT_1] != static_cast<uint32>(AuraRemoveFlags::ByEnemySpell))
                     GetHitAura()->ModStackAmount(1);
             }
 
@@ -2206,20 +2199,15 @@ class spell_the_lich_king_necrotic_plague_jump : public SpellScriptLoader
             void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
                 _lastAmount = aurEff->GetAmount();
-                switch (GetTargetApplication()->GetRemoveMode())
-                {
-                    case AURA_REMOVE_BY_EXPIRE:
-                    case AURA_REMOVE_BY_DEATH:
-                        break;
-                    default:
-                        return;
-                }
 
-                CustomSpellValues values;
-                values.AddSpellMod(SPELLVALUE_AURA_STACK, GetStackAmount());
-                GetTarget()->CastCustomSpell(SPELL_NECROTIC_PLAGUE_JUMP, values, nullptr, TRIGGERED_FULL_MASK, nullptr, nullptr, GetCasterGUID());
-                if (Unit* caster = GetCaster())
-                    caster->CastSpell(caster, SPELL_PLAGUE_SIPHON, true);
+                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired | AuraRemoveFlags::ByDeath))
+                {
+                    CustomSpellValues values;
+                    values.AddSpellMod(SPELLVALUE_AURA_STACK, GetStackAmount());
+                    GetTarget()->CastCustomSpell(SPELL_NECROTIC_PLAGUE_JUMP, values, nullptr, TRIGGERED_FULL_MASK, nullptr, nullptr, GetCasterGUID());
+                    if (Unit* caster = GetCaster())
+                        caster->CastSpell(caster, SPELL_PLAGUE_SIPHON, true);
+                }
             }
 
             void OnDispel(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
@@ -2235,12 +2223,12 @@ class spell_the_lich_king_necrotic_plague_jump : public SpellScriptLoader
 
                 CustomSpellValues values;
                 values.AddSpellMod(SPELLVALUE_AURA_STACK, GetStackAmount());
-                values.AddSpellMod(SPELLVALUE_BASE_POINT1, AURA_REMOVE_BY_ENEMY_SPELL); // add as marker (spell has no effect 1)
+                values.AddSpellMod(SPELLVALUE_BASE_POINT1, static_cast<uint32>(AuraRemoveFlags::ByEnemySpell)); // add as marker (spell has no effect 1)
                 GetTarget()->CastCustomSpell(SPELL_NECROTIC_PLAGUE_JUMP, values, nullptr, TRIGGERED_FULL_MASK, nullptr, nullptr, GetCasterGUID());
                 if (Unit* caster = GetCaster())
                     caster->CastSpell(caster, SPELL_PLAGUE_SIPHON, true);
 
-                Remove(AURA_REMOVE_BY_ENEMY_SPELL);
+                Remove(AuraRemoveFlags::ByEnemySpell);
             }
 
             void Register() override
@@ -2276,7 +2264,7 @@ class spell_the_lich_king_shadow_trap_visual : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
                     GetTarget()->CastSpell(GetTarget(), SPELL_SHADOW_TRAP_AURA, TRIGGERED_NONE);
             }
 
@@ -2846,7 +2834,7 @@ class spell_the_lich_king_harvest_soul : public SpellScriptLoader
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 // m_originalCaster to allow stacking from different casters, meh
-                if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_DEATH)
+                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByDeath))
                     GetTarget()->CastSpell((Unit*)nullptr, SPELL_HARVESTED_SOUL, true, nullptr, nullptr, GetTarget()->GetInstanceScript()->GetGuidData(DATA_THE_LICH_KING));
             }
 
@@ -3042,7 +3030,7 @@ class spell_the_lich_king_in_frostmourne_room : public SpellScriptLoader
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 // m_originalCaster to allow stacking from different casters, meh
-                if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_DEATH)
+                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByDeath))
                     GetTarget()->CastSpell((Unit*)nullptr, SPELL_HARVESTED_SOUL, true, nullptr, nullptr, GetTarget()->GetInstanceScript()->GetGuidData(DATA_THE_LICH_KING));
             }
 

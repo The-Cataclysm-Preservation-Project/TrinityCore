@@ -734,7 +734,7 @@ void AuraEffect::ChangeAmount(int32 newAmount, bool mark, bool onStackOrReapply)
 
     for (AuraApplication* aurApp : effectApplications)
     {
-        if (aurApp->GetRemoveMode() != AURA_REMOVE_NONE)
+        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
             continue;
 
         aurApp->GetTarget()->_RegisterAuraEffect(this, true);
@@ -770,13 +770,13 @@ void AuraEffect::HandleEffect(AuraApplication * aurApp, uint8 mode, bool apply)
         prevented = GetBase()->CallScriptEffectRemoveHandlers(this, aurApp, (AuraEffectHandleModes)mode);
 
     // check if script events have removed the aura or if default effect prevention was requested
-    if ((apply && aurApp->GetRemoveMode()) || prevented)
+    if ((apply && aurApp->GetRemoveMode() != AuraRemoveFlags::None) || prevented)
         return;
 
     (*this.*AuraEffectHandler[GetAuraType()])(aurApp, mode, apply);
 
     // check if script events have removed the aura or if default effect prevention was requested
-    if (apply && aurApp->GetRemoveMode())
+    if (apply && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
         return;
 
     // call scripts triggering additional events after apply/remove
@@ -1827,7 +1827,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
         target->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT, ObjectGuid::Empty, GetBase());
 
         // stop handling the effect if it was removed by linked event
-        if (aurApp->GetRemoveMode())
+        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
             return;
 
         if (PowerType != POWER_MANA)
@@ -1840,7 +1840,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
                 target->SetPower(POWER_ENERGY, 0);
         }
         // stop handling the effect if it was removed by linked event
-        if (aurApp->GetRemoveMode())
+        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
             return;
 
         ShapeshiftForm prevForm = target->GetShapeshiftForm();
@@ -1948,7 +1948,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
     }
 
     // stop handling the effect if it was removed by linked event
-    if (apply && aurApp->GetRemoveMode())
+    if (apply && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
         return;
 
     if (target->GetTypeId() == TYPEID_PLAYER)
@@ -2275,7 +2275,7 @@ void AuraEffect::HandleFeignDeath(AuraApplication const* aurApp, uint8 mode, boo
         target->getHostileRefManager().deleteReferences();
 
         // stop handling the effect if it was removed by linked event
-        if (aurApp->GetRemoveMode())
+        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
             return;
 
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_29);            // blizz like 2.0.x
@@ -4508,7 +4508,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             break;
                         case 43681: // Inactive
                         {
-                            if (target->GetTypeId() != TYPEID_PLAYER || aurApp->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+                            if (target->GetTypeId() != TYPEID_PLAYER || !aurApp->HasRemoveMode(AuraRemoveFlags::Expired))
                                 return;
 
                             if (target->GetMap()->IsBattleground())
@@ -4526,7 +4526,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             target->CastSpell((Unit*)nullptr, GetAmount(), true, nullptr, this);
                             break;
                         case 91604: // Restricted Flight Area
-                            if (aurApp->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+                            if (aurApp->HasRemoveMode(AuraRemoveFlags::Expired))
                                 target->CastSpell(target, 58601, true);
                             break;
                     }
@@ -4744,7 +4744,7 @@ void AuraEffect::HandleChannelDeathItem(AuraApplication const* aurApp, uint8 mod
     if (!(mode & AURA_EFFECT_HANDLE_REAL))
         return;
 
-    if (apply || aurApp->GetRemoveMode() != AURA_REMOVE_BY_DEATH)
+    if (apply || !aurApp->HasRemoveMode(AuraRemoveFlags::ByDeath))
         return;
 
     Unit* caster = GetCaster();
