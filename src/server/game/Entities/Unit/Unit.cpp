@@ -4193,7 +4193,7 @@ void Unit::RemoveNotOwnLimitedTargetAuras(bool onPhaseChange /*= false*/)
     }
 }
 
-void Unit::RemoveAurasWithInterruptFlags(uint32 flag, uint32 except)
+void Unit::RemoveAurasWithInterruptFlags(uint32 flag, uint32 except, Spell* interruptingSpell /* = nullptr */)
 {
     if (!(m_interruptMask & flag))
         return;
@@ -4219,7 +4219,7 @@ void Unit::RemoveAurasWithInterruptFlags(uint32 flag, uint32 except)
             && (spell->m_spellInfo->ChannelInterruptFlags & flag)
             && spell->m_spellInfo->Id != except
             && !(flag & AURA_INTERRUPT_FLAG_MOVE && HasAuraTypeWithAffectMask(SPELL_AURA_CAST_WHILE_WALKING, spell->GetSpellInfo())))
-            InterruptNonMeleeSpells(false);
+            InterruptNonMeleeSpells(false, 0, true, interruptingSpell);
 
     UpdateInterruptMask();
 }

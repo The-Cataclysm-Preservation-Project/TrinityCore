@@ -1494,7 +1494,7 @@ class TC_GAME_API Unit : public WorldObject
         void RemoveAurasDueToItemSpell(uint32 spellId, ObjectGuid castItemGuid);
         void RemoveAurasByType(AuraType auraType, ObjectGuid casterGUID = ObjectGuid::Empty, Aura* except = nullptr, bool negative = true, bool positive = true);
         void RemoveNotOwnLimitedTargetAuras(bool onPhaseChange = false);
-        void RemoveAurasWithInterruptFlags(uint32 flag, uint32 except = 0);
+        void RemoveAurasWithInterruptFlags(uint32 flag, uint32 except = 0, Spell* interruptingSpell = nullptr);
         void RemoveAurasWithAttribute(uint32 flags);
         void RemoveAurasWithFamily(SpellFamilyNames family, uint32 familyFlag1, uint32 familyFlag2, uint32 familyFlag3, ObjectGuid casterGUID);
         void RemoveAurasWithMechanic(uint32 mechanic_mask, AuraRemoveFlags removemode = AuraRemoveFlags::ByDefault, uint32 except = 0);
