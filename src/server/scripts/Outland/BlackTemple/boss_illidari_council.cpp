@@ -917,7 +917,7 @@ class spell_illidari_dampen_magic : public SpellScriptLoader
             {
                 if (Creature* target = GetTarget()->ToCreature())
                 {
-                    if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell | AuraRemoveFlags::Expired))
+                    if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByEnemySpell | AuraRemoveFlags::Expired))
                         target->AI()->DoAction(ACTION_REFRESH_DAMPEN);
                 }
             }

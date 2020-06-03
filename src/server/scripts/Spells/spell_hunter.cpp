@@ -557,7 +557,7 @@ class spell_hun_misdirection : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByDefault) || !GetTarget()->HasAura(SPELL_HUNTER_MISDIRECTION_PROC))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByDefault) || !GetTarget()->HasAura(SPELL_HUNTER_MISDIRECTION_PROC))
                     GetTarget()->ResetRedirectThreat();
             }
 

@@ -1416,7 +1416,7 @@ class spell_halion_meteor_strike_marker : public SpellScriptLoader
                 if (!GetCaster())
                     return;
 
-                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                     if (Creature* creCaster = GetCaster()->ToCreature())
                         creCaster->AI()->DoAction(ACTION_METEOR_STRIKE_AOE);
             }
@@ -1452,7 +1452,7 @@ class spell_halion_combustion_consumption : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByDeath))
+                if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByDeath))
                     return;
 
                 if (GetTarget()->HasAura(_markSpell))
@@ -1559,7 +1559,7 @@ class spell_halion_marks : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                     return;
 
                 // Stacks marker

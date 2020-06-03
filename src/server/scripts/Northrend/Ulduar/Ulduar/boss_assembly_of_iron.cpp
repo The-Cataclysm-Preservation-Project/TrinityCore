@@ -664,7 +664,7 @@ class spell_shield_of_runes : public SpellScriptLoader
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 if (Unit* caster = GetCaster())
-                    if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                    if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                         caster->CastSpell(caster, SPELL_SHIELD_OF_RUNES_BUFF, false);
             }
 

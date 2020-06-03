@@ -18,6 +18,7 @@
 #ifndef TRINITY_SPELLAURAS_H
 #define TRINITY_SPELLAURAS_H
 
+#include "EnumFlag.h"
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"
 #include "Unit.h"
@@ -48,7 +49,7 @@ class TC_GAME_API AuraApplication
     private:
         Unit* const _target;
         Aura* const _base;
-        AuraRemoveFlags _removeMode;                  // Store info for know remove aura reason
+        EnumFlag<AuraRemoveFlags> _removeMode;         // Store info for know remove aura reason
         uint8 _slot;                                   // Aura slot on unit
         uint8 _flags;                                  // Aura info flag
         uint8 _effectsToApply;                         // Used only at spell hit to determine which effect should be applied
@@ -73,10 +74,7 @@ class TC_GAME_API AuraApplication
         uint8 GetEffectsToApply() const { return _effectsToApply; }
 
         void SetRemoveMode(AuraRemoveFlags mode) { _removeMode = mode; }
-        AuraRemoveFlags GetRemoveMode() const { return _removeMode; }
-
-        bool HasRemoveMode(AuraRemoveFlags mode) const;
-        bool HasAllRemoveModes(AuraRemoveFlags mode) const;
+        EnumFlag<AuraRemoveFlags> GetRemoveMode() const { return _removeMode; }
 
         void SetNeedClientUpdate() { _needClientUpdate = true;}
         bool IsNeedClientUpdate() const { return _needClientUpdate;}

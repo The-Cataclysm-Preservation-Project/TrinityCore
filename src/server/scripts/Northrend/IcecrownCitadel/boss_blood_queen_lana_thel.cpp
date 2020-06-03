@@ -564,7 +564,7 @@ class spell_blood_queen_frenzied_bloodthirst : public SpellScriptLoader
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 Unit* target = GetTarget();
-                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                     if (InstanceScript* instance = target->GetInstanceScript())
                         if (Creature* bloodQueen = ObjectAccessor::GetCreature(*target, instance->GetGuidData(DATA_BLOOD_QUEEN_LANA_THEL)))
                         {

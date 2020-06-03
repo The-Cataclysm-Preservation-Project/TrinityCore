@@ -64,9 +64,12 @@ inline constexpr T operator~(T value)
 template<typename T>
 class EnumFlag
 {
+
     static_assert(EnumTraits::IsFlag<T>::value, "EnumFlag must be used only with enums that are specify EnumFlag::IsFlag");
 
 public:
+    using underlying_type = std::underlying_type_t<T>;
+
     /*implicit*/ constexpr EnumFlag(T value) : _value(value)
     {
     }
@@ -105,8 +108,7 @@ public:
 
     constexpr bool HasFlag(T flag) const
     {
-        using i = std::underlying_type_t<T>;
-        return static_cast<i>(_value & flag) != static_cast<i>(0);
+        return static_cast<underlying_type>(_value & flag) != static_cast<underlying_type>(0);
     }
 
     constexpr bool HasAllFlags(T flags) const
@@ -114,14 +116,19 @@ public:
         return (_value & flags) == flags;
     }
 
+    constexpr bool HasAnyFlag() const
+    {
+        return static_cast<underlying_type>(_value) != underlying_type{};
+    }
+
     constexpr operator T() const
     {
         return _value;
     }
 
-    constexpr std::underlying_type_t<T> AsUnderlyingType() const
+    constexpr underlying_type AsUnderlyingType() const
     {
-        return static_cast<std::underlying_type_t<T>>(_value);
+        return static_cast<underlying_type>(_value);
     }
 
 private:

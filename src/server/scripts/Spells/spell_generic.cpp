@@ -2088,7 +2088,7 @@ class spell_gen_lifebloom : public SpellScriptLoader
             void AfterRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
                 // Final heal only on duration end
-                if (!GetTargetApplication()->HasAllRemoveModes(AuraRemoveFlags::Expired | AuraRemoveFlags::ByEnemySpell))
+                if (!GetTargetApplication()->GetRemoveMode().HasAllFlags(AuraRemoveFlags::Expired | AuraRemoveFlags::ByEnemySpell))
                     return;
 
                 // final heal
@@ -2622,7 +2622,7 @@ class spell_gen_paralytic_poison : public SpellScriptLoader
 
             void HandleStun(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                     return;
 
                 GetTarget()->CastSpell((Unit*)nullptr, SPELL_PARALYSIS, true, nullptr, aurEff);

@@ -2070,7 +2070,7 @@ class spell_nefarians_end_explosive_cinders : public AuraScript
 
     void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+        if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
             GetTarget()->CastSpell(GetTarget(), SPELL_EXPLOSIVE_CINDERS_EXPLOSION, true);
     }
 

@@ -3551,14 +3551,14 @@ void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask)
 
     _RemoveNoStackAurasDueToAura(aura);
 
-    if (aurApp->GetRemoveMode() == AuraRemoveFlags::None)
+    if (aurApp->GetRemoveMode().HasAnyFlag())
         return;
 
     // Update target aura state flag
     if (AuraStateType aState = aura->GetSpellInfo()->GetAuraState())
         ModifyAuraState(aState, true);
 
-    if (aurApp->GetRemoveMode() == AuraRemoveFlags::None)
+    if (aurApp->GetRemoveMode().HasAnyFlag())
         return;
 
     // Sitdown on apply aura req seated
@@ -3567,7 +3567,7 @@ void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask)
 
     Unit* caster = aura->GetCaster();
 
-    if (aurApp->GetRemoveMode() == AuraRemoveFlags::None)
+    if (aurApp->GetRemoveMode().HasAnyFlag())
         return;
 
     aura->HandleAuraSpecificMods(aurApp, caster, true, false);
@@ -3575,7 +3575,7 @@ void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask)
     // apply effects of the aura
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (effMask & 1 << i && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+        if (effMask & 1 << i && !aurApp->GetRemoveMode().HasAnyFlag())
             aurApp->_HandleEffect(i, true);
     }
 
@@ -3589,7 +3589,7 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveFlags removeM
 {
     AuraApplication * aurApp = i->second;
     ASSERT(aurApp);
-    ASSERT(aurApp->GetRemoveMode() == AuraRemoveFlags::None);
+    ASSERT(!aurApp->GetRemoveMode().HasAnyFlag());
     ASSERT(aurApp->GetTarget() == this);
 
     aurApp->SetRemoveMode(removeMode);
@@ -3646,7 +3646,7 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveFlags removeM
     ASSERT(!aurApp->GetEffectMask());
 
     // Remove totem at next update if totem loses its aura
-    if (aurApp->HasRemoveMode(AuraRemoveFlags::Expired) && GetTypeId() == TYPEID_UNIT && IsTotem())
+    if (aurApp->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired) && GetTypeId() == TYPEID_UNIT && IsTotem())
     {
         if (ToTotem()->GetSpell() == aura->GetId() && ToTotem()->GetTotemType() == TOTEM_PASSIVE)
             ToTotem()->setDeathState(JUST_DIED);
@@ -3818,8 +3818,9 @@ void Unit::RemoveAura(AuraApplicationMap::iterator &i, AuraRemoveFlags mode)
 {
     AuraApplication * aurApp = i->second;
     // Do not remove aura which is already being removed
-    if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+    if (aurApp->GetRemoveMode().HasAnyFlag())
         return;
+
     Aura* aura = aurApp->GetBase();
     _UnapplyAura(i, mode);
     // Remove aura - for Area and Target auras
@@ -3850,7 +3851,7 @@ void Unit::RemoveAura(AuraApplication * aurApp, AuraRemoveFlags mode)
     // this kind of call is needed only when aura effect removal handler
     // or event triggered by it expects to remove
     // not yet removed effects of an aura
-    if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+    if (aurApp->GetRemoveMode().HasAnyFlag())
     {
         // remove remaining effects of an aura
         for (uint8 itr = 0; itr < MAX_SPELL_EFFECTS; ++itr)
@@ -11024,7 +11025,7 @@ void Unit::TriggerAurasProcOnEvent(ProcEventInfo& eventInfo, AuraApplicationProc
         uint8 procEffectMask;
         std::tie(procEffectMask, aurApp) = aurAppProc;
 
-        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+        if (aurApp->GetRemoveMode().HasAnyFlag())
             continue;
 
         SpellInfo const* spellInfo = aurApp->GetBase()->GetSpellInfo();
@@ -12268,7 +12269,7 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
 
     // charm is set by aura, and aura effect remove handler was called during apply handler execution
     // prevent undefined behaviour
-    if (aurApp && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+    if (aurApp && aurApp->GetRemoveMode().HasAnyFlag())
         return false;
 
     _oldFactionId = GetFaction();
@@ -12303,7 +12304,7 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
 
     // charm is set by aura, and aura effect remove handler was called during apply handler execution
     // prevent undefined behaviour
-    if (aurApp && aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+    if (aurApp && aurApp->GetRemoveMode().HasAnyFlag())
         return false;
 
     // Pets already have a properly initialized CharmInfo, don't overwrite it.
@@ -13483,7 +13484,7 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
         }
     }
 
-    if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+    if (aurApp->GetRemoveMode().HasAnyFlag())
         return;
 
     if (Player* player = ToPlayer())

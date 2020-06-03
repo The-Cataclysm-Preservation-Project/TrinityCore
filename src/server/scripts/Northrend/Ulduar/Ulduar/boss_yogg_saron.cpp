@@ -2077,7 +2077,7 @@ class spell_yogg_saron_malady_of_the_mind : public SpellScriptLoader    // 63830
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell | AuraRemoveFlags::Expired | AuraRemoveFlags::ByDeath))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByEnemySpell | AuraRemoveFlags::Expired | AuraRemoveFlags::ByDeath))
                     return;
 
                 GetTarget()->CastSpell(GetTarget(), SPELL_MALADY_OF_THE_MIND_JUMP);
@@ -2146,7 +2146,7 @@ class spell_yogg_saron_brain_link : public SpellScriptLoader    // 63802
 
                 if (SaraAI* ai = CAST_AI(SaraAI, caster->GetAI()))
                 {
-                    if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                    if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                         ai->RemoveLinkFrom(GetTarget()->GetGUID());
                     else
                     {
@@ -2834,7 +2834,7 @@ class spell_yogg_saron_sanity : public SpellScriptLoader     // 63050
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByEnemySpell))
                     return;
 
                 if (InstanceScript* instance = GetTarget()->GetInstanceScript())

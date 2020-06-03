@@ -1139,7 +1139,7 @@ class spell_grip : public SpellScriptLoader
 
             void HandleDrop(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                     return;
 
                 GetTarget()->GetAI()->DoAction(ACTION_GRIP_LOST);

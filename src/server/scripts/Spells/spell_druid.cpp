@@ -667,7 +667,7 @@ class spell_dru_lifebloom : public AuraScript
     void AfterRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
     {
         // Final heal only on duration end
-        if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+        if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
             return;
 
         // final heal

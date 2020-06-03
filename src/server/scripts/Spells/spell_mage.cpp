@@ -787,7 +787,7 @@ class spell_mage_living_bomb : public AuraScript
 
     void AfterRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
     {
-        if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+        if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
             return;
 
         if (Unit* caster = GetCaster())
@@ -820,7 +820,7 @@ class spell_mage_ice_barrier : public SpellScriptLoader
 
            void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
            {
-               if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell))
+               if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByEnemySpell))
                    return;
 
                if (GetTarget()->HasAura(SPELL_MAGE_SHATTERED_BARRIER_R1))
@@ -983,7 +983,7 @@ class spell_mage_mana_shield : public SpellScriptLoader
            void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
            {
                if (GetTarget()->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_GENERIC, ICON_MAGE_INCANTER_S_ABSORPTION, EFFECT_0))
-                   if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell))
+                   if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByEnemySpell))
                        GetTarget()->CastSpell(GetTarget(), SPELL_MAGE_INCANTERS_ABSORBTION_KNOCKBACK, true);
            }
 
@@ -1379,7 +1379,7 @@ class spell_mage_ring_of_frost_freeze : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::Expired))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                     if (GetCaster())
                         GetCaster()->CastSpell(GetTarget(), SPELL_MAGE_RING_OF_FROST_DUMMY, true);
             }

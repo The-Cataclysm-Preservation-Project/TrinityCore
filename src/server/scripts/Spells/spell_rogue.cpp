@@ -941,7 +941,7 @@ class spell_rog_tricks_of_the_trade : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                if (!GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByDefault))
+                if (!GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByDefault))
                     GetTarget()->ResetRedirectThreat();
             }
 

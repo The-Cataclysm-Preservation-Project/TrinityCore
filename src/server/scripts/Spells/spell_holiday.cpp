@@ -1131,7 +1131,7 @@ class spell_brewfest_giddyup : public SpellScriptLoader
                         break;
                 }
 
-                if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByDefault))
+                if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByDefault))
                 {
                     target->RemoveAura(SPELL_RAM_TROT);
                     target->CastSpell(target, SPELL_RAM_LEVEL_NEUTRAL, true);

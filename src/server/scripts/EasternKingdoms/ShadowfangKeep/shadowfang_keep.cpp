@@ -63,7 +63,7 @@ class spell_sfk_shield_of_bones : public AuraScript
 
     void OnAuraRemoveHandler(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (GetTargetApplication()->HasRemoveMode(AuraRemoveFlags::ByEnemySpell))
+        if (GetTargetApplication()->GetRemoveMode().HasFlag(AuraRemoveFlags::ByEnemySpell))
             if (Unit* caster = GetCaster())
                 caster->CastSpell(caster, SPELL_SHIELD_OF_BONES_TRIGGERED, true);
     }

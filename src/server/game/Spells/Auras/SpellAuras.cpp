@@ -220,18 +220,6 @@ void AuraApplication::BuildUpdatePacket(ByteBuffer& data, bool remove) const
                     data << int32(eff->GetAmount());
 }
 
-bool AuraApplication::HasRemoveMode(AuraRemoveFlags mode) const
-{
-    EnumFlag<AuraRemoveFlags> flags = _removeMode;
-    return flags.HasFlag(mode);
-}
-
-bool AuraApplication::HasAllRemoveModes(AuraRemoveFlags mode) const
-{
-    EnumFlag<AuraRemoveFlags> flags = _removeMode;
-    return flags.HasAllFlags(mode);
-}
-
 void AuraApplication::ClientUpdate(bool remove)
 {
     _needClientUpdate = false;
@@ -457,7 +445,7 @@ void Aura::_ApplyForTarget(Unit* target, Unit* caster, AuraApplication * auraApp
 void Aura::_UnapplyForTarget(Unit* target, Unit* caster, AuraApplication * auraApp)
 {
     ASSERT(target);
-    ASSERT(auraApp->GetRemoveMode() != AuraRemoveFlags::None);
+    ASSERT(auraApp->GetRemoveMode().HasAnyFlag());
     ASSERT(auraApp);
 
     ApplicationMap::iterator itr = m_applications.find(target->GetGUID());
@@ -486,7 +474,9 @@ void Aura::_UnapplyForTarget(Unit* target, Unit* caster, AuraApplication * auraA
 // and marks aura as removed
 void Aura::_Remove(AuraRemoveFlags removeMode)
 {
-    ASSERT (!m_isRemoved);
+    ASSERT(!m_isRemoved);
+    ASSERT(!EnumFlag<AuraRemoveFlags>{ removeMode }.HasFlag(AuraRemoveFlags::DontResetPeriodicTimer), "Aura must not be removed with AuraRemoveFlags::DontResetPeriodicTimer");
+
     m_isRemoved = true;
     ApplicationMap::iterator appItr = m_applications.begin();
     for (appItr = m_applications.begin(); appItr != m_applications.end();)
@@ -872,7 +862,7 @@ void Aura::SetStackAmount(uint8 stackAmount)
     GetApplicationList(applications);
 
     for (AuraApplication* aurApp : applications)
-        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+        if (!aurApp->GetRemoveMode().HasAnyFlag())
             HandleAuraSpecificMods(aurApp, caster, false, true);
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -880,7 +870,7 @@ void Aura::SetStackAmount(uint8 stackAmount)
             aurEff->ChangeAmount(aurEff->CalculateAmount(caster), false, true);
 
     for (AuraApplication* aurApp : applications)
-        if (aurApp->GetRemoveMode() != AuraRemoveFlags::None)
+        if (!aurApp->GetRemoveMode().HasAnyFlag())
             HandleAuraSpecificMods(aurApp, caster, true, true);
 
     SetNeedClientUpdateForTargets();
@@ -902,7 +892,7 @@ bool Aura::ModStackAmount(int32 num, AuraRemoveFlags removeMode /*= AuraRemoveFl
     // we're out of stacks, remove
     else if (stackAmount <= 0)
     {
-        Remove(removeMode);
+        Remove(removeMode & ~AuraRemoveFlags::DontResetPeriodicTimer);
         return true;
     }
 
