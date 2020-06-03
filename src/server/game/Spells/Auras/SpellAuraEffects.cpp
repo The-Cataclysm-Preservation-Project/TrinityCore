@@ -647,6 +647,7 @@ void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= tru
 
     GetBase()->CallScriptEffectCalcPeriodicHandlers(this, m_isPeriodic, newPeriod);
 
+    m_effectPeriodicTimer = 0;
     if (!m_isPeriodic)
         return;
 

@@ -3273,7 +3273,10 @@ int32 SpellInfo::CalcDuration(Unit* caster, Spell* spell) const
     if (!DurationEntry)
         return 0;
 
-    int32 duration = GetDuration();
+    int32 duration = GetMaxDuration();
+    if (duration == -1)
+        return -1;
+
     if (caster != nullptr)
     {
         uint32 level = caster->getLevel();
@@ -3282,9 +3285,12 @@ int32 SpellInfo::CalcDuration(Unit* caster, Spell* spell) const
         if (BaseLevel > 0)
             level -= BaseLevel;
 
-        int32 duration = DurationEntry->Duration + DurationEntry->DurationPerLevel * level;
+        duration = DurationEntry->Duration + DurationEntry->DurationPerLevel * level;
         duration = std::min(GetMaxDuration(), duration);
     }
+
+    if (duration == -1)
+        return -1;
 
     // This is ***not** in client code, but is very much needed for, ie, Slice and Dice.
     uint8 comboPoints = caster != nullptr && caster->m_playerMovingMe ? caster->m_playerMovingMe->GetComboPoints() : 0;
@@ -3307,7 +3313,7 @@ int32 SpellInfo::CalcDuration(Unit* caster, Spell* spell) const
     {
         // This is just a stupid way to find the first periodic effect.
         int32 periodicEffectIndex = 0;
-        while ((Effects[periodicEffectIndex].Effect == 0 || Effects[periodicEffectIndex].Amplitude == 0))
+        while ((Effects[periodicEffectIndex].Effect == 0 || Effects[periodicEffectIndex].AuraPeriod == 0))
         {
             ++periodicEffectIndex;
             if (periodicEffectIndex >= MAX_SPELL_EFFECTS)
