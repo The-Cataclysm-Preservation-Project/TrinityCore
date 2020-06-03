@@ -3134,7 +3134,7 @@ void Unit::SetCurrentCastSpell(Spell* pSpell)
         return;
 
     // break same type spell if it is not delayed
-    InterruptSpell(CSpellType, false);
+    InterruptSpell(CSpellType, false, true, pSpell);
 
     // special breakage effects:
     switch (CSpellType)

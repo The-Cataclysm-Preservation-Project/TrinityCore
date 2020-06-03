@@ -636,6 +636,7 @@ void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= tru
         case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
         case SPELL_AURA_POWER_BURN:
         case SPELL_AURA_PERIODIC_DUMMY:
+        case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
             m_isPeriodic = true;
             break;
         default:
@@ -673,8 +674,8 @@ void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= tru
 
             // If the aura was rolled over, use that timer as the first one to ensure ticks connect properly
             // in case of a haste proc between this cast and the previous one.
-            if (GetBase()->GetRolledOverDuration())
-                m_periodicTimer = GetBase()->GetRolledOverDuration();
+            //if (GetBase()->GetRolledOverDuration())
+            //    m_periodicTimer = GetBase()->GetRolledOverDuration();
         }
     }
 }
