@@ -26,15 +26,15 @@ WardenLuaCheck::WardenLuaCheck(Type scanType, Field* fields) : WardenCheck(scanT
 
     switch (GetCheckType())
     {
-        case Type::LuaString:
-            _queriedString = ReadDatabaseField<DatabaseColumn::Data0>(fields);
-            break;
-        case Type::LuaStringAdvanced:
-            _executableString = ReadDatabaseField<DatabaseColumn::Data0>(fields);
-            _queriedString = ReadDatabaseField<DatabaseColumn::Data1>(fields);
-            break;
-        /* [[unlikely]] */ default: // Make CI happy...
-            break;
+    case Type::LuaString:
+        _queriedString = ReadDatabaseField<DatabaseColumn::Data0>(fields);
+        break;
+    case Type::LuaStringAdvanced:
+        _executableString = ReadDatabaseField<DatabaseColumn::Data0>(fields);
+        _queriedString = ReadDatabaseField<DatabaseColumn::Data1>(fields);
+        break;
+    /* [[unlikely]] */ default: // Make CI happy...
+        break;
     }
 
     _expectedResult = ReadDatabaseField<DatabaseColumn::Result>(fields);
@@ -44,49 +44,49 @@ bool WardenLuaCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& r
 {
     switch (GetCheckType())
     {
-        case Type::LuaString:
+    case Type::LuaString:
+    {
+        auto [stringIndex, success] = request.RegisterString(_queriedString);
+        if (!success)
+            return false;
+
+        if (!request.CanWrite(2 * sizeof(uint8)))
         {
-            auto [stringIndex, success] = request.RegisterString(_queriedString);
-            if (!success)
-                return false;
-
-            if (!request.CanWrite(2 * sizeof(uint8)))
-            {
-                request.UnregisterString(stringIndex);
-                return false;
-            }
-
-            requestBuffer << uint8(warden->EncodeWardenCheck(Type::LuaString));
-            requestBuffer << uint8(stringIndex);
-            return true;
+            request.UnregisterString(stringIndex);
+            return false;
         }
-        case Type::LuaStringAdvanced:
+
+        requestBuffer << uint8(warden->EncodeWardenCheck(Type::LuaString));
+        requestBuffer << uint8(stringIndex);
+        return true;
+    }
+    case Type::LuaStringAdvanced:
+    {
+        auto [codeStringIndex, success0] = request.RegisterString(_executableString);
+        if (!success0)
+            return false;
+
+        auto [queryStringIndex, success1] = request.RegisterString(_queriedString);
+        if (!success1)
         {
-            auto [codeStringIndex, success0] = request.RegisterString(_executableString);
-            if (!success0)
-                return false;
-
-            auto [queryStringIndex, success1] = request.RegisterString(_queriedString);
-            if (!success1)
-            {
-                request.UnregisterString(codeStringIndex);
-                return false;
-            }
-
-            if (!request.CanWrite(3 * sizeof(uint8)))
-            {
-                request.UnregisterString(codeStringIndex);
-                request.UnregisterString(queryStringIndex);
-                return false;
-            }
-
-            requestBuffer << uint8(warden->EncodeWardenCheck(Type::LuaStringAdvanced));
-            requestBuffer << uint8(codeStringIndex);
-            requestBuffer << uint8(queryStringIndex);
-            return true;
+            request.UnregisterString(codeStringIndex);
+            return false;
         }
-        /* [[unlikely]] */ default: // Make CI happy
-            return true;
+
+        if (!request.CanWrite(3 * sizeof(uint8)))
+        {
+            request.UnregisterString(codeStringIndex);
+            request.UnregisterString(queryStringIndex);
+            return false;
+        }
+
+        requestBuffer << uint8(warden->EncodeWardenCheck(Type::LuaStringAdvanced));
+        requestBuffer << uint8(codeStringIndex);
+        requestBuffer << uint8(queryStringIndex);
+        return true;
+    }
+    /* [[unlikely]] */ default: // Make CI happy
+        return true;
     }
 }
 

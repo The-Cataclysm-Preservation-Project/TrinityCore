@@ -38,7 +38,7 @@ WardenMemoryCheck::WardenMemoryCheck(Field* fields) : WardenCheck(Type::Memory, 
     }
 }
 
-WardenMemoryCheck::WardenMemoryCheck(std::string const &moduleName, uint64 address, uint64 length) : WardenCheck(Type::Memory)
+WardenMemoryCheck::WardenMemoryCheck(std::string const& moduleName, uint64 address, uint64 length) : WardenCheck(Type::Memory)
 {
     SetModuleName(moduleName);
     _address = address;

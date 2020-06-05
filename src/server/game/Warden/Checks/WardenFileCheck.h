@@ -28,7 +28,7 @@ class Warden;
 struct WardenFileCheck : public WardenCheck
 {
     WardenFileCheck(Field* fields);
-    
+
     bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
     WardenCheckResult ProcessResponse(ByteBuffer& packet) const override final;
 

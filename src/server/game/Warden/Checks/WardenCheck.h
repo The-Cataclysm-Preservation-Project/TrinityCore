@@ -60,15 +60,15 @@ struct WardenCheck
 
     // Defines which type corresponds to which column
     template <DatabaseColumn Column> struct DatabaseColumnType { };
-    template <> struct DatabaseColumnType<DatabaseColumn::ID>       { using type = uint32; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Type>     { using type = uint8; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Flags>    { using type = uint32; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Data0>    { using type = std::string; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Data1>    { using type = std::string; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Address>  { using type = uint32; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Result>   { using type = std::string; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Length>   { using type = uint8; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Comment>  { using type = std::string; };
+    template <> struct DatabaseColumnType<DatabaseColumn::ID> { using type = uint32; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Type> { using type = uint8; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Flags> { using type = uint32; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Data0> { using type = std::string; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Data1> { using type = std::string; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Address> { using type = uint32; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Result> { using type = std::string; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Length> { using type = uint8; };
+    template <> struct DatabaseColumnType<DatabaseColumn::Comment> { using type = std::string; };
 
 protected:
     WardenCheck(Type scanType, Field* fields);
@@ -167,6 +167,5 @@ static auto ReadDatabaseField(Field* fields) -> typename WardenCheck::DatabaseCo
 
     return field_value_extractor<ValueType>::read(fields[static_cast<std::underlying_type_t<WardenCheck::DatabaseColumn>>(Column)]);
 }
-
 
 #endif // WARDENCHECK_H_

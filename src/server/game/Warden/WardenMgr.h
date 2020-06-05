@@ -31,40 +31,40 @@
 
 class TC_GAME_API WardenMgr
 {
-    private:
-        WardenMgr();
-        ~WardenMgr();
+private:
+    WardenMgr();
+    ~WardenMgr();
 
-    public:
-        static WardenMgr* instance();
+public:
+    static WardenMgr* instance();
 
-        //< Returns all modules that can be used for a given platform.
-        std::vector<std::shared_ptr<WardenModule>> FindModules(WardenPlatform platform) const;
+    //< Returns all modules that can be used for a given platform.
+    std::vector<std::shared_ptr<WardenModule>> FindModules(WardenPlatform platform) const;
 
-        //< Returns the check associated with the provided id, or nullptr if none exist.
-        std::shared_ptr<WardenCheck> GetWardenCheck(uint16 Id);
+    //< Returns the check associated with the provided id, or nullptr if none exist.
+    std::shared_ptr<WardenCheck> GetWardenCheck(uint16 Id);
 
-        void LoadWardenChecks();
-        void LoadWardenKeys();
-        void LoadWardenModules();
-        void LoadWardenOverrides();
+    void LoadWardenChecks();
+    void LoadWardenKeys();
+    void LoadWardenModules();
+    void LoadWardenOverrides();
 
-        std::shared_mutex _checkStoreLock;
+    std::shared_mutex _checkStoreLock;
 
-        //< Returns all checks for the given platform and session.
-        std::vector<std::shared_ptr<WardenCheck>> GetChecks(WorldSession* session, Warden* warden) const;
+    //< Returns all checks for the given platform and session.
+    std::vector<std::shared_ptr<WardenCheck>> GetChecks(WorldSession* session, Warden* warden) const;
 
-        WardenCheckResult GetCheckFailureAction(uint32 failedChecks) const;
+    WardenCheckResult GetCheckFailureAction(uint32 failedChecks) const;
 
-    private:
-        //< Stores all checks handled by all supported warden platforms.
-        std::unordered_map<uint32, std::shared_ptr<WardenCheck>> _checkStore;
+private:
+    //< Stores all checks handled by all supported warden platforms.
+    std::unordered_map<uint32, std::shared_ptr<WardenCheck>> _checkStore;
 
-        //< Stores check-specific action overrides.
-        std::unordered_map<uint32, WardenCheckResult> _actionOverrides;
+    //< Stores check-specific action overrides.
+    std::unordered_map<uint32, WardenCheckResult> _actionOverrides;
 
-        //< Stores all known modules.
-        std::vector<std::shared_ptr<WardenModule>> _modules;
+    //< Stores all known modules.
+    std::vector<std::shared_ptr<WardenModule>> _modules;
 };
 
 #define sWardenMgr WardenMgr::instance()

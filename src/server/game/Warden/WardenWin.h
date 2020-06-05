@@ -30,33 +30,33 @@
 
 class TC_GAME_API WardenWin : public Warden
 {
-    public:
-        WardenWin(WardenPlatform platform);
-        ~WardenWin();
+public:
+    WardenWin(WardenPlatform platform);
+    ~WardenWin();
 
-        void Init(WorldSession* session, BigNumber* K) override;
+    void Init(WorldSession* session, BigNumber* K) override;
 
-        void InitializeModule() override;
-        bool HandleHashResult(ByteBuffer& packet) override;
-        void RequestData() override;
-        void HandleCheatChecksResult(ByteBuffer& packet) override;
-        uint8 EncodeWardenCheck(WardenCheck::Type checkType) const override;
+    void InitializeModule() override;
+    bool HandleHashResult(ByteBuffer& packet) override;
+    void RequestData() override;
+    void HandleCheatChecksResult(ByteBuffer& packet) override;
+    uint8 EncodeWardenCheck(WardenCheck::Type checkType) const override;
 
-        uint32 GetCheatCheckRequestTime() const override { return _serverTicks; }
+    uint32 GetCheatCheckRequestTime() const override { return _serverTicks; }
 
-        void SubmitCheck(std::shared_ptr<WardenCheck> check) override;
+    void SubmitCheck(std::shared_ptr<WardenCheck> check) override;
 
-    protected:
-        bool IsAwaitingReply() const override { return !_sentChecks.empty(); }
+protected:
+    bool IsAwaitingReply() const override { return !_sentChecks.empty(); }
 
-    private:
-        uint32 _serverTicks;
+private:
+    uint32 _serverTicks;
 
-        //< Various checks that need to be sent to the client.
-        std::vector<std::shared_ptr<WardenCheck>> _pendingChecks;
+    //< Various checks that need to be sent to the client.
+    std::vector<std::shared_ptr<WardenCheck>> _pendingChecks;
 
-        //< Checks sent to the client, awaiting reply
-        std::vector<std::shared_ptr<WardenCheck>> _sentChecks;
+    //< Checks sent to the client, awaiting reply
+    std::vector<std::shared_ptr<WardenCheck>> _sentChecks;
 };
 
 #endif

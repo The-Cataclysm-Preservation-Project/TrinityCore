@@ -23,8 +23,8 @@
 
 #include <unordered_set>
 
-// Simple structure that encapsulates the string pooling logic of WARDEN_SMSG_CHEAT_CHECKS_REQUEST
-// and maximum packet size.
+ // Simple structure that encapsulates the string pooling logic of WARDEN_SMSG_CHEAT_CHECKS_REQUEST
+ // and maximum packet size.
 struct WardenCheatChecksRequest
 {
     constexpr const static uint32 MaximumSize = 512;

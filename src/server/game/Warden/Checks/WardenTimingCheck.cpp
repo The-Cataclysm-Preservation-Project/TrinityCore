@@ -27,7 +27,7 @@ WardenTimingCheck::WardenTimingCheck(Field* fields) : WardenCheck(Type::Timing, 
 
 WardenTimingCheck::WardenTimingCheck() : WardenCheck(Type::Timing)
 {
-    
+
 }
 
 bool WardenTimingCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)

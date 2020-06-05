@@ -28,7 +28,7 @@ WardenModuleCheck::WardenModuleCheck(Field* fields) : WardenCheck(Type::Module, 
 
 WardenModuleCheck::WardenModuleCheck(std::string const& moduleName) : WardenCheck(Type::Module), _moduleName(moduleName)
 {
-    
+
 }
 
 bool WardenModuleCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)

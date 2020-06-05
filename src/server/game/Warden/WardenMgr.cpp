@@ -104,8 +104,7 @@ void WardenMgr::LoadWardenKeys()
             TC_LOG_ERROR("server.loading", "Warden keychain %u references non-existing module %u, skipped.", id, moduleID);
             continue;
         }
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     // Remove modules for which we have no keychain since there is no way to use them
     for (auto itr = _modules.begin(); itr != _modules.end();)
@@ -155,8 +154,7 @@ void WardenMgr::LoadWardenModules()
             _modules.emplace_back(std::move(module));
             ++count;
         }
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loadded %u Warden modules in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
 }
@@ -193,35 +191,35 @@ void WardenMgr::LoadWardenChecks()
         try {
             switch (checkType)
             {
-                case WardenCheck::Type::Timing:
-                    wardenCheck = std::make_shared<WardenTimingCheck>(fields);
-                    break;
-                case WardenCheck::Type::PageCheckA:
-                case WardenCheck::Type::PageCheckB:
-                    wardenCheck = std::make_shared<WardenPageCheck>(checkType, fields);
-                    break;
-                case WardenCheck::Type::Driver:
-                    wardenCheck = std::make_shared<WardenDriverCheck>(fields);
-                    break;
-                case WardenCheck::Type::Memory:
-                    wardenCheck = std::make_shared<WardenMemoryCheck>(fields);
-                    break;
-                case WardenCheck::Type::Module:
-                    wardenCheck = std::make_shared<WardenModuleCheck>(fields);
-                    break;
-                case WardenCheck::Type::MPQ:
-                    wardenCheck = std::make_shared<WardenFileCheck>(fields);
-                    break;
-                case WardenCheck::Type::LuaString:
-                case WardenCheck::Type::LuaStringAdvanced:
-                    wardenCheck = std::make_shared<WardenLuaCheck>(checkType, fields);
-                    break;
-                case WardenCheck::Type::Proc:
-                    wardenCheck = std::make_shared<WardenProcCheck>(fields);
-                    break;
-                default:
-                    TC_LOG_ERROR("server.loading", "Unhandled check type (ID: %u), skipped.", id);
-                    break;
+            case WardenCheck::Type::Timing:
+                wardenCheck = std::make_shared<WardenTimingCheck>(fields);
+                break;
+            case WardenCheck::Type::PageCheckA:
+            case WardenCheck::Type::PageCheckB:
+                wardenCheck = std::make_shared<WardenPageCheck>(checkType, fields);
+                break;
+            case WardenCheck::Type::Driver:
+                wardenCheck = std::make_shared<WardenDriverCheck>(fields);
+                break;
+            case WardenCheck::Type::Memory:
+                wardenCheck = std::make_shared<WardenMemoryCheck>(fields);
+                break;
+            case WardenCheck::Type::Module:
+                wardenCheck = std::make_shared<WardenModuleCheck>(fields);
+                break;
+            case WardenCheck::Type::MPQ:
+                wardenCheck = std::make_shared<WardenFileCheck>(fields);
+                break;
+            case WardenCheck::Type::LuaString:
+            case WardenCheck::Type::LuaStringAdvanced:
+                wardenCheck = std::make_shared<WardenLuaCheck>(checkType, fields);
+                break;
+            case WardenCheck::Type::Proc:
+                wardenCheck = std::make_shared<WardenProcCheck>(fields);
+                break;
+            default:
+                TC_LOG_ERROR("server.loading", "Unhandled check type (ID: %u), skipped.", id);
+                break;
             }
         }
         catch (std::exception const& ex)
@@ -235,8 +233,7 @@ void WardenMgr::LoadWardenChecks()
         auto [itr, success] = _checkStore.emplace(wardenCheck->GetID(), wardenCheck);
         if (success)
             ++count;
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded %u warden checks in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
@@ -270,7 +267,7 @@ void WardenMgr::LoadWardenOverrides()
         Field* fields = result->Fetch();
 
         uint16 checkId = fields[0].GetUInt16();
-        WardenCheckResult action  = WardenCheckResult(fields[1].GetUInt8());
+        WardenCheckResult action = WardenCheckResult(fields[1].GetUInt8());
 
         if (action > WardenCheckResult::FailedLog)
             TC_LOG_ERROR("server.loading", "Warden check override action out of range (ID: %u)", checkId);
@@ -285,8 +282,7 @@ void WardenMgr::LoadWardenOverrides()
                 ++count;
             }
         }
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded %u warden action overrides in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
