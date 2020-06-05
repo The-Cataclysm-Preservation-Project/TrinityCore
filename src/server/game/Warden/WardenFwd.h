@@ -15,30 +15,29 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AUTH_SARC4_H
-#define _AUTH_SARC4_H
+#ifndef WARDEN_FWD_H_
+#define WARDEN_FWD_H_
 
-#include "Define.h"
-#include <array>
-#include <openssl/evp.h>
+#include "Common.h"
 
-class TC_COMMON_API ARC4
-{
-    public:
-        ARC4(uint32 len);
-        ARC4(uint8* seed, uint32 len);
-        ~ARC4();
-        void Init(uint8* seed);
+class WorldSession;
 
-        void UpdateData(int len, uint8* data);
+struct WardenKey;
+struct WardenCheck;
+struct WardenCheatChecksRequest;
 
-        template <size_t N>
-        void UpdateData(std::array<uint8, N>& arr)
-        {
-            UpdateData(arr.size(), arr.data());
-        }
-    private:
-        EVP_CIPHER_CTX* m_ctx;
-};
+struct WardenDriverCheck;
+struct WardenFileCheck;
+struct WardenLuaCheck;
+struct WardenTimingCheck;
+struct WardenModuleCheck;
+struct WardenMemoryCheck;
+struct WardenPageCheck;
+struct WardenProcCheck;
 
-#endif
+enum class WardenPlatform : uint8;
+enum WardenOpcodes : uint32;
+enum WardenCheckFlags : uint32;
+enum WardenActions : uint32;
+
+#endif // WARDEN_FWD_H_

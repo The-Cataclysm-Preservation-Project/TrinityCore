@@ -43,7 +43,7 @@ EndScriptData */
 #include "SmartAI.h"
 #include "SpellMgr.h"
 #include "TicketMgr.h"
-#include "WardenCheckMgr.h"
+#include "WardenMgr.h"
 #include "WaypointManager.h"
 #include "World.h"
 
@@ -699,7 +699,7 @@ public:
         }
 
         TC_LOG_INFO("misc", "Re-Loading warden_action Table!");
-        sWardenCheckMgr->LoadWardenOverrides();
+        sWardenMgr->LoadWardenOverrides();
         handler->SendGlobalGMSysMessage("DB table `warden_action` reloaded.");
         return true;
     }

@@ -39,7 +39,7 @@ template<HashCreateFn HashCreator, uint32 DigestLength>
 HmacHash<HashCreator, DigestLength>::HmacHash(uint32 len, uint8 const* seed) : _ctx(HMAC_CTX_new())
 {
     HMAC_Init_ex(_ctx, seed, len, HashCreator(), nullptr);
-    memset(_digest, 0, DigestLength);
+    _digest.fill(0);
 }
 
 template<HashCreateFn HashCreator, uint32 DigestLength>
@@ -54,6 +54,12 @@ void HmacHash<HashCreator, DigestLength>::UpdateData(std::string const& str)
     HMAC_Update(_ctx, reinterpret_cast<uint8 const*>(str.c_str()), str.length());
 }
 
+template <HashCreateFn HashCreator, uint32 DigestLength>
+void HmacHash<HashCreator, DigestLength>::UpdateData(BigNumber* bn)
+{
+    HMAC_Update(_ctx, bn->AsByteArray().get(), bn->GetNumBytes());
+}
+
 template<HashCreateFn HashCreator, uint32 DigestLength>
 void HmacHash<HashCreator, DigestLength>::UpdateData(uint8 const* data, size_t len)
 {
@@ -64,16 +70,8 @@ template<HashCreateFn HashCreator, uint32 DigestLength>
 void HmacHash<HashCreator, DigestLength>::Finalize()
 {
     uint32 length = 0;
-    HMAC_Final(_ctx, _digest, &length);
+    HMAC_Final(_ctx, _digest.data(), &length);
     ASSERT(length == DigestLength);
-}
-
-template<HashCreateFn HashCreator, uint32 DigestLength>
-uint8* HmacHash<HashCreator, DigestLength>::ComputeHash(BigNumber* bn)
-{
-    HMAC_Update(_ctx, bn->AsByteArray().get(), bn->GetNumBytes());
-    Finalize();
-    return _digest;
 }
 
 template class TC_COMMON_API HmacHash<EVP_sha1, SHA_DIGEST_LENGTH>;

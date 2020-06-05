@@ -488,7 +488,7 @@ void Battlenet::Session::HandleJoinRequestV2(WoWRealm::JoinRequestV2 const& join
     hmac.UpdateData((uint8*)&joinResponse->ServerSeed, 4);
     hmac.Finalize();
 
-    memcpy(sessionKey, hmac.GetDigest(), hmac.GetLength());
+    memcpy(sessionKey, hmac.GetDigest().data(), hmac.GetLength());
 
     HmacSha1 hmac2(K.GetNumBytes(), K.AsByteArray().get());
     hmac2.UpdateData((uint8*)"WoW\0", 4);
@@ -496,7 +496,7 @@ void Battlenet::Session::HandleJoinRequestV2(WoWRealm::JoinRequestV2 const& join
     hmac2.UpdateData((uint8*)&joinRequest.ClientSeed, 4);
     hmac2.Finalize();
 
-    memcpy(sessionKey + hmac.GetLength(), hmac2.GetDigest(), hmac2.GetLength());
+    memcpy(sessionKey + hmac.GetLength(), hmac2.GetDigest().data(), hmac2.GetLength());
 
     LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_LOGONPROOF);
     stmt->setString(0, ByteArrayToHexStr(sessionKey, 40, true).c_str());
@@ -1025,8 +1025,8 @@ bool Battlenet::Session::HandleResumeModule(BitStream* dataStream, ServerPacket*
     serverPart.Finalize();
 
     uint8 newSessionKey[64];
-    memcpy(&newSessionKey[0], clientPart.GetDigest(), clientPart.GetLength());
-    memcpy(&newSessionKey[32], serverPart.GetDigest(), serverPart.GetLength());
+    memcpy(&newSessionKey[0], clientPart.GetDigest().data(), clientPart.GetLength());
+    memcpy(&newSessionKey[32], serverPart.GetDigest().data(), serverPart.GetLength());
 
     K.SetBinary(newSessionKey, 64);
 
@@ -1036,7 +1036,7 @@ bool Battlenet::Session::HandleResumeModule(BitStream* dataStream, ServerPacket*
     proof.UpdateData(serverChallenge.get(), 16);
     proof.Finalize();
 
-    if (memcmp(proof.GetDigest(), clientProof.get(), serverPart.GetLength()))
+    if (memcmp(proof.GetDigest().data(), clientProof.get(), serverPart.GetLength()))
     {
         LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_BNET_FAILED_LOGINS);
         stmt->setString(0, _accountInfo->Login);
@@ -1066,7 +1066,7 @@ bool Battlenet::Session::HandleResumeModule(BitStream* dataStream, ServerPacket*
     BitStream resumeData;
     uint8 state = 2;
     resumeData.WriteBytes(&state, 1);
-    resumeData.WriteBytes(serverProof.GetDigest(), serverProof.GetLength());
+    resumeData.WriteBytes(serverProof.GetDigest().data(), serverProof.GetLength());
 
     resume->DataSize = resumeData.GetSize();
     resume->Data = new uint8[resume->DataSize];

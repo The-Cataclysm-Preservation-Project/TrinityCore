@@ -35,23 +35,26 @@ void WorldPacketCrypt::Init(BigNumber* K)
 void WorldPacketCrypt::Init(BigNumber* k, uint8 const* serverKey, uint8 const* clientKey)
 {
     HmacSha1 serverEncryptHmac(SEED_KEY_SIZE, (uint8*)serverKey);
-    uint8* encryptHash = serverEncryptHmac.ComputeHash(k);
+    serverEncryptHmac.UpdateData(k);
+    serverEncryptHmac.Finalize();
+    auto encryptHash = serverEncryptHmac.GetDigest();
 
     HmacSha1 clientDecryptHmac(SEED_KEY_SIZE, (uint8*)clientKey);
-    uint8* decryptHash = clientDecryptHmac.ComputeHash(k);
+    clientDecryptHmac.UpdateData(k);
+    clientDecryptHmac.Finalize();
+    auto decryptHash = clientDecryptHmac.GetDigest();
 
-    _clientDecrypt.Init(decryptHash);
-    _serverEncrypt.Init(encryptHash);
+    _clientDecrypt.Init(decryptHash.data());
+    _serverEncrypt.Init(encryptHash.data());
 
     // Drop first 1024 bytes, as WoW uses ARC4-drop1024.
-    uint8 syncBuf[1024];
-    memset(syncBuf, 0, 1024);
+    std::array<uint8, 1024> syncBuf;
 
-    _serverEncrypt.UpdateData(1024, syncBuf);
+    syncBuf.fill(0);
+    _serverEncrypt.UpdateData(syncBuf);
 
-    memset(syncBuf, 0, 1024);
-
-    _clientDecrypt.UpdateData(1024, syncBuf);
+    syncBuf.fill(0);
+    _clientDecrypt.UpdateData(syncBuf);
 
     _initialized = true;
 }

@@ -344,7 +344,7 @@ WorldPacket const* WorldPackets::Auth::ConnectTo::Write()
     hmacHash.UpdateData(&Payload.XorMagic, 1);
     hmacHash.Finalize();
 
-    uint8* hmac = hmacHash.GetDigest();
+    auto hmac = hmacHash.GetDigest();
 
     payload << uint8(PiDigits[30]);
     payload << uint8(Haiku[31]);

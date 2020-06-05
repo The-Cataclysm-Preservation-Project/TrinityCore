@@ -22,6 +22,7 @@
 #include "StringFormat.h"
 #include <utf8.h>
 #include <algorithm>
+#include <iomanip>
 #include <sstream>
 #include <string>
 #include <cctype>
@@ -581,11 +582,7 @@ std::string ByteArrayToHexStr(uint8 const* bytes, uint32 arrayLen, bool reverse 
 
     std::ostringstream ss;
     for (int32 i = init; i != end; i += op)
-    {
-        char buffer[4];
-        sprintf(buffer, "%02X", bytes[i]);
-        ss << buffer;
-    }
+        ss << std::hex << std::setfill('0') << std::setw(2) << std::uppercase << uint32(bytes[i]);
 
     return ss.str();
 }

@@ -18,6 +18,7 @@
 #include "Cryptography/HmacHash.h"
 #include "Cryptography/WardenKeyGeneration.h"
 #include "Common.h"
+#include "Containers.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Log.h"
@@ -30,42 +31,45 @@
 #include "Util.h"
 #include "WardenWin.h"
 #include "WardenModuleWin.h"
-#include "WardenCheckMgr.h"
+#include "WardenMgr.h"
+#include "WardenCheck.h"
+#include "WardenCheatCheckRequest.h"
+#include "WardenKey.h"
+#include "WardenDefines.h"
 #include "Random.h"
 #include <openssl/md5.h>
 
-WardenWin::WardenWin() : Warden(), _serverTicks(0) {}
+WardenWin::WardenWin() : Warden(WardenPlatform::Win), _serverTicks(0) {}
 
 WardenWin::~WardenWin() { }
 
 void WardenWin::Init(WorldSession* session, BigNumber* k)
 {
     _session = session;
+
     // Generate Warden Key
     SHA1Randx WK(k->AsByteArray().get(), k->GetNumBytes());
-    WK.Generate(_inputKey, 16);
-    WK.Generate(_outputKey, 16);
+    WK.Generate(_inputKey);
+    WK.Generate(_outputKey);
 
-    memcpy(_seed, Module.Seed, 16);
+    _inputCrypto.Init(_inputKey.data());
+    _outputCrypto.Init(_outputKey.data());
 
-    _inputCrypto.Init(_inputKey);
-    _outputCrypto.Init(_outputKey);
     TC_LOG_DEBUG("warden", "Server side warden for client %u initializing...", session->GetAccountId());
-    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey, 16).c_str());
-    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey, 16).c_str());
-    TC_LOG_DEBUG("warden", "  Seed: %s", ByteArrayToHexStr(_seed, 16).c_str());
+    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey.data(), 16).c_str());
+    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey.data(), 16).c_str());
     TC_LOG_DEBUG("warden", "Loading Module...");
 
     _module = GetModuleForClient();
 
-    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key, 16).c_str());
-    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id, 16).c_str());
+    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key.data(), 16).c_str());
+    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id.data(), 16).c_str());
     RequestModule();
 }
 
 ClientWardenModule* WardenWin::GetModuleForClient()
 {
-    ClientWardenModule *mod = new ClientWardenModule;
+    ClientWardenModule *mod = new ClientWardenModule();
 
     uint32 length = sizeof(Module.Module);
 
@@ -73,22 +77,23 @@ ClientWardenModule* WardenWin::GetModuleForClient()
     mod->CompressedSize = length;
     mod->CompressedData = new uint8[length];
     memcpy(mod->CompressedData, Module.Module, length);
-    memcpy(mod->Key, Module.ModuleKey, 16);
+    mod->Key = Module.ModuleKey;
 
-    // md5 hash
-    MD5_CTX ctx;
-    MD5_Init(&ctx);
-    MD5_Update(&ctx, mod->CompressedData, length);
-    MD5_Final((uint8*)&mod->Id, &ctx);
+    // sha256 hash
+    SHA256_CTX ctx;
+    SHA256_Init(&ctx);
+    SHA256_Update(&ctx, mod->CompressedData, length);
+    SHA256_Final((uint8*)&mod->Id, &ctx);
 
     return mod;
 }
 
 void WardenWin::InitializeModule()
 {
-    TC_LOG_DEBUG("warden", "Initialize module");
+    TC_LOG_DEBUG("warden", "Initializing module function pointers");
 
     // Create packet structure
+
     WardenInitModuleRequest Request;
     Request.Command1 = WARDEN_SMSG_MODULE_INITIALIZE;
     Request.Size1 = 20;
@@ -96,404 +101,184 @@ void WardenWin::InitializeModule()
     Request.Unk2 = 0;
     Request.Type = 1;
     Request.String_library1 = 0;
-    Request.Function1[0] = 0x00024F80;                      // 0x00400000 + 0x00024F80 SFileOpenFile
-    Request.Function1[1] = 0x000218C0;                      // 0x00400000 + 0x000218C0 SFileGetFileSize
-    Request.Function1[2] = 0x00022530;                      // 0x00400000 + 0x00022530 SFileReadFile
-    Request.Function1[3] = 0x00022910;                      // 0x00400000 + 0x00022910 SFileCloseFile
+    Request.Function1[0] = 0x003A8C50;                      // 0x00400000 + 0x003A8C50 SFileOpenFile
+    Request.Function1[1] = 0x003A5170;                      // 0x00400000 + 0x003A5170 SFileGetFileSize
+    Request.Function1[2] = 0x003A6550;                      // 0x00400000 + 0x003A6550 SFileReadFile
+    Request.Function1[3] = 0x003A6600;                      // 0x00400000 + 0x003A6600 SFileCloseFile
     Request.CheckSumm1 = BuildChecksum(&Request.Unk1, 20);
-
+    
     Request.Command2 = WARDEN_SMSG_MODULE_INITIALIZE;
-    Request.Size2 = 8;
+    Request.Size2 = 12;
     Request.Unk3 = 4;
     Request.Unk4 = 0;
     Request.String_library2 = 0;
-    Request.Function2 = 0x00419D40;                         // 0x00400000 + 0x00419D40 FrameScript::GetText
+    Request.Function2[0] = 0x0043D310;                      // 0x00400000 + 0x0043D310 FrameScript::GetText
+    Request.Function2[1] = 0x0043C230;                      // 0x00400000 + 0x0043C230 FrameScript::ExecuteBuffer
     Request.Function2_set = 1;
-    Request.CheckSumm2 = BuildChecksum(&Request.Unk2, 8);
+    Request.CheckSumm2 = BuildChecksum(&Request.Unk3, 12);
 
     Request.Command3 = WARDEN_SMSG_MODULE_INITIALIZE;
     Request.Size3 = 8;
     Request.Unk5 = 1;
     Request.Unk6 = 1;
     Request.String_library3 = 0;
-    Request.Function3 = 0x0046AE20;                         // 0x00400000 + 0x0046AE20 PerformanceCounter
+    Request.Function3 = 0x00479740;                         // 0x00400000 + 0x00479740 OsGetAsyncTimeMs
     Request.Function3_set = 1;
     Request.CheckSumm3 = BuildChecksum(&Request.Unk5, 8);
 
-    // Encrypt with warden RC4 key.
-    EncryptData((uint8*)&Request, sizeof(WardenInitModuleRequest));
+    ByteBuffer buffer;
+    buffer.append((uint8*)&Request, sizeof(WardenInitModuleRequest));
 
-    WorldPacket pkt(SMSG_WARDEN_DATA, sizeof(WardenInitModuleRequest));
-    pkt.append((uint8*)&Request, sizeof(WardenInitModuleRequest));
-    _session->SendPacket(&pkt);
+    SendPacket(std::move(buffer));
 }
 
-void WardenWin::RequestHash()
+void WardenWin::HandleModuleOK()
 {
-    TC_LOG_DEBUG("warden", "Request hash");
+    // Module successfully loaded. We now pick pregenerated key pairs to reinitialize the cryptography for both
+    // incoming and outgoing packets.
+
+    _wardenKey = sWardenMgr->SelectWardenKey(_platform);
+    if (_wardenKey == nullptr)
+        return;
+
+    TC_LOG_INFO("warden", "Hash request issued to %s with keychain %u", _session->GetPlayerInfo().c_str(), _wardenKey->ID);
 
     // Create packet structure
-    WardenHashRequest Request;
-    Request.Command = WARDEN_SMSG_HASH_REQUEST;
-    memcpy(Request.Seed, _seed, 16);
+    WardenCommand request;
+    request.Command = WARDEN_SMSG_HASH_REQUEST;
+    request.Buffer.append(_wardenKey->Seed.data(), _wardenKey->Seed.size());
 
-    // Encrypt with warden RC4 key.
-    EncryptData((uint8*)&Request, sizeof(WardenHashRequest));
-
-    WorldPacket pkt(SMSG_WARDEN_DATA, sizeof(WardenHashRequest));
-    pkt.append((uint8*)&Request, sizeof(WardenHashRequest));
-    _session->SendPacket(&pkt);
+    SendCommand(request);
 }
 
-void WardenWin::HandleHashResult(ByteBuffer &buff)
+bool WardenWin::HandleHashResult(ByteBuffer& packet)
 {
-    buff.rpos(buff.wpos());
+    // TODO: throw
+    if (packet.size() != SHA_DIGEST_LENGTH + 1)
+        throw std::runtime_error("WARDEN_CMSG_HASH_RESULT does not match expectations");
 
-    // Verify key
-    if (memcmp(buff.contents() + 1, Module.ClientKeySeedHash, 20) != 0)
+    std::array<uint8, SHA_DIGEST_LENGTH> clientDigest;
+    packet.read(clientDigest.data(), clientDigest.size());
+
+    if (!_wardenKey->Validate(clientDigest))
     {
-        TC_LOG_WARN("warden", "%s failed hash reply. Action: %s", _session->GetPlayerInfo().c_str(), Penalty().c_str());
-        return;
+        TC_LOG_ERROR("warden", "Handshake with %s using key %u failed.", _session->GetPlayerInfo().c_str(), _wardenKey->ID);
+        return false;
     }
 
-    TC_LOG_DEBUG("warden", "Request hash reply: succeed");
+    TC_LOG_INFO("warden", "(Key #%u) Hash success with %s.", _wardenKey->ID, _session->GetPlayerInfo().c_str());
 
-    // Change keys here
-    memcpy(_inputKey, Module.ClientKeySeed, 16);
-    memcpy(_outputKey, Module.ServerKeySeed, 16);
+    _inputKey = _wardenKey->ClientKey;
+    _outputKey = _wardenKey->ServerKey;
 
-    _inputCrypto.Init(_inputKey);
-    _outputCrypto.Init(_outputKey);
+    _inputCrypto.Init(_inputKey.data());
+    _outputCrypto.Init(_outputKey.data());
 
     _initialized = true;
 
+    _checkTimer = 0;
     _previousTimestamp = GameTime::GetGameTimeMS();
+    return true;
 }
 
 void WardenWin::RequestData()
 {
     TC_LOG_DEBUG("warden", "Request data");
 
-    // If all checks were done, fill the todo list again
-    if (_memChecksTodo.empty())
-        _memChecksTodo.assign(sWardenCheckMgr->MemChecksIdPool.begin(), sWardenCheckMgr->MemChecksIdPool.end());
+    // No more checks to do, re-request a new pile.
+    if (_pendingChecks.empty())
+    {
+        boost::shared_lock<boost::shared_mutex> lock(sWardenMgr->_checkStoreLock);
 
-    if (_otherChecksTodo.empty())
-        _otherChecksTodo.assign(sWardenCheckMgr->OtherChecksIdPool.begin(), sWardenCheckMgr->OtherChecksIdPool.end());
+        _pendingChecks = sWardenMgr->GetChecks(_session, WardenPlatform::Win);
+    }
 
     _serverTicks = GameTime::GetGameTimeMS();
 
-    uint16 id;
-    uint8 type;
-    WardenCheck* wd;
-    _currentChecks.clear();
+    // Make sure no checks remain from the last query.
+    _sentChecks.clear();
+
+    std::vector<std::shared_ptr<WardenCheck>> selectedChecks;
+
+    WardenCheatChecksRequest request;
+    ByteBuffer dataBuffer;
 
     // Build check request
-    for (uint32 i = 0; i < sWorld->getIntConfig(CONFIG_WARDEN_NUM_MEM_CHECKS); ++i)
+    for (uint32 i = 0; i < sWorld->getIntConfig(CONFIG_WARDEN_NUM_CHECKS) && !_pendingChecks.empty(); ++i)
     {
-        // If todo list is done break loop (will be filled on next Update() run)
-        if (_memChecksTodo.empty())
-            break;
+        auto itr = Trinity::Containers::SelectRandomContainerIterator(_pendingChecks);
+        auto currentCheck = *itr;
 
-        // Get check id from the end and remove it from todo
-        id = _memChecksTodo.back();
-        _memChecksTodo.pop_back();
-
-        // Add the id to the list sent in this cycle
-        _currentChecks.push_back(id);
-    }
-
-    ByteBuffer buff;
-    buff << uint8(WARDEN_SMSG_CHEAT_CHECKS_REQUEST);
-
-    std::shared_lock<std::shared_mutex> lock(sWardenCheckMgr->_checkStoreLock);
-
-    for (uint32 i = 0; i < sWorld->getIntConfig(CONFIG_WARDEN_NUM_OTHER_CHECKS); ++i)
-    {
-        // If todo list is done break loop (will be filled on next Update() run)
-        if (_otherChecksTodo.empty())
-            break;
-
-        // Get check id from the end and remove it from todo
-        id = _otherChecksTodo.back();
-        _otherChecksTodo.pop_back();
-
-        // Add the id to the list sent in this cycle
-        _currentChecks.push_back(id);
-
-        wd = sWardenCheckMgr->GetWardenDataById(id);
-
-        switch (wd->Type)
+        if (currentCheck->WriteWardenCheckRequest(this, request, dataBuffer))
         {
-            case MPQ_CHECK:
-            case LUA_STR_CHECK:
-            case DRIVER_CHECK:
-                buff << uint8(wd->Str.size());
-                buff.append(wd->Str.c_str(), wd->Str.size());
-                break;
-            default:
-                break;
+            _pendingChecks.erase(itr);
+            _sentChecks.emplace_back(currentCheck);
         }
     }
 
-    uint8 xorByte = _inputKey[0];
-
-    // Add TIMING_CHECK
-    buff << uint8(0x00);
-    buff << uint8(TIMING_CHECK ^ xorByte);
-
-    uint8 index = 1;
-
-    for (std::list<uint16>::iterator itr = _currentChecks.begin(); itr != _currentChecks.end(); ++itr)
+    ByteBuffer outboundBuffer(3uLL + request.GetSize());
+    outboundBuffer << uint8(WARDEN_SMSG_CHEAT_CHECKS_REQUEST);
+    for (std::string const& pooledString : request)
     {
-        wd = sWardenCheckMgr->GetWardenDataById(*itr);
-
-        type = wd->Type;
-        buff << uint8(type ^ xorByte);
-        switch (type)
-        {
-            case MEM_CHECK:
-            {
-                buff << uint8(0x00);
-                buff << uint32(wd->Address);
-                buff << uint8(wd->Length);
-                break;
-            }
-            case PAGE_CHECK_A:
-            case PAGE_CHECK_B:
-            {
-                buff.append(wd->Data.AsByteArray(0, false).get(), wd->Data.GetNumBytes());
-                buff << uint32(wd->Address);
-                buff << uint8(wd->Length);
-                break;
-            }
-            case MPQ_CHECK:
-            case LUA_STR_CHECK:
-            {
-                buff << uint8(index++);
-                break;
-            }
-            case DRIVER_CHECK:
-            {
-                buff.append(wd->Data.AsByteArray(0, false).get(), wd->Data.GetNumBytes());
-                buff << uint8(index++);
-                break;
-            }
-            case MODULE_CHECK:
-            {
-                uint32 seed = rand32();
-                buff << uint32(seed);
-                HmacSha1 hmac(4, (uint8*)&seed);
-                hmac.UpdateData(wd->Str);
-                hmac.Finalize();
-                buff.append(hmac.GetDigest(), hmac.GetLength());
-                break;
-            }
-            /*case PROC_CHECK:
-            {
-                buff.append(wd->i.AsByteArray(0, false).get(), wd->i.GetNumBytes());
-                buff << uint8(index++);
-                buff << uint8(index++);
-                buff << uint32(wd->Address);
-                buff << uint8(wd->Length);
-                break;
-            }*/
-            default:
-                break;                                      // Should never happen
-        }
+        outboundBuffer << uint8(pooledString.length());
+        outboundBuffer.WriteString(pooledString);
     }
-    buff << uint8(xorByte);
-    buff.hexlike();
+    outboundBuffer << uint8(0); // Mark the end of the string block
+    outboundBuffer.append(dataBuffer);
+    outboundBuffer << uint8(_inputKey[0]);
 
-    // Encrypt with warden RC4 key
-    EncryptData(buff.contents(), buff.size());
+    SendPacket(std::move(outboundBuffer));
 
-    WorldPacket pkt(SMSG_WARDEN_DATA, buff.size());
-    pkt.append(buff);
-    _session->SendPacket(&pkt);
+    if (sLog->ShouldLog("warden", LOG_LEVEL_DEBUG))
+    {
+        std::stringstream stream;
+        stream << "Sent checks { ";
+        for (auto&& currentCheck : _sentChecks)
+            stream << currentCheck->GetID() << " ";
+        stream << "} to " << _session->GetPlayerInfo();
 
-    _dataSent = true;
-
-    std::stringstream stream;
-    stream << "Sent check id's: ";
-    for (std::list<uint16>::iterator itr = _currentChecks.begin(); itr != _currentChecks.end(); ++itr)
-        stream << *itr << " ";
-
-    TC_LOG_DEBUG("warden", "%s", stream.str().c_str());
+        TC_LOG_DEBUG("warden", "%s", stream.str().c_str());
+    }
 }
 
-void WardenWin::HandleData(ByteBuffer &buff)
+void WardenWin::HandleCheatChecksResult(ByteBuffer& packet)
 {
-    TC_LOG_DEBUG("warden", "Handle data");
-
-    _dataSent = false;
     _clientResponseTimer = 0;
 
-    uint16 Length;
-    buff >> Length;
-    uint32 Checksum;
-    buff >> Checksum;
+    uint16 length;
+    uint32 checksum;
+    packet >> length >> checksum;
 
-    if (!IsValidCheckSum(Checksum, buff.contents() + buff.rpos(), Length))
+    if (!IsValidCheckSum(checksum, packet.contents() + packet.rpos(), length))
     {
-        buff.rpos(buff.wpos());
-        TC_LOG_WARN("warden", "%s failed checksum. Action: %s", _session->GetPlayerInfo().c_str(), Penalty().c_str());
+        packet.read_skip(length);
+        TC_LOG_WARN("warden", "Player %s failed response checksum.", _session->GetPlayerInfo().c_str());
+        _session->KickPlayer();
         return;
     }
 
-    // TIMING_CHECK
-    {
-        uint8 result;
-        buff >> result;
-        /// @todo test it.
-        if (result == 0x00)
-        {
-            TC_LOG_WARN("warden", "%s failed timing check. Action: %s", _session->GetPlayerInfo().c_str(), Penalty().c_str());
-            return;
-        }
+    std::vector<uint16> failedChecks;
 
-        uint32 newClientTicks;
-        buff >> newClientTicks;
+    std::shared_lock<std::shared_mutex> lock(sWardenMgr->_checkStoreLock);
 
-        uint32 ticksNow = GameTime::GetGameTimeMS();
-        uint32 ourTicks = newClientTicks + (ticksNow - _serverTicks);
-
-        TC_LOG_DEBUG("warden", "ServerTicks %u", ticksNow);         // Now
-        TC_LOG_DEBUG("warden", "RequestTicks %u", _serverTicks);    // At request
-        TC_LOG_DEBUG("warden", "Ticks %u", newClientTicks);         // At response
-        TC_LOG_DEBUG("warden", "Ticks diff %u", ourTicks - newClientTicks);
-    }
-
-    WardenCheckResult* rs;
-    WardenCheck *rd;
-    uint8 type;
-    uint16 checkFailed = 0;
-
-    std::shared_lock<std::shared_mutex> lock(sWardenCheckMgr->_checkStoreLock);
-
-    for (std::list<uint16>::iterator itr = _currentChecks.begin(); itr != _currentChecks.end(); ++itr)
-    {
-        rd = sWardenCheckMgr->GetWardenDataById(*itr);
-        rs = sWardenCheckMgr->GetWardenResultById(*itr);
-
-        type = rd->Type;
-        switch (type)
-        {
-            case MEM_CHECK:
-            {
-                uint8 Mem_Result;
-                buff >> Mem_Result;
-
-                if (Mem_Result != 0)
-                {
-                    TC_LOG_DEBUG("warden", "RESULT MEM_CHECK not 0x00, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                    checkFailed = *itr;
-                    continue;
-                }
-
-                if (memcmp(buff.contents() + buff.rpos(), rs->Result.AsByteArray(0, false).get(), rd->Length) != 0)
-                {
-                    TC_LOG_DEBUG("warden", "RESULT MEM_CHECK fail CheckId %u account Id %u", *itr, _session->GetAccountId());
-                    checkFailed = *itr;
-                    buff.rpos(buff.rpos() + rd->Length);
-                    continue;
-                }
-
-                buff.rpos(buff.rpos() + rd->Length);
-                TC_LOG_DEBUG("warden", "RESULT MEM_CHECK passed CheckId %u account Id %u", *itr, _session->GetAccountId());
-                break;
-            }
-            case PAGE_CHECK_A:
-            case PAGE_CHECK_B:
-            case DRIVER_CHECK:
-            case MODULE_CHECK:
-            {
-                const uint8 byte = 0xE9;
-                if (memcmp(buff.contents() + buff.rpos(), &byte, sizeof(uint8)) != 0)
-                {
-                    if (type == PAGE_CHECK_A || type == PAGE_CHECK_B)
-                        TC_LOG_DEBUG("warden", "RESULT PAGE_CHECK fail, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                    if (type == MODULE_CHECK)
-                        TC_LOG_DEBUG("warden", "RESULT MODULE_CHECK fail, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                    if (type == DRIVER_CHECK)
-                        TC_LOG_DEBUG("warden", "RESULT DRIVER_CHECK fail, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                    checkFailed = *itr;
-                    buff.rpos(buff.rpos() + 1);
-                    continue;
-                }
-
-                buff.rpos(buff.rpos() + 1);
-                if (type == PAGE_CHECK_A || type == PAGE_CHECK_B)
-                    TC_LOG_DEBUG("warden", "RESULT PAGE_CHECK passed CheckId %u account Id %u", *itr, _session->GetAccountId());
-                else if (type == MODULE_CHECK)
-                    TC_LOG_DEBUG("warden", "RESULT MODULE_CHECK passed CheckId %u account Id %u", *itr, _session->GetAccountId());
-                else if (type == DRIVER_CHECK)
-                    TC_LOG_DEBUG("warden", "RESULT DRIVER_CHECK passed CheckId %u account Id %u", *itr, _session->GetAccountId());
-                break;
-            }
-            case LUA_STR_CHECK:
-            {
-                uint8 Lua_Result;
-                buff >> Lua_Result;
-
-                if (Lua_Result != 0)
-                {
-                    TC_LOG_DEBUG("warden", "RESULT LUA_STR_CHECK fail, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                    checkFailed = *itr;
-                    continue;
-                }
-
-                uint8 luaStrLen;
-                buff >> luaStrLen;
-
-                if (luaStrLen != 0)
-                {
-                    char *str = new char[luaStrLen + 1];
-                    memcpy(str, buff.contents() + buff.rpos(), luaStrLen);
-                    str[luaStrLen] = '\0'; // null terminator
-                    TC_LOG_DEBUG("warden", "Lua string: %s", str);
-                    delete[] str;
-                }
-                buff.rpos(buff.rpos() + luaStrLen);         // Skip string
-                TC_LOG_DEBUG("warden", "RESULT LUA_STR_CHECK passed, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                break;
-            }
-            case MPQ_CHECK:
-            {
-                uint8 Mpq_Result;
-                buff >> Mpq_Result;
-
-                if (Mpq_Result != 0)
-                {
-                    TC_LOG_DEBUG("warden", "RESULT MPQ_CHECK not 0x00 account id %u", _session->GetAccountId());
-                    checkFailed = *itr;
-                    continue;
-                }
-
-                if (memcmp(buff.contents() + buff.rpos(), rs->Result.AsByteArray(0, false).get(), 20) != 0) // SHA1
-                {
-                    TC_LOG_DEBUG("warden", "RESULT MPQ_CHECK fail, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                    checkFailed = *itr;
-                    buff.rpos(buff.rpos() + 20);            // 20 bytes SHA1
-                    continue;
-                }
-
-                buff.rpos(buff.rpos() + 20);                // 20 bytes SHA1
-                TC_LOG_DEBUG("warden", "RESULT MPQ_CHECK passed, CheckId %u account Id %u", *itr, _session->GetAccountId());
-                break;
-            }
-            default:                                        // Should never happen
-                break;
-        }
-    }
-
-    if (checkFailed > 0)
-    {
-        WardenCheck* check = sWardenCheckMgr->GetWardenDataById(checkFailed);
-        TC_LOG_WARN("warden", "%s failed Warden check %u. Action: %s", _session->GetPlayerInfo().c_str(), checkFailed, Penalty(check).c_str());
-    }
+    ByteBuffer underlyingBuffer = packet;
+    for (auto&& currentCheck : _sentChecks)
+        currentCheck->ProcessResponse(this, underlyingBuffer);
 
     // Set hold off timer, minimum timer should at least be 1 second
     uint32 holdOff = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_CHECK_HOLDOFF);
     _checkTimer = (holdOff < 1 ? 1 : holdOff) * IN_MILLISECONDS;
+}
+
+uint8 WardenWin::EncodeWardenCheck(WardenCheck::Type checkType) const
+{
+    if (checkType >= WardenCheck::Type::MAX)
+        return -1;
+
+    return Module.CheckTypeTable[static_cast<uint32>(checkType)] ^ _inputKey[0];
+}
+
+void WardenWin::SubmitCheck(std::shared_ptr<WardenCheck> check)
+{
+    _pendingChecks.emplace_back(check);
 }

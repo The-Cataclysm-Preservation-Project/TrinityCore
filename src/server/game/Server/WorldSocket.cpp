@@ -581,7 +581,7 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
 
     // Must be done before WorldSession is created
     bool wardenActive = sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED);
-    if (wardenActive && account.BattleNet.OS != "Win" && account.BattleNet.OS != "OSX")
+    if (wardenActive && account.BattleNet.OS != "Win" && account.BattleNet.OS != "OSX" && account.BattleNet.OS != "Wn64")
     {
         SendAuthResponseError(AUTH_REJECT);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Client %s attempted to log in using invalid client OS (%s).", address.c_str(), account.BattleNet.OS.c_str());
@@ -600,7 +600,7 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
     sha.UpdateBigNumbers(&account.Game.SessionKey, nullptr);
     sha.Finalize();
 
-    if (memcmp(sha.GetDigest(), authSession->Digest.data(), SHA_DIGEST_LENGTH) != 0)
+    if (sha.GetDigest() != authSession->Digest)
     {
         SendAuthResponseError(AUTH_FAILED);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Authentication failed for account: %u ('%s') address: %s", account.Game.Id, authSession->Account.c_str(), address.c_str());
@@ -751,7 +751,7 @@ void WorldSocket::HandleAuthContinuedSessionCallback(std::shared_ptr<WorldPacket
     sha.UpdateData((uint8*)&_authSeed, 4);
     sha.Finalize();
 
-    if (memcmp(sha.GetDigest(), authSession->Digest.data(), sha.GetLength()))
+    if (sha.GetDigest() != authSession->Digest)
     {
         SendAuthResponseError(AUTH_UNKNOWN_ACCOUNT);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthContinuedSession: Authentication failed for account: %u ('%s') address: %s", accountId, login.c_str(), GetRemoteIpAddress().to_string().c_str());

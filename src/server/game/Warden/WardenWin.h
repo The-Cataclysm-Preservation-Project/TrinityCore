@@ -18,11 +18,16 @@
 #ifndef _WARDEN_WIN_H
 #define _WARDEN_WIN_H
 
-#include <map>
 #include "Cryptography/ARC4.h"
 #include "Cryptography/BigNumber.h"
+
 #include "ByteBuffer.h"
+
 #include "Warden.h"
+#include "WardenCheck.h"
+
+#include <vector>
+#include <memory>
 
 #pragma pack(push, 1)
 
@@ -43,7 +48,7 @@ struct WardenInitModuleRequest
     uint8 Unk3;
     uint8 Unk4;
     uint8 String_library2;
-    uint32 Function2;
+    uint32 Function2[2];
     uint8 Function2_set;
 
     uint8 Command3;
@@ -58,9 +63,6 @@ struct WardenInitModuleRequest
 
 #pragma pack(pop)
 
-class WorldSession;
-class Warden;
-
 class TC_GAME_API WardenWin : public Warden
 {
     public:
@@ -70,16 +72,27 @@ class TC_GAME_API WardenWin : public Warden
         void Init(WorldSession* session, BigNumber* K) override;
         ClientWardenModule* GetModuleForClient() override;
         void InitializeModule() override;
-        void RequestHash() override;
-        void HandleHashResult(ByteBuffer &buff) override;
+        void HandleModuleOK() override;
+        bool HandleHashResult(ByteBuffer& packet) override;
         void RequestData() override;
-        void HandleData(ByteBuffer &buff) override;
+        void HandleCheatChecksResult(ByteBuffer& packet) override;
+        uint8 EncodeWardenCheck(WardenCheck::Type checkType) const override;
+
+        uint32 GetCheatCheckRequestTime() const override { return _serverTicks; }
+
+        void SubmitCheck(std::shared_ptr<WardenCheck> check) override;
+
+    protected:
+        bool IsAwaitingReply() const override { return !_sentChecks.empty(); }
 
     private:
         uint32 _serverTicks;
-        std::list<uint16> _otherChecksTodo;
-        std::list<uint16> _memChecksTodo;
-        std::list<uint16> _currentChecks;
+
+        //< Various checks that need to be sent to the client.
+        std::vector<std::shared_ptr<WardenCheck>> _pendingChecks;
+
+        //< Checks sent to the client, awaiting reply
+        std::vector<std::shared_ptr<WardenCheck>> _sentChecks;
 };
 
 #endif

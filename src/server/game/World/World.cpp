@@ -83,7 +83,7 @@
 #include "UpdateTime.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
-#include "WardenCheckMgr.h"
+#include "WardenMgr.h"
 #include "WaypointManager.h"
 #include "WeatherMgr.h"
 #include "WhoListStorage.h"
@@ -1481,8 +1481,7 @@ void World::LoadConfigSettings(bool reload)
 
     // Warden
     m_bool_configs[CONFIG_WARDEN_ENABLED]              = sConfigMgr->GetBoolDefault("Warden.Enabled", false);
-    m_int_configs[CONFIG_WARDEN_NUM_MEM_CHECKS]        = sConfigMgr->GetIntDefault("Warden.NumMemChecks", 3);
-    m_int_configs[CONFIG_WARDEN_NUM_OTHER_CHECKS]      = sConfigMgr->GetIntDefault("Warden.NumOtherChecks", 7);
+    m_int_configs[CONFIG_WARDEN_NUM_CHECKS]            = sConfigMgr->GetIntDefault("Warden.NumChecks", 10);
     m_int_configs[CONFIG_WARDEN_CLIENT_BAN_DURATION]   = sConfigMgr->GetIntDefault("Warden.BanDuration", 86400);
     m_int_configs[CONFIG_WARDEN_CLIENT_CHECK_HOLDOFF]  = sConfigMgr->GetIntDefault("Warden.ClientCheckHoldOff", 30);
     m_int_configs[CONFIG_WARDEN_CLIENT_FAIL_ACTION]    = sConfigMgr->GetIntDefault("Warden.ClientCheckFailAction", 0);
@@ -2291,10 +2290,13 @@ void World::SetInitialWorldSettings()
 
     ///- Initialize Warden
     TC_LOG_INFO("server.loading", "Loading Warden Checks...");
-    sWardenCheckMgr->LoadWardenChecks();
+    sWardenMgr->LoadWardenChecks();
+
+    TC_LOG_INFO("server.loading", "Loading Warden Keys...");
+    sWardenMgr->LoadWardenKeys();
 
     TC_LOG_INFO("server.loading", "Loading Warden Action Overrides...");
-    sWardenCheckMgr->LoadWardenOverrides();
+    sWardenMgr->LoadWardenOverrides();
 
     TC_LOG_INFO("server.loading", "Deleting expired bans...");
     LoginDatabase.Execute("DELETE FROM ip_banned WHERE unbandate <= UNIX_TIMESTAMP() AND unbandate<>bandate");      // One-time query

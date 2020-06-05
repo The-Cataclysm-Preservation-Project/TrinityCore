@@ -19,6 +19,8 @@
 #define _AUTH_HMAC_H
 
 #include "Define.h"
+
+#include <array>
 #include <string>
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
@@ -35,15 +37,19 @@ class TC_COMMON_API HmacHash
     public:
         HmacHash(uint32 len, uint8 const* seed);
         ~HmacHash();
+
+        void UpdateData(BigNumber* bn);
         void UpdateData(std::string const& str);
         void UpdateData(uint8 const* data, size_t len);
+
         void Finalize();
-        uint8* ComputeHash(BigNumber* bn);
-        uint8* GetDigest() { return _digest; }
+
+        std::array<uint8, DigestLength> const& GetDigest() const { return _digest; }
+
         uint32 GetLength() const { return DigestLength; }
     private:
         HMAC_CTX* _ctx;
-        uint8 _digest[DigestLength];
+        std::array<uint8, DigestLength> _digest;
 };
 
 typedef HmacHash<EVP_sha1, SHA_DIGEST_LENGTH> HmacSha1;

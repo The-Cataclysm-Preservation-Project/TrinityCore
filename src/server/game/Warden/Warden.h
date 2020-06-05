@@ -18,59 +18,23 @@
 #ifndef _WARDEN_BASE_H
 #define _WARDEN_BASE_H
 
+#include <array>
 #include <map>
+
 #include "Cryptography/ARC4.h"
 #include "Cryptography/BigNumber.h"
+#include "Cryptography/SHA1.h"
+
 #include "ByteBuffer.h"
-#include "WardenCheckMgr.h"
 
-enum WardenOpcodes
-{
-    // Client->Server
-    WARDEN_CMSG_MODULE_MISSING                  = 0,
-    WARDEN_CMSG_MODULE_OK                       = 1,
-    WARDEN_CMSG_CHEAT_CHECKS_RESULT             = 2,
-    WARDEN_CMSG_MEM_CHECKS_RESULT               = 3,        // only sent if MEM_CHECK bytes doesn't match
-    WARDEN_CMSG_HASH_RESULT                     = 4,
-    WARDEN_CMSG_MODULE_FAILED                   = 5,        // this is sent when client failed to load uploaded module due to cache fail
-
-    // Server->Client
-    WARDEN_SMSG_MODULE_USE                      = 0,
-    WARDEN_SMSG_MODULE_CACHE                    = 1,
-    WARDEN_SMSG_CHEAT_CHECKS_REQUEST            = 2,
-    WARDEN_SMSG_MODULE_INITIALIZE               = 3,
-    WARDEN_SMSG_MEM_CHECKS_REQUEST              = 4,        // byte len; while (!EOF) { byte unk(1); byte index(++); string module(can be 0); int offset; byte len; byte[] bytes_to_compare[len]; }
-    WARDEN_SMSG_HASH_REQUEST                    = 5
-};
-
-enum WardenCheckType
-{
-    MEM_CHECK               = 0xF3, // 243: byte moduleNameIndex + uint Offset + byte Len (check to ensure memory isn't modified)
-    PAGE_CHECK_A            = 0xB2, // 178: uint Seed + byte[20] SHA1 + uint Addr + byte Len (scans all pages for specified hash)
-    PAGE_CHECK_B            = 0xBF, // 191: uint Seed + byte[20] SHA1 + uint Addr + byte Len (scans only pages starts with MZ+PE headers for specified hash)
-    MPQ_CHECK               = 0x98, // 152: byte fileNameIndex (check to ensure MPQ file isn't modified)
-    LUA_STR_CHECK           = 0x8B, // 139: byte luaNameIndex (check to ensure LUA string isn't used)
-    DRIVER_CHECK            = 0x71, // 113: uint Seed + byte[20] SHA1 + byte driverNameIndex (check to ensure driver isn't loaded)
-    TIMING_CHECK            = 0x57, //  87: empty (check to ensure GetTickCount() isn't detoured)
-    PROC_CHECK              = 0x7E, // 126: uint Seed + byte[20] SHA1 + byte moluleNameIndex + byte procNameIndex + uint Offset + byte Len (check to ensure proc isn't detoured)
-    MODULE_CHECK            = 0xD9  // 217: uint Seed + byte[20] SHA1 (check to ensure module isn't injected)
-};
+#include "WardenFwd.h"
+#include "WardenCheck.h"
 
 #pragma pack(push, 1)
-
-struct WardenModuleUse
+struct WardenCommand
 {
     uint8 Command;
-    uint8 ModuleId[16];
-    uint8 ModuleKey[16];
-    uint32 Size;
-};
-
-struct WardenModuleTransfer
-{
-    uint8 Command;
-    uint16 DataSize;
-    uint8 Data[500];
+    ByteBuffer Buffer;
 };
 
 struct WardenHashRequest
@@ -78,58 +42,104 @@ struct WardenHashRequest
     uint8 Command;
     uint8 Seed[16];
 };
-
 #pragma pack(pop)
 
 struct ClientWardenModule
 {
-    uint8 Id[16];
-    uint8 Key[16];
+    std::array<uint8, 32> Id;
+    std::array<uint8, 16> Key;
     uint32 CompressedSize;
     uint8* CompressedData;
 };
 
-class WorldSession;
-
 class TC_GAME_API Warden
 {
     friend class WardenWin;
-    friend class WardenMac;
+    // friend class WardenMac;
+
+    protected:
+        Warden(WardenPlatform platform);
 
     public:
-        Warden();
         virtual ~Warden();
 
+        //< Initializes Warden with the given session key.
         virtual void Init(WorldSession* session, BigNumber* k) = 0;
+
+        //< Returns a description of an acceptable module for the current session.
         virtual ClientWardenModule* GetModuleForClient() = 0;
+
+        //< Initializes the module loaded by the client.
         virtual void InitializeModule() = 0;
-        virtual void RequestHash() = 0;
-        virtual void HandleHashResult(ByteBuffer &buff) = 0;
+
+        //< Requests checks from the client.
         virtual void RequestData() = 0;
-        virtual void HandleData(ByteBuffer &buff) = 0;
 
-        void SendModuleToClient();
-        void RequestModule();
+        //< Encodes a warden check in order to be sent to the client.
+        virtual uint8 EncodeWardenCheck(WardenCheck::Type checkType) const = 0;
+
+        //< Main update loop.
         void Update();
-        void DecryptData(uint8* buffer, uint32 length);
-        void EncryptData(uint8* buffer, uint32 length);
 
+        //< Processes any incoming packet and dispatches it to the appropriate function.
+        void ProcessIncoming(ByteBuffer& buffer);
+
+        //< Ensures the checksum sent by the client module in CMSG_WARDEN_CHEAT_CHECKS_RESPONSE is valid.
         static bool IsValidCheckSum(uint32 checksum, const uint8 *data, const uint16 length);
+
+        //< Calculates a checksum for data received via CMSG_WARDEN_CHEAT_CHECKS_RESPONSE.
         static uint32 BuildChecksum(const uint8 *data, uint32 length);
 
-        // If no check is passed, the default action from config is executed
-        std::string Penalty(WardenCheck* check = nullptr);
+        WorldSession* GetSession() const { return _session; }
+
+        //< Returns the time at which the last WARDEN_SMSG_CHEAT_CHECKD_REQUEST was issued.
+        virtual uint32 GetCheatCheckRequestTime() const = 0;
+
+        void Violation(uint32 checkID);
+
+        virtual void SubmitCheck(std::shared_ptr<WardenCheck> check) = 0;
+
+    private:
+        //< Handles WARDEN_CMSG_MODULE_MISSING.
+        void HandleModuleMissing();
+
+        //< Sends WARDEN_SMSG_MODULE_USE to the client, requesting a specific module to be loaded from cache.
+        void RequestModule();
+
+        //< Decrypts data sent by the client.
+        void DecryptData(uint8* buffer, uint32 length);
+
+        //< Encrypts data sent to the client.
+        void EncryptData(uint8* buffer, uint32 length);
+
+    protected:
+        //< Handles WARDEN_CMSG_MODULE_OK.
+        virtual void HandleModuleOK() = 0;
+        //< Handles WARDEN_CMSG_HASH_RESULT.
+        virtual bool HandleHashResult(ByteBuffer& packet) = 0;
+        //< Handles WARDEN_CMSG_CHEAT_CHECK_RESULTS.
+        virtual void HandleCheatChecksResult(ByteBuffer& packet) = 0;
+
+        //< Returns true if checks have been sent to the client and we're waiting for a reply.
+        virtual bool IsAwaitingReply() const = 0;
+
+        void SendCommand(WardenCommand const& command);
+        void SendPacket(ByteBuffer&& buffer);
 
     private:
         WorldSession* _session;
-        uint8 _inputKey[16];
-        uint8 _outputKey[16];
-        uint8 _seed[16];
+        WardenKey const* _wardenKey;
+        WardenPlatform _platform;
+
+        std::array<uint8, 16> _inputKey;
+        std::array<uint8, 16> _outputKey;
+
         ARC4 _inputCrypto;
         ARC4 _outputCrypto;
-        uint32 _checkTimer;                          // Timer for sending check requests
-        uint32 _clientResponseTimer;                 // Timer for client response delay
-        bool _dataSent;
+
+        uint32 _checkTimer;                          //< Timer for sending check requests
+        uint32 _clientResponseTimer;                 //< Timer for client response delay
+
         uint32 _previousTimestamp;
         ClientWardenModule* _module;
         bool _initialized;

@@ -136,6 +136,20 @@ namespace Trinity
         }
 
         /*
+         * Returns an iterator to a random element from a container.
+         *
+         * Note: container cannot be empty
+         */
+        template<class C>
+        inline auto SelectRandomContainerIterator(C const& container) -> decltype(std::begin(container))
+        {
+            auto it = std::begin(container);
+            std::advance(it, urand(0, uint32(Size(container)) - 1));
+            return it;
+        }
+
+
+        /*
          * Select a random element from a container where each element has a different chance to be selected.
          *
          * @param container Container to select an element from

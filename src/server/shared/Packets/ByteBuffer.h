@@ -20,6 +20,7 @@
 
 #include "Define.h"
 #include "ByteConverter.h"
+#include <array>
 #include <string>
 #include <vector>
 #include <cstring>
@@ -572,6 +573,12 @@ class TC_SHARED_API ByteBuffer
         {
             if (buffer.wpos())
                 append(buffer.contents(), buffer.wpos());
+        }
+
+        template <size_t N>
+        void append(const std::array<uint8, N>& arr)
+        {
+            append(arr.data(), arr.size());
         }
 
         // can be used in SMSG_MONSTER_MOVE opcode

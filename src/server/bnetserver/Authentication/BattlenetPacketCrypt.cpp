@@ -36,7 +36,7 @@ void Battlenet::PacketCrypt::Init(BigNumber* K)
     clientDecryptHmac.UpdateData(ClientDecryptionKey, SEED_KEY_SIZE);
     clientDecryptHmac.Finalize();
 
-    _clientDecrypt.Init(clientDecryptHmac.GetDigest());
-    _serverEncrypt.Init(serverEncryptHmac.GetDigest());
+    _clientDecrypt.Init(const_cast<uint8*>(clientDecryptHmac.GetDigest().data()));
+    _serverEncrypt.Init(const_cast<uint8*>(serverEncryptHmac.GetDigest().data()));
     _initialized = true;
 }

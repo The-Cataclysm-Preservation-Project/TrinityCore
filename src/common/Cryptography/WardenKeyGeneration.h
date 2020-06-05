@@ -33,15 +33,14 @@ public:
         sh.UpdateData(buff, halfSize);
         sh.Finalize();
 
-        memcpy(o1, sh.GetDigest(), 20);
+        o1 = sh.GetDigest();
 
         sh.Initialize();
         sh.UpdateData(buff + halfSize, size - halfSize);
         sh.Finalize();
 
-        memcpy(o2, sh.GetDigest(), 20);
-
-        memset(o0, 0x00, 20);
+        o2 = sh.GetDigest();
+        o0.fill(0x00);
 
         FillUp();
     }
@@ -58,23 +57,31 @@ public:
         }
     }
 
+    template <size_t N>
+    void Generate(std::array<uint8_t, N>& buffer)
+    {
+        Generate(buffer.data(), buffer.size());
+    }
+
 private:
     void FillUp()
     {
         sh.Initialize();
-        sh.UpdateData(o1, 20);
-        sh.UpdateData(o0, 20);
-        sh.UpdateData(o2, 20);
+        sh.UpdateData(o1.data(), o1.size());
+        sh.UpdateData(o0.data(), o0.size());
+        sh.UpdateData(o2.data(), o2.size());
         sh.Finalize();
 
-        memcpy(o0, sh.GetDigest(), 20);
+        o0 = sh.GetDigest();
 
         taken = 0;
     }
 
     SHA1Hash sh;
     uint32 taken;
-    uint8 o0[20], o1[20], o2[20];
+    std::array<uint8, SHA_DIGEST_LENGTH> o0;
+    std::array<uint8, SHA_DIGEST_LENGTH> o1;
+    std::array<uint8, SHA_DIGEST_LENGTH> o2;
 };
 
 #endif

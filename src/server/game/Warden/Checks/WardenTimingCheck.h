@@ -15,31 +15,22 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WARDEN_MAC_H
-#define _WARDEN_MAC_H
+#ifndef WARDEN_TIMING_CHECK_H_
+#define WARDEN_TIMING_CHECK_H_
 
-#include "Cryptography/ARC4.h"
-#include <map>
-#include "Cryptography/BigNumber.h"
-#include "ByteBuffer.h"
-#include "Warden.h"
+#include "WardenCheck.h"
 
-class WorldSession;
+#include <memory>
+
 class Warden;
 
-class TC_GAME_API WardenMac : public Warden
+struct WardenTimingCheck final : public WardenCheck, std::enable_shared_from_this<WardenTimingCheck>
 {
-    public:
-        WardenMac();
-        ~WardenMac();
+    WardenTimingCheck();
 
-        void Init(WorldSession* session, BigNumber* k) override;
-        ClientWardenModule* GetModuleForClient() override;
-        void InitializeModule() override;
-        void RequestHash() override;
-        void HandleHashResult(ByteBuffer& buff) override;
-        void RequestData() override;
-        void HandleData(ByteBuffer& buff) override;
+    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
+    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 };
 
-#endif
+
+#endif // WARDEN_TIMING_CHECK_H_

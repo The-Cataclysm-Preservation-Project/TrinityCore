@@ -19,6 +19,7 @@
 #define _AUTH_SHA1_H
 
 #include "Define.h"
+#include <array>
 #include <string>
 #include <openssl/sha.h>
 
@@ -38,12 +39,12 @@ class TC_COMMON_API SHA1Hash
         void Initialize();
         void Finalize();
 
-        uint8 *GetDigest(void) { return mDigest; }
-        int GetLength(void) const { return SHA_DIGEST_LENGTH; }
+        std::array<uint8, SHA_DIGEST_LENGTH> const& GetDigest() { return mDigest; }
+        uint32 GetLength() const { return SHA_DIGEST_LENGTH; }
 
     private:
         SHA_CTX mC;
-        uint8 mDigest[SHA_DIGEST_LENGTH];
+        std::array<uint8, SHA_DIGEST_LENGTH> mDigest;
 };
 
 /// Returns the SHA1 hash of the given content as hex string.

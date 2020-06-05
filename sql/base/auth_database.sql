@@ -143,6 +143,31 @@ LOCK TABLES `account_muted` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `account_warden_flags`
+--
+
+DROP TABLE IF EXISTS `account_warden_flags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `account_warden_flags`  (
+  `account_id` int(10) UNSIGNED NOT NULL,
+  `timestamp` int(10) UNSIGNED NOT NULL,
+  `check_id` int(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`account_id`),
+  FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) Engine=InnoDB DEFAULT CHARSET=utf8 COMMENT='Warden checks failed by account';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `account_warden_flags`
+--
+
+LOCK TABLE `account_warden_flags` WRITE;
+/*!40000 ALTER TABLE `account_warden_flags` DISABLE KEYS */;
+/*!40000 ALTER TABLE `account_warden_flags` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `autobroadcast`
 --
 
@@ -2012,7 +2037,8 @@ INSERT INTO `updates` VALUES
 ('2021_07_06_00_auth.sql','D3E1354B64589894890430A8AA009178FC79F4CD','ARCHIVED','2021-07-06 05:02:44',0),
 ('2021_12_31_00_auth.sql','D5B6B3800A57163901ACFCE1C25463768F5B82D0','ARCHIVED','2021-12-31 18:36:14',0),
 ('2022_01_01_00_auth.sql','336E62A8850A3E78A1D0BD3E81FFD5769184BDF8','ARCHIVED','2022-01-01 11:08:01',0),
-('2022_01_09_00_auth.sql','3A662EEEC4361A0CA23B78FA01698A3FC2C69CE8','ARCHIVED','2022-01-09 00:12:22',0);
+('2022_01_09_00_auth.sql','3A662EEEC4361A0CA23B78FA01698A3FC2C69CE8','ARCHIVED','2022-01-09 00:12:22',0),
+('9999_99_99_00_auth.sql','F8C43965F95ABB14212C9DD8A551E508276A9884','RELEASED','2020-06-09 23:46:29',0);
 /*!40000 ALTER TABLE `updates` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -3839,16 +3839,36 @@ DROP TABLE IF EXISTS `warden_checks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `warden_checks` (
-  `id` smallint unsigned NOT NULL AUTO_INCREMENT,
-  `type` tinyint unsigned DEFAULT NULL,
-  `data` varchar(48) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `str` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` int unsigned DEFAULT NULL,
-  `length` tinyint unsigned DEFAULT NULL,
-  `result` varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `comment` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `type` tinyint(3) UNSIGNED NULL DEFAULT NULL,
+  `flags` int(10) NOT NULL DEFAULT 0,
+  `enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `data0` varchar(255) DEFAULT NULL,
+  `data1` varchar(255) DEFAULT NULL,
+  `address` int(10) UNSIGNED NULL DEFAULT NULL,
+  `length` tinyint(3) UNSIGNED NULL DEFAULT NULL,
+  `result` varchar(40) DEFAULT NULL,
+  `comment` text DEFAULT NULL,
+  `VerifiedBuild` SMALLINT(5) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=787 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `warden_keys`
+--
+
+DROP TABLE IF EXISTS warden_keys;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `warden_keys`  (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `platform` varchar(5) NOT NULL,
+  `seed` text NOT NULL,
+  `clientKey` text NOT NULL,
+  `serverKey` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

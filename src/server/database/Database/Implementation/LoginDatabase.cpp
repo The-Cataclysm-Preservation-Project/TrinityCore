@@ -148,6 +148,9 @@ void LoginDatabaseConnection::DoPrepareStatements()
     PrepareStatement(LOGIN_UPD_BNET_GAME_ACCOUNT_LINK, "UPDATE account SET battlenet_account = ?, battlenet_index = ? WHERE id = ?", CONNECTION_ASYNC);
     PrepareStatement(LOGIN_SEL_BNET_MAX_ACCOUNT_INDEX, "SELECT MAX(battlenet_index) FROM account WHERE battlenet_account = ?", CONNECTION_SYNCH);
     PrepareStatement(LOGIN_SEL_BNET_GAME_ACCOUNT_LIST, "SELECT a.id, a.username FROM account a LEFT JOIN battlenet_accounts ba ON a.battlenet_account = ba.id WHERE ba.email = ?", CONNECTION_SYNCH);
+
+    // Warden
+    PrepareStatement(LOGIN_INS_WARDEN_FLAG, "INSERT INTO account_warden_flags (account_id, timestamp, check_id) VALUES (?, ?, ?)", CONNECTION_ASYNC);
 }
 
 LoginDatabaseConnection::LoginDatabaseConnection(MySQLConnectionInfo& connInfo) : MySQLConnection(connInfo)
