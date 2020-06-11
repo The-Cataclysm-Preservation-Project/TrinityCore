@@ -64,16 +64,21 @@ void Warden::HandleModuleMissing()
 
     int32 sizeLeft = _module->CompressedSize;
     uint32 pos = 0;
+
+
+    ByteBuffer buffer(503);
+    buffer << uint8(WARDEN_SMSG_MODULE_CACHE);
+
     while (sizeLeft > 0)
     {
         size_t burstSize = std::min<size_t>(sizeLeft, 500);
 
-        WardenCommand transferCommand;
-        transferCommand.Command = WARDEN_SMSG_MODULE_CACHE;
-        transferCommand.Buffer << uint16(burstSize);
-        transferCommand.Buffer.append(&_module->CompressedData[pos], burstSize);
+        ByteBuffer buffer(burstSize + sizeof(uint8) + sizeof(uint16));
+        buffer << uint8(WARDEN_SMSG_MODULE_CACHE);
+        buffer << uint16(burstSize);
+        buffer.append(&_module->CompressedData[pos], burstSize);
 
-        SendCommand(transferCommand);
+        SendPacket(std::move(buffer));
 
         sizeLeft -= burstSize;
         pos += burstSize;
@@ -83,25 +88,15 @@ void Warden::HandleModuleMissing()
 void Warden::RequestModule()
 {
     // Ask Maiev to use the module identified by the provided ID and Key.
-    // Maiev can reply either WARDEN_CMSG_MODULE_OK if the module is found in WowCache.WDB
+    // Maiev can reply WARDEN_CMSG_MODULE_OK if the module is found in WowCache.WDB
     // Otherwise, Maiev replies WARDEN_CMSG_MODULE_MISSING.
     TC_LOG_DEBUG("warden", "Sending WARDEN_SMSG_MODULE_USE");
 
-    WardenCommand request;
-    request.Command = WARDEN_SMSG_MODULE_USE;
-    request.Buffer.append(_module->Id.data(), _module->Id.size());
-    request.Buffer.append(_module->Key.data(), _module->Key.size());
-    request.Buffer << uint32(_module->CompressedSize);
-
-    SendCommand(request);
-}
-
-void Warden::SendCommand(WardenCommand const& command)
-{
-    // Flatten
-    ByteBuffer buffer(1 + command.Buffer.size());
-    buffer << uint8(command.Command);
-    buffer.append(command.Buffer);
+    ByteBuffer buffer;
+    buffer << uint8(WARDEN_SMSG_MODULE_USE);
+    buffer.append(_module->Id.data(), _module->Id.size());
+    buffer.append(_module->Key.data(), _module->Key.size());
+    buffer << uint32(_module->CompressedSize);
 
     SendPacket(std::move(buffer));
 }

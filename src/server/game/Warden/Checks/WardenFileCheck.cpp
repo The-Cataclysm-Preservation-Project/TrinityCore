@@ -16,9 +16,12 @@
  */
 
 #include "WardenFileCheck.h"
+#include "WardenDefines.h"
+#include "EnumFlag.h"
 #include "Log.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
+#include "WorldSession.h"
 
 #include <boost/algorithm/hex.hpp>
 
@@ -92,4 +95,60 @@ bool WardenFileCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
         handler(shared_from_this(), checkFailed);
 
     return checkFailed;
+}
+
+bool WardenFileCheck::TrySelect(WorldSession* session, WardenPlatform platform)
+{
+    if (!WardenCheck::TrySelect(session, platform))
+        return false;
+    
+    EnumFlag<WardenCheckFlags> checkFlags(GetFlags());
+    
+    switch (session->GetSessionDbLocaleIndex())
+    {
+        case LOCALE_enUS:
+            if (!checkFlags.HasFlag(WardenCheckFlags::AmericanLocale))
+                return false;
+            break;
+        case LOCALE_koKR:
+            if (!checkFlags.HasFlag(WardenCheckFlags::KoreanLocale))
+                return false;
+            break;
+        case LOCALE_frFR:
+            if (!checkFlags.HasFlag(WardenCheckFlags::FrenchLocale))
+                return false;
+            break;
+        case LOCALE_deDE:
+            if (!checkFlags.HasFlag(WardenCheckFlags::GermanLocale))
+                return false;
+            break;
+        case LOCALE_zhCN:
+            if (!checkFlags.HasFlag(WardenCheckFlags::ChineseLocale))
+                return false;
+            break;
+        case LOCALE_zhTW:
+            if (!checkFlags.HasFlag(WardenCheckFlags::TaiwaneseLocale))
+                return false;
+            break;
+        case LOCALE_esES:
+            if (!checkFlags.HasFlag(WardenCheckFlags::SpanishLocale))
+                return false;
+            break;
+        case LOCALE_esMX:
+            if (!checkFlags.HasFlag(WardenCheckFlags::MexicanLocale))
+                return false;
+            break;
+        case LOCALE_ruRU:
+            if (!checkFlags.HasFlag(WardenCheckFlags::RussianLocale))
+                return false;
+            break;
+        case LOCALE_ptBR:
+            if (!checkFlags.HasFlag(WardenCheckFlags::BrazilianLocale))
+                return false;
+            break;
+        default: // Should never happen
+            return false;
+    }
+    
+    return true;
 }

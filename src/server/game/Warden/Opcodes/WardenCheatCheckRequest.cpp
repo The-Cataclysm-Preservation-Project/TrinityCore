@@ -33,6 +33,12 @@ bool WardenCheatChecksRequest::CanWrite(uint32 size)
 
 void WardenCheatChecksRequest::UnregisterString(uint32 stringIndex)
 {
+    // String indices are 1-based and 0 means no string
+    if (stringIndex == 0)
+        return;
+
+    stringIndex -= 1;
+
     auto itr = _stringPool.begin();
     if (_stringPool.size() < stringIndex)
         return;
@@ -44,23 +50,22 @@ void WardenCheatChecksRequest::UnregisterString(uint32 stringIndex)
 
 std::pair<uint32, bool> WardenCheatChecksRequest::RegisterString(std::string const& string)
 {
-    // Max 255 strings
+    // The string is empty, return it as offset 0
+    if (string.size() == 0)
+        return std::make_pair(0, true);
+
+    // Max 255 strings (std::numeric_limits<uint8>::max())
     if (_stringPool.size() >= 0xFF)
         return std::make_pair(0, false);
 
-    if (string.length() > 0)
-    {
-        // If injecting the string will exceed buffer size
-        if (_projectedSize + string.length() + 1 > MaximumSize)
-            return std::make_pair(0, false);
+    // If injecting the string will exceed buffer size
+    if (_projectedSize + string.length() + 1 > MaximumSize)
+        return std::make_pair(0, false);
 
-        // Pool the string
-        auto [itr, success] = _stringPool.insert(string);
-        if (success) // Adjust projected buffer size if first insertion
-            _projectedSize += string.length() + 1;
+    // Pool the string
+    auto [itr, success] = _stringPool.insert(string);
+    if (success) // Adjust projected buffer size if first insertion
+        _projectedSize += string.length() + 1;
 
-        return std::make_pair(std::distance(_stringPool.begin(), itr) + 1, true);
-    }
-    else // Block empty strings
-        return std::make_pair(0, true); // TEST. Revert true back to false
+    return std::make_pair(std::distance(_stringPool.begin(), itr) + 1, true);
 }

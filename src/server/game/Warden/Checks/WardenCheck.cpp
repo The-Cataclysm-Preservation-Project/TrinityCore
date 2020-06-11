@@ -16,12 +16,13 @@
  */
 
 #include "WardenCheck.h"
+#include "Player.h"
 #include "WardenDefines.h"
 #include "WorldSession.h"
 #include "EnumFlag.h"
 #include "Log.h"
 
-WardenCheck::WardenCheck(Type scanType) : _id(0), _scanType(scanType), _flags(), _platform()
+WardenCheck::WardenCheck(Type scanType) : _id(0), _scanType(scanType), _flags()
 {
 
 }
@@ -34,52 +35,21 @@ bool WardenCheck::TrySelect(WorldSession* session, WardenPlatform platform)
     if (checkFlags.HasFlag(WardenCheckFlags::IsLoggedIn) != (player != nullptr && player->IsInWorld()))
         return false;
 
-    if (_platform != platform)
-        return false;
-
-    switch (session->GetSessionDbLocaleIndex())
+    switch (platform)
     {
-        case LOCALE_enUS:
-            if (!checkFlags.HasFlag(WardenCheckFlags::AmericanLocale))
+        case WardenPlatform::Win:
+            if (!checkFlags.HasFlag(WardenCheckFlags::Win32))
                 return false;
             break;
-        case LOCALE_koKR:
-            if (!checkFlags.HasFlag(WardenCheckFlags::KoreanLocale))
+        case WardenPlatform::Wn64:
+            if (!checkFlags.HasFlag(WardenCheckFlags::Win64))
                 return false;
             break;
-        case LOCALE_frFR:
-            if (!checkFlags.HasFlag(WardenCheckFlags::FrenchLocale))
+        case WardenPlatform::Mac:
+            if (!checkFlags.HasFlag(WardenCheckFlags::OSX))
                 return false;
             break;
-        case LOCALE_deDE:
-            if (!checkFlags.HasFlag(WardenCheckFlags::GermanLocale))
-                return false;
-            break;
-        case LOCALE_zhCN:
-            if (!checkFlags.HasFlag(WardenCheckFlags::ChineseLocale))
-                return false;
-            break;
-        case LOCALE_zhTW:
-            if (!checkFlags.HasFlag(WardenCheckFlags::TaiwaneseLocale))
-                return false;
-            break;
-        case LOCALE_esES:
-            if (!checkFlags.HasFlag(WardenCheckFlags::SpanishLocale))
-                return false;
-            break;
-        case LOCALE_esMX:
-            if (!checkFlags.HasFlag(WardenCheckFlags::MexicanLocale))
-                return false;
-            break;
-        case LOCALE_ruRU:
-            if (!checkFlags.HasFlag(WardenCheckFlags::BlyatLocale))
-                return false;
-            break;
-        case LOCALE_ptBR:
-            if (!checkFlags.HasFlag(WardenCheckFlags::BrazilianLocale))
-                return false;
-            break;
-        default: // Should never happen
+        default:
             return false;
     }
 
@@ -154,19 +124,6 @@ bool WardenCheck::LoadFromDB(Field* fields)
     _id = ReadDatabaseField<DatabaseColumn::ID>(fields);
     _flags = static_cast<WardenCheckFlags>(ReadDatabaseField<DatabaseColumn::Flags>(fields));
     _comment = ReadDatabaseField<DatabaseColumn::Comment>(fields);
-
-    std::string platform = ReadDatabaseField<DatabaseColumn::Platform>(fields);
-    if (platform == "Win")
-        _platform = WardenPlatform::Win;
-    else if (platform == "Wn64")
-        _platform = WardenPlatform::Wn64;
-    else if (platform == "OSX")
-        _platform = WardenPlatform::Mac;
-    else
-    {
-        TC_LOG_ERROR("server.loading", "Warden check (ID: %u) is specific to unknown platform %s, skipped.", GetID(), platform.c_str());
-        return false;
-    }
 
     return true;
 }

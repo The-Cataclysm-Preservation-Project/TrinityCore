@@ -40,7 +40,8 @@ struct WardenCheck
         Timing,                      // { }
         WardenInterop,               // { }
 
-        MAX
+        MAX,                         // Limit checks loaded from DB
+        Scripted
     };
 
     //! The order of member declaration in this enum must match the order or columns retrieved by WardenMgr::LoadWardenChecks.
@@ -49,7 +50,6 @@ struct WardenCheck
         ID,
         Type,
         Flags,
-        Platform,
         Data0,
         Data1,
         Address,
@@ -63,7 +63,6 @@ struct WardenCheck
     template <> struct DatabaseColumnType<DatabaseColumn::ID>       { using type = uint32; };
     template <> struct DatabaseColumnType<DatabaseColumn::Type>     { using type = uint8; };
     template <> struct DatabaseColumnType<DatabaseColumn::Flags>    { using type = uint32; };
-    template <> struct DatabaseColumnType<DatabaseColumn::Platform> { using type = std::string; };
     template <> struct DatabaseColumnType<DatabaseColumn::Data0>    { using type = std::string; };
     template <> struct DatabaseColumnType<DatabaseColumn::Data1>    { using type = std::string; };
     template <> struct DatabaseColumnType<DatabaseColumn::Address>  { using type = uint32; };
@@ -80,11 +79,11 @@ public:
     virtual bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) = 0;
     virtual bool ProcessResponse(Warden* warden, ByteBuffer& packet) const = 0;
 
-    bool TrySelect(WorldSession* session, WardenPlatform platform);
+    virtual bool TrySelect(WorldSession* session, WardenPlatform platform);
 
     uint32 GetID() const { return _id; }
-    WardenPlatform GetPlatform() const { return _platform; }
     std::string const& GetComment() const { return _comment; }
+    WardenCheckFlags GetFlags() const { return _flags; }
     Type GetCheckType() const { return _scanType; }
 
 protected:
@@ -97,7 +96,6 @@ private:
     uint32 _id;
     Type _scanType;
     WardenCheckFlags _flags;
-    WardenPlatform _platform;
     std::string _comment;
 };
 

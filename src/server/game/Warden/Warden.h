@@ -99,6 +99,8 @@ class TC_GAME_API Warden
 
         virtual void SubmitCheck(std::shared_ptr<WardenCheck> check) = 0;
 
+        WardenPlatform GetPlatform() const { return _platform; }
+
     private:
         //< Handles WARDEN_CMSG_MODULE_MISSING.
         void HandleModuleMissing();
@@ -123,7 +125,6 @@ class TC_GAME_API Warden
         //< Returns true if checks have been sent to the client and we're waiting for a reply.
         virtual bool IsAwaitingReply() const = 0;
 
-        void SendCommand(WardenCommand const& command);
         void SendPacket(ByteBuffer&& buffer);
 
     private:

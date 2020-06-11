@@ -34,7 +34,7 @@ struct WardenInteropCheck final : public WardenCheck, std::enable_shared_from_th
     bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
     bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
-    using HandlerType = std::function<void(std::shared_ptr<const WardenInteropCheck>, uint64, uint64, uint64)>;
+    using HandlerType = std::function<void(uint64, uint64, uint64)>;
 
     void RegisterResponseHandler(HandlerType&& handler)
     {

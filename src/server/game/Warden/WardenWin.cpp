@@ -29,11 +29,13 @@
 #include "World.h"
 #include "Player.h"
 #include "Util.h"
+#include "WardenInteropCheck.h"
 #include "WardenWin.h"
 #include "WardenModuleWin.h"
 #include "WardenMgr.h"
 #include "WardenCheck.h"
 #include "WardenCheatCheckRequest.h"
+#include "WardenModuleInitializeRequest.h"
 #include "WardenKey.h"
 #include "WardenDefines.h"
 #include "Random.h"
@@ -65,6 +67,19 @@ void WardenWin::Init(WorldSession* session, BigNumber* k)
     TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key.data(), 16).c_str());
     TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id.data(), 16).c_str());
     RequestModule();
+
+    // Immediately request allocation bases for complex scans
+    auto interopCheck = std::make_shared<WardenInteropCheck>();
+    interopCheck->RegisterResponseHandler(std::bind(&WardenWin::HandleInteropCheckResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    SubmitCheck(interopCheck);
+}
+
+void WardenWin::HandleInteropCheckResult(uint64 clientBase, uint64 moduleBase, uint64 handlerBase)
+{
+    _moduleInfo.emplace();
+    _moduleInfo->ClientBase = clientBase;
+    _moduleInfo->ModuleBase = moduleBase;
+    _moduleInfo->HandlerBase = handlerBase;
 }
 
 ClientWardenModule* WardenWin::GetModuleForClient()
@@ -93,41 +108,23 @@ void WardenWin::InitializeModule()
     TC_LOG_DEBUG("warden", "Initializing module function pointers");
 
     // Create packet structure
-
-    WardenInitModuleRequest Request;
-    Request.Command1 = WARDEN_SMSG_MODULE_INITIALIZE;
-    Request.Size1 = 20;
-    Request.Unk1 = 1;
-    Request.Unk2 = 0;
-    Request.Type = 1;
-    Request.String_library1 = 0;
-    Request.Function1[0] = 0x003A8C50;                      // 0x00400000 + 0x003A8C50 SFileOpenFile
-    Request.Function1[1] = 0x003A5170;                      // 0x00400000 + 0x003A5170 SFileGetFileSize
-    Request.Function1[2] = 0x003A6550;                      // 0x00400000 + 0x003A6550 SFileReadFile
-    Request.Function1[3] = 0x003A6600;                      // 0x00400000 + 0x003A6600 SFileCloseFile
-    Request.CheckSumm1 = BuildChecksum(&Request.Unk1, 20);
-    
-    Request.Command2 = WARDEN_SMSG_MODULE_INITIALIZE;
-    Request.Size2 = 12;
-    Request.Unk3 = 4;
-    Request.Unk4 = 0;
-    Request.String_library2 = 0;
-    Request.Function2[0] = 0x0043D310;                      // 0x00400000 + 0x0043D310 FrameScript::GetText
-    Request.Function2[1] = 0x0043C230;                      // 0x00400000 + 0x0043C230 FrameScript::ExecuteBuffer
-    Request.Function2_set = 1;
-    Request.CheckSumm2 = BuildChecksum(&Request.Unk3, 12);
-
-    Request.Command3 = WARDEN_SMSG_MODULE_INITIALIZE;
-    Request.Size3 = 8;
-    Request.Unk5 = 1;
-    Request.Unk6 = 1;
-    Request.String_library3 = 0;
-    Request.Function3 = 0x00479740;                         // 0x00400000 + 0x00479740 OsGetAsyncTimeMs
-    Request.Function3_set = 1;
-    Request.CheckSumm3 = BuildChecksum(&Request.Unk5, 8);
-
     ByteBuffer buffer;
-    buffer.append((uint8*)&Request, sizeof(WardenInitModuleRequest));
+
+    WardenModuleInitializeMPQRequest mpqRequest;
+    mpqRequest.Functions[0] = 0x003A8C50;
+    mpqRequest.Functions[1] = 0x003A5170;
+    mpqRequest.Functions[2] = 0x003A6550;
+    mpqRequest.Functions[3] = 0x003A6600;
+    mpqRequest.Write(this, buffer);
+
+    WardenModuleInitializeFrameXMLRequest xmlRequest;
+    xmlRequest.Functions[0] = 0x0043D310;
+    xmlRequest.Functions[1] = 0x0043C230;
+    xmlRequest.Write(this, buffer);
+
+    WardenModuleInitializeTimingRequest timingRequest;
+    timingRequest.Functions[0] = 0x00479740;
+    timingRequest.Write(this, buffer);
 
     SendPacket(std::move(buffer));
 }
@@ -144,19 +141,15 @@ void WardenWin::HandleModuleOK()
     TC_LOG_INFO("warden", "Hash request issued to %s with keychain %u", _session->GetPlayerInfo().c_str(), _wardenKey->ID);
 
     // Create packet structure
-    WardenCommand request;
-    request.Command = WARDEN_SMSG_HASH_REQUEST;
-    request.Buffer.append(_wardenKey->Seed.data(), _wardenKey->Seed.size());
+    ByteBuffer buffer(_wardenKey->Seed.size() + sizeof(uint8));
+    buffer << uint8(WARDEN_SMSG_HASH_REQUEST);
+    buffer.append(_wardenKey->Seed.data(), _wardenKey->Seed.size());
 
-    SendCommand(request);
+    SendPacket(std::move(buffer));
 }
 
 bool WardenWin::HandleHashResult(ByteBuffer& packet)
 {
-    // TODO: throw
-    if (packet.size() != SHA_DIGEST_LENGTH + 1)
-        throw std::runtime_error("WARDEN_CMSG_HASH_RESULT does not match expectations");
-
     std::array<uint8, SHA_DIGEST_LENGTH> clientDigest;
     packet.read(clientDigest.data(), clientDigest.size());
 
@@ -197,8 +190,6 @@ void WardenWin::RequestData()
 
     // Make sure no checks remain from the last query.
     _sentChecks.clear();
-
-    std::vector<std::shared_ptr<WardenCheck>> selectedChecks;
 
     WardenCheatChecksRequest request;
     ByteBuffer dataBuffer;
@@ -259,15 +250,18 @@ void WardenWin::HandleCheatChecksResult(ByteBuffer& packet)
 
     std::vector<uint16> failedChecks;
 
-    std::shared_lock<std::shared_mutex> lock(sWardenMgr->_checkStoreLock);
-
-    ByteBuffer underlyingBuffer = packet;
     for (auto&& currentCheck : _sentChecks)
-        currentCheck->ProcessResponse(this, underlyingBuffer);
+        currentCheck->ProcessResponse(this, packet);
 
     // Set hold off timer, minimum timer should at least be 1 second
     uint32 holdOff = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_CHECK_HOLDOFF);
-    _checkTimer = (holdOff < 1 ? 1 : holdOff) * IN_MILLISECONDS;
+    if (holdOff < 1)
+        holdOff = 1; // Minimum one second
+
+    holdOff *= IN_MILLISECONDS;
+
+    _sentChecks.clear();
+    _checkTimer = holdOff;
 }
 
 uint8 WardenWin::EncodeWardenCheck(WardenCheck::Type checkType) const

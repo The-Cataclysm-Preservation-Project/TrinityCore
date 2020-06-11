@@ -55,7 +55,7 @@ enum class WardenPlatform : uint8
     Mac
 };
 
-enum WardenCheckFlags : uint32
+enum class WardenCheckFlags : uint32
 {
     /// <summary>
     /// Check can only be sent if the player is logged on a character.
@@ -74,8 +74,12 @@ enum WardenCheckFlags : uint32
     TaiwaneseLocale   = ChineseLocale << 1,
     SpanishLocale     = TaiwaneseLocale << 1,
     MexicanLocale     = SpanishLocale << 1,
-    BlyatLocale       = MexicanLocale << 1, // Who will see this? :)
-    BrazilianLocale   = BlyatLocale << 1,
+    RussianLocale     = MexicanLocale << 1,
+    BrazilianLocale   = RussianLocale << 1,
+
+    Win32             = BrazilianLocale << 1,
+    Win64             = Win32 << 1,
+    OSX               = Win64 << 1
 };
 
 DEFINE_ENUM_FLAG(WardenCheckFlags);

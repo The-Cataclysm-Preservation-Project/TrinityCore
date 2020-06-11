@@ -116,8 +116,8 @@ void WardenMgr::LoadWardenChecks()
     }
 
     //! The order of fields retrieve must match WardenCheck::DatabaseColumn
-    //                                               0    1     2      3         4      5      6       7        8       9
-    QueryResult result = WorldDatabase.Query("SELECT id, type, flags, platform, data0, data1, address, length, result, comment FROM warden_checks WHERE enabled = 1 ORDER BY id ASC");
+    //                                               0    1     2      3      4      5      6       7        8
+    QueryResult result = WorldDatabase.Query("SELECT id, type, flags, data0, data1, address, length, result, comment FROM warden_checks WHERE enabled = 1 ORDER BY id ASC");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 Warden checks. All checks are disabled.");

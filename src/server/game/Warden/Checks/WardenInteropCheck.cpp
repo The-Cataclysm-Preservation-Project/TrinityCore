@@ -42,14 +42,14 @@ bool WardenInteropCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChec
     return true;
 }
 
-bool WardenInteropCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+bool WardenInteropCheck::ProcessResponse(Warden* /* warden */, ByteBuffer& packet) const
 {
     uint64 clientBase = ReadPackedValue(packet);
     uint64 moduleBase = ReadPackedValue(packet);
     uint64 moduleAddress = ReadPackedValue(packet);
 
     for (auto&& handler : _handlers)
-        handler(shared_from_this(), clientBase, moduleBase, moduleAddress);
+        handler(clientBase, moduleBase, moduleAddress);
 
     return true;
 }

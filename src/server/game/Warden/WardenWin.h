@@ -20,6 +20,7 @@
 
 #include "Cryptography/ARC4.h"
 #include "Cryptography/BigNumber.h"
+#include "OptionalFwd.h"
 
 #include "ByteBuffer.h"
 
@@ -28,40 +29,6 @@
 
 #include <vector>
 #include <memory>
-
-#pragma pack(push, 1)
-
-struct WardenInitModuleRequest
-{
-    uint8 Command1;
-    uint16 Size1;
-    uint32 CheckSumm1;
-    uint8 Unk1;
-    uint8 Unk2;
-    uint8 Type;
-    uint8 String_library1;
-    uint32 Function1[4];
-
-    uint8 Command2;
-    uint16 Size2;
-    uint32 CheckSumm2;
-    uint8 Unk3;
-    uint8 Unk4;
-    uint8 String_library2;
-    uint32 Function2[2];
-    uint8 Function2_set;
-
-    uint8 Command3;
-    uint16 Size3;
-    uint32 CheckSumm3;
-    uint8 Unk5;
-    uint8 Unk6;
-    uint8 String_library3;
-    uint32 Function3;
-    uint8 Function3_set;
-};
-
-#pragma pack(pop)
 
 class TC_GAME_API WardenWin : public Warden
 {
@@ -82,6 +49,8 @@ class TC_GAME_API WardenWin : public Warden
 
         void SubmitCheck(std::shared_ptr<WardenCheck> check) override;
 
+        void HandleInteropCheckResult(uint64 clientBase, uint64 moduleBase, uint64 handlerBase);
+
     protected:
         bool IsAwaitingReply() const override { return !_sentChecks.empty(); }
 
@@ -93,6 +62,14 @@ class TC_GAME_API WardenWin : public Warden
 
         //< Checks sent to the client, awaiting reply
         std::vector<std::shared_ptr<WardenCheck>> _sentChecks;
+
+        struct ClientModuleInfo
+        {
+            uint64 ClientBase;
+            uint64 ModuleBase;
+            uint64 HandlerBase;
+        };
+        Optional<ClientModuleInfo> _moduleInfo;
 };
 
 #endif

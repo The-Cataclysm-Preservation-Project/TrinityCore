@@ -23,8 +23,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <boost/thread/locks.hpp>
-#include <boost/thread/shared_mutex.hpp>
+#include <mutex>
 
 #include "Cryptography/SHA1.h"
 #include "Cryptography/BigNumber.h"
@@ -53,7 +52,7 @@ class TC_GAME_API WardenMgr
         void LoadWardenOverrides();
         void LoadWardenKeys();
 
-        boost::shared_mutex _checkStoreLock;
+        std::shared_mutex _checkStoreLock;
 
         //< Returns all checks for the given platform and session.
         std::vector<std::shared_ptr<WardenCheck>> GetChecks(WorldSession* session, WardenPlatform platform) const;
