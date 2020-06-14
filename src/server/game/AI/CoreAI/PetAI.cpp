@@ -455,8 +455,7 @@ void PetAI::HandleReturnMovement()
         {
             ClearCharmInfoFlags();
             me->GetCharmInfo()->SetIsReturning(true);
-            me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MoveFollow(me->GetCharmerOrOwner(), PET_FOLLOW_DIST, ChaseAngle(me->GetFollowAngle(), 0.f), true);
+            me->FollowTarget(me->GetCharmerOrOwner());
         }
     }
 
@@ -485,7 +484,6 @@ void PetAI::DoAttack(Unit* target, bool chase)
             bool oldCmdAttack = me->GetCharmInfo()->IsCommandAttack(); // This needs to be reset after other flags are cleared
             ClearCharmInfoFlags();
             me->GetCharmInfo()->SetIsCommandAttack(oldCmdAttack); // For passive pets commanded to attack so they will use spells
-            me->GetMotionMaster()->Clear();
 
             float chaseDistance = me->GetPetChaseDistance();
 
@@ -498,7 +496,6 @@ void PetAI::DoAttack(Unit* target, bool chase)
             ClearCharmInfoFlags();
             me->GetCharmInfo()->SetIsAtStay(true);
             me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MoveIdle();
         }
     }
 }
