@@ -16,6 +16,7 @@
  */
 
 #include "WardenCheck.h"
+#include "Warden.h"
 #include "Player.h"
 #include "WardenDefines.h"
 #include "WorldSession.h"
@@ -27,15 +28,18 @@ WardenCheck::WardenCheck(Type scanType) : _id(0), _scanType(scanType), _flags()
 
 }
 
-bool WardenCheck::TrySelect(WorldSession* session, WardenPlatform platform)
+bool WardenCheck::TrySelect(WorldSession* session, Warden* warden)
 {
+    if (!warden->CanHandle(_scanType))
+        return false;
+
     EnumFlag<WardenCheckFlags> checkFlags(_flags);
 
     Player* player = session->GetPlayer();
     if (checkFlags.HasFlag(WardenCheckFlags::IsLoggedIn) != (player != nullptr && player->IsInWorld()))
         return false;
 
-    switch (platform)
+    switch (warden->GetPlatform())
     {
         case WardenPlatform::Win:
             if (!checkFlags.HasFlag(WardenCheckFlags::Win32))

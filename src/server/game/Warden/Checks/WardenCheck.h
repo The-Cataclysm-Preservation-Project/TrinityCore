@@ -79,7 +79,7 @@ public:
     virtual bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) = 0;
     virtual bool ProcessResponse(Warden* warden, ByteBuffer& packet) const = 0;
 
-    virtual bool TrySelect(WorldSession* session, WardenPlatform platform);
+    virtual bool TrySelect(WorldSession* session, Warden* warden);
 
     uint32 GetID() const { return _id; }
     std::string const& GetComment() const { return _comment; }

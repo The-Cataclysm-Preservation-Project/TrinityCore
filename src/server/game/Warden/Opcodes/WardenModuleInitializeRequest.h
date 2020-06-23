@@ -30,7 +30,7 @@ struct WardenModuleInitializeRequest
     std::string Module;
     std::array<uint32, N> Functions;
 
-    virtual void Write(Warden* warden, ByteBuffer& buffer)
+    virtual void Write(Warden* /* warden */, ByteBuffer& buffer)
     {
          buffer << Module;
          for (uint32 function : Functions)

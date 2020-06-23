@@ -24,6 +24,7 @@
 #include "DatabaseEnv.h"
 #include "WardenMgr.h"
 #include "Warden.h"
+#include "WardenModule.h"
 #include "WardenKey.h"
 #include "WardenCheck.h"
 #include "WardenDriverCheck.h"
@@ -55,7 +56,7 @@ void WardenMgr::LoadWardenKeys()
         return;
     }
 
-    QueryResult result = WorldDatabase.Query("SELECT `id`, `platform`, `seed`, `clientKey`, `serverKey` FROM `warden_keys`");
+    QueryResult result = WorldDatabase.Query("SELECT `id`, `module`, `seed`, `clientKey`, `serverKey` FROM `warden_keys`");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 Warden keys. DB table `warden_keys` is empty!");
@@ -67,7 +68,7 @@ void WardenMgr::LoadWardenKeys()
         Field* fields = result->Fetch();
 
         uint32 id = fields[0].GetUInt32();
-        std::string platform = fields[1].GetString();
+        uint32 moduleID = fields[1].GetUInt32();
 
         auto loadIntoContainer = [&count](Field* fields, std::vector<WardenKey>& store)
         {
@@ -88,20 +89,73 @@ void WardenMgr::LoadWardenKeys()
             ++count;
         };
 
-        if (platform == "Win")
-            loadIntoContainer(fields, _keyStore[WardenPlatform::Win]);
-        // else if (platform == "Wn64")
-        //     loadIntoContainer(fields, KeyStore[WardenPlatform::Wn64]);
-        // else if (platform == "OSX")
-        //     loadIntoContainer(fields, KeyStore[WardenPlatform::Mac]);
-        else
+        bool moduleFound = false;
+        for (auto&& module : _modules)
         {
-            TC_LOG_INFO("server.loading", ">> Warden Key %u targets non-handled platform '%s'. Skipped!", id, platform.c_str());
+            if (module->ID == moduleID)
+            {
+                loadIntoContainer(fields, module->KeyChains);
+                moduleFound = true;
+                break;
+            }
+        }
+
+        if (!moduleFound)
+        {
+            TC_LOG_ERROR("server.loading", "Warden keychain %u references non-existing module %u, skipped.", id, moduleID);
+            continue;
         }
     }
     while (result->NextRow());
 
+    // Remove modules for which we have no keychain since there is no way to use them
+    for (auto itr = _modules.begin(); itr != _modules.end();)
+    {
+        if ((*itr)->KeyChains.empty())
+        {
+            TC_LOG_ERROR("server.loading", "Module %u has no keychains, ignored.", (*itr)->ID);
+            itr = _modules.erase(itr);
+        }
+        else
+            ++itr;
+    }
+
     TC_LOG_INFO("server.loading", ">> Loaded %u warden keys in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+}
+
+void WardenMgr::LoadWardenModules()
+{
+    uint32 oldMSTime = getMSTime();
+
+    // Check if Warden is enabled by config before loading anything
+    if (!sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED))
+    {
+        TC_LOG_INFO("warden", ">> Warden disabled, loading modules skipped.");
+        return;
+    }
+
+    QueryResult result = WorldDatabase.Query("SELECT `id`, `platform`, `key`, `module`, `checks` FROM `warden_modules`");
+    if (!result)
+    {
+        TC_LOG_INFO("server.loading", ">> Loaded 0 Warden modules.");
+        return;
+    }
+
+    uint32 count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+
+        auto module = std::make_shared<WardenModule>();
+        if (module->LoadFromDB(fields))
+        {
+            _modules.emplace_back(std::move(module));
+            ++count;
+        }
+    }
+    while (result->NextRow());
+
+    TC_LOG_INFO("server.loading", ">> Loadded %u Warden modules in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void WardenMgr::LoadWardenChecks()
@@ -247,17 +301,14 @@ WardenMgr* WardenMgr::instance()
     return &instance;
 }
 
-const WardenKey* WardenMgr::SelectWardenKey(WardenPlatform platform) const
+std::vector<std::shared_ptr<WardenModule>> WardenMgr::FindModules(WardenPlatform platform) const
 {
-    auto itr = _keyStore.find(platform);
-    if (itr == _keyStore.end())
-        return nullptr;
+    std::vector<std::shared_ptr<WardenModule>> filteredModules;
+    for (auto&& itr : _modules)
+        if (itr->Platform == platform)
+            filteredModules.push_back(itr);
 
-    if (itr->second.empty())
-        return nullptr;
-
-    const WardenKey& element = Trinity::Containers::SelectRandomContainerElement(itr->second);
-    return &element;
+    return filteredModules;
 }
 
 std::shared_ptr<WardenCheck> WardenMgr::GetWardenCheck(uint16 id)
@@ -269,13 +320,13 @@ std::shared_ptr<WardenCheck> WardenMgr::GetWardenCheck(uint16 id)
     return nullptr;
 }
 
-std::vector<std::shared_ptr<WardenCheck>> WardenMgr::GetChecks(WorldSession* session, WardenPlatform platform) const
+std::vector<std::shared_ptr<WardenCheck>> WardenMgr::GetChecks(WorldSession* session, Warden* warden) const
 {
     std::vector<std::shared_ptr<WardenCheck>> container;
 
     for (auto [checkID, check] : _checkStore)
     {
-        if (!check->TrySelect(session, platform))
+        if (!check->TrySelect(session, warden))
             continue;
 
         container.push_back(check);

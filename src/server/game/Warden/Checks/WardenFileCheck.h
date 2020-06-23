@@ -36,7 +36,7 @@ struct WardenFileCheck final : public WardenCheck, std::enable_shared_from_this<
     bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
     bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
-    bool TrySelect(WorldSession* session, WardenPlatform platform) override;
+    bool TrySelect(WorldSession* session, Warden* warden) override;
 
     std::array<uint8, SHA_DIGEST_LENGTH> const& GetExpectedResult() const { return _expectedResult; }
     std::string const& GetFileName() const { return _fileName; }

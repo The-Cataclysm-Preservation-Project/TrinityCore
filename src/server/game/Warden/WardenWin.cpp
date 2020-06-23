@@ -26,22 +26,24 @@
 #include "ByteBuffer.h"
 #include "Database/DatabaseEnv.h"
 #include "GameTime.h"
+#include "Optional.h"
 #include "World.h"
 #include "Player.h"
 #include "Util.h"
 #include "WardenInteropCheck.h"
 #include "WardenWin.h"
-#include "WardenModuleWin.h"
+#include "WardenModule.h"
 #include "WardenMgr.h"
 #include "WardenCheck.h"
 #include "WardenCheatCheckRequest.h"
 #include "WardenModuleInitializeRequest.h"
-#include "WardenKey.h"
 #include "WardenDefines.h"
 #include "Random.h"
 #include <openssl/md5.h>
 
-WardenWin::WardenWin() : Warden(WardenPlatform::Win), _serverTicks(0) {}
+WardenWin::WardenWin(WardenPlatform platform) : Warden(platform), _serverTicks(0)
+{
+}
 
 WardenWin::~WardenWin() { }
 
@@ -49,23 +51,22 @@ void WardenWin::Init(WorldSession* session, BigNumber* k)
 {
     _session = session;
 
-    // Generate Warden Key
+    // Generate Warden Key into the key.
+    // Reuse existing fields for ease of use
     SHA1Randx WK(k->AsByteArray().get(), k->GetNumBytes());
-    WK.Generate(_inputKey);
-    WK.Generate(_outputKey);
+    WK.Generate(_wardenKey.ClientKey);
+    WK.Generate(_wardenKey.ServerKey);
 
-    _inputCrypto.Init(_inputKey.data());
-    _outputCrypto.Init(_outputKey.data());
+    _inputCrypto.Init(_wardenKey.ClientKey.data());
+    _outputCrypto.Init(_wardenKey.ServerKey.data());
 
     TC_LOG_DEBUG("warden", "Server side warden for client %u initializing...", session->GetAccountId());
-    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey.data(), 16).c_str());
-    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey.data(), 16).c_str());
+    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_wardenKey.ClientKey.data(), 16).c_str());
+    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_wardenKey.ServerKey.data(), 16).c_str());
     TC_LOG_DEBUG("warden", "Loading Module...");
 
-    _module = GetModuleForClient();
+    _module = SelectModule();
 
-    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key.data(), 16).c_str());
-    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id.data(), 16).c_str());
     RequestModule();
 
     // Immediately request allocation bases for complex scans
@@ -82,68 +83,50 @@ void WardenWin::HandleInteropCheckResult(uint64 clientBase, uint64 moduleBase, u
     _moduleInfo->HandlerBase = handlerBase;
 }
 
-ClientWardenModule* WardenWin::GetModuleForClient()
-{
-    ClientWardenModule *mod = new ClientWardenModule();
-
-    uint32 length = sizeof(Module.Module);
-
-    // data assign
-    mod->CompressedSize = length;
-    mod->CompressedData = new uint8[length];
-    memcpy(mod->CompressedData, Module.Module, length);
-    mod->Key = Module.ModuleKey;
-
-    // sha256 hash
-    SHA256_CTX ctx;
-    SHA256_Init(&ctx);
-    SHA256_Update(&ctx, mod->CompressedData, length);
-    SHA256_Final((uint8*)&mod->Id, &ctx);
-
-    return mod;
-}
-
 void WardenWin::InitializeModule()
 {
     TC_LOG_DEBUG("warden", "Initializing module function pointers");
 
     // Create packet structure
     ByteBuffer buffer;
+    if (GetPlatform() == WardenPlatform::Win)
+    {
+        WardenModuleInitializeFrameXMLRequest xmlRequest;
+        xmlRequest.Functions[0] = 0x0043D310;
+        xmlRequest.Functions[1] = 0x0043C230;
+        xmlRequest.Write(this, buffer);
 
-    WardenModuleInitializeMPQRequest mpqRequest;
-    mpqRequest.Functions[0] = 0x003A8C50;
-    mpqRequest.Functions[1] = 0x003A5170;
-    mpqRequest.Functions[2] = 0x003A6550;
-    mpqRequest.Functions[3] = 0x003A6600;
-    mpqRequest.Write(this, buffer);
+        WardenModuleInitializeMPQRequest mpqRequest;
+        mpqRequest.Functions[0] = 0x003A8C50;
+        mpqRequest.Functions[1] = 0x003A5170;
+        mpqRequest.Functions[2] = 0x003A6550;
+        mpqRequest.Functions[3] = 0x003A6600;
+        mpqRequest.Write(this, buffer);
 
-    WardenModuleInitializeFrameXMLRequest xmlRequest;
-    xmlRequest.Functions[0] = 0x0043D310;
-    xmlRequest.Functions[1] = 0x0043C230;
-    xmlRequest.Write(this, buffer);
+        WardenModuleInitializeTimingRequest timingRequest;
+        timingRequest.Functions[0] = 0x00479740;
+        timingRequest.Write(this, buffer);
+    }
+    else if (GetPlatform() == WardenPlatform::Wn64)
+    {
+        WardenModuleInitializeFrameXMLRequest xmlRequest;
+        xmlRequest.Functions[0] = 0x00568110;
+        xmlRequest.Functions[1] = 0x00566BC0;
+        xmlRequest.Write(this, buffer);
 
-    WardenModuleInitializeTimingRequest timingRequest;
-    timingRequest.Functions[0] = 0x00479740;
-    timingRequest.Write(this, buffer);
+        WardenModuleInitializeMPQRequest mpqRequest;
+        mpqRequest.Functions[0] = 0x0049EA10;
+        mpqRequest.Functions[1] = 0x00499DF0;
+        mpqRequest.Functions[2] = 0x0049B550;
+        mpqRequest.Functions[3] = 0x0049B610;
+        mpqRequest.Write(this, buffer);
 
-    SendPacket(std::move(buffer));
-}
-
-void WardenWin::HandleModuleOK()
-{
-    // Module successfully loaded. We now pick pregenerated key pairs to reinitialize the cryptography for both
-    // incoming and outgoing packets.
-
-    _wardenKey = sWardenMgr->SelectWardenKey(_platform);
-    if (_wardenKey == nullptr)
-        return;
-
-    TC_LOG_INFO("warden", "Hash request issued to %s with keychain %u", _session->GetPlayerInfo().c_str(), _wardenKey->ID);
-
-    // Create packet structure
-    ByteBuffer buffer(_wardenKey->Seed.size() + sizeof(uint8));
-    buffer << uint8(WARDEN_SMSG_HASH_REQUEST);
-    buffer.append(_wardenKey->Seed.data(), _wardenKey->Seed.size());
+        WardenModuleInitializeTimingRequest timingRequest;
+        timingRequest.Functions[0] = 0x005B2500;
+        timingRequest.Write(this, buffer);
+    }
+    else
+        ASSERT(false, "Unhandled windows module type");
 
     SendPacket(std::move(buffer));
 }
@@ -153,19 +136,14 @@ bool WardenWin::HandleHashResult(ByteBuffer& packet)
     std::array<uint8, SHA_DIGEST_LENGTH> clientDigest;
     packet.read(clientDigest.data(), clientDigest.size());
 
-    if (!_wardenKey->Validate(clientDigest))
+    if (!_wardenKey.Validate(clientDigest))
     {
-        TC_LOG_ERROR("warden", "Handshake with %s using key %u failed.", _session->GetPlayerInfo().c_str(), _wardenKey->ID);
+        TC_LOG_ERROR("warden", "Handshake with %s using key %u failed.", _session->GetPlayerInfo().c_str(), _wardenKey.ID);
         return false;
     }
 
-    TC_LOG_INFO("warden", "(Key #%u) Hash success with %s.", _wardenKey->ID, _session->GetPlayerInfo().c_str());
-
-    _inputKey = _wardenKey->ClientKey;
-    _outputKey = _wardenKey->ServerKey;
-
-    _inputCrypto.Init(_inputKey.data());
-    _outputCrypto.Init(_outputKey.data());
+    _inputCrypto.Init(_wardenKey.ClientKey.data());
+    _outputCrypto.Init(_wardenKey.ServerKey.data());
 
     _initialized = true;
 
@@ -183,7 +161,7 @@ void WardenWin::RequestData()
     {
         boost::shared_lock<boost::shared_mutex> lock(sWardenMgr->_checkStoreLock);
 
-        _pendingChecks = sWardenMgr->GetChecks(_session, WardenPlatform::Win);
+        _pendingChecks = sWardenMgr->GetChecks(_session, this);
     }
 
     _serverTicks = GameTime::GetGameTimeMS();
@@ -216,7 +194,7 @@ void WardenWin::RequestData()
     }
     outboundBuffer << uint8(0); // Mark the end of the string block
     outboundBuffer.append(dataBuffer);
-    outboundBuffer << uint8(_inputKey[0]);
+    outboundBuffer << uint8(_wardenKey.ClientKey[0]);
 
     SendPacket(std::move(outboundBuffer));
 
@@ -266,10 +244,11 @@ void WardenWin::HandleCheatChecksResult(ByteBuffer& packet)
 
 uint8 WardenWin::EncodeWardenCheck(WardenCheck::Type checkType) const
 {
-    if (checkType >= WardenCheck::Type::MAX)
+    auto itr = _module->Checks.find(checkType);
+    if (itr == _module->Checks.end())
         return -1;
 
-    return Module.CheckTypeTable[static_cast<uint32>(checkType)] ^ _inputKey[0];
+    return itr->second ^ _wardenKey.ClientKey[0];
 }
 
 void WardenWin::SubmitCheck(std::shared_ptr<WardenCheck> check)

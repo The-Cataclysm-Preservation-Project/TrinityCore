@@ -25,6 +25,7 @@ class WorldSession;
 struct WardenKey;
 struct WardenCheck;
 struct WardenCheatChecksRequest;
+struct WardenModule;
 
 struct WardenDriverCheck;
 struct WardenFileCheck;

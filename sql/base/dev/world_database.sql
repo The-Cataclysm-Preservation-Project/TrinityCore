@@ -3863,12 +3863,30 @@ DROP TABLE IF EXISTS warden_keys;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `warden_keys`  (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `platform` varchar(5) NOT NULL,
+  `module` int unsigned NOT NULL,
   `seed` text NOT NULL,
   `clientKey` text NOT NULL,
   `serverKey` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `warden_modules`
+--
+
+DROP TABLE IF EXISTS warden_modules;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `warden_modules`  (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `platform` int NOT NULL,
+  `key` VARCHAR(32) NOT NULL,
+  `module` text NOT NULL,
+  `checks` VARCHAR(50) NOT NULL,
+  `comment` VARCHAR(255),
+  PRIMARY KEY (`id`)
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

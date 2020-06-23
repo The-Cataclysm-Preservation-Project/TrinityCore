@@ -26,7 +26,7 @@ void WardenModuleInitializeMPQRequest::Write(Warden* warden, ByteBuffer& buffer)
     bodyBuffer << uint8(2); // 2 also allowed. Populates a different set of pointers
     Base::Write(warden, bodyBuffer);
 
-    uint32 checksum = warden->BuildChecksum(bodyBuffer.contents(), bodyBuffer.wpos());
+    uint32 checksum = BuildChecksum(bodyBuffer.contents(), bodyBuffer.wpos());
 
     buffer << uint8(WARDEN_SMSG_MODULE_INITIALIZE);
     buffer << uint16(bodyBuffer.wpos());
@@ -42,7 +42,7 @@ void WardenModuleInitializeTimingRequest::Write(Warden* warden, ByteBuffer& buff
     Base::Write(warden, bodyBuffer);
     bodyBuffer << uint8(1); // Trailing byte, read but unused
 
-    uint32 checksum = warden->BuildChecksum(bodyBuffer.contents(), bodyBuffer.wpos());
+    uint32 checksum = BuildChecksum(bodyBuffer.contents(), bodyBuffer.wpos());
 
     buffer << uint8(WARDEN_SMSG_MODULE_INITIALIZE);
     buffer << uint16(bodyBuffer.wpos());
@@ -58,7 +58,7 @@ void WardenModuleInitializeFrameXMLRequest::Write(Warden* warden, ByteBuffer& bu
     Base::Write(warden, bodyBuffer);
     bodyBuffer << uint8(1); // Trailing byte, read but unused
 
-    uint32 checksum = warden->BuildChecksum(bodyBuffer.contents(), bodyBuffer.wpos());
+    uint32 checksum = BuildChecksum(bodyBuffer.contents(), bodyBuffer.wpos());
 
     buffer << uint8(WARDEN_SMSG_MODULE_INITIALIZE);
     buffer << uint16(bodyBuffer.wpos());

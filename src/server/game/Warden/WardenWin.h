@@ -33,13 +33,12 @@
 class TC_GAME_API WardenWin : public Warden
 {
     public:
-        WardenWin();
+        WardenWin(WardenPlatform platform);
         ~WardenWin();
 
         void Init(WorldSession* session, BigNumber* K) override;
-        ClientWardenModule* GetModuleForClient() override;
+
         void InitializeModule() override;
-        void HandleModuleOK() override;
         bool HandleHashResult(ByteBuffer& packet) override;
         void RequestData() override;
         void HandleCheatChecksResult(ByteBuffer& packet) override;

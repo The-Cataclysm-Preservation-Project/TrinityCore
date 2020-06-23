@@ -40,34 +40,33 @@ class TC_GAME_API WardenMgr
     public:
         static WardenMgr* instance();
 
-        typedef std::unordered_map<WardenPlatform, std::vector<WardenKey>> KeyContainer;
-
-        //< Picks a random warden key.
-        const WardenKey* SelectWardenKey(WardenPlatform platform) const;
+        //< Returns all modules that can be used for a given platform.
+        std::vector<std::shared_ptr<WardenModule>> FindModules(WardenPlatform platform) const;
 
         //< Returns the check associated with the provided id, or nullptr if none exist.
         std::shared_ptr<WardenCheck> GetWardenCheck(uint16 Id);
 
         void LoadWardenChecks();
-        void LoadWardenOverrides();
         void LoadWardenKeys();
+        void LoadWardenModules();
+        void LoadWardenOverrides();
 
         std::shared_mutex _checkStoreLock;
 
         //< Returns all checks for the given platform and session.
-        std::vector<std::shared_ptr<WardenCheck>> GetChecks(WorldSession* session, WardenPlatform platform) const;
+        std::vector<std::shared_ptr<WardenCheck>> GetChecks(WorldSession* session, Warden* warden) const;
 
         WardenActions GetCheckFailureAction(uint32 failedChecks) const;
 
     private:
-        //< Stores warden keys
-        KeyContainer _keyStore;
-
         //< Stores all checks handled by all supported warden platforms.
         std::unordered_map<uint32, std::shared_ptr<WardenCheck>> _checkStore;
 
         //< Stores check-specific action overrides.
         std::unordered_map<uint32, WardenActions> _actionOverrides;
+
+        //< Stores all known modules.
+        std::vector<std::shared_ptr<WardenModule>> _modules;
 };
 
 #define sWardenMgr WardenMgr::instance()

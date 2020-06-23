@@ -50,6 +50,7 @@
 #include "Transport.h"
 #include "Vehicle.h"
 #include "WardenWin.h"
+#include "WardenDefines.h"
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSocket.h"
@@ -1145,10 +1146,12 @@ SQLQueryHolderCallback& WorldSession::AddQueryHolderCallback(SQLQueryHolderCallb
 void WorldSession::InitWarden(BigNumber* k, std::string const& os)
 {
     if (os == "Win")
-    {
-        _warden = new WardenWin();
+        _warden = new WardenWin(WardenPlatform::Win);
+    else if (os == "Wn64")
+        _warden = new WardenWin(WardenPlatform::Wn64);
+
+    if (_warden != nullptr)
         _warden->Init(this, k);
-    }
 }
 
 void WorldSession::LoadPermissions()

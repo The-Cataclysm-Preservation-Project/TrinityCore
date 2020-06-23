@@ -26,8 +26,9 @@
 #include "Cryptography/SHA1.h"
 
 #include "ByteBuffer.h"
-
+#include "OptionalFwd.h"
 #include "WardenFwd.h"
+#include "WardenKey.h"
 #include "WardenCheck.h"
 
 #pragma pack(push, 1)
@@ -44,13 +45,8 @@ struct WardenHashRequest
 };
 #pragma pack(pop)
 
-struct ClientWardenModule
-{
-    std::array<uint8, 32> Id;
-    std::array<uint8, 16> Key;
-    uint32 CompressedSize;
-    uint8* CompressedData;
-};
+uint32 BuildChecksum(const uint8* data, uint32 length);
+bool IsValidCheckSum(uint32 checksum, const uint8* data, const uint16 length);
 
 class TC_GAME_API Warden
 {
@@ -66,9 +62,6 @@ class TC_GAME_API Warden
         //< Initializes Warden with the given session key.
         virtual void Init(WorldSession* session, BigNumber* k) = 0;
 
-        //< Returns a description of an acceptable module for the current session.
-        virtual ClientWardenModule* GetModuleForClient() = 0;
-
         //< Initializes the module loaded by the client.
         virtual void InitializeModule() = 0;
 
@@ -78,32 +71,37 @@ class TC_GAME_API Warden
         //< Encodes a warden check in order to be sent to the client.
         virtual uint8 EncodeWardenCheck(WardenCheck::Type checkType) const = 0;
 
+        //< Returns the time at which the last WARDEN_SMSG_CHEAT_CHECKD_REQUEST was issued.
+        virtual uint32 GetCheatCheckRequestTime() const = 0;
+
+    public:
+        //< Returns a description of an acceptable module for the current session.
+        std::shared_ptr<WardenModule> SelectModule() const;
+
+        //< Called when a given check is failed.
+        void Violation(uint32 checkID);
+
+        //< Enqueues a check to be sent to the client.
+        virtual void SubmitCheck(std::shared_ptr<WardenCheck> check) = 0;
+
         //< Main update loop.
         void Update();
 
         //< Processes any incoming packet and dispatches it to the appropriate function.
         void ProcessIncoming(ByteBuffer& buffer);
 
-        //< Ensures the checksum sent by the client module in CMSG_WARDEN_CHEAT_CHECKS_RESPONSE is valid.
-        static bool IsValidCheckSum(uint32 checksum, const uint8 *data, const uint16 length);
-
-        //< Calculates a checksum for data received via CMSG_WARDEN_CHEAT_CHECKS_RESPONSE.
-        static uint32 BuildChecksum(const uint8 *data, uint32 length);
+        //< Returns true if the module can send/receive a given check
+        bool CanHandle(WardenCheck::Type checkType) const;
 
         WorldSession* GetSession() const { return _session; }
-
-        //< Returns the time at which the last WARDEN_SMSG_CHEAT_CHECKD_REQUEST was issued.
-        virtual uint32 GetCheatCheckRequestTime() const = 0;
-
-        void Violation(uint32 checkID);
-
-        virtual void SubmitCheck(std::shared_ptr<WardenCheck> check) = 0;
-
         WardenPlatform GetPlatform() const { return _platform; }
 
     private:
         //< Handles WARDEN_CMSG_MODULE_MISSING.
         void HandleModuleMissing();
+
+        //< Handles WARDEN_CMSG_MODULE_FAILED.
+        void HandleModuleFailed();
 
         //< Sends WARDEN_SMSG_MODULE_USE to the client, requesting a specific module to be loaded from cache.
         void RequestModule();
@@ -116,7 +114,8 @@ class TC_GAME_API Warden
 
     protected:
         //< Handles WARDEN_CMSG_MODULE_OK.
-        virtual void HandleModuleOK() = 0;
+        void HandleModuleOK();
+
         //< Handles WARDEN_CMSG_HASH_RESULT.
         virtual bool HandleHashResult(ByteBuffer& packet) = 0;
         //< Handles WARDEN_CMSG_CHEAT_CHECK_RESULTS.
@@ -129,11 +128,19 @@ class TC_GAME_API Warden
 
     private:
         WorldSession* _session;
-        WardenKey const* _wardenKey;
-        WardenPlatform _platform;
 
-        std::array<uint8, 16> _inputKey;
-        std::array<uint8, 16> _outputKey;
+        //< The module selected on client initialization.
+        std::shared_ptr<WardenModule> _module;
+
+        //< All modules suceptible to be loaded, and their associated selection chance weight.
+        std::vector<std::shared_ptr<WardenModule>> _modules;
+        std::vector<double> _moduleWeights;
+
+        //< The key selected for handshaking with the client.
+        WardenKey _wardenKey;
+
+        //< The client platform.
+        WardenPlatform _platform;
 
         ARC4 _inputCrypto;
         ARC4 _outputCrypto;
@@ -142,7 +149,6 @@ class TC_GAME_API Warden
         uint32 _clientResponseTimer;                 //< Timer for client response delay
 
         uint32 _previousTimestamp;
-        ClientWardenModule* _module;
         bool _initialized;
 };
 

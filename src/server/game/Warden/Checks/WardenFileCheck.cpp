@@ -97,9 +97,9 @@ bool WardenFileCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
     return checkFailed;
 }
 
-bool WardenFileCheck::TrySelect(WorldSession* session, WardenPlatform platform)
+bool WardenFileCheck::TrySelect(WorldSession* session, Warden* warden)
 {
-    if (!WardenCheck::TrySelect(session, platform))
+    if (!WardenCheck::TrySelect(session, warden))
         return false;
     
     EnumFlag<WardenCheckFlags> checkFlags(GetFlags());

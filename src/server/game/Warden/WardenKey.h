@@ -13,6 +13,8 @@ struct WardenKey
     std::array<uint8_t, 16> ClientKey;
     std::array<uint8_t, 16> ServerKey;
 
+    WardenKey();
+
     bool Validate(std::array<uint8_t, SHA_DIGEST_LENGTH> const& clientProof) const;
 };
 

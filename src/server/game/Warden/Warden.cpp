@@ -27,33 +27,53 @@
 #include "Opcodes.h"
 #include "Player.h"
 #include "Util.h"
+#include "WardenModule.h"
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "Containers.h"
 #include <openssl/sha.h>
 
+uint32 BuildChecksum(const uint8* data, uint32 length)
+{
+    std::array<uint8, 20> digest;
+
+    SHA1(data, length, digest.data());
+    uint32 checkSum = 0;
+    for (uint8 i = 0; i < 5; ++i)
+        checkSum = checkSum ^ reinterpret_cast<uint32_t*>(digest.data())[i];
+
+    return checkSum;
+}
+
+bool IsValidCheckSum(uint32 checksum, const uint8* data, const uint16 length)
+{
+    return checksum == BuildChecksum(data, length);
+}
+
 Warden::Warden(WardenPlatform platform) : _session(nullptr),
-    _wardenKey(nullptr),
+    _module(nullptr),
     _platform(platform),
     _inputCrypto(16),
     _outputCrypto(16),
     _checkTimer(10000/*10 sec*/),
     _clientResponseTimer(0),
     _previousTimestamp(0),
-    _module(nullptr),
     _initialized(false)
 {
-    _inputKey.fill(0);
-    _outputKey.fill(0);
+    _modules = sWardenMgr->FindModules(_platform);
+    _moduleWeights.resize(_modules.size(), 1.0);
 }
 
 Warden::~Warden()
 {
-    delete[] _module->CompressedData;
-    delete _module;
-
     _module = nullptr;
     _initialized = false;
+}
+
+std::shared_ptr<WardenModule> Warden::SelectModule() const
+{
+    return *Trinity::Containers::SelectRandomWeightedContainerElement(_modules, _moduleWeights);
 }
 
 void Warden::HandleModuleMissing()
@@ -62,12 +82,8 @@ void Warden::HandleModuleMissing()
 
     // Create packet structure
 
-    int32 sizeLeft = _module->CompressedSize;
+    int32 sizeLeft = _module->Module.Data.size();
     uint32 pos = 0;
-
-
-    ByteBuffer buffer(503);
-    buffer << uint8(WARDEN_SMSG_MODULE_CACHE);
 
     while (sizeLeft > 0)
     {
@@ -76,7 +92,7 @@ void Warden::HandleModuleMissing()
         ByteBuffer buffer(burstSize + sizeof(uint8) + sizeof(uint16));
         buffer << uint8(WARDEN_SMSG_MODULE_CACHE);
         buffer << uint16(burstSize);
-        buffer.append(&_module->CompressedData[pos], burstSize);
+        buffer.append(&_module->Module.Data[pos], burstSize);
 
         SendPacket(std::move(buffer));
 
@@ -94,9 +110,12 @@ void Warden::RequestModule()
 
     ByteBuffer buffer;
     buffer << uint8(WARDEN_SMSG_MODULE_USE);
-    buffer.append(_module->Id.data(), _module->Id.size());
-    buffer.append(_module->Key.data(), _module->Key.size());
-    buffer << uint32(_module->CompressedSize);
+
+    auto id = _module->GetModuleChecksum();
+
+    buffer.append(id.data(), id.size());
+    buffer.append(_module->Module.Key.data(), _module->Module.Key.size());
+    buffer << uint32(_module->Module.Data.size());
 
     SendPacket(std::move(buffer));
 }
@@ -160,35 +179,39 @@ void Warden::EncryptData(uint8* buffer, uint32 length)
     _outputCrypto.UpdateData(length, buffer);
 }
 
-bool Warden::IsValidCheckSum(uint32 checksum, const uint8* data, const uint16 length)
+void Warden::HandleModuleOK()
 {
-    uint32 newChecksum = BuildChecksum(data, length);
+    TC_LOG_INFO("warden", "Hash request issued to %s with keychain %u", _session->GetPlayerInfo().c_str(), _wardenKey.ID);
 
-    if (checksum != newChecksum)
-    {
-        TC_LOG_DEBUG("warden", "CHECKSUM IS NOT VALID");
-        return false;
-    }
-    else
-    {
-        TC_LOG_DEBUG("warden", "CHECKSUM IS VALID");
-        return true;
-    }
+    // Select a proper key
+    _wardenKey = _module->SelectRandomKey();
+
+    // Create packet structure
+    ByteBuffer buffer(_wardenKey.Seed.size() + sizeof(uint8));
+    buffer << uint8(WARDEN_SMSG_HASH_REQUEST);
+    buffer.append(_wardenKey.Seed.data(), _wardenKey.Seed.size());
+
+    SendPacket(std::move(buffer));
 }
 
-uint32 Warden::BuildChecksum(const uint8* data, uint32 length)
+void Warden::HandleModuleFailed()
 {
-    union {
-        uint8 bytes[20];
-        uint32 ints[5];
-    } hash;
+    // C++20 ranges please
+    auto itr = std::find(_modules.begin(), _modules.end(), _module);
+    if (itr == _modules.end())
+        return;
 
-    SHA1(data, length, hash.bytes);
-    uint32 checkSum = 0;
-    for (uint8 i = 0; i < 5; ++i)
-        checkSum = checkSum ^ hash.ints[i];
+    auto index = std::distance(_modules.begin(), itr);
 
-    return checkSum;
+    _modules.erase(itr);
+
+    auto weightItr = _moduleWeights.begin();
+    std::advance(weightItr, index);
+    _moduleWeights.erase(weightItr);
+
+    _module = SelectModule();
+
+    RequestModule();
 }
 
 void Warden::ProcessIncoming(ByteBuffer& buffer)
@@ -222,6 +245,7 @@ void Warden::ProcessIncoming(ByteBuffer& buffer)
             break;
         case WARDEN_CMSG_MODULE_FAILED:
             TC_LOG_DEBUG("warden", "Received WARDEN_CMSG_MODULE_FAILED");
+            HandleModuleFailed();
             break;
         default:
             TC_LOG_DEBUG("warden", "Received unknown warden opcode 0x%02X of size %u.", opcode, uint32(buffer.size() - 1));
@@ -264,6 +288,12 @@ void Warden::Violation(uint32 checkID)
         default:
             break;
     }
+}
+
+bool Warden::CanHandle(WardenCheck::Type checkType) const
+{
+    auto itr = _module->Checks.find(checkType);
+    return itr != _module->Checks.end();
 }
 
 void WorldSession::HandleWardenDataOpcode(WorldPacket& recvData)
