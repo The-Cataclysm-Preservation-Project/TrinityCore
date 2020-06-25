@@ -97,12 +97,12 @@ static void ApplyCatchUpMod(Unit* owner, Position dest, float& velocity)
     if (distance > 0.2f)
     {
         if (dest.HasInArc(float(M_PI), owner, 4.f))
-            AddPct(velocity, -(distance / velocity) * 5.f);
+            AddPct(velocity, -(distance / velocity) * 10.f);
         else
             AddPct(velocity, 50.f);
     }
     else if (!dest.HasInArc(float(M_PI), owner, 4.f))
-        AddPct(velocity, (distance / velocity) * 5.f);
+        AddPct(velocity, (distance / velocity) * 10.f);
 }
 
 static void DoMovementInform(Unit* owner, Unit* target)
