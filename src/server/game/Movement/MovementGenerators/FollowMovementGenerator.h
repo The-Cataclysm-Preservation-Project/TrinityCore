@@ -53,7 +53,7 @@ public:
     Unit const* GetTarget() { return _target; }
 
 private:
-    void UpdateFollowFormation(Unit* owner);
+    void UpdateFollowFormation();
     void UpdateFormationFollowOffsets(uint32 slot);
     void LaunchMovement(Unit* owner);
 

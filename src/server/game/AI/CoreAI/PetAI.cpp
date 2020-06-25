@@ -455,6 +455,7 @@ void PetAI::HandleReturnMovement()
         {
             ClearCharmInfoFlags();
             me->GetCharmInfo()->SetIsReturning(true);
+            me->GetMotionMaster()->Clear();
             me->FollowTarget(me->GetCharmerOrOwner());
         }
     }
@@ -490,12 +491,14 @@ void PetAI::DoAttack(Unit* target, bool chase)
             // Pets with ranged attacks should not care about the chase angle at all.
             ChaseAngle angle = ChaseAngle(chaseDistance == 0.f ? float(M_PI) : 0.f, chaseDistance == 0.f ? float(M_PI_4) : float(M_PI * 2));
             me->GetMotionMaster()->MoveChase(target, chaseDistance, angle);
+            me->GetMotionMaster()->Clear();
         }
         else // (Stay && ((Aggressive || Defensive) && In Melee Range)))
         {
             ClearCharmInfoFlags();
             me->GetCharmInfo()->SetIsAtStay(true);
             me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MoveIdle();
         }
     }
 }

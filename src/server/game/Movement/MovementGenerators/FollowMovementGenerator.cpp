@@ -177,7 +177,7 @@ void FollowMovementGenerator::Initialize(Unit* owner)
     if (_joinFormation)
     {
         _target->AddFormationFollower(owner);
-        UpdateFollowFormation(owner);
+        UpdateFollowFormation();
     }
 
     _followMovementTimer.Reset(0);
@@ -191,7 +191,7 @@ void FollowMovementGenerator::Finalize(Unit* owner)
     if (_joinFormation && _target)
     {
         _target->RemoveFormationFollower(owner);
-        UpdateFollowFormation(owner);
+        UpdateFollowFormation();
     }
 }
 
@@ -330,7 +330,7 @@ bool FollowMovementGenerator::Update(Unit* owner, uint32 diff)
     return true;
 }
 
-void FollowMovementGenerator::UpdateFollowFormation(Unit* owner)
+void FollowMovementGenerator::UpdateFollowFormation()
 {
     uint8 followSlot = 0;
     for (Unit* follower : _target->GetFormationFollowers())

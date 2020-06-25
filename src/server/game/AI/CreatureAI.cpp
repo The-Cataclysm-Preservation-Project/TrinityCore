@@ -251,7 +251,9 @@ void CreatureAI::EnterEvadeMode(EvadeReason why)
 
     if (!me->GetVehicle()) // otherwise me will be in evade mode forever
     {
-        if (!me->GetCharmerOrOwner())
+        if (Unit* owner = me->GetCharmerOrOwner())
+            me->FollowTarget(owner);
+        else
         {
             // Required to prevent attacking creatures that are evading and cause them to reenter combat
             // Does not apply to MoveFollow
