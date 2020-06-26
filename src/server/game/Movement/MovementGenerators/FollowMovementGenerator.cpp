@@ -93,16 +93,10 @@ static void ApplyCatchUpMod(Unit* owner, Position dest, float& velocity)
 {
     float distance = owner->GetExactDist2d(dest);
 
-    // No need for excessive corrections for tiny distance differences
-    if (distance > 0.2f)
-    {
-        if (dest.HasInArc(float(M_PI), owner, 4.f))
-            AddPct(velocity, -(distance / velocity) * 10.f);
-        else
-            AddPct(velocity, 50.f);
-    }
-    else if (!dest.HasInArc(float(M_PI), owner, 4.f))
-        AddPct(velocity, (distance / velocity) * 10.f);
+    if (dest.HasInArc(float(M_PI), owner)) // owner is beyond default destination. throttle speed.
+        AddPct(velocity, -((distance / velocity) * 100.f));
+    else // owner is behind destination, catch up.
+        AddPct(velocity, ((distance / velocity) * 100.f));
 }
 
 static void DoMovementInform(Unit* owner, Unit* target)
@@ -223,7 +217,6 @@ bool FollowMovementGenerator::Update(Unit* owner, uint32 diff)
     _followMovementTimer.Update(diff);
     if (_followMovementTimer.Passed())
     {
-        _followMovementTimer.Reset(FOLLOW_MOVEMENT_INTERVAL);
         if (IsTargetMoving(_target))
         {
             _events.Reset();
@@ -238,6 +231,7 @@ bool FollowMovementGenerator::Update(Unit* owner, uint32 diff)
             _events.ScheduleEvent(EVENT_ALLIGN_TO_TARGET, Milliseconds(ALLIGN_MOVEMENT_INTERVAL));
         }
     }
+    _followMovementTimer.Reset(FOLLOW_MOVEMENT_INTERVAL);
 
     _events.Update(diff);
     while (uint32 eventId = _events.ExecuteEvent())
@@ -379,7 +373,6 @@ void FollowMovementGenerator::LaunchMovement(Unit* owner)
     // Let's start with a cheap base destination calculation
     dest.m_positionX += std::cos(Position::NormalizeOrientation(_target->GetOrientation() + _angle)) * _distance;
     dest.m_positionY += std::sin(Position::NormalizeOrientation(_target->GetOrientation() + _angle)) * _distance;
-    dest.m_positionZ += owner->GetCollisionHeight() * 0.5f;
     dest.SetOrientation(dest.GetOrientation() + offset);
 
     // Calculate velocity based on target's speed values
