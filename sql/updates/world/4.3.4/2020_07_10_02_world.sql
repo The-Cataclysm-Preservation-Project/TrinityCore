@@ -1,6 +1,7 @@
 -- Correct low level class trainers.
 
 -- Insert gossip menu options to trainers with no options using generic text.
+DELETE FROM `gossip_menu_option` WHERE `OptionIndex` IN (0,1,2) AND `MenuId` IN (14137,14137,14138,14139,14140,14141,10675,10685,10686,10694,10699,10698,10697,10879,10878,10985,11185,11617,11620,11621,11645,11810,11831);
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES
 (14137,0,3,'I require training.', 2756, 5, 16, 0),
 (14137,1,0,'I wish to unlearn my talents.',62295,16,16,0),
@@ -70,6 +71,7 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 (11831,2,0,'I wish to know about Dual Talent Specialization.',33762,20,1,0);
 
 -- insert option_actions for talent and dual spec gossips.
+DELETE FROM `gossip_menu_option_action` WHERE `OptionIndex` IN (1,2) AND `MenuId` IN (14137,14137,14138,14139,14140,14141,10675,10685,10686,10694,10699,10698,10697,10879,10878,10985,11185,11617,11620,11621,11645,11810,11831);
 INSERT INTO `gossip_menu_option_action` (`MenuId`, `OptionIndex`, `ActionMenuId`, `ActionPoiId`) VALUES
 (14137,1,4461,0),
 (14137,2,10371,0),
@@ -120,6 +122,7 @@ INSERT INTO `gossip_menu_option_action` (`MenuId`, `OptionIndex`, `ActionMenuId`
 UPDATE `gossip_menu_option` SET `OptionType` = 5, `OptionNpcflag` = 16 WHERE `MenuId` = 10683;
 
 -- add gossip_menu_option_trainer records.
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4684,14137,14141,10675,10697,11185,4676,10686,10699,10985,14140,11621,4692,4679,14139,11617,7522,4652,10879,10878,11620,11810,4655,4643,14138,11645,11831,10702);
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4684, 0, 145),
 (14137, 0, 168),
@@ -166,6 +169,7 @@ UPDATE `creature_template` SET `gossip_menu_id` = 6648 WHERE `entry` = 15279;
 -- Correct remaining class trainers
 
 -- Insert gossip menu options to trainers with no options using generic text.
+DELETE FROM `gossip_menu_option` WHERE `OptionIndex` IN (0,1,2) AND `MenuId` IN (14136,11824,11906,4608,14144,10555,11052,11045,10814,10549,10554,11051,10553,10819,10818,11050,11049,10551,10816,12572,10815,12576,12513,12523,12532,12533,12925,12926,12835,10835,12528,12535,12517,10843,12051,12524,12531,12536,12928,12543,12564,12924,4560,4583,12004,12841,12049,12525,10702,12053,10840,12526,12921,4602,12882,2522,12845,10373,11878,11972,11997);
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES
 (14136,0,3,'I require training.', 2756, 5, 16, 0),
 (14136,1,0,'I wish to unlearn my talents.',62295,16,16,0),
@@ -352,6 +356,7 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 (11997,2,0,'I wish to know about Dual Talent Specialization.',33762,20,1,0);
 
 -- insert option_actions for talent and dual spec gossips.
+DELETE FROM `gossip_menu_option_action` WHERE `OptionIndex` IN (1,2) AND `MenuId` IN (14136,11824,11906,4608,14144,10555,11052,11045,10814,10549,10554,11051,10553,10819,10818,11050,11049,10551,10816,12572,10815,12576,12513,12523,12532,12533,12925,12926,12835,10835,12528,12535,12517,10843,12051,12524,12531,12536,12928,12543,12564,12924,4560,4583,12004,12841,12049,12525,10702,12053,10840,12526,12921,4602,12882,2522,12845,10373,11878,11972,11997);
 INSERT INTO `gossip_menu_option_action` (`MenuId`, `OptionIndex`, `ActionMenuId`, `ActionPoiId`) VALUES
 (14136,1,4461,0),
 (14136,2,10371,0),
@@ -480,6 +485,7 @@ INSERT INTO `gossip_menu_option_action` (`MenuId`, `OptionIndex`, `ActionMenuId`
 UPDATE `gossip_menu_option` SET `OptionType` = 5, `OptionNpcflag` = 16 WHERE `OptionIcon` = 3 AND `MenuId` IN (141, 11912, 11913, 12050, 4105, 11932, 12606, 10552, 10817, 11766, 11875, 12344, 12151, 11879, 12048, 12341, 10838, 12010, 12537, 12714, 10684, 12052, 4555, 4553, 10837, 12918, 12716, 12521, 12821, 12522, 12746, 12927, 12755, 12920);
 
 -- add `gossip_menu_option_trainer` records.
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4683,11052,4526,4525,4527,7263,12513,12532,12533,12925,4662,12516,12527,12926,14144,11045,10814,10549,12835,4694,4674,4621,12528,12535,12924,4092,410,10843,10554,11051,10819,12517,12051,12524,12531,12536,12928,12543,12564,7265,4680,10553,4691,11050,10818,4574,4573,4572,4559,4558,4560,3643,4801,3642,12004,12841,4105,7467,11049,4516,4515,5123,11878,12052,64,6648,10551,10816,12572,4534,4536,4535,4539,4538,4537,4553,4583,14136,12049,12233,12525,4641,11932,4608,4656,10840,4603,4604,4609,4610,4504,1522,12053,12821,12526,12921,4602,12882,50723,50729,2522,12845,10373,4605,4646,4687,11997,12755);
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4683, 0, 16),
 (11052, 0, 16),
@@ -591,6 +597,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (12755, 0, 39);
 
 -- add missing gossip_menu_option_trainer for Portal Trainers
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4824,11972,4827);
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4824, 0, 130),
 (11972, 0, 149),
@@ -684,8 +691,11 @@ SET @Frang := 3153;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @Frang);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 145);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @Frang, 5, 0, 0, 'Show gossip when Frang is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @Frang, 5, 0, 1, 'Show gossip when Frang is not present');
@@ -694,8 +704,11 @@ SET @DeliosSilverBlade := 43010;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @DeliosSilverBlade);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 145);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES 
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @DeliosSilverBlade, 5, 0, 0, 'Show gossip when Delios Silver Blade is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @DeliosSilverBlade, 5, 0, 1, 'Show gossip when Delios Silver Blade is not present');
@@ -704,8 +717,11 @@ SET @Kore := 16503;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @Kore);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 145);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES 
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @Kore, 5, 0, 0, 'Show gossip when Kore is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @Kore, 5, 0, 1, 'Show gossip when Kore is not present');
@@ -714,8 +730,11 @@ SET @SunwalkerHelaku := 37737;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @SunwalkerHelaku);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 168);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @SunwalkerHelaku, 5, 0, 0, 'Show gossip when Sunwalker Helaku is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @SunwalkerHelaku, 5, 0, 1, 'Show gossip when Sunwalker Helaku is not present');
@@ -724,8 +743,11 @@ SET @Aurelon := 16501;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @Aurelon);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 168);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES 
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @Aurelon, 5, 0, 0, 'Show gossip when Aurelon is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @Aurelon, 5, 0, 1, 'Show gossip when Aurelon is not present');
@@ -734,8 +756,11 @@ SET @Keilnei := 16499;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @Keilnei);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 15);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES 
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @Keilnei, 5, 0, 0, 'Show gossip when Keilnei is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @Keilnei, 5, 0, 1, 'Show gossip when Keilnei is not present');
@@ -744,8 +769,11 @@ SET @LankaFarshot := 3061;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @LankaFarshot);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 15);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES 
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @LankaFarshot, 5, 0, 0, 'Show gossip when Lanka Farshot is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @LankaFarshot, 5, 0, 1, 'Show gossip when Lanka Farshot is not present');
@@ -754,8 +782,11 @@ SET @Rwag := 3155;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @Rwag);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 17);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES 
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @Rwag, 5, 0, 0, 'Show gossip when Rwag is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @Rwag, 5, 0, 1, 'Show gossip when Rwag is not present');
@@ -764,8 +795,11 @@ SET @DavidTrias := 2122;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @DavidTrias);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 17);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @DavidTrias, 5, 0, 0, 'Show gossip when David Trias is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @DavidTrias, 5, 0, 1, 'Show gossip when David Trias is not present');
@@ -774,8 +808,11 @@ SET @DarkClericDuesten := 2123;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @DarkClericDuesten);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 127);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @DarkClericDuesten, 5, 0, 0, 'Show gossip when Dark Cleric Duesten is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @DarkClericDuesten, 5, 0, 1, 'Show gossip when Dark Cleric Duesten is not present');
@@ -784,8 +821,11 @@ SET @SeerRavenfeather := 37724;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @SeerRavenfeather);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 127);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @SeerRavenfeather, 5, 0, 0, 'Show gossip when Seer Ravenfeather is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @SeerRavenfeather, 5, 0, 1, 'Show gossip when Seer Ravenfeather is not present');
@@ -794,8 +834,11 @@ SET @MeelaDawnstrider := 3062;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @MeelaDawnstrider);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 134);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @MeelaDawnstrider, 5, 0, 0, 'Show gossip when Meela Dawnstrider is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @MeelaDawnstrider, 5, 0, 1, 'Show gossip when Meela Dawnstrider is not present');
@@ -804,8 +847,11 @@ SET @JuliaSunstriker := 15279;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @JuliaSunstriker);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 44);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @JuliaSunstriker, 5, 0, 0, 'Show gossip when Julia Sunstriker is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @JuliaSunstriker, 5, 0, 1, 'Show gossip when Julia Sunstriker is not present');
@@ -814,8 +860,11 @@ SET @Valaatu := 16500;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @Valaatu);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 44);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @Valaatu, 5, 0, 0, 'Show gossip when Valaatu is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @Valaatu, 5, 0, 1, 'Show gossip when Valaatu is not present');
@@ -825,8 +874,11 @@ SET @Narinth := 16654;
 SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` = @Narinth);
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,` OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 149);
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
 (15, @MenuId, @newGossipMenuOptionIndex, 0, 29, 0, @Narinth, 5, 0, 0, 'Show gossip when Narinth is present'),
 (15, @MenuId, @trainingGossipOptionIndex, 0, 29, 0, @Narinth, 5, 0, 1, 'Show gossip when Narinth is not present');
@@ -835,6 +887,7 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 -- Correct Profession Trainers
 
 -- add missing gossip_menu_option for Alchemists.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4111,4110,4117,8863) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES 
 (4111, 0, 3, 'Train me in Alchemy.', 0, 5, 16),
 (4110, 0, 3, 'Train me in Alchemy.', 0, 5, 16),
@@ -842,6 +895,7 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 (8863, 0, 3, 'Train me in Alchemy.', 0, 5, 16);
 
 -- add missing gossip_menu_option for Blacksmiths.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (2741,2749,1043,1042,1041,3203,3202,8760,7809,9131,9132,8254) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
 (2741, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
 (2749, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
@@ -857,6 +911,7 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 (8254, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16);
 
 -- add missing gossip_menu_option for Enchanters.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4169,4156,4171,4170) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
 (4169, 0, 3, 'Train me in Enchanting.', 0, 5, 16),
 (4156, 0, 3, 'Train me in Enchanting.', 0, 5, 16),
@@ -864,6 +919,7 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 (4170, 0, 3, 'Train me in Enchanting.', 0, 5, 16);
 
 -- add missing gossip_menu_option for Engineers.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4136,1469,1465,7512,7513,7820,10363) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
 (4136, 0, 3, 'Train me in Engineering.', 0, 5, 16),
 (1469, 0, 3, 'Train me in Engineering.', 0, 5, 16),
@@ -874,17 +930,20 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 (10363, 0, 3, 'Train me in Engineering.', 0, 5, 16);
 
 -- add missing gossip_menu_option for Leatherworkers.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4208,4842,4244) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
 (4208, 0, 3, 'Train me in Leatherworking.', 0, 5, 16),
 (4842, 0, 3, 'Train me in Leatherworking.', 0, 5, 16),
 (4244, 0, 3, 'Train me in Leatherworking.', 0, 5, 16);
 
 -- add missing gossip_menu_option for Tailors.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4356,10138) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
 (4356, 0, 3, 'Train me in Tailoring.', 0, 5, 16),
 (10138, 0, 3, 'Train me in Tailoring.', 0, 5, 16);
 
 -- add missing gossip_menu_option for First Aid Trainers.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (8522) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
 (8522, 0, 3, 'Train me in First Aide.', 0, 5, 16);
 
@@ -892,36 +951,43 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 UPDATE `gossip_menu_option` SET `OptionType` = 5, `OptionNpcflag` = 16 WHERE `OptionIcon` = 3 AND `MenuId` IN (4361, 4134, 4129, 4164, 7455, 7817, 9084, 12846, 8460, 6087, 10437, 2021, 51997);
 
 -- add missing gossip_menu_option_trainer for Apprentice Blacksmiths
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (2746,2741) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (2746, 0, 80),
 (2741, 0, 80);
 
 -- add missing gossip_menu_option_trainer for Apprentice Engineers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4142,7383) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4142, 0, 102),
 (7383, 0, 102);
 
 -- add missing gossip_menu_option_trainer for Apprentice Leatherworkers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (7430) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (7430, 0, 103);
 
 -- add missing gossip_menu_option_trainer for Herbalists.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (7524,7459,10350) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (7524, 1, 101),
 (7459, 0, 101),
 (10350, 0, 101);
 
 -- add missing gossip_menu_option_traine` for Miners
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4361,10351) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4361, 0, 49),
 (10351, 0, 49);
 
 -- add missing gossip_menu_option_trainer for Skinners
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (7429,10360) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (7429, 0, 83),
 (10360, 0, 83);
 	
 -- add missing gossip_menu_option_trainer for Alchemists
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4111,7384,4110,4115,4127,4129,2391,2837,4117,16161,8540,8733,8863,10627) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4111, 0, 122),
 (7384, 0, 122),
@@ -939,6 +1005,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (10627, 0, 122);
 
 -- add missing gossip_menu_option_trainer for Blacksmiths
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (2781,2783,2749,593,597,1022,1043,1042,1041,3203,3202,7256,8760,7809,9131,9132,8254,9459) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (2781, 0, 58),
 (2783, 0, 58),
@@ -960,6 +1027,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (9459, 0, 58);
 
 -- add missing gossip_menu_option_trainer for Enchanters
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4169,4166,4171,4170,8731,8866,10365,33676) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4169, 0, 62),
 (4166, 0, 62),
@@ -971,6 +1039,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (33676, 0, 62);
 
 -- add missing gossip_menu_option_trainer for Engineers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4145,4136,1469,1465,4149,8656,7512,7513,7820,9084,10363) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4145, 0, 407),
 (4136, 0, 407),
@@ -985,10 +1054,12 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (10363, 0, 407);
 
 -- add missing gossip_menu_option_trainer for Scribes
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (9879) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (9879, 0, 63);
 
 -- add missing gossip_menu_option_trainer for Jewelcrafters
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (12848,8376,8380,8382,9892,9894,9895,9873) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (12848, 0, 29),
 (8376, 0, 29),
@@ -1000,6 +1071,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (9873, 0, 29);
 
 -- add missing gossip_menu_option_trainer for Leatherworkers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4108,4172,4208,4210,4243,7866,10361,4842,4843,4244,8732,7816,12852) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4108, 0, 56),
 (4172, 0, 56),
@@ -1016,6 +1088,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (12852, 0, 56);
 
 -- add missing gossip_menu_option_trainer for Tailors
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4261,4356,4348,4270,4267,4354,4844,7524,8868,10114,10116,10117,10138,10364) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4261, 0, 163),
 (4356, 0, 163),
@@ -1033,6 +1106,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (10364, 0, 163);
 
 -- add missing gossip_menu_option_trainer for First Aid Trainers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4761,12939,8522,8502) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4761, 0, 107),
 (12939, 0, 107),
@@ -1040,22 +1114,26 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (8502, 0, 107);
 
 -- add missing gossip_menu_option_trainer for Cooking Trainers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (9986,9985,9987) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (9986, 0, 136),
 (9985, 0, 136),
 (9987, 0, 136);
 
 -- add missing gossip_menu_option_trainer for Fishing Trainers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (12887,6087,8826) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (12887, 0, 10),
 (6087, 0, 10),
 (8826, 0, 10);
 
 -- add missing gossip_menu_option_trainer for Archaeology Trainers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (12850) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (12850, 0, 373);
 
 -- add missing gossip_menu_option_trainer for Riding Trainers
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (8553,8275,4019) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (8553, 0, 46),
 (8275, 0, 46),
@@ -1194,10 +1272,12 @@ UPDATE `creature_template` SET `npcflag` = 83 WHERE `entry` = 16280;
 -- correct a few innkeepers
 UPDATE `gossip_menu_option` SET `OptionType` = 8, `OptionNpcflag` = 65536 WHERE `MenuId` = 1297 AND `OptionIndex` = 1;
 UPDATE `gossip_menu_option` SET `OptionType` = 3, `OptionNpcflag` = 128 WHERE `MenuId` = 1297 AND `OptionIndex` = 2;
+DELETE FROM `gossip_menu_option_action` WHERE `MenuId` = 1297 AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_action` (`MenuId`, `OptionIndex`, `ActionMenuId`, `ActionPoiId`) VALUES (1297, 0, 1221, 0);
 UPDATE `gossip_menu_option` SET `OptionType` = 1, `OptionNpcflag` = 1 WHERE `MenuId` = 1293 AND `OptionIndex` = 0;
 UPDATE `gossip_menu_option` SET `OptionType` = 8, `OptionNpcflag` = 65536 WHERE `MenuId` = 1293 AND `OptionIndex` = 1;
 UPDATE `gossip_menu_option` SET `OptionType` = 3, `OptionNpcflag` = 128 WHERE `MenuId` = 1293 AND `OptionIndex` = 2;
+DELETE FROM `gossip_menu_option_action` WHERE `MenuId` = 1293 AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_action` (`MenuId`, `OptionIndex`, `ActionMenuId`, `ActionPoiId`) VALUES (1293, 0, 1221, 0);
 UPDATE `gossip_menu_option` SET `OptionIcon` = 0, `OptionText` = 'What can I do at an inn?', `OptionBroadcastTextId` = 4308 WHERE `MenuId` = 1294 AND `OptionIndex` = 2;
 UPDATE `gossip_menu_option` SET `OptionIcon` = 0, `OptionText` = 'What can I do at an inn?', `OptionBroadcastTextId` = 4308 WHERE `MenuId` = 7468 AND `OptionIndex` = 2;
