@@ -167,7 +167,6 @@ UPDATE `creature_template` SET `gossip_menu_id` = 6648 WHERE `entry` = 15279;
 
 
 -- Correct remaining class trainers
-
 -- Insert gossip menu options to trainers with no options using generic text.
 DELETE FROM `gossip_menu_option` WHERE `OptionIndex` IN (0,1,2) AND `MenuId` IN (14136,11824,11906,4608,14144,10555,11052,11045,10814,10549,10554,11051,10553,10819,10818,11050,11049,10551,10816,12572,10815,12576,12513,12523,12532,12533,12925,12926,12835,10835,12528,12535,12517,10843,12051,12524,12531,12536,12928,12543,12564,12924,4560,4583,12004,12841,12049,12525,10702,12053,10840,12526,12921,4602,12882,2522,12845,10373,11878,11972,11997);
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES
@@ -705,7 +704,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 145);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -718,7 +717,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 145);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -731,7 +730,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 168);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -744,7 +743,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 168);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -757,7 +756,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 15);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -770,7 +769,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 15);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -783,7 +782,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 17);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -796,7 +795,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 17);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -809,7 +808,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 127);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -822,7 +821,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 127);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -835,7 +834,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 134);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -848,7 +847,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 44);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -861,7 +860,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 44);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -875,7 +874,7 @@ SET @MenuId := (SELECT `gossip_menu_id` FROM `creature_template` WHERE `entry` =
 SET @trainingGossipOptionIndex := (SELECT `OptionIndex` FROM `gossip_menu_option` WHERE `OptionIcon` = 3 AND `MenuId` = @MenuId AND `OptionType` = 5 AND `OptionNpcFlag` = 16);
 SET @newGossipMenuOptionIndex := (SELECT MAX(`OptionIndex`) + 1 FROM `gossip_menu_option` WHERE `MenuId` = @MenuId);
 DELETE FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
-INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId, @newGossipMenuOptionIndex, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) SELECT @MenuId AS `MenuId`, @newGossipMenuOptionIndex AS `OptionIndex`, `OptionIcon`, `OptionText`,`OptionBroadcastTextId`, `OptionType`, `OptionNpcFlag`, `VerifiedBuild` FROM `gossip_menu_option` WHERE `MenuId` = @MenuId AND `OptionIndex` = @trainingGossipOptionIndex;
 DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` = @MenuId AND `OptionIndex` = @newGossipMenuOptionIndex;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES (@MenuId, @newGossipMenuOptionIndex, 149);
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = @MenuId AND `SourceEntry` IN (@newGossipMenuOptionIndex,@trainingGossipOptionIndex) AND `ConditionTypeOrReference` = 29;
@@ -885,7 +884,6 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 
 
 -- Correct Profession Trainers
-
 -- add missing gossip_menu_option for Alchemists.
 DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4111,4110,4117,8863) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES 
@@ -1268,7 +1266,7 @@ UPDATE `creature_template` SET `npcflag` = 80 WHERE `entry` = 16278;
 -- correct mount trainer npcflags
 UPDATE `creature_template` SET `npcflag` = 81 WHERE `entry` = 3175;
 UPDATE `creature_template` SET `npcflag` = 83 WHERE `entry` = 16280;
-	
+
 -- correct a few innkeepers
 UPDATE `gossip_menu_option` SET `OptionType` = 8, `OptionNpcflag` = 65536 WHERE `MenuId` = 1297 AND `OptionIndex` = 1;
 UPDATE `gossip_menu_option` SET `OptionType` = 3, `OptionNpcflag` = 128 WHERE `MenuId` = 1297 AND `OptionIndex` = 2;
