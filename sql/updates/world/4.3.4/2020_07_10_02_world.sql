@@ -892,12 +892,16 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 (4117, 0, 3, 'Train me in Alchemy.', 0, 5, 16),
 (8863, 0, 3, 'Train me in Alchemy.', 0, 5, 16);
 
+-- add gossip data from wotlk for Blacksmiths.
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (1043) AND `OptionIndex` = 0;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
+(1043, 0, 3, 'Train me.', 3266, 5, 16);
+
 -- add missing gossip_menu_option for Blacksmiths.
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (2741,2749,1043,1042,1041,3203,3202,8760,7809,9131,9132,8254) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (2741,2749,1042,1041,3203,3202,8760,7809,9131,9132,8254) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`) VALUES
 (2741, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
 (2749, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
-(1043, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
 (1042, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
 (1041, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
 (3203, 0, 3, 'Train me in Blacksmithing.', 0, 5, 16),
@@ -949,43 +953,43 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 UPDATE `gossip_menu_option` SET `OptionType` = 5, `OptionNpcflag` = 16 WHERE `OptionIcon` = 3 AND `MenuId` IN (4361, 4134, 4129, 4164, 7455, 7817, 9084, 12846, 8460, 6087, 10437, 2021, 51997);
 
 -- add missing gossip_menu_option_trainer for Apprentice Blacksmiths
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (2746,2741) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (2746,2741) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (2746, 0, 80),
 (2741, 0, 80);
 
 -- add missing gossip_menu_option_trainer for Apprentice Engineers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4142,7383) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4142,7383) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4142, 0, 102),
 (7383, 0, 102);
 
 -- add missing gossip_menu_option_trainer for Apprentice Leatherworkers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (7430) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (7430) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (7430, 0, 103);
 
 -- add missing gossip_menu_option_trainer for Herbalists.
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (7524,7459,10350) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (7524,7459,10350) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (7524, 1, 101),
 (7459, 0, 101),
 (10350, 0, 101);
 
 -- add missing gossip_menu_option_traine` for Miners
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4361,10351) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4361,10351) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4361, 0, 49),
 (10351, 0, 49);
 
 -- add missing gossip_menu_option_trainer for Skinners
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (7429,10360) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (7429,10360) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (7429, 0, 83),
 (10360, 0, 83);
 	
 -- add missing gossip_menu_option_trainer for Alchemists
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4111,7384,4110,4115,4127,4129,2391,2837,4117,16161,8540,8733,8863,10627) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4111,7384,4110,4115,4127,4129,2391,2837,4117,16161,8540,8733,8863,10627) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4111, 0, 122),
 (7384, 0, 122),
@@ -1003,7 +1007,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (10627, 0, 122);
 
 -- add missing gossip_menu_option_trainer for Blacksmiths
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (2781,2783,2749,593,597,1022,1043,1042,1041,3203,3202,7256,8760,7809,9131,9132,8254,9459) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (2781,2783,2749,593,597,1022,1043,1042,1041,3203,3202,7256,8760,7809,9131,9132,8254,9459) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (2781, 0, 58),
 (2783, 0, 58),
@@ -1025,7 +1029,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (9459, 0, 58);
 
 -- add missing gossip_menu_option_trainer for Enchanters
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4169,4166,4171,4170,8731,8866,10365,33676) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4169,4166,4171,4170,8731,8866,10365,33676) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4169, 0, 62),
 (4166, 0, 62),
@@ -1037,7 +1041,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (33676, 0, 62);
 
 -- add missing gossip_menu_option_trainer for Engineers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4145,4136,1469,1465,4149,8656,7512,7513,7820,9084,10363) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4145,4136,1469,1465,4149,8656,7512,7513,7820,9084,10363) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4145, 0, 407),
 (4136, 0, 407),
@@ -1052,12 +1056,12 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (10363, 0, 407);
 
 -- add missing gossip_menu_option_trainer for Scribes
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (9879) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (9879) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (9879, 0, 63);
 
 -- add missing gossip_menu_option_trainer for Jewelcrafters
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (12848,8376,8380,8382,9892,9894,9895,9873) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (12848,8376,8380,8382,9892,9894,9895,9873) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (12848, 0, 29),
 (8376, 0, 29),
@@ -1069,7 +1073,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (9873, 0, 29);
 
 -- add missing gossip_menu_option_trainer for Leatherworkers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4108,4172,4208,4210,4243,7866,10361,4842,4843,4244,8732,7816,12852) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4108,4172,4208,4210,4243,7866,10361,4842,4843,4244,8732,7816,12852) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4108, 0, 56),
 (4172, 0, 56),
@@ -1086,7 +1090,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (12852, 0, 56);
 
 -- add missing gossip_menu_option_trainer for Tailors
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4261,4356,4348,4270,4267,4354,4844,7524,8868,10114,10116,10117,10138,10364) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4261,4356,4348,4270,4267,4354,4844,7524,8868,10114,10116,10117,10138,10364) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (4261, 0, 163),
 (4356, 0, 163),
@@ -1104,7 +1108,7 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (10364, 0, 163);
 
 -- add missing gossip_menu_option_trainer for First Aid Trainers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (4761,12939,8522,8502) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (4761,12939,8522,8502) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (4761, 0, 107),
 (12939, 0, 107),
@@ -1112,26 +1116,26 @@ INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) 
 (8502, 0, 107);
 
 -- add missing gossip_menu_option_trainer for Cooking Trainers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (9986,9985,9987) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (9986,9985,9987) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (9986, 0, 136),
 (9985, 0, 136),
 (9987, 0, 136);
 
 -- add missing gossip_menu_option_trainer for Fishing Trainers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (12887,6087,8826) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (12887,6087,8826) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (12887, 0, 10),
 (6087, 0, 10),
 (8826, 0, 10);
 
 -- add missing gossip_menu_option_trainer for Archaeology Trainers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (12850) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (12850) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES
 (12850, 0, 373);
 
 -- add missing gossip_menu_option_trainer for Riding Trainers
-DELETE FROM `gossip_menu_option` WHERE `MenuId` IN (8553,8275,4019) AND `OptionIndex` = 0;
+DELETE FROM `gossip_menu_option_trainer` WHERE `MenuId` IN (8553,8275,4019) AND `OptionIndex` = 0;
 INSERT INTO `gossip_menu_option_trainer` (`MenuId`, `OptionIndex`, `TrainerId`) VALUES 
 (8553, 0, 46),
 (8275, 0, 46),
