@@ -58,7 +58,7 @@ public:
     }
 
     template <size_t N>
-    void Generate(std::array<uint8_t, N>& buffer)
+    void Generate(std::array<uint8, N>& buffer)
     {
         Generate(buffer.data(), buffer.size());
     }

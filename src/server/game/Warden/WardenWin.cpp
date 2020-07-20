@@ -61,6 +61,7 @@ void WardenWin::Init(WorldSession* session, BigNumber* k)
     _outputCrypto.Init(_wardenKey.ServerKey.data());
 
     TC_LOG_DEBUG("warden", "Server side warden for client %u initializing...", session->GetAccountId());
+    TC_LOG_DEBUG("warden", "Session key: %s", ByteArrayToHexStr(k->AsByteArray().get(), k->GetNumBytes()).c_str());
     TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_wardenKey.ClientKey.data(), 16).c_str());
     TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_wardenKey.ServerKey.data(), 16).c_str());
     TC_LOG_DEBUG("warden", "Loading Module...");
@@ -225,8 +226,6 @@ void WardenWin::HandleCheatChecksResult(ByteBuffer& packet)
         _session->KickPlayer();
         return;
     }
-
-    std::vector<uint16> failedChecks;
 
     for (auto&& currentCheck : _sentChecks)
         currentCheck->ProcessResponse(this, packet);

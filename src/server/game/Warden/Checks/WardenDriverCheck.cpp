@@ -21,6 +21,8 @@
 #include "WardenCheatCheckRequest.h"
 #include "WorldSession.h"
 
+#include "Cryptography/HmacHash.h"
+
 #include <boost/algorithm/hex.hpp>
 
 WardenDriverCheck::WardenDriverCheck() : WardenCheck(Type::Driver)
@@ -44,9 +46,15 @@ bool WardenDriverCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatCheck
     if (!success)
         return false;
 
+    uint32 seed = rand32();
+    HmacSha1 hmac(4, reinterpret_cast<uint8*>(&seed));
+    hmac.UpdateData(_expectedData.data(), _expectedData.size());
+    hmac.Finalize();
+
     ByteBuffer dataBuffer;
     dataBuffer << uint8(warden->EncodeWardenCheck(GetCheckType()));
-    dataBuffer.append(_expectedData.data(), _expectedData.size());
+    dataBuffer << uint32(seed);
+    dataBuffer.append(hmac.GetDigest().data(), hmac.GetDigest().size());
     dataBuffer << uint8(stringIndex);
 
     if (!request.CanWrite(dataBuffer.wpos()))
