@@ -17,6 +17,7 @@
 
 #include "WardenDriverCheck.h"
 #include "Log.h"
+#include "Random.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
 #include "WorldSession.h"

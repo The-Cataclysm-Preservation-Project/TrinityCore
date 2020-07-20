@@ -23,7 +23,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <mutex>
+#include <shared_mutex>
 
 #include "Cryptography/SHA1.h"
 #include "Cryptography/BigNumber.h"

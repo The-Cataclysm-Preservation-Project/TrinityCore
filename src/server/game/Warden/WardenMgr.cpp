@@ -258,16 +258,16 @@ void WardenMgr::LoadWardenOverrides()
 
     uint32 count = 0;
 
-    boost::unique_lock<boost::shared_mutex> lock(sWardenMgr->_checkStoreLock);
+    std::unique_lock<std::shared_mutex> lock(sWardenMgr->_checkStoreLock);
 
     do
     {
         Field* fields = result->Fetch();
 
         uint16 checkId = fields[0].GetUInt16();
-        uint8  action  = fields[1].GetUInt8();
+        WardenActions action  = WardenActions(fields[1].GetUInt8());
 
-        if (action >= WARDEN_ACTION_MAX)
+        if (action > WardenActions::Log)
             TC_LOG_ERROR("server.loading", "Warden check override action out of range (ID: %u)", checkId);
         else
         {
@@ -276,7 +276,7 @@ void WardenMgr::LoadWardenOverrides()
                 TC_LOG_ERROR("server.loading", "Warden check action override for non-existing check (ID: %u), skipped", checkId);
             else
             {
-                _actionOverrides.emplace(checkId, WardenActions(action));
+                _actionOverrides.emplace(checkId, action);
                 ++count;
             }
         }

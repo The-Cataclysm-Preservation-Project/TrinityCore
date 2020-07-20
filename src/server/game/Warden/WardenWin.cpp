@@ -160,7 +160,7 @@ void WardenWin::RequestData()
     // No more checks to do, re-request a new pile.
     if (_pendingChecks.empty())
     {
-        boost::shared_lock<boost::shared_mutex> lock(sWardenMgr->_checkStoreLock);
+        std::shared_lock<std::shared_mutex> lock(sWardenMgr->_checkStoreLock);
 
         _pendingChecks = sWardenMgr->GetChecks(_session, this);
     }

@@ -40,12 +40,11 @@ enum WardenOpcodes : uint32
     WARDEN_SMSG_HASH_REQUEST                    = 5
 };
 
-enum WardenActions : uint32
+enum class WardenActions : uint32
 {
-    WARDEN_ACTION_LOG,
-    WARDEN_ACTION_KICK,
-    WARDEN_ACTION_BAN,
-    WARDEN_ACTION_MAX
+    Log,
+    Kick,
+    Ban
 };
 
 enum class WardenPlatform : uint8

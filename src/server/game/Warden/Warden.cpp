@@ -263,7 +263,7 @@ void Warden::Violation(uint32 checkID)
     WardenActions action = sWardenMgr->GetCheckFailureAction(checkID);
     switch (action)
     {
-        case WARDEN_ACTION_BAN:
+        case WardenActions::Ban:
         {
             uint32 banDuration = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION);
             std::string accountName;
@@ -272,11 +272,11 @@ void Warden::Violation(uint32 checkID)
             sWorld->BanAccount(BAN_ACCOUNT, accountName, banDuration, "Anticheat Violation", "Warden");
             break;
         }
-        case WARDEN_ACTION_KICK:
+        case WardenActions::Kick:
             // Kick the player but log the violation as well.
             _session->KickPlayer();
             [[fallthrough]];
-        case WARDEN_ACTION_LOG:
+        case WardenActions::Log:
         {
             LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_WARDEN_FLAG);
             stmt->setUInt32(0, accountId);
