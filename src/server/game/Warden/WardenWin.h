@@ -64,9 +64,9 @@ class TC_GAME_API WardenWin : public Warden
 
         struct ClientModuleInfo
         {
-            uint64 ClientBase;
-            uint64 ModuleBase;
-            uint64 HandlerBase;
+            uint64 ClientBase; //< Base address of the game module
+            uint64 ModuleBase; //< Address of the memory block where the whole BLL2 file was loaded.
+            uint64 HandlerBase; //< Address of the module on the heap.
         };
         Optional<ClientModuleInfo> _moduleInfo;
 };

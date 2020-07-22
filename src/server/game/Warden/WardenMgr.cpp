@@ -134,7 +134,11 @@ void WardenMgr::LoadWardenModules()
         return;
     }
 
-    QueryResult result = WorldDatabase.Query("SELECT `id`, `platform`, `key`, `module`, `checks` FROM `warden_modules`");
+    // Order matters
+    // Especially check codes: they need to match WardenCheck::Type.
+    QueryResult result = WorldDatabase.Query("SELECT `id`, `platform`, `key`, `module`, "
+        "`memoryCheckCode`, `moduleCheckCode`, `aPageCheckCode`, `bPageCheckCode`, `driverCheckCode`, `luaStringCheckCode`, `luaExecCheckCode`, "
+        "`filesystemCheckCode`, `procCheckCode`, `timingCheckCode`, `interopCheckCode` FROM `warden_modules`");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 Warden modules.");

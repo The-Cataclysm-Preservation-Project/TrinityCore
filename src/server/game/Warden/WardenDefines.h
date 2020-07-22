@@ -56,29 +56,23 @@ enum class WardenPlatform : uint8
 
 enum class WardenCheckFlags : uint32
 {
-    /// <summary>
-    /// Check can only be sent if the player is logged on a character.
-    /// </summary>
-    IsLoggedIn        = 0x00000001,
-    /// <summary>
-    /// The result of the check is inverted (must differ from result).
-    /// </summary>
-    Inverted          = IsLoggedIn << 1,
+    IsLoggedIn        = 0x00000001, //< Check can only be sent if the player is logged on a character.
+    Inverted          = 0x00000002, //< The result of the check is inverted (must differ from result).
 
-    AmericanLocale    = Inverted   << 1,
-    KoreanLocale      = AmericanLocale << 1,
-    FrenchLocale      = KoreanLocale << 1,
-    GermanLocale      = FrenchLocale << 1,
-    ChineseLocale     = GermanLocale << 1,
-    TaiwaneseLocale   = ChineseLocale << 1,
-    SpanishLocale     = TaiwaneseLocale << 1,
-    MexicanLocale     = SpanishLocale << 1,
-    RussianLocale     = MexicanLocale << 1,
-    BrazilianLocale   = RussianLocale << 1,
+    AmericanLocale    = 0x00000004, //< Check applies to enUS locale.
+    KoreanLocale      = 0x00000008, //< Check applies to krKR locale.
+    FrenchLocale      = 0x00000010, //< Check applies to frFR locale.
+    GermanLocale      = 0x00000020, //< Check applies to deDE locale.
+    ChineseLocale     = 0x00000040, //< Check applies to zhCN locale.
+    TaiwaneseLocale   = 0x00000080, //< Check applies to zhTW locale.
+    SpanishLocale     = 0x00000100, //< Check applies to esES locale.
+    MexicanLocale     = 0x00000200, //< Check applies to esMX locale.
+    RussianLocale     = 0x00000400, //< Check applies to ruRU locale.
+    BrazilianLocale   = 0x00000800, //< Check applies to esBR locale.
 
-    Win32             = BrazilianLocale << 1,
-    Win64             = Win32 << 1,
-    OSX               = Win64 << 1
+    Win32             = 0x00001000, //< Check applies to 32-bits Windows clients.
+    Win64             = 0x00002000, //< Check applies to 64-bits Windows clients.
+    OSX               = 0x00004000  //< Check applies to OSX clients.
 };
 
 DEFINE_ENUM_FLAG(WardenCheckFlags);

@@ -11,28 +11,32 @@ bool WardenModule::LoadFromDB(Field* fields)
     ID                 = fields[0].GetUInt32();
     Platform           = static_cast<WardenPlatform>(fields[1].GetUInt8());
     std::string key    = fields[2].GetString();
-    std::string module = fields[3].GetString();
-    std::string checks = fields[4].GetString();
 
     // Ensure key size is 32 characters (16 bytes)
     if (key.length() != 2 * Module.Key.size())
+    {
+        TC_LOG_ERROR("server.loading", "Module %u has an invalid key (16 bytes expected, %u read from database). Ignored.", ID, key.length());
         return false;
+    }
 
     boost::algorithm::unhex(key, Module.Key.begin());
 
-    // Reserver module data
-    Module.Data.resize(module.length() / 2);
-    boost::algorithm::unhex(module, Module.Data.begin());
+    Module.Data = std::move(fields[3].GetBinary());
 
-    // Parse checks - needs to have a value for each supported check in sequence, empty token if none
-    Tokenizer tokens(fields[4].GetString(), ';', true);
-    if (tokens.size() != static_cast<uint32>(WardenCheck::Type::MAX))
-        return false;
+    uint32 missingCheckCount = 0;
+    for (uint32 i = 0; i < AsUnderlyingType(WardenCheck::Type::MAX); ++i)
+    {
+        if (fields[i + 4].IsNull())
+        {
+            ++missingCheckCount;
+            continue;
+        }
 
-    // Setup
-    for (uint32 i = 0; i < static_cast<uint32>(WardenCheck::Type::MAX); ++i)
-        if (strlen(tokens[i]) != 0)
-            Checks[static_cast<WardenCheck::Type>(i)] = std::stoi(tokens[i], nullptr, 16);
+        Checks[i] = fields[i + 4].GetUInt8();
+    }
+
+    if (missingCheckCount == Checks.size())
+        TC_LOG_ERROR("server.loading", "Module %u has no defined check codes. Skipped.", ID);
 
     // Fail if no checks
     return !Checks.empty();

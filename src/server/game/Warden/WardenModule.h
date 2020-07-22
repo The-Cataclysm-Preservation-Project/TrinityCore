@@ -2,6 +2,8 @@
 #define WARDEN_MODULE_H_
 
 #include "Define.h"
+#include "EnumFlag.h"
+#include "Optional.h"
 #include "WardenFwd.h"
 #include "WardenCheck.h"
 #include "WardenKey.h"
@@ -28,7 +30,7 @@ struct WardenModule
     std::vector<WardenKey> KeyChains;
 
     //< A map associating each supported warden check with its encoded network value.
-    std::unordered_map<WardenCheck::Type, uint8_t> Checks;
+    std::array<Optional<uint8_t>, AsUnderlyingType(WardenCheck::Type::MAX)> Checks;
 
     //< Tries to load the module from database.
     bool LoadFromDB(Field* fields);

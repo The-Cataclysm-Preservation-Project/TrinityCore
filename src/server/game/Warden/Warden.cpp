@@ -268,32 +268,27 @@ void Warden::Violation(uint32 checkID)
             uint32 banDuration = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION);
             std::string accountName;
             AccountMgr::GetName(accountId, accountName);
-
             sWorld->BanAccount(BAN_ACCOUNT, accountName, banDuration, "Anticheat Violation", "Warden");
             break;
         }
         case WardenActions::Kick:
-            // Kick the player but log the violation as well.
             _session->KickPlayer();
-            [[fallthrough]];
-        case WardenActions::Log:
-        {
-            LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_WARDEN_FLAG);
-            stmt->setUInt32(0, accountId);
-            stmt->setUInt32(1, GameTime::GetGameTime());
-            stmt->setUInt32(2, checkID);
-            LoginDatabase.Execute(stmt);
             break;
-        }
         default:
             break;
     }
+
+    // Log the violation in all situations.
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_WARDEN_FLAG);
+    stmt->setUInt32(0, accountId);
+    stmt->setUInt32(1, GameTime::GetGameTime());
+    stmt->setUInt32(2, checkID);
+    LoginDatabase.Execute(stmt);
 }
 
 bool Warden::CanHandle(WardenCheck::Type checkType) const
 {
-    auto itr = _module->Checks.find(checkType);
-    return itr != _module->Checks.end();
+    return _module->Checks[AsUnderlyingType(checkType)].has_value();
 }
 
 void WorldSession::HandleWardenDataOpcode(WorldPacket& recvData)
