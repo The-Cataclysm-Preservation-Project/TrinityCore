@@ -2,8 +2,8 @@
 #define WARDEN_MODULE_H_
 
 #include "Define.h"
-#include "EnumFlag.h"
 #include "Optional.h"
+#include "Util.h"
 #include "WardenFwd.h"
 #include "WardenCheck.h"
 #include "WardenKey.h"

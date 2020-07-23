@@ -1,6 +1,7 @@
 #include "WardenModule.h"
 #include "WardenDefines.h"
 #include "Containers.h"
+#include "Log.h"
 #include "Util.h"
 
 #include <boost/algorithm/hex.hpp>
@@ -15,13 +16,13 @@ bool WardenModule::LoadFromDB(Field* fields)
     // Ensure key size is 32 characters (16 bytes)
     if (key.length() != 2 * Module.Key.size())
     {
-        TC_LOG_ERROR("server.loading", "Module %u has an invalid key (16 bytes expected, %u read from database). Ignored.", ID, key.length());
+        TC_LOG_ERROR("server.loading", "Module %u has an invalid key (16 bytes expected, %lu read from database). Ignored.", ID, key.length());
         return false;
     }
 
     boost::algorithm::unhex(key, Module.Key.begin());
 
-    Module.Data = std::move(fields[3].GetBinary());
+    Module.Data = fields[3].GetBinary();
 
     uint32 missingCheckCount = 0;
     for (uint32 i = 0; i < AsUnderlyingType(WardenCheck::Type::MAX); ++i)
@@ -35,11 +36,14 @@ bool WardenModule::LoadFromDB(Field* fields)
         Checks[i] = fields[i + 4].GetUInt8();
     }
 
-    if (missingCheckCount == Checks.size())
-        TC_LOG_ERROR("server.loading", "Module %u has no defined check codes. Skipped.", ID);
-
     // Fail if no checks
-    return !Checks.empty();
+    if (missingCheckCount == Checks.size())
+    {
+        TC_LOG_ERROR("server.loading", "Module %u has no defined check codes. Skipped.", ID);
+        return false;
+    }
+
+    return true;
 }
 
 std::array<uint8, 32> WardenModule::GetModuleChecksum() const

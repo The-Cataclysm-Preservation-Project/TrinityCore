@@ -243,11 +243,7 @@ void WardenWin::HandleCheatChecksResult(ByteBuffer& packet)
 
 uint8 WardenWin::EncodeWardenCheck(WardenCheck::Type checkType) const
 {
-    auto itr = _module->Checks.find(checkType);
-    if (itr == _module->Checks.end())
-        return -1;
-
-    return itr->second ^ _wardenKey.ClientKey[0];
+    return _module->Checks[AsUnderlyingType(checkType)].value() ^ _wardenKey.ClientKey[0];
 }
 
 void WardenWin::SubmitCheck(std::shared_ptr<WardenCheck> check)

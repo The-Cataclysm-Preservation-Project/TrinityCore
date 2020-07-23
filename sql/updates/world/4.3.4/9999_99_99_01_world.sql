@@ -58,7 +58,6 @@ CREATE TABLE `warden_modules` (
   `platform` int NOT NULL,
   `key` VARCHAR(32) NOT NULL,
   `module` BLOB,
-  `checks` VARCHAR(50) NOT NULL,
   `memoryCheckCode` TINYINT UNSIGNED,
   `moduleCheckCode` TINYINT UNSIGNED,
   `aPageCheckCode` TINYINT UNSIGNED,
