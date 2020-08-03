@@ -701,14 +701,19 @@ void WorldSession::HandleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
         guild->HandleNewsSetSticky(this, newsId, sticky);
 }
 
+void WorldSession::HandleGuildReplaceGuildMaster(WorldPacket& recvPacket)
+{
+    if (Guild* guild = GetPlayer()->GetGuild())
+        guild->HandleSetNewGuildMaster(this, "", true);
+}
+
 void WorldSession::HandleGuildSetGuildMaster(WorldPacket& recvPacket)
 {
     uint8 nameLength = recvPacket.ReadBits(7);
-    // This is related to guild master inactivity.
-    /*bool isDethrone = */recvPacket.ReadBit();
+    bool isDethrone = recvPacket.ReadBit();
     std::string playerName = recvPacket.ReadString(nameLength);
     if (Guild* guild = GetPlayer()->GetGuild())
-        guild->HandleSetNewGuildMaster(this, playerName);
+        guild->HandleSetNewGuildMaster(this, playerName, isDethrone);
 }
 
 void WorldSession::HandleGuildSetAchievementTracking(WorldPacket& recvPacket)
