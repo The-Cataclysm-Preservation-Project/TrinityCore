@@ -1856,7 +1856,7 @@ void Guild::HandleSetNewGuildMaster(WorldSession* session, std::string const& na
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     _SetLeader(trans, newGuildMaster);
     oldGuildMaster->ChangeRank(trans, GR_INITIATE);
-    _BroadcastEvent(GE_LEADER_CHANGED, ObjectGuid::Empty, player->GetName().c_str(), name.c_str());
+    _BroadcastEvent(GE_LEADER_CHANGED, ObjectGuid::Empty, player->GetName().c_str(), newGuildMaster->GetName().c_str());
     CharacterDatabase.CommitTransaction(trans);
 }
 
