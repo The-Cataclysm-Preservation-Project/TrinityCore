@@ -701,7 +701,7 @@ void WorldSession::HandleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
         guild->HandleNewsSetSticky(this, newsId, sticky);
 }
 
-void WorldSession::HandleGuildReplaceGuildMaster(WorldPacket& recvPacket)
+void WorldSession::HandleGuildReplaceGuildMaster(WorldPacket& /*recvPacket*/)
 {
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->HandleSetNewGuildMaster(this, "", true);
