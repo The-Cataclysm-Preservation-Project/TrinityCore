@@ -701,19 +701,16 @@ void WorldSession::HandleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
         guild->HandleNewsSetSticky(this, newsId, sticky);
 }
 
-void WorldSession::HandleGuildReplaceGuildMaster(WorldPacket& /*recvPacket*/)
+void WorldSession::HandleGuildReplaceGuildMaster(WorldPackets::Guild::ReplaceGuildMaster& /*packet */)
 {
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->HandleSetNewGuildMaster(this, "", true);
 }
 
-void WorldSession::HandleGuildSetGuildMaster(WorldPacket& recvPacket)
+void WorldSession::HandleGuildSetGuildMaster(WorldPackets::Guild::SetGuildMaster& packet)
 {
-    uint8 nameLength = recvPacket.ReadBits(7);
-    bool isDethrone = recvPacket.ReadBit();
-    std::string playerName = recvPacket.ReadString(nameLength);
     if (Guild* guild = GetPlayer()->GetGuild())
-        guild->HandleSetNewGuildMaster(this, playerName, isDethrone);
+        guild->HandleSetNewGuildMaster(this, packet.NewMasterName, packet.IsDethrone);
 }
 
 void WorldSession::HandleGuildSetAchievementTracking(WorldPacket& recvPacket)
