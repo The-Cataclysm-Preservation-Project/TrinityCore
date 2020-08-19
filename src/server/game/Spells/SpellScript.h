@@ -64,6 +64,7 @@ enum SpellScriptState
 };
 #define SPELL_SCRIPT_STATE_END SPELL_SCRIPT_STATE_UNLOADING + 1
 
+
 template <typename R, typename... Args>
 struct TC_GAME_API HookHandler
 {
@@ -271,17 +272,19 @@ class TC_GAME_API SpellScript : public _SpellScript
         template <typename EffectHandler>
         class TC_GAME_API NamedEffectHook : public  _SpellScript::EffectNameHook, public _SpellScript::EffectIndexHook<EffectHandler>
         {
+            using BaseHook = _SpellScript::EffectIndexHook<EffectHandler>;
+
             public:
                 template <typename Base, typename Derived = Base>
                 NamedEffectHook(Derived* owner, typename EffectHandler::template HookType<Base> hookFunction, uint8 _effIndex, uint16 _effName)
-                    : _SpellScript::EffectNameHook(_effName), _SpellScript::EffectIndexHook<EffectHandler>(_effIndex, owner, hookFunction)
+                    : _SpellScript::EffectNameHook(_effName), BaseHook(_effIndex, owner, hookFunction)
                 {
 
                 }
 
                 std::string ToString()
                 {
-                    return "Index: " + EffIndexToString() + " Name: " + _SpellScript::EffectNameHook::ToString();
+                    return "Index: " + BaseHook::EffIndexToString() + " Name: " + _SpellScript::EffectNameHook::ToString();
                 }
 
                 bool CheckEffect(SpellInfo const* spellInfo, uint8 effIndex) override
@@ -435,7 +438,7 @@ class TC_GAME_API SpellScript : public _SpellScript
 
         // OnCast.Register(this, &class::function);
         // Function is: void function();
-        HookList<CastHook> OnCast;        
+        HookList<CastHook> OnCast;
 
         // AfterCast.Register(this, &class::function);
         // Function is: void function();
@@ -803,6 +806,7 @@ class TC_GAME_API AuraScript : public _SpellScript
         // executed after aura effect is removed with specified mode from target
         // should be used when when effect handler preventing/replacing is needed, do not use this hook for triggering spellcasts/removing auras etc - may be unsafe
         // example: OnEffectRemove.Register(this, &class::function, EffectIndexSpecifier, EffectAuraNameSpecifier);
+        // example: OnEffectRemove.Register(this, &class::function, EffectIndexSpecifier, EffectAuraNameSpecifier, AuraEffectHandleModes);
         // where function is: void function (AuraEffect const* aurEff, AuraEffectHandleModes mode);
         HookList<AuraEffectApplyHook> OnEffectRemove;
         // executed when aura effect is removed with specified mode from target
