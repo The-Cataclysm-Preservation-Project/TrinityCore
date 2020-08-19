@@ -942,14 +942,13 @@ class spell_hadronox_periodic_summon_template_AuraScript : public AuraScript
 {
     public:
         spell_hadronox_periodic_summon_template_AuraScript(uint32 topSpellId, uint32 bottomSpellId) : AuraScript(), _topSpellId(topSpellId), _bottomSpellId(bottomSpellId) { }
-        PrepareAuraScript(spell_hadronox_periodic_summon_template_AuraScript);
 
         bool Validate(SpellInfo const* /*spell*/) override
         {
             return ValidateSpellInfo({ _topSpellId, _bottomSpellId });
         }
 
-        void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes /*mode*/)
+        void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes mode)
         {
             if (AuraEffect* effect = GetAura()->GetEffect(EFFECT_0))
                 effect->SetPeriodicTimer(urandms(2, 17));
@@ -978,8 +977,8 @@ class spell_hadronox_periodic_summon_template_AuraScript : public AuraScript
 
         void Register() override
         {
-            AfterEffectApply += AuraEffectApplyFn(spell_hadronox_periodic_summon_template_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
-            OnEffectPeriodic += AuraEffectPeriodicFn(spell_hadronox_periodic_summon_template_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+            AfterEffectApply.Register(this, &spell_hadronox_periodic_summon_template_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            OnEffectPeriodic.Register(this, &spell_hadronox_periodic_summon_template_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
         }
 
     private:
@@ -1045,8 +1044,6 @@ class spell_hadronox_leeching_poison : public SpellScriptLoader
 
     class spell_hadronox_leeching_poison_AuraScript : public AuraScript
     {
-        PrepareAuraScript(spell_hadronox_leeching_poison_AuraScript);
-
         bool Validate(SpellInfo const* /*spell*/) override
         {
             return ValidateSpellInfo({ SPELL_LEECH_POISON_HEAL });
@@ -1066,7 +1063,7 @@ class spell_hadronox_leeching_poison : public SpellScriptLoader
 
         void Register() override
         {
-            OnEffectRemove += AuraEffectRemoveFn(spell_hadronox_leeching_poison_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_LEECH, AURA_EFFECT_HANDLE_REAL);
+            OnEffectRemove.Register(this, &spell_hadronox_leeching_poison_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_LEECH, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -1083,8 +1080,6 @@ class spell_hadronox_web_doors : public SpellScriptLoader
 
         class spell_hadronox_web_doors_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_hadronox_web_doors_SpellScript);
-
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 return ValidateSpellInfo({ SPELL_SUMMON_CHAMPION_PERIODIC, SPELL_SUMMON_CRYPT_FIEND_PERIODIC, SPELL_SUMMON_NECROMANCER_PERIODIC });
@@ -1102,7 +1097,7 @@ class spell_hadronox_web_doors : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget += SpellEffectFn(spell_hadronox_web_doors_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(this, &spell_hadronox_web_doors_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 

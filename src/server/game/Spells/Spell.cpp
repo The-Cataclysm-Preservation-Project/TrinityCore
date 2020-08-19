@@ -7886,7 +7886,7 @@ void Spell::CallScriptBeforeCastHandlers()
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_BEFORE_CAST);
         auto hookItrEnd = (*scritr)->BeforeCast.end(), hookItr = (*scritr)->BeforeCast.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            (*hookItr).Call(*scritr);
+            (*hookItr).Call();
 
         (*scritr)->_FinishScriptCall();
     }
@@ -7899,7 +7899,7 @@ void Spell::CallScriptOnCastHandlers()
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_ON_CAST);
         auto hookItrEnd = (*scritr)->OnCast.end(), hookItr = (*scritr)->OnCast.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            (*hookItr).Call(*scritr);
+            (*hookItr).Call();
 
         (*scritr)->_FinishScriptCall();
     }
@@ -7912,7 +7912,7 @@ void Spell::CallScriptAfterCastHandlers()
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_AFTER_CAST);
         auto hookItrEnd = (*scritr)->AfterCast.end(), hookItr = (*scritr)->AfterCast.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            (*hookItr).Call(*scritr);
+            (*hookItr).Call();
 
         (*scritr)->_FinishScriptCall();
     }
@@ -7927,7 +7927,7 @@ SpellCastResult Spell::CallScriptCheckCastHandlers()
         auto hookItrEnd = (*scritr)->OnCheckCast.end(), hookItr = (*scritr)->OnCheckCast.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
         {
-            SpellCastResult tempResult = (*hookItr).Call(*scritr);
+            SpellCastResult tempResult = (*hookItr).Call();
             if (retVal == SPELL_CAST_OK)
                 retVal = tempResult;
         }
@@ -7944,7 +7944,7 @@ void Spell::CallScriptOnSpellStartHandlers()
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_ON_SPELL_START);
         auto hookItrEnd = (*scritr)->OnSpellStart.end(), hookItr = (*scritr)->OnSpellStart.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            (*hookItr).Call(*scritr);
+            (*hookItr).Call();
 
         (*scritr)->_FinishScriptCall();
     }
@@ -7963,7 +7963,7 @@ bool Spell::CallScriptEffectHandlers(SpellEffIndex effIndex, SpellEffectHandleMo
     bool preventDefault = false;
     for (auto scritr = m_loadedScripts.begin(); scritr != m_loadedScripts.end(); ++scritr)
     {
-        HookList<SpellScript::EffectHandler>::iterator effItr, effEndItr;
+        HookList<SpellScript::NamedEffectHook<SpellScript::EffectIndexHook>>::iterator effItr, effEndItr;
         SpellScriptHookType hookType;
         switch (mode)
         {
@@ -7995,7 +7995,7 @@ bool Spell::CallScriptEffectHandlers(SpellEffIndex effIndex, SpellEffectHandleMo
         for (; effItr != effEndItr; ++effItr)
             // effect execution can be prevented
             if (!(*scritr)->_IsEffectPrevented(effIndex) && (*effItr).IsEffectAffected(m_spellInfo, effIndex))
-                (*effItr).Call(*scritr, effIndex);
+                (*effItr).Call(effIndex);
 
         if (!preventDefault)
             preventDefault = (*scritr)->_IsDefaultEffectPrevented(effIndex);
@@ -8012,7 +8012,7 @@ void Spell::CallScriptSuccessfulDispel(SpellEffIndex effIndex)
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_EFFECT_SUCCESSFUL_DISPEL);
         auto hookItrEnd = (*scritr)->OnEffectSuccessfulDispel.end(), hookItr = (*scritr)->OnEffectSuccessfulDispel.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            hookItr->Call(*scritr, effIndex);
+            hookItr->Call(effIndex);
 
         (*scritr)->_FinishScriptCall();
     }
@@ -8025,7 +8025,7 @@ void Spell::CallScriptBeforeHitHandlers()
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_BEFORE_HIT);
         auto hookItrEnd = (*scritr)->BeforeHit.end(), hookItr = (*scritr)->BeforeHit.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            (*hookItr).Call(*scritr);
+            (*hookItr).Call();
 
         (*scritr)->_FinishScriptCall();
     }
@@ -8038,7 +8038,7 @@ void Spell::CallScriptOnHitHandlers()
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_HIT);
         auto hookItrEnd = (*scritr)->OnHit.end(), hookItr = (*scritr)->OnHit.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            (*hookItr).Call(*scritr);
+            (*hookItr).Call();
 
         (*scritr)->_FinishScriptCall();
     }
@@ -8051,7 +8051,7 @@ void Spell::CallScriptAfterHitHandlers()
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_AFTER_HIT);
         auto hookItrEnd = (*scritr)->AfterHit.end(), hookItr = (*scritr)->AfterHit.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            (*hookItr).Call(*scritr);
+            (*hookItr).Call();
 
         (*scritr)->_FinishScriptCall();
     }
@@ -8065,7 +8065,7 @@ void Spell::CallScriptObjectAreaTargetSelectHandlers(std::list<WorldObject*>& ta
         auto hookItrEnd = (*scritr)->OnObjectAreaTargetSelect.end(), hookItr = (*scritr)->OnObjectAreaTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
             if (hookItr->IsEffectAffected(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
-                hookItr->Call(*scritr, targets);
+                hookItr->Call(targets);
 
         (*scritr)->_FinishScriptCall();
     }
@@ -8079,7 +8079,7 @@ void Spell::CallScriptObjectTargetSelectHandlers(WorldObject*& target, SpellEffI
         auto hookItrEnd = (*scritr)->OnObjectTargetSelect.end(), hookItr = (*scritr)->OnObjectTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
             if (hookItr->IsEffectAffected(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
-                hookItr->Call(*scritr, target);
+                hookItr->Call(target);
 
         (*scritr)->_FinishScriptCall();
     }
@@ -8093,7 +8093,7 @@ void Spell::CallScriptDestinationTargetSelectHandlers(SpellDestination& target, 
         auto hookItrEnd = (*scritr)->OnDestinationTargetSelect.end(), hookItr = (*scritr)->OnDestinationTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
             if (hookItr->IsEffectAffected(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
-                hookItr->Call(*scritr, target);
+                hookItr->Call(target);
 
         (*scritr)->_FinishScriptCall();
     }

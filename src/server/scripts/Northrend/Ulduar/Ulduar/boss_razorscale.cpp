@@ -1094,8 +1094,6 @@ class spell_razorscale_devouring_flame : public SpellScriptLoader
 
         class spell_razorscale_devouring_flame_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_razorscale_devouring_flame_SpellScript);
-
             void HandleSummon(SpellEffIndex effIndex)
             {
                 PreventHitDefaultEffect(effIndex);
@@ -1110,7 +1108,7 @@ class spell_razorscale_devouring_flame : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit += SpellEffectFn(spell_razorscale_devouring_flame_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
+                OnEffectHit.Register(this, &spell_razorscale_devouring_flame_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
             }
         };
 
@@ -1127,8 +1125,6 @@ class spell_razorscale_flame_breath : public SpellScriptLoader
 
         class spell_razorscale_flame_breath_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_razorscale_flame_breath_SpellScript);
-
             void CheckDamage()
             {
                 Creature* target = GetHitCreature();
@@ -1141,7 +1137,7 @@ class spell_razorscale_flame_breath : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit += SpellHitFn(spell_razorscale_flame_breath_SpellScript::CheckDamage);
+                OnHit.Register(this, &spell_razorscale_flame_breath_SpellScript::CheckDamage);
             }
         };
 

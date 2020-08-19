@@ -94,8 +94,6 @@ enum MiscSpells
 // 23881 - Bloodthirst
 class spell_warr_bloodthirst : public SpellScript
 {
-    PrepareSpellScript(spell_warr_bloodthirst);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_BLOODTHIRST });
@@ -115,8 +113,8 @@ class spell_warr_bloodthirst : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_bloodthirst::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHit += SpellEffectFn(spell_warr_bloodthirst::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+        OnEffectLaunchTarget.Register(this, &spell_warr_bloodthirst::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHit.Register(this, &spell_warr_bloodthirst::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -124,8 +122,6 @@ class spell_warr_bloodthirst : public SpellScript
 // 23880 - Bloodthirst
 class spell_warr_bloodthirst_heal : public SpellScript
 {
-    PrepareSpellScript(spell_warr_bloodthirst_heal);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_BLOODTHIRST_DAMAGE });
@@ -139,15 +135,13 @@ class spell_warr_bloodthirst_heal : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_warr_bloodthirst_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+        OnEffectHitTarget.Register(this, &spell_warr_bloodthirst_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
     }
 };
 
 /// Updated 4.3.4
 class spell_warr_charge : public SpellScript
 {
-    PrepareSpellScript(spell_warr_charge);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo(
@@ -180,16 +174,14 @@ class spell_warr_charge : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_warr_charge::HandleStun, EFFECT_0, SPELL_EFFECT_CHARGE);
-        OnEffectHitTarget += SpellEffectFn(spell_warr_charge::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(this, &spell_warr_charge::HandleStun, EFFECT_0, SPELL_EFFECT_CHARGE);
+        OnEffectHitTarget.Register(this, &spell_warr_charge::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
 /// Updated 4.3.4
 class spell_warr_concussion_blow : public SpellScript
 {
-    PrepareSpellScript(spell_warr_concussion_blow);
-
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
         SetEffectValue(CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_2].CalcValue()));
@@ -197,7 +189,7 @@ class spell_warr_concussion_blow : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_concussion_blow::HandleDummy, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(this, &spell_warr_concussion_blow::HandleDummy, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -205,8 +197,6 @@ class spell_warr_concussion_blow : public SpellScript
 // -12834 - Deep Wounds
 class spell_warr_deep_wounds : public AuraScript
 {
-    PrepareAuraScript(spell_warr_deep_wounds);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_DEEP_WOUNDS_PERIODIC });
@@ -231,15 +221,13 @@ class spell_warr_deep_wounds : public AuraScript
 
     void Register() override
     {
-        OnEffectProc += AuraEffectProcFn(spell_warr_deep_wounds::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(this, &spell_warr_deep_wounds::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
 /// Updated 4.3.4
 class spell_warr_execute : public SpellScript
 {
-    PrepareSpellScript(spell_warr_execute);
-
     void HandleEffect(SpellEffIndex /*effIndex*/)
     {
         Unit* caster = GetCaster();
@@ -268,15 +256,13 @@ class spell_warr_execute : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_execute::HandleEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(this, &spell_warr_execute::HandleEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
 // 58387 - Glyph of Sunder Armor
 class spell_warr_glyph_of_sunder_armor : public AuraScript
 {
-    PrepareAuraScript(spell_warr_glyph_of_sunder_armor);
-
     void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
     {
         if (!spellMod)
@@ -293,15 +279,13 @@ class spell_warr_glyph_of_sunder_armor : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcSpellMod += AuraEffectCalcSpellModFn(spell_warr_glyph_of_sunder_armor::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
+        DoEffectCalcSpellMod.Register(this, &spell_warr_glyph_of_sunder_armor::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
 // 5246 - Intimidating Shout
 class spell_warr_intimidating_shout : public SpellScript
 {
-    PrepareSpellScript(spell_warr_intimidating_shout);
-
     void FilterTargets(std::list<WorldObject*>& unitList)
     {
         unitList.remove(GetExplTargetWorldObject());
@@ -309,16 +293,14 @@ class spell_warr_intimidating_shout : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warr_intimidating_shout::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warr_intimidating_shout::FilterTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(this, &spell_warr_intimidating_shout::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(this, &spell_warr_intimidating_shout::FilterTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
 // -84583 Lambs to the Slaughter
 class spell_warr_lambs_to_the_slaughter : public AuraScript
 {
-    PrepareAuraScript(spell_warr_lambs_to_the_slaughter);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_MORTAL_STRIKE, SPELL_WARRIOR_REND });
@@ -333,7 +315,7 @@ class spell_warr_lambs_to_the_slaughter : public AuraScript
 
     void Register() override
     {
-        OnEffectProc += AuraEffectProcFn(spell_warr_lambs_to_the_slaughter::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(this, &spell_warr_lambs_to_the_slaughter::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -341,8 +323,6 @@ class spell_warr_lambs_to_the_slaughter : public AuraScript
 // 12975 - Last Stand
 class spell_warr_last_stand : public SpellScript
 {
-    PrepareSpellScript(spell_warr_last_stand);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_LAST_STAND_TRIGGERED });
@@ -358,15 +338,13 @@ class spell_warr_last_stand : public SpellScript
     void Register() override
     {
         // add dummy effect spell handler to Last Stand
-        OnEffectHit += SpellEffectFn(spell_warr_last_stand::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHit.Register(this, &spell_warr_last_stand::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
 // 7384 - Overpower
 class spell_warr_overpower : public SpellScript
 {
-    PrepareSpellScript(spell_warr_overpower);
-
     void HandleEffect(SpellEffIndex /*effIndex*/)
     {
         uint32 spellId = 0;
@@ -385,15 +363,13 @@ class spell_warr_overpower : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_warr_overpower::HandleEffect, EFFECT_0, SPELL_EFFECT_ANY);
+        OnEffectHitTarget.Register(this, &spell_warr_overpower::HandleEffect, EFFECT_0, SPELL_EFFECT_ANY);
     }
 };
 
 // 97462 - Rallying Cry
 class spell_warr_rallying_cry : public SpellScript
 {
-    PrepareSpellScript(spell_warr_rallying_cry);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_RALLYING_CRY });
@@ -413,15 +389,13 @@ class spell_warr_rallying_cry : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_warr_rallying_cry::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(this, &spell_warr_rallying_cry::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
 // 94009 - Rend
 class spell_warr_rend : public AuraScript
 {
-    PrepareAuraScript(spell_warr_rend);
-
     void CalculateAmount(AuraEffect const* aurEff, int32& amount, bool& canBeRecalculated)
     {
         if (Unit* caster = GetCaster())
@@ -440,15 +414,13 @@ class spell_warr_rend : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_warr_rend::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        DoEffectCalcAmount.Register(this, &spell_warr_rend::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
 // 20230 - Retaliation
 class spell_warr_retaliation : public AuraScript
 {
-    PrepareAuraScript(spell_warr_retaliation);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_RETALIATION_DAMAGE });
@@ -468,16 +440,14 @@ class spell_warr_retaliation : public AuraScript
 
     void Register() override
     {
-        DoCheckProc += AuraCheckProcFn(spell_warr_retaliation::CheckProc);
-        OnEffectProc += AuraEffectProcFn(spell_warr_retaliation::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(this, &spell_warr_retaliation::CheckProc);
+        OnEffectProc.Register(this, &spell_warr_retaliation::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
 // 64380, 65941 - Shattering Throw
 class spell_warr_shattering_throw : public SpellScript
 {
-    PrepareSpellScript(spell_warr_shattering_throw);
-
     void HandleScript(SpellEffIndex effIndex)
     {
         PreventHitDefaultEffect(effIndex);
@@ -489,15 +459,13 @@ class spell_warr_shattering_throw : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_warr_shattering_throw::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(this, &spell_warr_shattering_throw::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
 /// Updated 4.3.4
 class spell_warr_slam : public SpellScript
 {
-    PrepareSpellScript(spell_warr_slam);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo(
@@ -524,14 +492,12 @@ class spell_warr_slam : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_slam::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectLaunchTarget.Register(this, &spell_warr_slam::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
 class spell_warr_slam_triggered : public SpellScript
 {
-    PrepareSpellScript(spell_warr_slam_triggered);
-
     bool Load() override
     {
         _bloodsurgeBonusActive = GetCaster()->HasAura(SPELL_WARRIOR_BLOODSURGE, GetCaster()->GetGUID());
@@ -564,7 +530,7 @@ class spell_warr_slam_triggered : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_slam_triggered::HandleBonusDamage, EFFECT_1, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
+        OnEffectLaunchTarget.Register(this, &spell_warr_slam_triggered::HandleBonusDamage, EFFECT_1, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
     }
 private:
     bool _bloodsurgeBonusActive = false;
@@ -572,8 +538,6 @@ private:
 
 class spell_warr_second_wind_proc : public AuraScript
 {
-    PrepareAuraScript(spell_warr_second_wind_proc);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo(
@@ -612,15 +576,13 @@ class spell_warr_second_wind_proc : public AuraScript
 
     void Register() override
     {
-        DoCheckProc += AuraCheckProcFn(spell_warr_second_wind_proc::CheckProc);
-        OnEffectProc += AuraEffectProcFn(spell_warr_second_wind_proc::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(this, &spell_warr_second_wind_proc::CheckProc);
+        OnEffectProc.Register(this, &spell_warr_second_wind_proc::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
 class spell_warr_second_wind_trigger : public AuraScript
 {
-    PrepareAuraScript(spell_warr_second_wind_trigger);
-
     void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
     {
         amount = int32(GetUnitOwner()->CountPctFromMaxHealth(amount));
@@ -628,15 +590,13 @@ class spell_warr_second_wind_trigger : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_warr_second_wind_trigger::CalculateAmount, EFFECT_1, SPELL_AURA_PERIODIC_HEAL);
+        DoEffectCalcAmount.Register(this, &spell_warr_second_wind_trigger::CalculateAmount, EFFECT_1, SPELL_AURA_PERIODIC_HEAL);
     }
 };
 
 // 52437 - Sudden Death
 class spell_warr_sudden_death : public AuraScript
 {
-    PrepareAuraScript(spell_warr_sudden_death);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_COLOSSUS_SMASH });
@@ -651,15 +611,13 @@ class spell_warr_sudden_death : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply += AuraEffectRemoveFn(spell_warr_sudden_death::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL); // correct?
+        AfterEffectApply.Register(this, &spell_warr_sudden_death::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
 // 12328, 18765, 35429 - Sweeping Strikes
 class spell_warr_sweeping_strikes : public AuraScript
 {
-    PrepareAuraScript(spell_warr_sweeping_strikes);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo(
@@ -696,8 +654,8 @@ class spell_warr_sweeping_strikes : public AuraScript
 
     void Register() override
     {
-        DoCheckProc += AuraCheckProcFn(spell_warr_sweeping_strikes::CheckProc);
-        OnEffectProc += AuraEffectProcFn(spell_warr_sweeping_strikes::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(this, &spell_warr_sweeping_strikes::CheckProc);
+        OnEffectProc.Register(this, &spell_warr_sweeping_strikes::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 private:
     Unit* _procTarget = nullptr;
@@ -705,10 +663,7 @@ private:
 
 // -46951 - Sword and Board
 class spell_warr_sword_and_board : public AuraScript
-{
-    PrepareAuraScript(spell_warr_sword_and_board);
-
-private:
+{private:
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_SHIELD_SLAM });
@@ -723,15 +678,13 @@ private:
 
     void Register() override
     {
-        OnEffectProc += AuraEffectProcFn(spell_warr_sword_and_board::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(this, &spell_warr_sword_and_board::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
 // 34428 - Victory Rush
 class spell_warr_victory_rush : public SpellScript
 {
-    PrepareSpellScript(spell_warr_victory_rush);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo(
@@ -772,16 +725,14 @@ class spell_warr_victory_rush : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_victory_rush::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget += SpellEffectFn(spell_warr_victory_rush::HandleImpendingVictoryHeal, EFFECT_2, SPELL_EFFECT_HEAL_PCT);
+        OnEffectLaunchTarget.Register(this, &spell_warr_victory_rush::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(this, &spell_warr_victory_rush::HandleImpendingVictoryHeal, EFFECT_2, SPELL_EFFECT_HEAL_PCT);
     }
 };
 
 // 50720 - Vigilance
 class spell_warr_vigilance : public AuraScript
 {
-    PrepareAuraScript(spell_warr_vigilance);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_VENGEANCE });
@@ -813,9 +764,9 @@ class spell_warr_vigilance : public AuraScript
 
     void Register() override
     {
-        DoCheckProc += AuraCheckProcFn(spell_warr_vigilance::CheckProc);
-        OnEffectProc += AuraEffectProcFn(spell_warr_vigilance::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
-        OnEffectRemove += AuraEffectRemoveFn(spell_warr_vigilance::HandleRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        DoCheckProc.Register(this, &spell_warr_vigilance::CheckProc);
+        OnEffectProc.Register(this, &spell_warr_vigilance::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectRemove.Register(this, &spell_warr_vigilance::HandleRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 private:
     Unit* _procTarget = nullptr;
@@ -824,8 +775,6 @@ private:
 // 50725 Vigilance
 class spell_warr_vigilance_trigger : public SpellScript
 {
-    PrepareSpellScript(spell_warr_vigilance_trigger);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_TAUNT });
@@ -842,15 +791,13 @@ class spell_warr_vigilance_trigger : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_warr_vigilance_trigger::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(this, &spell_warr_vigilance_trigger::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
 // 76838 - Strikes of Opportunity
 class spell_warr_strikes_of_opportunity : public AuraScript
 {
-    PrepareAuraScript(spell_warr_strikes_of_opportunity);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_OPPORTUNITY_STRIKE });
@@ -871,15 +818,13 @@ class spell_warr_strikes_of_opportunity : public AuraScript
 
     void Register() override
     {
-        DoCheckProc += AuraCheckProcFn(spell_warr_strikes_of_opportunity::CheckProc);
-        OnEffectProc += AuraEffectProcFn(spell_warr_strikes_of_opportunity::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(this, &spell_warr_strikes_of_opportunity::CheckProc);
+        OnEffectProc.Register(this, &spell_warr_strikes_of_opportunity::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
 class spell_warr_thunder_clap : public SpellScript
 {
-    PrepareSpellScript(spell_warr_thunder_clap);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_REND });
@@ -910,8 +855,8 @@ class spell_warr_thunder_clap : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warr_thunder_clap::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget += SpellEffectFn(spell_warr_thunder_clap::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnObjectAreaTargetSelect.Register(this, &spell_warr_thunder_clap::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(this, &spell_warr_thunder_clap::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 
 private:
@@ -920,8 +865,6 @@ private:
 
 class spell_warr_shield_specialization : public AuraScript
 {
-    PrepareAuraScript(spell_warr_shield_specialization);
-
     void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
     {
         if (eventInfo.GetHitMask() & PROC_HIT_REFLECT)
@@ -938,14 +881,12 @@ class spell_warr_shield_specialization : public AuraScript
 
     void Register() override
     {
-        OnEffectProc += AuraEffectProcFn(spell_warr_shield_specialization::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(this, &spell_warr_shield_specialization::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
 class spell_warr_blood_craze : public AuraScript
 {
-    PrepareAuraScript(spell_warr_blood_craze);
-
     void HandleCalcAmount(AuraEffect const* aurEff, int32& amount, bool& /*canBeRecalculated*/)
     {
         int32 bp = GetSpellInfo()->Effects[EFFECT_0].BasePoints / 2;
@@ -955,15 +896,13 @@ class spell_warr_blood_craze : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_warr_blood_craze::HandleCalcAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
+        DoEffectCalcAmount.Register(this, &spell_warr_blood_craze::HandleCalcAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
     }
 };
 
 // 46968 - Shockwave
 class spell_warr_shockwave : public SpellScript
 {
-    PrepareSpellScript(spell_warr_shockwave);
-
     void HandleDamage(SpellEffIndex /*effIndex*/)
     {
         SetEffectValue(CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_2].CalcValue()));
@@ -971,14 +910,12 @@ class spell_warr_shockwave : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_shockwave::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(this, &spell_warr_shockwave::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
 class spell_warr_devastate : public SpellScript
 {
-    PrepareSpellScript(spell_warr_devastate);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_SUNDER_ARMOR });
@@ -999,15 +936,13 @@ class spell_warr_devastate : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget += SpellEffectFn(spell_warr_devastate::HandleDamageBonus, EFFECT_1, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
-        OnEffectHitTarget += SpellEffectFn(spell_warr_devastate::HandleSunderArmor, EFFECT_1, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
+        OnEffectLaunchTarget.Register(this, &spell_warr_devastate::HandleDamageBonus, EFFECT_1, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
+        OnEffectHitTarget.Register(this, &spell_warr_devastate::HandleSunderArmor, EFFECT_1, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
     }
 };
 
 class spell_warr_whirlwind : public SpellScript
 {
-    PrepareSpellScript(spell_warr_whirlwind);
-
     void CountTargets(SpellEffIndex /*effIndex*/)
     {
         _hitTargets++;
@@ -1024,8 +959,8 @@ class spell_warr_whirlwind : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_warr_whirlwind::CountTargets, EFFECT_0, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
-        AfterCast += SpellCastFn(spell_warr_whirlwind::HandleCooldownReduction);
+        OnEffectHitTarget.Register(this, &spell_warr_whirlwind::CountTargets, EFFECT_0, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
+        AfterCast.Register(this, &spell_warr_whirlwind::HandleCooldownReduction);
     }
 private:
     uint8 _hitTargets = 0;
@@ -1033,8 +968,6 @@ private:
 
 class spell_warr_heroic_leap : public SpellScript
 {
-    PrepareSpellScript(spell_warr_heroic_leap);
-
     SpellCastResult CheckLocation()
     {
         // The client shows an area as unreachable once the target destination is 4 yards above your position
@@ -1046,7 +979,7 @@ class spell_warr_heroic_leap : public SpellScript
 
     void Register() override
     {
-        OnCheckCast += SpellCheckCastFn(spell_warr_heroic_leap::CheckLocation);
+        OnCheckCast.Register(this, &spell_warr_heroic_leap::CheckLocation);
     }
 };
 

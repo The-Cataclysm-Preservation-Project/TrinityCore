@@ -347,6 +347,12 @@ class HookList final
             return *this;
         }
 
+        template <typename... Args>
+        void Register(Args&&... args)
+        {
+            _container.emplace_back(std::forward<Args&&>(args)...);
+        }
+
         size_t size()
         {
             return _container.size();
