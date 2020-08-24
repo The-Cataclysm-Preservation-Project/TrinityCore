@@ -828,7 +828,7 @@ class spell_ozumat_shadow_blast_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_ozumat_shadow_blast_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_ozumat_shadow_blast_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

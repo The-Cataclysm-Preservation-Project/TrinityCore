@@ -142,7 +142,7 @@ class spell_ticking_time_bomb : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_ticking_time_bomb_AuraScript::HandleOnEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectRemove.Register(this, &spell_ticking_time_bomb_AuraScript::HandleOnEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

@@ -800,7 +800,7 @@ class spell_helix_helix_ride_face_timer_aura : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_helix_helix_ride_face_timer_aura::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_helix_helix_ride_face_timer_aura::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -848,7 +848,7 @@ class spell_helix_ride_vehicle : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_helix_ride_vehicle::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE);
+        AfterEffectRemove.Register(this, &spell_helix_ride_vehicle::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

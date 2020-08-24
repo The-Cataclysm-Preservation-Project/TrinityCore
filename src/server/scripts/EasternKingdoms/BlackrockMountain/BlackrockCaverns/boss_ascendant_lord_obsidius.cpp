@@ -298,7 +298,7 @@ class spell_obsidius_transformation_not_selectable : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_obsidius_transformation_not_selectable::AfterRemmove, EFFECT_0, SPELL_AURA_MOD_UNATTACKABLE);
+        AfterEffectRemove.Register(this, &spell_obsidius_transformation_not_selectable::AfterRemmove, EFFECT_0, SPELL_AURA_MOD_UNATTACKABLE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

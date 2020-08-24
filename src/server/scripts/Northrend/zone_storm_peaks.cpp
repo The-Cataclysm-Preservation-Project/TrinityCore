@@ -1139,7 +1139,7 @@ class spell_grip : public SpellScriptLoader
             {
                 OnEffectPeriodic.Register(this, &spell_grip_AuraScript::DummyTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
 
-                AfterEffectRemove.Register(this, &spell_grip_AuraScript::HandleDrop, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                AfterEffectRemove.Register(this, &spell_grip_AuraScript::HandleDrop, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
 
             // tick number in the AuraEffect gets reset each time we stack the aura, so keep track of it locally

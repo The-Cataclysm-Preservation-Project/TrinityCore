@@ -148,7 +148,7 @@ class spell_dru_berserk : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_berserk::HandleEffectApply, EFFECT_1, SPELL_AURA_ADD_PCT_MODIFIER);
+        AfterEffectApply.Register(this, &spell_dru_berserk::HandleEffectApply, EFFECT_1, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -690,7 +690,7 @@ class spell_dru_lifebloom : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dru_lifebloom::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_dru_lifebloom::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         AfterDispel.Register(this, &spell_dru_lifebloom::HandleDispel);
     }
 };
@@ -1531,7 +1531,7 @@ class spell_dru_moonfire : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dru_moonfire::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER);
+        AfterEffectRemove.Register(this, &spell_dru_moonfire::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1910,7 +1910,7 @@ class spell_dru_harmony_triggered : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dru_harmony_triggered::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER);
+        AfterEffectRemove.Register(this, &spell_dru_harmony_triggered::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

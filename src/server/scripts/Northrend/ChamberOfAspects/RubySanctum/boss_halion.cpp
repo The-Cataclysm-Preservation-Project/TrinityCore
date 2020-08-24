@@ -1418,7 +1418,7 @@ class spell_halion_meteor_strike_marker : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_halion_meteor_strike_marker_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(this, &spell_halion_meteor_strike_marker_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1558,7 +1558,7 @@ class spell_halion_marks : public SpellScriptLoader
             void Register() override
             {
                 OnDispel.Register(this, &spell_halion_marks_AuraScript::BeforeDispel);
-                AfterEffectRemove.Register(this, &spell_halion_marks_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(this, &spell_halion_marks_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
 
             uint32 _summonSpellId;

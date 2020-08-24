@@ -2150,7 +2150,7 @@ class spell_mimiron_rapid_burst : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_mimiron_rapid_burst_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                AfterEffectRemove.Register(this, &spell_mimiron_rapid_burst_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
                 OnEffectPeriodic.Register(this, &spell_mimiron_rapid_burst_AuraScript::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
@@ -2376,7 +2376,7 @@ class spell_mimiron_summon_assault_bot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_mimiron_summon_assault_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectRemove.Register(this, &spell_mimiron_summon_assault_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2439,7 +2439,7 @@ class spell_mimiron_summon_fire_bot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_mimiron_summon_fire_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectRemove.Register(this, &spell_mimiron_summon_fire_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2617,7 +2617,7 @@ class spell_mimiron_summon_junk_bot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_mimiron_summon_junk_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectRemove.Register(this, &spell_mimiron_summon_junk_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

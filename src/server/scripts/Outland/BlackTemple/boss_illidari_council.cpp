@@ -765,7 +765,7 @@ class spell_illidari_council_deadly_poison : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_illidari_council_deadly_poison_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                OnEffectRemove.Register(this, &spell_illidari_council_deadly_poison_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -877,7 +877,7 @@ class spell_illidari_council_seal : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_illidari_council_seal_AuraScript::OnRemove, EFFECT_2, SPELL_AURA_DUMMY);
+                OnEffectRemove.Register(this, &spell_illidari_council_seal_AuraScript::OnRemove, EFFECT_2, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -906,7 +906,7 @@ class spell_illidari_dampen_magic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_illidari_dampen_magic_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
+                OnEffectRemove.Register(this, &spell_illidari_dampen_magic_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

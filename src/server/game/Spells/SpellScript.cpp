@@ -82,50 +82,6 @@ std::string const* _SpellScript::_GetScriptName() const
     return m_scriptName;
 }
 
-bool _SpellScript::EffectNameHook::Check(SpellInfo const* spellEntry, uint8 effIndex)
-{
-    if (!spellEntry->Effects[effIndex].Effect && !effName)
-        return true;
-    if (!spellEntry->Effects[effIndex].Effect)
-        return false;
-    return (effName == SPELL_EFFECT_ANY) || (spellEntry->Effects[effIndex].Effect == effName);
-}
-
-std::string _SpellScript::EffectNameHook::ToString()
-{
-    switch (effName)
-    {
-        case SPELL_EFFECT_ANY:
-            return "SPELL_EFFECT_ANY";
-        default:
-            char num[10];
-            sprintf (num, "%u", effName);
-            return num;
-    }
-}
-
-bool _SpellScript::EffectAuraNameHook::Check(SpellInfo const* spellEntry, uint8 effIndex)
-{
-    if (!spellEntry->Effects[effIndex].ApplyAuraName && !effAurName)
-        return true;
-    if (!spellEntry->Effects[effIndex].ApplyAuraName)
-        return false;
-    return (effAurName == SPELL_AURA_ANY) || (spellEntry->Effects[effIndex].ApplyAuraName == effAurName);
-}
-
-std::string _SpellScript::EffectAuraNameHook::ToString()
-{
-    switch (effAurName)
-    {
-        case SPELL_AURA_ANY:
-            return "SPELL_AURA_ANY";
-        default:
-            char num[10];
-            sprintf (num, "%u", effAurName);
-            return num;
-    }
-}
-
 bool SpellScript::_Validate(SpellInfo const* entry)
 {
     for (auto itr = OnEffectLaunch.begin(); itr != OnEffectLaunch.end(); ++itr)

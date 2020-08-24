@@ -7963,7 +7963,7 @@ bool Spell::CallScriptEffectHandlers(SpellEffIndex effIndex, SpellEffectHandleMo
     bool preventDefault = false;
     for (auto scritr = m_loadedScripts.begin(); scritr != m_loadedScripts.end(); ++scritr)
     {
-        HookList<SpellScript::NamedEffectHook<SpellScript::EffectIndexHook>>::iterator effItr, effEndItr;
+        HookList<SpellScript::EffectNameHook>::iterator effItr, effEndItr;
         SpellScriptHookType hookType;
         switch (mode)
         {
@@ -7994,7 +7994,7 @@ bool Spell::CallScriptEffectHandlers(SpellEffIndex effIndex, SpellEffectHandleMo
         (*scritr)->_PrepareScriptCall(hookType);
         for (; effItr != effEndItr; ++effItr)
             // effect execution can be prevented
-            if (!(*scritr)->_IsEffectPrevented(effIndex) && (*effItr).IsEffectAffected(m_spellInfo, effIndex))
+            if (!(*scritr)->_IsEffectPrevented(effIndex) && (*effItr).Filter(m_spellInfo, effIndex))
                 (*effItr).Call(effIndex);
 
         if (!preventDefault)
@@ -8064,7 +8064,7 @@ void Spell::CallScriptObjectAreaTargetSelectHandlers(std::list<WorldObject*>& ta
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_OBJECT_AREA_TARGET_SELECT);
         auto hookItrEnd = (*scritr)->OnObjectAreaTargetSelect.end(), hookItr = (*scritr)->OnObjectAreaTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            if (hookItr->IsEffectAffected(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
+            if (hookItr->Filter(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
                 hookItr->Call(targets);
 
         (*scritr)->_FinishScriptCall();
@@ -8078,7 +8078,7 @@ void Spell::CallScriptObjectTargetSelectHandlers(WorldObject*& target, SpellEffI
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_OBJECT_TARGET_SELECT);
         auto hookItrEnd = (*scritr)->OnObjectTargetSelect.end(), hookItr = (*scritr)->OnObjectTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            if (hookItr->IsEffectAffected(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
+            if (hookItr->Filter(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
                 hookItr->Call(target);
 
         (*scritr)->_FinishScriptCall();
@@ -8092,7 +8092,7 @@ void Spell::CallScriptDestinationTargetSelectHandlers(SpellDestination& target, 
         (*scritr)->_PrepareScriptCall(SPELL_SCRIPT_HOOK_DESTINATION_TARGET_SELECT);
         auto hookItrEnd = (*scritr)->OnDestinationTargetSelect.end(), hookItr = (*scritr)->OnDestinationTargetSelect.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
-            if (hookItr->IsEffectAffected(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
+            if (hookItr->Filter(m_spellInfo, effIndex) && targetType.GetTarget() == hookItr->GetTarget())
                 hookItr->Call(target);
 
         (*scritr)->_FinishScriptCall();
@@ -8109,14 +8109,14 @@ bool Spell::CheckScriptEffectImplicitTargets(uint32 effIndex, uint32 effIndexToC
     {
         auto targetSelectHookEnd = (*itr)->OnObjectTargetSelect.end(), targetSelectHookItr = (*itr)->OnObjectTargetSelect.begin();
         for (; targetSelectHookItr != targetSelectHookEnd; ++targetSelectHookItr)
-            if (((*targetSelectHookItr).IsEffectAffected(m_spellInfo, effIndex) && !(*targetSelectHookItr).IsEffectAffected(m_spellInfo, effIndexToCheck)) ||
-                (!(*targetSelectHookItr).IsEffectAffected(m_spellInfo, effIndex) && (*targetSelectHookItr).IsEffectAffected(m_spellInfo, effIndexToCheck)))
+            if (((*targetSelectHookItr).Filter(m_spellInfo, effIndex) && !(*targetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)) ||
+                (!(*targetSelectHookItr).Filter(m_spellInfo, effIndex) && (*targetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)))
                 return false;
 
         auto areaTargetSelectHookEnd = (*itr)->OnObjectAreaTargetSelect.end(), areaTargetSelectHookItr = (*itr)->OnObjectAreaTargetSelect.begin();
         for (; areaTargetSelectHookItr != areaTargetSelectHookEnd; ++areaTargetSelectHookItr)
-            if (((*areaTargetSelectHookItr).IsEffectAffected(m_spellInfo, effIndex) && !(*areaTargetSelectHookItr).IsEffectAffected(m_spellInfo, effIndexToCheck)) ||
-                (!(*areaTargetSelectHookItr).IsEffectAffected(m_spellInfo, effIndex) && (*areaTargetSelectHookItr).IsEffectAffected(m_spellInfo, effIndexToCheck)))
+            if (((*areaTargetSelectHookItr).Filter(m_spellInfo, effIndex) && !(*areaTargetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)) ||
+                (!(*areaTargetSelectHookItr).Filter(m_spellInfo, effIndex) && (*areaTargetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)))
                 return false;
     }
     return true;

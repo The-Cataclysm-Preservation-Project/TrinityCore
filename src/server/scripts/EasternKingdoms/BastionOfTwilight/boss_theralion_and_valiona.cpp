@@ -1265,7 +1265,7 @@ class spell_valiona_blackout: public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_valiona_blackout_AuraScript::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB);
+                AfterEffectRemove.Register(this, &spell_valiona_blackout_AuraScript::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

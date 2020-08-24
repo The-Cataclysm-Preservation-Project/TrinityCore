@@ -457,7 +457,7 @@ class spell_festergut_blighted_spores : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_festergut_blighted_spores_AuraScript::ExtraEffect, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                OnEffectRemove.Register(this, &spell_festergut_blighted_spores_AuraScript::ExtraEffect, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

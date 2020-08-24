@@ -466,7 +466,7 @@ class spell_corborus_crystal_barrage : public AuraScript
 
     void Register() override
     {
-        OnEffectRemove.Register(this, &spell_corborus_crystal_barrage::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectRemove.Register(this, &spell_corborus_crystal_barrage::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

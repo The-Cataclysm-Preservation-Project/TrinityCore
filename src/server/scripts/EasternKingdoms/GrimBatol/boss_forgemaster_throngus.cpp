@@ -695,8 +695,8 @@ class spell_throngus_impaling_slam : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_throngus_impaling_slam_AuraScript::AfterApply, EFFECT_2, SPELL_AURA_PERIODIC_DAMAGE);
-                AfterEffectRemove.Register(this, &spell_throngus_impaling_slam_AuraScript::AfterRemove, EFFECT_2, SPELL_AURA_PERIODIC_DAMAGE);
+                AfterEffectApply.Register(this, &spell_throngus_impaling_slam_AuraScript::AfterApply, EFFECT_2, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(this, &spell_throngus_impaling_slam_AuraScript::AfterRemove, EFFECT_2, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

@@ -656,7 +656,7 @@ class spell_dark_fiend_skin : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_dark_fiend_skin_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(this, &spell_dark_fiend_skin_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

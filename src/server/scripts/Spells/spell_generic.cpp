@@ -1448,7 +1448,7 @@ class spell_gen_defend : public SpellScriptLoader
 
                 // Remove Defend spell from player when he dismounts
                 if (spell->Effects[EFFECT_2].ApplyAuraName == SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN)
-                    OnEffectRemove.Register(this, &spell_gen_defend_AuraScript::RemoveDummyFromDriver, EFFECT_2, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
+                    OnEffectRemove.Register(this, &spell_gen_defend_AuraScript::RemoveDummyFromDriver, EFFECT_2, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
 
                 // Defend spells cast by players (add/remove visuals)
                 if (spell->Effects[EFFECT_1].ApplyAuraName == SPELL_AURA_DUMMY)
@@ -1782,7 +1782,7 @@ class spell_steal_essence_visual : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_steal_essence_visual::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_steal_essence_visual::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -2007,7 +2007,7 @@ class spell_gen_lifebloom : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_gen_lifebloom_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
+                AfterEffectRemove.Register(this, &spell_gen_lifebloom_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL);
             }
 
         private:
@@ -2524,7 +2524,7 @@ class spell_gen_paralytic_poison : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_gen_paralytic_poison_AuraScript::HandleStun, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                AfterEffectRemove.Register(this, &spell_gen_paralytic_poison_AuraScript::HandleStun, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -3160,8 +3160,8 @@ class spell_gen_summon_elemental : public SpellScriptLoader
 
             void Register() override
             {
-                 AfterEffectApply.Register(this, &spell_gen_summon_elemental_AuraScript::AfterApply, EFFECT_1, SPELL_AURA_DUMMY);
-                 AfterEffectRemove.Register(this, &spell_gen_summon_elemental_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY);
+                 AfterEffectApply.Register(this, &spell_gen_summon_elemental_AuraScript::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                 AfterEffectRemove.Register(this, &spell_gen_summon_elemental_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
 
         private:
@@ -5294,7 +5294,7 @@ class spell_gen_zero_energy_zero_regen : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_gen_zero_energy_zero_regen::AfterApply, EFFECT_0, SPELL_AURA_MOD_POWER_REGEN_PERCENT);
+        AfterEffectApply.Register(this, &spell_gen_zero_energy_zero_regen::AfterApply, EFFECT_0, SPELL_AURA_MOD_POWER_REGEN_PERCENT, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

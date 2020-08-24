@@ -768,7 +768,7 @@ class spell_mage_living_bomb : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_mage_living_bomb::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_mage_living_bomb::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -802,8 +802,8 @@ class spell_mage_ice_barrier : public SpellScriptLoader
            void Register() override
            {
                 DoEffectCalcAmount.Register(this, &spell_mage_ice_barrier_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-                AfterEffectRemove.Register(this, &spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-                AfterEffectRemove.Register(this, &spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+                AfterEffectRemove.Register(this, &spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(this, &spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
            }
        };
 
@@ -955,7 +955,7 @@ class spell_mage_mana_shield : public SpellScriptLoader
            {
                 DoEffectCalcAmount.Register(this, &spell_mage_mana_shield_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MANA_SHIELD);
                 AfterEffectManaShield.Register(this, &spell_mage_mana_shield_AuraScript::HandleAbsorb, EFFECT_0);
-                AfterEffectRemove.Register(this, &spell_mage_mana_shield_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_MANA_SHIELD);
+                AfterEffectRemove.Register(this, &spell_mage_mana_shield_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_MANA_SHIELD, AURA_EFFECT_HANDLE_REAL);
            }
        };
 
@@ -1332,7 +1332,7 @@ class spell_mage_ring_of_frost_freeze : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_mage_ring_of_frost_freeze_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN);
+                AfterEffectRemove.Register(this, &spell_mage_ring_of_frost_freeze_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1545,7 +1545,7 @@ public:
 
         void Register() override
         {
-            AfterEffectRemove.Register(this, &spell_mage_early_frost_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER);
+            AfterEffectRemove.Register(this, &spell_mage_early_frost_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

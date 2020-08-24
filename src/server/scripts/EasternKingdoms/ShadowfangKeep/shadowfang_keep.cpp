@@ -68,7 +68,7 @@ class spell_sfk_shield_of_bones : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_sfk_shield_of_bones::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        AfterEffectRemove.Register(this, &spell_sfk_shield_of_bones::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

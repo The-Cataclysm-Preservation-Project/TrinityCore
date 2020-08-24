@@ -1241,7 +1241,7 @@ class spell_sindragosa_instability : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_sindragosa_instability_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(this, &spell_sindragosa_instability_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1330,7 +1330,7 @@ class spell_sindragosa_ice_tomb : public SpellScriptLoader
             void Register() override
             {
                 OnEffectPeriodic.Register(this, &spell_sindragosa_ice_tomb_AuraScript::PeriodicTick, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-                AfterEffectRemove.Register(this, &spell_sindragosa_ice_tomb_AuraScript::HandleRemove, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                AfterEffectRemove.Register(this, &spell_sindragosa_ice_tomb_AuraScript::HandleRemove, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

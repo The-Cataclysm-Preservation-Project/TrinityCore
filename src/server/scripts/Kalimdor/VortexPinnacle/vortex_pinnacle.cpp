@@ -638,7 +638,7 @@ class spell_vp_lurk_ressurect : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_vp_lurk_ressurect::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_vp_lurk_ressurect::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

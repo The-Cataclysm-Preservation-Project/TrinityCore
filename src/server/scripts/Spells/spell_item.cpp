@@ -4535,7 +4535,7 @@ class spell_item_egg_shell : public AuraScript
     void Register() override
     {
         OnEffectPeriodic.Register(this, &spell_item_egg_shell::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
-        AfterEffectRemove.Register(this, &spell_item_egg_shell::HandleEffectRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        AfterEffectRemove.Register(this, &spell_item_egg_shell::HandleEffectRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -4571,7 +4571,7 @@ class spell_item_crescendo_of_suffering : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_item_crescendo_of_suffering::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_DONE);
+        AfterEffectRemove.Register(this, &spell_item_crescendo_of_suffering::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_DONE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

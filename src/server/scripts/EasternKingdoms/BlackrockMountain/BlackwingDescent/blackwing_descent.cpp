@@ -634,7 +634,7 @@ class spell_bwd_execution_sentence : public AuraScript
 
     void Register() override
     {
-        OnEffectRemove.Register(this, &spell_bwd_execution_sentence::HandleRemove, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectRemove.Register(this, &spell_bwd_execution_sentence::HandleRemove, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

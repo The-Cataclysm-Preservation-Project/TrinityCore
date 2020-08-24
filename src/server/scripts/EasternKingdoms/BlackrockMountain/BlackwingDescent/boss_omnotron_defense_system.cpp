@@ -1292,7 +1292,7 @@ class spell_omnotron_recharging : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_omnotron_recharging::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE);
+        AfterEffectRemove.Register(this, &spell_omnotron_recharging::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1320,7 +1320,7 @@ class spell_omnotron_activated : public AuraScript
     void Register() override
     {
         OnEffectPeriodic.Register(this, &spell_omnotron_activated::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-        AfterEffectRemove.Register(this, &spell_omnotron_activated::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove.Register(this, &spell_omnotron_activated::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1483,7 +1483,7 @@ class spell_omnotron_barrier : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_omnotron_barrier::HandleAbsorbRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        AfterEffectRemove.Register(this, &spell_omnotron_barrier::HandleAbsorbRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

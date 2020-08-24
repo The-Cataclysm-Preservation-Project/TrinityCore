@@ -924,7 +924,7 @@ class spell_rog_tricks_of_the_trade_aura : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_rog_tricks_of_the_trade_aura::OnRemove, EFFECT_1, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_rog_tricks_of_the_trade_aura::OnRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         OnEffectProc.Register(this, &spell_rog_tricks_of_the_trade_aura::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
     }
 
@@ -963,7 +963,7 @@ class spell_rog_tricks_of_the_trade_proc : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_rog_tricks_of_the_trade_proc::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_rog_tricks_of_the_trade_proc::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1282,7 +1282,7 @@ class spell_rog_sap: public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_rog_sap::HandleBlackJack, EFFECT_0, SPELL_AURA_MOD_STUN);
+        AfterEffectRemove.Register(this, &spell_rog_sap::HandleBlackJack, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

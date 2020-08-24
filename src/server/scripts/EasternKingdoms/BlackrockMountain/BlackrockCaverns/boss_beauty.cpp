@@ -245,7 +245,7 @@ class spell_beauty_magma_spit : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_beauty_magma_spit::AfterRemove, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);
+        AfterEffectRemove.Register(this, &spell_beauty_magma_spit::AfterRemove, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

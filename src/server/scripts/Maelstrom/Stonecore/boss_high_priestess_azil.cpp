@@ -764,7 +764,7 @@ class spell_azil_force_grip_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_azil_force_grip_AuraScript::OnAuraRemove, EFFECT_1, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_azil_force_grip_AuraScript::OnAuraRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

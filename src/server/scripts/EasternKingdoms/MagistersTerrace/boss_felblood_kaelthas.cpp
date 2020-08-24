@@ -496,7 +496,7 @@ class spell_felblood_kaelthas_flame_strike : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_felblood_kaelthas_flame_strike::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_felblood_kaelthas_flame_strike::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

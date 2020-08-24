@@ -574,7 +574,7 @@ class spell_deadmines_on_fire : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_deadmines_on_fire::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE_PERCENT);
+        AfterEffectRemove.Register(this, &spell_deadmines_on_fire::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE_PERCENT, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

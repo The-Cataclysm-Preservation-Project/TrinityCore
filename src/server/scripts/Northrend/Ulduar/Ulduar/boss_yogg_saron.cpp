@@ -2169,7 +2169,7 @@ class spell_yogg_saron_brain_link : public SpellScriptLoader    // 63802
             void Register() override
             {
                 OnEffectPeriodic.Register(this, &spell_yogg_saron_brain_link_AuraScript::DummyTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-                OnEffectRemove.Register(this, &spell_yogg_saron_brain_link_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectRemove.Register(this, &spell_yogg_saron_brain_link_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2407,7 +2407,7 @@ class spell_yogg_saron_squeeze : public SpellScriptLoader     // 64125, 64126
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_yogg_saron_squeeze_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                AfterEffectRemove.Register(this, &spell_yogg_saron_squeeze_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2565,7 +2565,7 @@ class spell_yogg_saron_death_ray_warning_visual : public SpellScriptLoader     /
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_yogg_saron_death_ray_warning_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(this, &spell_yogg_saron_death_ray_warning_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2622,7 +2622,7 @@ class spell_yogg_saron_nondescript : public SpellScriptLoader     // 64010, 6401
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_yogg_saron_nondescript_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN);
+                AfterEffectRemove.Register(this, &spell_yogg_saron_nondescript_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2797,7 +2797,7 @@ class spell_yogg_saron_sanity : public SpellScriptLoader     // 63050
             void Register() override
             {
                 OnEffectPeriodic.Register(this, &spell_yogg_saron_sanity_AuraScript::DummyTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-                AfterEffectRemove.Register(this, &spell_yogg_saron_sanity_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                AfterEffectRemove.Register(this, &spell_yogg_saron_sanity_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

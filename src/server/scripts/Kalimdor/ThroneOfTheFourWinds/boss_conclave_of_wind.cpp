@@ -1085,7 +1085,7 @@ class spell_conclave_of_wind_winds_pre_effect_warning : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_conclave_of_wind_winds_pre_effect_warning::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove.Register(this, &spell_conclave_of_wind_winds_pre_effect_warning::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

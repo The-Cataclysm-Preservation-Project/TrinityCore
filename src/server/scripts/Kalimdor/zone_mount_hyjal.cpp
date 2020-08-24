@@ -713,7 +713,7 @@ class spell_mh_fandral_creator_aura : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_mh_fandral_creator_aura::HandleAuraRemove, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_mh_fandral_creator_aura::HandleAuraRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

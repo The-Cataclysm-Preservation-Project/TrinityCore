@@ -303,7 +303,7 @@ class spell_warl_bane_of_doom : public SpellScriptLoader
 
             void Register() override
             {
-                 AfterEffectRemove.Register(this, &spell_warl_curse_of_doom_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                 AfterEffectRemove.Register(this, &spell_warl_curse_of_doom_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -774,8 +774,8 @@ class spell_warl_health_funnel : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_warl_health_funnel_AuraScript::ApplyEffect, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH);
-                OnEffectRemove.Register(this, &spell_warl_health_funnel_AuraScript::RemoveEffect, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH);
+                OnEffectApply.Register(this, &spell_warl_health_funnel_AuraScript::ApplyEffect, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(this, &spell_warl_health_funnel_AuraScript::RemoveEffect, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH, AURA_EFFECT_HANDLE_REAL);
                 OnEffectPeriodic.Register(this, &spell_warl_health_funnel_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH);
             }
         };

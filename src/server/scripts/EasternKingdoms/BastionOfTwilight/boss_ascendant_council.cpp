@@ -2085,7 +2085,7 @@ class spell_ignacious_rising_flames : public AuraScript
     void Register() override
     {
         OnEffectPeriodic.Register(this, &spell_ignacious_rising_flames::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-        AfterEffectRemove.Register(this, &spell_ignacious_rising_flames::HandleAuraRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove.Register(this, &spell_ignacious_rising_flames::HandleAuraRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -2499,7 +2499,7 @@ private:
     void Register() override
     {
         OnEffectAbsorb.Register(this, &spell_terrastra_harden_skin::OnAbsorb, EFFECT_1);
-        AfterEffectRemove.Register(this, &spell_terrastra_harden_skin::OnAuraRemoveHandler, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
+        AfterEffectRemove.Register(this, &spell_terrastra_harden_skin::OnAuraRemoveHandler, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

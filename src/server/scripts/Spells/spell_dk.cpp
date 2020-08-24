@@ -834,7 +834,7 @@ class spell_dk_improved_presence : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dk_improved_presence::HandleEffectRemove, EFFECT_0, SPELL_AURA_ANY);
+        AfterEffectRemove.Register(this, &spell_dk_improved_presence::HandleEffectRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

@@ -766,7 +766,7 @@ class spell_warr_vigilance : public AuraScript
     {
         DoCheckProc.Register(this, &spell_warr_vigilance::CheckProc);
         OnEffectProc.Register(this, &spell_warr_vigilance::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
-        OnEffectRemove.Register(this, &spell_warr_vigilance::HandleRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectRemove.Register(this, &spell_warr_vigilance::HandleRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 private:
     Unit* _procTarget = nullptr;

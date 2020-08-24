@@ -602,7 +602,7 @@ class spell_palehoof_crazed : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_palehoof_crazed_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectRemove.Register(this, &spell_palehoof_crazed_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

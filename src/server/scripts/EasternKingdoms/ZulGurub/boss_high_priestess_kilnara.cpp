@@ -364,7 +364,7 @@ class spell_kilnara_tears_of_blood : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_kilnara_tears_of_blood::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove.Register(this, &spell_kilnara_tears_of_blood::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -440,7 +440,7 @@ class spell_kilnara_primal_awakening : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_kilnara_primal_awakening::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STUN);
+        AfterEffectRemove.Register(this, &spell_kilnara_primal_awakening::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

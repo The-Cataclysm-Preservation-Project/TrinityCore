@@ -1899,7 +1899,7 @@ class spell_illidan_akama_door_channel : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_illidan_akama_door_channel_AuraScript::OnRemoveDummy, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(this, &spell_illidan_akama_door_channel_AuraScript::OnRemoveDummy, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1962,7 +1962,7 @@ class spell_illidan_parasitic_shadowfiend : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_illidan_parasitic_shadowfiend_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                AfterEffectRemove.Register(this, &spell_illidan_parasitic_shadowfiend_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2309,7 +2309,7 @@ class spell_illidan_eye_blast : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_illidan_eye_blast_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(this, &spell_illidan_eye_blast_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

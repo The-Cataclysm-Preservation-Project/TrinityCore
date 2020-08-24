@@ -331,7 +331,7 @@ std::string StringJoin(Container const& c, std::string delimiter)
 
 // simple class for not-modifyable list
 template <typename T>
-class HookList final
+class HookList
 {
     private:
         typedef std::vector<T> ContainerType;

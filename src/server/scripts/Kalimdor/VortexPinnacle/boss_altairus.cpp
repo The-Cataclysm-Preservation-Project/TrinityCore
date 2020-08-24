@@ -352,7 +352,7 @@ class spell_altairus_safe_area : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_altairus_safe_area::HandleLightningBlast, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_altairus_safe_area::HandleLightningBlast, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

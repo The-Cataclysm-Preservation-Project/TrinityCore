@@ -837,7 +837,7 @@ class spell_deathwhisper_dominated_mind : public SpellScriptLoader
                 return ValidateSpellInfo({ SPELL_DOMINATE_MIND_SCALE });
             }
 
-            void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes mode)
+            void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes /*mode*/)
             {
                 Unit* target = GetTarget();
                 target->CastSpell(target, SPELL_DOMINATE_MIND_SCALE, true);
@@ -845,7 +845,7 @@ class spell_deathwhisper_dominated_mind : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_deathwhisper_dominated_mind_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_AOE_CHARM);
+                AfterEffectApply.Register(this, &spell_deathwhisper_dominated_mind_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_AOE_CHARM, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

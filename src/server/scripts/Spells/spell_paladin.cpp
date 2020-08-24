@@ -1730,7 +1730,7 @@ class spell_pal_ancient_crusader : public AuraScript
     void Register() override
     {
         OnEffectProc.Register(this, &spell_pal_ancient_crusader::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-        AfterEffectRemove.Register(this, &spell_pal_ancient_crusader::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectRemove.Register(this, &spell_pal_ancient_crusader::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

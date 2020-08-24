@@ -668,7 +668,7 @@ class spell_shield_of_runes : public SpellScriptLoader
 
             void Register() override
             {
-                 AfterEffectRemove.Register(this, &spell_shield_of_runes_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+                 AfterEffectRemove.Register(this, &spell_shield_of_runes_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -731,7 +731,7 @@ class spell_assembly_rune_of_summoning : public SpellScriptLoader
             void Register() override
             {
                 OnEffectPeriodic.Register(this, &spell_assembly_rune_of_summoning_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-                OnEffectRemove.Register(this, &spell_assembly_rune_of_summoning_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectRemove.Register(this, &spell_assembly_rune_of_summoning_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

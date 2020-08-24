@@ -1006,7 +1006,7 @@ class spell_magmaw_launch_hook : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_magmaw_launch_hook::AfterApply, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectApply.Register(this, &spell_magmaw_launch_hook::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

@@ -195,8 +195,8 @@ class spell_hallow_end_candy_pirate : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_hallow_end_candy_pirate_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_MOD_INCREASE_SWIM_SPEED);
-                AfterEffectRemove.Register(this, &spell_hallow_end_candy_pirate_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_MOD_INCREASE_SWIM_SPEED);
+                AfterEffectApply.Register(this, &spell_hallow_end_candy_pirate_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_MOD_INCREASE_SWIM_SPEED, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(this, &spell_hallow_end_candy_pirate_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_MOD_INCREASE_SWIM_SPEED, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1863,7 +1863,7 @@ class spell_darkmoon_island_whack_a_gnoll : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_darkmoon_island_whack_a_gnoll::OnRemove, EFFECT_0, SPELL_AURA_OVERRIDE_SPELLS);
+        AfterEffectRemove.Register(this, &spell_darkmoon_island_whack_a_gnoll::OnRemove, EFFECT_0, SPELL_AURA_OVERRIDE_SPELLS, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

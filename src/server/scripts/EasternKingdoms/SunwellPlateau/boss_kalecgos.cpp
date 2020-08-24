@@ -714,7 +714,7 @@ class spell_kalecgos_spectral_realm_aura : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_kalecgos_spectral_realm_aura::OnRemove, EFFECT_0, SPELL_AURA_MOD_INVISIBILITY_DETECT);
+        AfterEffectRemove.Register(this, &spell_kalecgos_spectral_realm_aura::OnRemove, EFFECT_0, SPELL_AURA_MOD_INVISIBILITY_DETECT, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

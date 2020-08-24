@@ -492,7 +492,7 @@ class spell_venoxis_toxic_link : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_venoxis_toxic_link::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove.Register(this, &spell_venoxis_toxic_link::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

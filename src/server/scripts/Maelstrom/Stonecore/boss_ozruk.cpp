@@ -293,7 +293,7 @@ class spell_ozruk_paralyze_stun : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_ozruk_paralyze_stun::OnAuraRemove, EFFECT_0, SPELL_AURA_MOD_STUN);
+        AfterEffectRemove.Register(this, &spell_ozruk_paralyze_stun::OnAuraRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

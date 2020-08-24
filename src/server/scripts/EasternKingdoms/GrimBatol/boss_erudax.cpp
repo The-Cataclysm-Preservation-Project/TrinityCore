@@ -543,7 +543,7 @@ class spell_erudax_twilight_corruption_AuraScript : public AuraScript
     void Register() override
     {
         OnEffectPeriodic.Register(this, &spell_erudax_twilight_corruption_AuraScript::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-        OnEffectRemove.Register(this, &spell_erudax_twilight_corruption_AuraScript::OnAuraRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectRemove.Register(this, &spell_erudax_twilight_corruption_AuraScript::OnAuraRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
