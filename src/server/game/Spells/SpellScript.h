@@ -770,7 +770,7 @@ class TC_GAME_API AuraScript : public _SpellScript
             }
 
             //> Disable the other implementation.
-            bool Filter(SpellInfo const* spellInfo, SpellEffIndex effIndex) = delete;
+            bool Filter(SpellInfo const* /*spellInfo*/, SpellEffIndex /*effIndex*/) = delete;
 
             //> Contractual implementation, see HookHandler::Filtered
             bool Filter(SpellInfo const* spellInfo, SpellEffIndex effIndex, AuraEffectHandleModes mode)
