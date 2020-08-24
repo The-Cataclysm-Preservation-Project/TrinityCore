@@ -346,7 +346,7 @@ class TC_GAME_API _SpellScript
 
             std::string ToString() const
             {
-                return Trinity::StringFormat("%s Target: %u", BaseHookHandler::ToString(), _targetTpe);
+                return Trinity::StringFormat("%s Target: %u", BaseHookHandler::ToString(), _targetType);
             }
 
             uint16 GetTarget() const
