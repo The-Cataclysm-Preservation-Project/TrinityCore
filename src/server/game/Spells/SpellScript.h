@@ -158,7 +158,7 @@ class TC_GAME_API _SpellScript
          * This type can't be directly used because it doesn't expose a HookList typedef.
          */
         template <typename R, typename... Args>
-        struct TC_GAME_API EffectIndexHookHandler : HookHandler<R, Args...>::Filtered<uint8>
+        struct TC_GAME_API EffectIndexHookHandler : HookHandler<R, Args...>::template Filtered<uint8>
         {
             //> Type of the required function pointer.
             template <typename T>
