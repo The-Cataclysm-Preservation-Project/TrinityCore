@@ -948,7 +948,7 @@ class spell_hadronox_periodic_summon_template_AuraScript : public AuraScript
             return ValidateSpellInfo({ _topSpellId, _bottomSpellId });
         }
 
-        void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes mode)
+        void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes /*mode*/)
         {
             if (AuraEffect* effect = GetAura()->GetEffect(EFFECT_0))
                 effect->SetPeriodicTimer(urandms(2, 17));

@@ -3280,7 +3280,7 @@ class spell_item_nitro_boosts_backfire : public SpellScriptLoader
                 return ValidateSpellInfo({ SPELL_NITRO_BOOSTS_PARACHUTE });
             }
 
-            void HandleApply(AuraEffect const* /*effect*/, AuraEffectHandleModes mode)
+            void HandleApply(AuraEffect const* /*effect*/, AuraEffectHandleModes /*mode*/)
             {
                 lastZ = GetTarget()->GetPositionZ();
             }

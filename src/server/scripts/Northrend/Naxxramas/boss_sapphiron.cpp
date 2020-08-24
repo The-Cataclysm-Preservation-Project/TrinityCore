@@ -539,12 +539,12 @@ class spell_sapphiron_icebolt : public SpellScriptLoader
 
     class spell_sapphiron_icebolt_AuraScript : public AuraScript
     {
-        void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes mode)
+        void HandleApply(AuraEffect const* /*eff*/, AuraEffectHandleModes /*mode*/)
         {
             GetTarget()->ApplySpellImmune(SPELL_ICEBOLT, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_FROST, true);
         }
 
-        void HandleRemove(AuraEffect const* /*eff*/, AuraEffectHandleModes mode)
+        void HandleRemove(AuraEffect const* /*eff*/, AuraEffectHandleModes /*mode*/)
         {
             if (_block)
                 if (GameObject* oBlock = ObjectAccessor::GetGameObject(*GetTarget(), _block))
