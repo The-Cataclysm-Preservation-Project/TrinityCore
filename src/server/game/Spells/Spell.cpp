@@ -8109,14 +8109,14 @@ bool Spell::CheckScriptEffectImplicitTargets(uint32 effIndex, uint32 effIndexToC
     {
         auto targetSelectHookEnd = (*itr)->OnObjectTargetSelect.end(), targetSelectHookItr = (*itr)->OnObjectTargetSelect.begin();
         for (; targetSelectHookItr != targetSelectHookEnd; ++targetSelectHookItr)
-            if (((*targetSelectHookItr).Filter(m_spellInfo, effIndex) && !(*targetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)) ||
-                (!(*targetSelectHookItr).Filter(m_spellInfo, effIndex) && (*targetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)))
+            if (((*targetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndex)) && !(*targetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndexToCheck))) ||
+                (!(*targetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndex)) && (*targetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndexToCheck))))
                 return false;
 
         auto areaTargetSelectHookEnd = (*itr)->OnObjectAreaTargetSelect.end(), areaTargetSelectHookItr = (*itr)->OnObjectAreaTargetSelect.begin();
         for (; areaTargetSelectHookItr != areaTargetSelectHookEnd; ++areaTargetSelectHookItr)
-            if (((*areaTargetSelectHookItr).Filter(m_spellInfo, effIndex) && !(*areaTargetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)) ||
-                (!(*areaTargetSelectHookItr).Filter(m_spellInfo, effIndex) && (*areaTargetSelectHookItr).Filter(m_spellInfo, effIndexToCheck)))
+            if (((*areaTargetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndex)) && !(*areaTargetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndexToCheck))) ||
+                (!(*areaTargetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndex)) && (*areaTargetSelectHookItr).Filter(m_spellInfo, SpellEffIndex(effIndexToCheck))))
                 return false;
     }
     return true;

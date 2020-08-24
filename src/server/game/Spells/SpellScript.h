@@ -23,6 +23,7 @@
 #include "SharedDefines.h"
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"
+#include "Utilities/StringFormat.h"
 #include "Util.h"
 #include "advstd.h"
 
@@ -292,7 +293,7 @@ class TC_GAME_API _SpellScript
             using BaseHookHandler = EffectIndexHookHandler<R, Args...>;
 
             //> Type of the hook container list.
-            using HookList = _HookList<EffectNameHookHandler<R, Args...>, uint8, uint16>;
+            using HookList = _HookList<EffectTargetHookHandler<Area, Dest, R, Args...>, uint8, uint16>;
 
             template <typename Base, typename Derived = Base>
             EffectTargetHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex, uint16 targetType)
@@ -349,7 +350,7 @@ class TC_GAME_API _SpellScript
                 return Trinity::StringFormat("%s Target: %u", BaseHookHandler::ToString(), _targetType);
             }
 
-            uint16 GetTarget() const
+            uint16 GetTarget()
             {
                 return _targetType;
             }
