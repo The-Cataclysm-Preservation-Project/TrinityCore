@@ -1068,7 +1068,7 @@ class spell_thaddius_polarity_charge : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_thaddius_polarity_charge_SpellScript::HandleTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+                OnObjectAreaTargetSelect.Register(&spell_thaddius_polarity_charge_SpellScript::HandleTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
             }
         };
 
@@ -1119,7 +1119,7 @@ class spell_thaddius_polarity_shift : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_thaddius_polarity_shift_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_thaddius_polarity_shift_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1203,7 +1203,7 @@ class spell_thaddius_magnetic_pull : public SpellScriptLoader
 
             void Register() override
             {
-                OnCast.Register(this, &spell_thaddius_magnetic_pull_SpellScript::HandleCast);
+                OnCast.Register(&spell_thaddius_magnetic_pull_SpellScript::HandleCast);
             }
         };
 

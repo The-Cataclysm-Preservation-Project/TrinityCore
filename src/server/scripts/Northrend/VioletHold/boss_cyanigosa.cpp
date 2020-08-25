@@ -163,7 +163,7 @@ class spell_cyanigosa_arcane_vacuum : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_cyanigosa_arcane_vacuum_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_cyanigosa_arcane_vacuum_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 

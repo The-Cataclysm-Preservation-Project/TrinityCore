@@ -66,7 +66,7 @@ class spell_item_trigger_spell : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_trigger_spell_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_trigger_spell_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -102,7 +102,7 @@ class spell_item_aegis_of_preservation : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_aegis_of_preservation_AuraScript::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
+                OnEffectProc.Register(&spell_item_aegis_of_preservation_AuraScript::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
             }
         };
 
@@ -174,7 +174,7 @@ class spell_item_alchemists_stone : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_alchemists_stone_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_alchemists_stone_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -237,7 +237,7 @@ class spell_item_anger_capacitor : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_anger_capacitor_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_anger_capacitor_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -264,7 +264,7 @@ class spell_item_arcane_shroud : public SpellScriptLoader
 
             void Register() override
             {
-                DoEffectCalcAmount.Register(this, &spell_item_arcane_shroud_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_THREAT);
+                DoEffectCalcAmount.Register(&spell_item_arcane_shroud_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_THREAT);
             }
         };
 
@@ -358,7 +358,7 @@ class spell_item_aura_of_madness : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_aura_of_madness_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_aura_of_madness_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -393,7 +393,7 @@ class spell_item_dementia : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_item_dementia_AuraScript::HandlePeriodicDummy, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_item_dementia_AuraScript::HandlePeriodicDummy, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -449,8 +449,8 @@ class spell_item_blessing_of_ancient_kings : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_blessing_of_ancient_kings_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_item_blessing_of_ancient_kings_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_item_blessing_of_ancient_kings_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_item_blessing_of_ancient_kings_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -470,7 +470,7 @@ class spell_item_valanyr_hammer_of_ancient_kings : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_item_valanyr_hammer_of_ancient_kings::CheckProc);
+        DoCheckProc.Register(&spell_item_valanyr_hammer_of_ancient_kings::CheckProc);
     }
 };
 
@@ -495,7 +495,7 @@ class spell_item_deadly_precision : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_deadly_precision_charm_AuraScript::HandleStackDrop, EFFECT_0, SPELL_AURA_MOD_RATING);
+                OnEffectProc.Register(&spell_item_deadly_precision_charm_AuraScript::HandleStackDrop, EFFECT_0, SPELL_AURA_MOD_RATING);
             }
         };
 
@@ -526,7 +526,7 @@ class spell_item_deadly_precision_dummy : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_deadly_precision_dummy_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHit.Register(&spell_item_deadly_precision_dummy_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -619,7 +619,7 @@ class spell_item_deathbringers_will : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_deathbringers_will_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_deathbringers_will_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -666,7 +666,7 @@ class spell_item_decahedral_dwarven_dice : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_decahedral_dwarven_dice_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_item_decahedral_dwarven_dice_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -712,7 +712,7 @@ class spell_item_defibrillate : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_defibrillate_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_RESURRECT);
+                OnEffectHitTarget.Register(&spell_item_defibrillate_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_RESURRECT);
             }
 
         private:
@@ -756,7 +756,7 @@ class spell_item_desperate_defense : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_desperate_defense_AuraScript::HandleProc, EFFECT_2, SPELL_AURA_PROC_TRIGGER_SPELL);
+                OnEffectProc.Register(&spell_item_desperate_defense_AuraScript::HandleProc, EFFECT_2, SPELL_AURA_PROC_TRIGGER_SPELL);
             }
         };
 
@@ -803,7 +803,7 @@ class spell_item_deviate_fish : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_deviate_fish_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_deviate_fish_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -840,7 +840,7 @@ class spell_item_echoes_of_light : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_item_echoes_of_light_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+                OnObjectAreaTargetSelect.Register(&spell_item_echoes_of_light_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
             }
         };
 
@@ -876,7 +876,7 @@ class spell_item_fate_rune_of_unsurpassed_vigor : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_fate_rune_of_unsurpassed_vigor_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_fate_rune_of_unsurpassed_vigor_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -942,7 +942,7 @@ class spell_item_flask_of_the_north : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_flask_of_the_north_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_flask_of_the_north_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -985,7 +985,7 @@ class spell_item_frozen_shadoweave : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_frozen_shadoweave_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_frozen_shadoweave_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1029,7 +1029,7 @@ class spell_item_gnomish_death_ray : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_gnomish_death_ray_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_gnomish_death_ray_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1065,7 +1065,7 @@ class spell_item_harm_prevention_belt : public SpellScriptLoader
 
             void Register() override
             {
-                OnProc.Register(this, &spell_item_harm_prevention_belt_AuraScript::HandleProc);
+                OnProc.Register(&spell_item_harm_prevention_belt_AuraScript::HandleProc);
             }
         };
 
@@ -1102,7 +1102,7 @@ class spell_item_healing_touch_refund : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_healing_touch_refund_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_healing_touch_refund_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1180,7 +1180,7 @@ class spell_item_heartpierce : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_heartpierce_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_heartpierce_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1211,7 +1211,7 @@ class spell_item_crystal_spire_of_karabor : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_crystal_spire_of_karabor_AuraScript::CheckProc);
+                DoCheckProc.Register(&spell_item_crystal_spire_of_karabor_AuraScript::CheckProc);
             }
         };
 
@@ -1272,7 +1272,7 @@ class spell_item_make_a_wish : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_make_a_wish_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_make_a_wish_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1315,7 +1315,7 @@ class spell_item_mark_of_conquest : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_mark_of_conquest_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+                OnEffectProc.Register(&spell_item_mark_of_conquest_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
             }
         };
 
@@ -1369,7 +1369,7 @@ class spell_item_mingos_fortune_generator : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_mingos_fortune_generator_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_mingos_fortune_generator_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1415,8 +1415,8 @@ class spell_item_necrotic_touch : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_necrotic_touch_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_item_necrotic_touch_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_item_necrotic_touch_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_item_necrotic_touch_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1469,7 +1469,7 @@ class spell_item_net_o_matic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_net_o_matic_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_net_o_matic_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1525,7 +1525,7 @@ class spell_item_noggenfogger_elixir : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_noggenfogger_elixir_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_noggenfogger_elixir_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1553,7 +1553,7 @@ class spell_item_pendant_of_the_violet_eye : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_pendant_of_the_violet_eye_AuraScript::CheckProc);
+                DoCheckProc.Register(&spell_item_pendant_of_the_violet_eye_AuraScript::CheckProc);
             }
         };
 
@@ -1602,8 +1602,8 @@ class spell_item_persistent_shield : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_persistent_shield_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_item_persistent_shield_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+                DoCheckProc.Register(&spell_item_persistent_shield_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_item_persistent_shield_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
             }
         };
 
@@ -1647,7 +1647,7 @@ class spell_item_pet_healing : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_pet_healing_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_pet_healing_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1674,7 +1674,7 @@ class spell_item_piccolo_of_the_flaming_fire : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_piccolo_of_the_flaming_fire_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_item_piccolo_of_the_flaming_fire_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1716,10 +1716,10 @@ class spell_item_power_circle : public AuraScript
 
     void Register() override
     {
-        DoCheckAreaTarget.Register(this, &spell_item_power_circle::CheckCaster);
+        DoCheckAreaTarget.Register(&spell_item_power_circle::CheckCaster);
 
-        AfterEffectApply.Register(this, &spell_item_power_circle::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_item_power_circle::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_item_power_circle::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_item_power_circle::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1772,7 +1772,7 @@ class spell_item_savory_deviate_delight : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_savory_deviate_delight_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_savory_deviate_delight_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1843,7 +1843,7 @@ class spell_item_scroll_of_recall : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_scroll_of_recall_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_TELEPORT_UNITS);
+                OnEffectHitTarget.Register(&spell_item_scroll_of_recall_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_TELEPORT_UNITS);
             }
         };
 
@@ -1882,7 +1882,7 @@ class spell_item_unsated_craving : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_unsated_craving_AuraScript::CheckProc);
+                DoCheckProc.Register(&spell_item_unsated_craving_AuraScript::CheckProc);
             }
         };
 
@@ -1913,7 +1913,7 @@ class spell_item_shadows_fate : public SpellScriptLoader
 
             void Register() override
             {
-                OnProc.Register(this, &spell_item_shadows_fate_AuraScript::HandleProc);
+                OnProc.Register(&spell_item_shadows_fate_AuraScript::HandleProc);
             }
         };
 
@@ -1975,8 +1975,8 @@ class spell_item_shadowmourne : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_shadowmourne_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_item_shadowmourne_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_item_shadowmourne_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_item_shadowmourne_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -2034,8 +2034,8 @@ class spell_item_shadowmourne_soul_fragment : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_item_shadowmourne_soul_fragment_AuraScript::OnStackChange, EFFECT_0, SPELL_AURA_MOD_STAT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-                AfterEffectRemove.Register(this, &spell_item_shadowmourne_soul_fragment_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STAT, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectApply.Register(&spell_item_shadowmourne_soul_fragment_AuraScript::OnStackChange, EFFECT_0, SPELL_AURA_MOD_STAT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                AfterEffectRemove.Register(&spell_item_shadowmourne_soul_fragment_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STAT, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2110,7 +2110,7 @@ class spell_item_six_demon_bag : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_six_demon_bag_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_six_demon_bag_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2149,7 +2149,7 @@ class spell_item_swift_hand_justice_dummy : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_swift_hand_justice_dummy_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_swift_hand_justice_dummy_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -2186,7 +2186,7 @@ class spell_item_totem_of_flowing_water : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_totem_of_flowing_water_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_totem_of_flowing_water_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -2214,7 +2214,7 @@ class spell_item_the_eye_of_diminution : public SpellScriptLoader
 
             void Register() override
             {
-                DoEffectCalcAmount.Register(this, &spell_item_the_eye_of_diminution_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_THREAT);
+                DoEffectCalcAmount.Register(&spell_item_the_eye_of_diminution_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_THREAT);
             }
         };
 
@@ -2268,7 +2268,7 @@ class spell_item_underbelly_elixir : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_underbelly_elixir_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_underbelly_elixir_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2317,7 +2317,7 @@ class spell_item_worn_troll_dice : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_worn_troll_dice_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_item_worn_troll_dice_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2370,7 +2370,7 @@ class spell_item_red_rider_air_rifle : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_red_rider_air_rifle_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_item_red_rider_air_rifle_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2419,7 +2419,7 @@ class spell_item_create_heart_candy : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_create_heart_candy_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_item_create_heart_candy_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2464,8 +2464,8 @@ class spell_item_book_of_glyph_mastery : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_item_book_of_glyph_mastery_SpellScript::CheckRequirement);
-                OnEffectHitTarget.Register(this, &spell_item_book_of_glyph_mastery_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnCheckCast.Register(&spell_item_book_of_glyph_mastery_SpellScript::CheckRequirement);
+                OnEffectHitTarget.Register(&spell_item_book_of_glyph_mastery_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2503,7 +2503,7 @@ class spell_item_gift_of_the_harvester : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_item_gift_of_the_harvester_SpellScript::CheckRequirement);
+                OnCheckCast.Register(&spell_item_gift_of_the_harvester_SpellScript::CheckRequirement);
             }
         };
 
@@ -2541,7 +2541,7 @@ class spell_item_map_of_the_geyser_fields : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_item_map_of_the_geyser_fields_SpellScript::CheckSinkholes);
+                OnCheckCast.Register(&spell_item_map_of_the_geyser_fields_SpellScript::CheckSinkholes);
             }
         };
 
@@ -2584,7 +2584,7 @@ class spell_item_vanquished_clutches : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_vanquished_clutches_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_vanquished_clutches_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2637,7 +2637,7 @@ class spell_item_ashbringer : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_item_ashbringer_SpellScript::OnDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_item_ashbringer_SpellScript::OnDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2693,7 +2693,7 @@ class spell_magic_eater_food : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_magic_eater_food_AuraScript::HandleTriggerSpell, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_magic_eater_food_AuraScript::HandleTriggerSpell, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -2718,7 +2718,7 @@ class spell_item_shimmering_vessel : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_shimmering_vessel_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_shimmering_vessel_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2763,7 +2763,7 @@ class spell_item_purify_helboar_meat : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_purify_helboar_meat_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_purify_helboar_meat_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2804,7 +2804,7 @@ class spell_item_crystal_prison_dummy_dnd : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_crystal_prison_dummy_dnd_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_crystal_prison_dummy_dnd_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2873,7 +2873,7 @@ class spell_item_reindeer_transformation : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_reindeer_transformation_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_reindeer_transformation_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
     };
 
@@ -2915,7 +2915,7 @@ class spell_item_nigh_invulnerability : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_nigh_invulnerability_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_nigh_invulnerability_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2951,7 +2951,7 @@ class spell_item_poultryizer : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_poultryizer_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_poultryizer_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3001,7 +3001,7 @@ class spell_item_socrethars_stone : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_socrethars_stone_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_socrethars_stone_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3057,8 +3057,8 @@ class spell_item_demon_broiled_surprise : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_demon_broiled_surprise_SpellScript::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
-                OnCheckCast.Register(this, &spell_item_demon_broiled_surprise_SpellScript::CheckRequirement);
+                OnEffectHitTarget.Register(&spell_item_demon_broiled_surprise_SpellScript::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+                OnCheckCast.Register(&spell_item_demon_broiled_surprise_SpellScript::CheckRequirement);
             }
         };
 
@@ -3099,7 +3099,7 @@ class spell_item_complete_raptor_capture : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_complete_raptor_capture_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_complete_raptor_capture_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3141,7 +3141,7 @@ class spell_item_impale_leviroth : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_impale_leviroth_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_impale_leviroth_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3210,7 +3210,7 @@ class spell_item_brewfest_mount_transformation : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_brewfest_mount_transformation_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_brewfest_mount_transformation_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3258,7 +3258,7 @@ class spell_item_nitro_boosts : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_nitro_boosts_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_nitro_boosts_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3301,8 +3301,8 @@ class spell_item_nitro_boosts_backfire : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_item_nitro_boosts_backfire_AuraScript::HandleApply, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
-                OnEffectPeriodic.Register(this, &spell_item_nitro_boosts_backfire_AuraScript::HandlePeriodicDummy, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectApply.Register(&spell_item_nitro_boosts_backfire_AuraScript::HandleApply, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+                OnEffectPeriodic.Register(&spell_item_nitro_boosts_backfire_AuraScript::HandlePeriodicDummy, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
 
             float lastZ = INVALID_HEIGHT;
@@ -3347,7 +3347,7 @@ class spell_item_teach_language : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_teach_language_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_teach_language_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3398,8 +3398,8 @@ class spell_item_rocket_boots : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_item_rocket_boots_SpellScript::CheckCast);
-                OnEffectHitTarget.Register(this, &spell_item_rocket_boots_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnCheckCast.Register(&spell_item_rocket_boots_SpellScript::CheckCast);
+                OnEffectHitTarget.Register(&spell_item_rocket_boots_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3447,7 +3447,7 @@ class spell_item_pygmy_oil : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_pygmy_oil_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_pygmy_oil_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3472,7 +3472,7 @@ class spell_item_unusual_compass : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_unusual_compass_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_unusual_compass_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3524,7 +3524,7 @@ class spell_item_chicken_cover : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_chicken_cover_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_chicken_cover_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3550,7 +3550,7 @@ class spell_item_muisek_vessel : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_muisek_vessel_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_muisek_vessel_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3579,7 +3579,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_item_greatmothers_soulcatcher_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnEffectHitTarget.Register(&spell_item_greatmothers_soulcatcher_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
 
@@ -3636,7 +3636,7 @@ class spell_item_shard_of_the_scale : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_item_shard_of_the_scale_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_item_shard_of_the_scale_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -3699,7 +3699,7 @@ public:
 
         void Register() override
         {
-            OnEffectProc.Register(this, &spell_item_soul_preserver_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            OnEffectProc.Register(&spell_item_soul_preserver_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
         }
     };
 
@@ -3777,8 +3777,8 @@ class spell_item_sunwell_neck : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_sunwell_neck_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_item_sunwell_neck_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_item_sunwell_neck_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_item_sunwell_neck_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -3812,8 +3812,8 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_item_toy_train_set_pulse_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            OnObjectAreaTargetSelect.Register(this, &spell_item_toy_train_set_pulse_SpellScript::HandleTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
+            OnEffectHitTarget.Register(&spell_item_toy_train_set_pulse_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnObjectAreaTargetSelect.Register(&spell_item_toy_train_set_pulse_SpellScript::HandleTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
         }
     };
 
@@ -3871,8 +3871,8 @@ class spell_item_taunt_flag_targeting : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_item_taunt_flag_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_CORPSE_SRC_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_item_taunt_flag_targeting_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_item_taunt_flag_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_CORPSE_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_item_taunt_flag_targeting_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3925,7 +3925,7 @@ class spell_item_mind_control_cap : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_mind_control_cap_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_mind_control_cap_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -3978,7 +3978,7 @@ class spell_item_universal_remote : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_item_universal_remote_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_item_universal_remote_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -4031,8 +4031,8 @@ class spell_item_zandalarian_charm : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_item_zandalarian_charm_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_item_zandalarian_charm_AuraScript::HandleStackDrop, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_item_zandalarian_charm_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_item_zandalarian_charm_AuraScript::HandleStackDrop, EFFECT_0, SPELL_AURA_DUMMY);
             }
 
             uint32 _spellId;
@@ -4117,7 +4117,7 @@ public:
 
         void Register() override
         {
-            AfterCast.Register(this, &mad_alchemists_potion_SpellScript::SecondaryEffect);
+            AfterCast.Register(&mad_alchemists_potion_SpellScript::SecondaryEffect);
         }
 
     };
@@ -4167,7 +4167,7 @@ public:
 
         void Register() override
         {
-            AfterCast.Register(this, &crazy_alchemists_potion_SpellScript::SecondaryEffect);
+            AfterCast.Register(&crazy_alchemists_potion_SpellScript::SecondaryEffect);
         }
 
     };
@@ -4239,7 +4239,7 @@ public:
 
         void Register() override
         {
-            OnEffectProc.Register(this, &spell_item_death_choice_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            OnEffectProc.Register(&spell_item_death_choice_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
         }
     };
 
@@ -4307,7 +4307,7 @@ public:
 
         void Register() override
         {
-            OnEffectProc.Register(this, &spell_item_trinket_stack_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            OnEffectProc.Register(&spell_item_trinket_stack_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
         }
 
     private:
@@ -4394,7 +4394,7 @@ public:
 
         void Register() override
         {
-            OnEffectProc.Register(this, &spell_item_darkmoon_card_greatness_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            OnEffectProc.Register(&spell_item_darkmoon_card_greatness_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
         }
     };
 
@@ -4438,7 +4438,7 @@ public:
 
         void Register() override
         {
-            OnEffectProc.Register(this, &spell_item_charm_witch_doctor_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            OnEffectProc.Register(&spell_item_charm_witch_doctor_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
         }
     };
 
@@ -4487,7 +4487,7 @@ public:
 
         void Register() override
         {
-            OnEffectProc.Register(this, &spell_item_mana_drain_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+            OnEffectProc.Register(&spell_item_mana_drain_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
         }
     };
 
@@ -4534,8 +4534,8 @@ class spell_item_egg_shell : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_item_egg_shell::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
-        AfterEffectRemove.Register(this, &spell_item_egg_shell::HandleEffectRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_item_egg_shell::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        AfterEffectRemove.Register(&spell_item_egg_shell::HandleEffectRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -4558,7 +4558,7 @@ class spell_item_song_of_sorrow : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_item_song_of_sorrow::CheckProc);
+        DoCheckProc.Register(&spell_item_song_of_sorrow::CheckProc);
     }
 };
 
@@ -4571,7 +4571,7 @@ class spell_item_crescendo_of_suffering : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_item_crescendo_of_suffering::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_DONE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_item_crescendo_of_suffering::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_DONE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -4611,8 +4611,8 @@ class spell_item_consume_charges : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_item_consume_charges_SpellScript::CheckCast);
-                AfterCast.Register(this, &spell_item_consume_charges_SpellScript::HandleStackConsumption);
+                OnCheckCast.Register(&spell_item_consume_charges_SpellScript::CheckCast);
+                AfterCast.Register(&spell_item_consume_charges_SpellScript::HandleStackConsumption);
             }
 
             uint32 _spellId;
@@ -4663,7 +4663,7 @@ class spell_item_hearts_judgement : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_item_hearts_judgement::CheckCast);
+        OnCheckCast.Register(&spell_item_hearts_judgement::CheckCast);
     }
 private:
     uint32 _auraId = 0;
@@ -4692,7 +4692,7 @@ class spell_item_hearts_judgement_AuraScript : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_item_hearts_judgement_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_RATING);
+        DoEffectCalcAmount.Register(&spell_item_hearts_judgement_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_RATING);
     }
 private:
     uint32 _auraId;
@@ -4759,7 +4759,7 @@ class spell_item_blessing_of_khazgoroth : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_item_blessing_of_khazgoroth::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_item_blessing_of_khazgoroth::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -4801,8 +4801,8 @@ class spell_item_weight_of_a_feather : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_item_weight_of_a_feather::CheckProc);
-        OnEffectProc.Register(this, &spell_item_weight_of_a_feather::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_item_weight_of_a_feather::CheckProc);
+        OnEffectProc.Register(&spell_item_weight_of_a_feather::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -4833,8 +4833,8 @@ class spell_item_tipping_of_the_scales : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_item_tipping_of_the_scales::CheckCast);
-        OnEffectLaunchTarget.Register(this, &spell_item_tipping_of_the_scales::HandleHealValue, EFFECT_0, SPELL_EFFECT_HEAL);
+        OnCheckCast.Register(&spell_item_tipping_of_the_scales::CheckCast);
+        OnEffectLaunchTarget.Register(&spell_item_tipping_of_the_scales::HandleHealValue, EFFECT_0, SPELL_EFFECT_HEAL);
     }
 };
 
@@ -4878,7 +4878,7 @@ class spell_item_blind_spot : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_item_blind_spot::HandleHitEffect, EFFECT_0, SPELL_EFFECT_ENERGIZE);
+        OnEffectHitTarget.Register(&spell_item_blind_spot::HandleHitEffect, EFFECT_0, SPELL_EFFECT_ENERGIZE);
     }
 };
 
@@ -4936,7 +4936,7 @@ class spell_item_variable_pulse_lightning_capacitor : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_item_variable_pulse_lightning_capacitor::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_item_variable_pulse_lightning_capacitor::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 

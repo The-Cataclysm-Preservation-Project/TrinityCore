@@ -1339,7 +1339,7 @@ class spell_violet_hold_destroy_door_seal : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_violet_hold_destroy_door_seal_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_violet_hold_destroy_door_seal_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
 
         private:
@@ -1369,7 +1369,7 @@ class spell_violet_hold_portal_periodic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_violet_hold_portal_periodic_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_violet_hold_portal_periodic_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -1400,7 +1400,7 @@ class spell_violet_hold_teleport_player : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_violet_hold_teleport_player_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_violet_hold_teleport_player_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 

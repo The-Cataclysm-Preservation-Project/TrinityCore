@@ -389,7 +389,7 @@ class spell_rajh_summon_meteor : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_rajh_summon_meteor::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_rajh_summon_meteor::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -402,7 +402,7 @@ class spell_rajh_summon_sun_orb : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_rajh_summon_sun_orb::SetDest, EFFECT_0, TARGET_DEST_CASTER_FRONT_RIGHT);
+        OnDestinationTargetSelect.Register(&spell_rajh_summon_sun_orb::SetDest, EFFECT_0, TARGET_DEST_CASTER_FRONT_RIGHT);
     }
 };
 
@@ -416,7 +416,7 @@ class spell_rajh_summon_sun_orb_power_cost : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_rajh_summon_sun_orb_power_cost::HandlePeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_rajh_summon_sun_orb_power_cost::HandlePeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 

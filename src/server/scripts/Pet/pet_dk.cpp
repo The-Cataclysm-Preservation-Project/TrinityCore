@@ -212,7 +212,7 @@ class spell_pet_ghoul_dummy_ability : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pet_ghoul_dummy_ability::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_pet_ghoul_dummy_ability::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 

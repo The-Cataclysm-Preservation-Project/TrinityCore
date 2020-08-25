@@ -2276,7 +2276,7 @@ class spell_faction_champion_warl_unstable_affliction : public SpellScriptLoader
 
             void Register() override
             {
-                AfterDispel.Register(this, &spell_faction_champion_warl_unstable_affliction_AuraScript::HandleDispel);
+                AfterDispel.Register(&spell_faction_champion_warl_unstable_affliction_AuraScript::HandleDispel);
             }
         };
 
@@ -2309,7 +2309,7 @@ class spell_faction_champion_death_grip : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_faction_champion_death_grip_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_faction_champion_death_grip_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
 
         };
@@ -2345,9 +2345,9 @@ class spell_toc_bloodlust : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_toc_bloodlust_SpellScript::RemoveInvalidTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
-                OnObjectAreaTargetSelect.Register(this, &spell_toc_bloodlust_SpellScript::RemoveInvalidTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ALLY);
-                AfterHit.Register(this, &spell_toc_bloodlust_SpellScript::ApplyDebuff);
+                OnObjectAreaTargetSelect.Register(&spell_toc_bloodlust_SpellScript::RemoveInvalidTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+                OnObjectAreaTargetSelect.Register(&spell_toc_bloodlust_SpellScript::RemoveInvalidTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ALLY);
+                AfterHit.Register(&spell_toc_bloodlust_SpellScript::ApplyDebuff);
             }
         };
 
@@ -2382,9 +2382,9 @@ class spell_toc_heroism : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_toc_heroism_SpellScript::RemoveInvalidTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
-                OnObjectAreaTargetSelect.Register(this, &spell_toc_heroism_SpellScript::RemoveInvalidTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ALLY);
-                AfterHit.Register(this, &spell_toc_heroism_SpellScript::ApplyDebuff);
+                OnObjectAreaTargetSelect.Register(&spell_toc_heroism_SpellScript::RemoveInvalidTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+                OnObjectAreaTargetSelect.Register(&spell_toc_heroism_SpellScript::RemoveInvalidTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ALLY);
+                AfterHit.Register(&spell_toc_heroism_SpellScript::ApplyDebuff);
             }
         };
 

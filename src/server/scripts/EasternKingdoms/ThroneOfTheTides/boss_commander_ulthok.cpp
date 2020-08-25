@@ -213,7 +213,7 @@ class spell_ulthok_dark_fissure : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_ulthok_dark_fissure::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_ulthok_dark_fissure::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 

@@ -522,7 +522,7 @@ class spell_sapphiron_change_blizzard_target : public SpellScriptLoader
 
         void Register() override
         {
-            OnEffectPeriodic.Register(this, &spell_sapphiron_change_blizzard_target_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+            OnEffectPeriodic.Register(&spell_sapphiron_change_blizzard_target_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
         }
     };
 
@@ -566,9 +566,9 @@ class spell_sapphiron_icebolt : public SpellScriptLoader
 
         void Register() override
         {
-            AfterEffectApply.Register(this, &spell_sapphiron_icebolt_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
-            AfterEffectRemove.Register(this, &spell_sapphiron_icebolt_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
-            OnEffectPeriodic.Register(this, &spell_sapphiron_icebolt_AuraScript::HandlePeriodic, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+            AfterEffectApply.Register(&spell_sapphiron_icebolt_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_sapphiron_icebolt_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+            OnEffectPeriodic.Register(&spell_sapphiron_icebolt_AuraScript::HandlePeriodic, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
         }
 
         ObjectGuid _block;
@@ -614,7 +614,7 @@ class spell_sapphiron_summon_blizzard : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_sapphiron_summon_blizzard_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_sapphiron_summon_blizzard_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 

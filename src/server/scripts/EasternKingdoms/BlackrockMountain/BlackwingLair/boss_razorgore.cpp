@@ -216,7 +216,7 @@ class spell_egg_event : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_egg_eventSpellScript::HandleOnHit);
+                OnHit.Register(&spell_egg_eventSpellScript::HandleOnHit);
             }
         };
 

@@ -511,7 +511,7 @@ public:
 
         void Register() override
         {
-            OnObjectAreaTargetSelect.Register(this, &spell_setesh_chaos_blast_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+            OnObjectAreaTargetSelect.Register(&spell_setesh_chaos_blast_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
         }
     };
 

@@ -808,7 +808,7 @@ class spell_shredder_delivery : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_shredder_delivery_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_shredder_delivery_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -844,7 +844,7 @@ class spell_infected_worgen_bite : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_infected_worgen_bite_AuraScript::HandleAfterEffectApply, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAPPLY);
+                AfterEffectApply.Register(&spell_infected_worgen_bite_AuraScript::HandleAfterEffectApply, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAPPLY);
             }
         };
 
@@ -965,7 +965,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_vehicle_warhead_fuse_SpellScript::HandleDummy, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectHitTarget.Register(&spell_vehicle_warhead_fuse_SpellScript::HandleDummy, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -1015,7 +1015,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_warhead_detonate_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectHitTarget.Register(&spell_warhead_detonate_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -1051,8 +1051,8 @@ public:
 
         void Register() override
         {
-            OnEffectApply.Register(this, &spell_z_check_AuraScript::HandleEffectApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
-            OnEffectPeriodic.Register(this, &spell_z_check_AuraScript::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+            OnEffectApply.Register(&spell_z_check_AuraScript::HandleEffectApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+            OnEffectPeriodic.Register(&spell_z_check_AuraScript::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
         }
     };
 
@@ -1079,7 +1079,7 @@ public:
 
         void Register() override
         {
-            OnEffectRemove.Register(this, &spell_warhead_fuse_AuraScript::HandleOnEffectRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            OnEffectRemove.Register(&spell_warhead_fuse_AuraScript::HandleOnEffectRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

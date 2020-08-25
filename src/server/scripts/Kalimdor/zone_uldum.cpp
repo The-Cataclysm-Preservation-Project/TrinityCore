@@ -95,7 +95,7 @@ class spell_uldum_initialize_uldum_intro : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_uldum_initialize_uldum_intro::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_uldum_initialize_uldum_intro::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -114,7 +114,7 @@ class spell_uldum_master_ping_all_actors : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_uldum_master_ping_all_actors::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_uldum_master_ping_all_actors::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -133,7 +133,7 @@ class spell_uldum_master_summon_beam_target_02 : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_uldum_master_summon_beam_target_02::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_uldum_master_summon_beam_target_02::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -152,7 +152,7 @@ class spell_uldum_master_summon_skarf : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_uldum_master_summon_skarf::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_uldum_master_summon_skarf::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -171,7 +171,7 @@ class spell_uldum_player_summon_camera : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_uldum_player_summon_camera::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_uldum_player_summon_camera::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -432,7 +432,7 @@ class spell_gobbles_initialize : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_gobbles_initialize::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_gobbles_initialize::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -447,7 +447,7 @@ class spell_summon_schnottz : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_summon_schnottz::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
+        OnDestinationTargetSelect.Register(&spell_summon_schnottz::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
     }
 };
 

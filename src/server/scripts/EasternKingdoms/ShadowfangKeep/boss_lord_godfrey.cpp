@@ -265,7 +265,7 @@ class spell_godfrey_summon_bloodthirsty_ghouls : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_godfrey_summon_bloodthirsty_ghouls::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_godfrey_summon_bloodthirsty_ghouls::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 private:
     bool _useLeftGun = true;
@@ -314,9 +314,9 @@ class spell_godfrey_pistol_barrage : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_godfrey_pistol_barrage::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_godfrey_pistol_barrage::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
-        OnEffectPeriodic.Register(this, &spell_godfrey_pistol_barrage::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectApply.Register(&spell_godfrey_pistol_barrage::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_godfrey_pistol_barrage::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_godfrey_pistol_barrage::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 private:
     bool _useLeftGun = true;
@@ -331,7 +331,7 @@ class spell_godfrey_pistol_barrage_aoe : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_godfrey_pistol_barrage_aoe::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_godfrey_pistol_barrage_aoe::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -347,7 +347,7 @@ class spell_godfrey_cursed_bullets : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_godfrey_cursed_bullets::OnPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectPeriodic.Register(&spell_godfrey_cursed_bullets::OnPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);
     }
 private:
     uint32 _baseDamage = 0;

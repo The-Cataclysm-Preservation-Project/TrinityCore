@@ -977,8 +977,8 @@ class spell_hadronox_periodic_summon_template_AuraScript : public AuraScript
 
         void Register() override
         {
-            AfterEffectApply.Register(this, &spell_hadronox_periodic_summon_template_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
-            OnEffectPeriodic.Register(this, &spell_hadronox_periodic_summon_template_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+            AfterEffectApply.Register(&spell_hadronox_periodic_summon_template_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            OnEffectPeriodic.Register(&spell_hadronox_periodic_summon_template_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
         }
 
     private:
@@ -1063,7 +1063,7 @@ class spell_hadronox_leeching_poison : public SpellScriptLoader
 
         void Register() override
         {
-            OnEffectRemove.Register(this, &spell_hadronox_leeching_poison_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_LEECH, AURA_EFFECT_HANDLE_REAL);
+            OnEffectRemove.Register(&spell_hadronox_leeching_poison_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_LEECH, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -1097,7 +1097,7 @@ class spell_hadronox_web_doors : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hadronox_web_doors_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(&spell_hadronox_web_doors_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 

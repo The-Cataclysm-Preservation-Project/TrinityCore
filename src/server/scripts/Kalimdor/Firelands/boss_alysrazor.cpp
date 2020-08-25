@@ -518,7 +518,7 @@ class spell_alysrazor_cosmetic_egg_xplosion : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_alysrazor_cosmetic_egg_xplosion_SpellScript::HandleExplosion, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_alysrazor_cosmetic_egg_xplosion_SpellScript::HandleExplosion, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -594,8 +594,8 @@ class spell_alysrazor_turn_monstrosity : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_alysrazor_turn_monstrosity_SpellScript::KnockBarrage, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-                OnEffectHitTarget.Register(this, &spell_alysrazor_turn_monstrosity_SpellScript::TurnBird, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_alysrazor_turn_monstrosity_SpellScript::KnockBarrage, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_alysrazor_turn_monstrosity_SpellScript::TurnBird, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -632,8 +632,8 @@ class spell_alysrazor_aggro_closest : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_alysrazor_aggro_closest_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
-                AfterCast.Register(this, &spell_alysrazor_aggro_closest_SpellScript::UpdateThreat);
+                OnEffectHitTarget.Register(&spell_alysrazor_aggro_closest_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+                AfterCast.Register(&spell_alysrazor_aggro_closest_SpellScript::UpdateThreat);
             }
         };
 
@@ -662,7 +662,7 @@ class spell_alysrazor_fieroblast : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_alysrazor_fieroblast_SpellScript::FireItUp);
+                AfterCast.Register(&spell_alysrazor_fieroblast_SpellScript::FireItUp);
             }
         };
 

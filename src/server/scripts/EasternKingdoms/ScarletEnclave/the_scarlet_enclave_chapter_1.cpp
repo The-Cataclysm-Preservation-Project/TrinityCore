@@ -1059,7 +1059,7 @@ class spell_gift_of_the_harvester : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_gift_of_the_harvester::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_gift_of_the_harvester::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 

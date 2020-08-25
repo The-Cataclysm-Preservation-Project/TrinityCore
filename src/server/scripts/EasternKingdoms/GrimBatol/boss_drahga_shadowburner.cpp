@@ -519,7 +519,7 @@ class spell_drahga_burning_shadowbolt : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_drahga_burning_shadowbolt::CastDummySpell, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(&spell_drahga_burning_shadowbolt::CastDummySpell, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -538,7 +538,7 @@ class spell_drahga_devouring_flames : public SpellScript
 
     void Register() override
     {
-        OnHit.Register(this, &spell_drahga_devouring_flames::ChangeDamage);
+        OnHit.Register(&spell_drahga_devouring_flames::ChangeDamage);
     }
 };
 

@@ -557,7 +557,7 @@ class spell_archimonde_drain_world_tree_dummy : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_archimonde_drain_world_tree_dummy_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_archimonde_drain_world_tree_dummy_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 

@@ -375,7 +375,7 @@ class spell_destroy_karangs_banner : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_destroy_karangs_banner_SpellScript::HandleAfterCast);
+                AfterCast.Register(&spell_destroy_karangs_banner_SpellScript::HandleAfterCast);
             }
         };
 

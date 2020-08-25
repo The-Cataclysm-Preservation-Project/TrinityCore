@@ -237,7 +237,7 @@ class spell_zulgurub_rolling_boulders : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_zulgurub_rolling_boulders::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_zulgurub_rolling_boulders::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -515,9 +515,9 @@ class spell_zulgurub_sigil_shatter : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_zulgurub_sigil_shatter::FilterSigilOfFlameTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(this, &spell_zulgurub_sigil_shatter::FilterSigilOfFrostTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(this, &spell_zulgurub_sigil_shatter::FilterSigilOfDeathTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_zulgurub_sigil_shatter::FilterSigilOfFlameTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_zulgurub_sigil_shatter::FilterSigilOfFrostTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_zulgurub_sigil_shatter::FilterSigilOfDeathTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -552,8 +552,8 @@ class spell_zulgurub_ancient_guardian : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_zulgurub_ancient_guardian::CalculateAmount, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectAbsorb.Register(this, &spell_zulgurub_ancient_guardian::Absorb, EFFECT_1);
+        DoEffectCalcAmount.Register(&spell_zulgurub_ancient_guardian::CalculateAmount, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb.Register(&spell_zulgurub_ancient_guardian::Absorb, EFFECT_1);
     }
 };
 
@@ -656,7 +656,7 @@ class spell_zulgurub_toad_explode : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_zulgurub_toad_explode::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_zulgurub_toad_explode::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 

@@ -303,8 +303,8 @@ class spell_garfrost_permafrost : public SpellScriptLoader
 
             void Register() override
             {
-                BeforeHit.Register(this, &spell_garfrost_permafrost_SpellScript::PreventHitByLoS);
-                AfterHit.Register(this, &spell_garfrost_permafrost_SpellScript::RestoreImmunity);
+                BeforeHit.Register(&spell_garfrost_permafrost_SpellScript::PreventHitByLoS);
+                AfterHit.Register(&spell_garfrost_permafrost_SpellScript::RestoreImmunity);
             }
 
             bool prevented = false;

@@ -529,8 +529,8 @@ class spell_marrowgar_coldflame : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_marrowgar_coldflame_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_marrowgar_coldflame_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_marrowgar_coldflame_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_marrowgar_coldflame_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -556,7 +556,7 @@ class spell_marrowgar_coldflame_bonestorm : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_marrowgar_coldflame_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_marrowgar_coldflame_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -590,7 +590,7 @@ class spell_marrowgar_coldflame_damage : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckAreaTarget.Register(this, &spell_marrowgar_coldflame_damage_AuraScript::CanBeAppliedOn);
+                DoCheckAreaTarget.Register(&spell_marrowgar_coldflame_damage_AuraScript::CanBeAppliedOn);
             }
         };
 
@@ -657,8 +657,8 @@ class spell_marrowgar_bone_spike_graveyard : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_marrowgar_bone_spike_graveyard_SpellScript::CheckCast);
-                OnEffectHitTarget.Register(this, &spell_marrowgar_bone_spike_graveyard_SpellScript::HandleSpikes, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
+                OnCheckCast.Register(&spell_marrowgar_bone_spike_graveyard_SpellScript::CheckCast);
+                OnEffectHitTarget.Register(&spell_marrowgar_bone_spike_graveyard_SpellScript::HandleSpikes, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -682,7 +682,7 @@ class spell_marrowgar_bone_storm : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_marrowgar_bone_storm_SpellScript::RecalculateDamage);
+                OnHit.Register(&spell_marrowgar_bone_storm_SpellScript::RecalculateDamage);
             }
         };
 
@@ -729,9 +729,9 @@ class spell_marrowgar_bone_slice : public SpellScriptLoader
 
             void Register() override
             {
-                BeforeCast.Register(this, &spell_marrowgar_bone_slice_SpellScript::ClearSpikeImmunities);
-                OnObjectAreaTargetSelect.Register(this, &spell_marrowgar_bone_slice_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-                OnHit.Register(this, &spell_marrowgar_bone_slice_SpellScript::SplitDamage);
+                BeforeCast.Register(&spell_marrowgar_bone_slice_SpellScript::ClearSpikeImmunities);
+                OnObjectAreaTargetSelect.Register(&spell_marrowgar_bone_slice_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnHit.Register(&spell_marrowgar_bone_slice_SpellScript::SplitDamage);
             }
 
             uint32 _targetCount;

@@ -729,7 +729,7 @@ public:
 
         void Register()
         {
-            AfterEffectRemove.Register(this, &spell_red_dragonblood_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_red_dragonblood_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -2358,7 +2358,7 @@ public:
 
         void Register() override
         {
-            OnEffectRemove.Register(this, &spell_windsoul_totem_aura_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            OnEffectRemove.Register(&spell_windsoul_totem_aura_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -2392,7 +2392,7 @@ public:
 
         void Register() override
         {
-            OnEffectHit.Register(this, &spell_q11719_bloodspore_ruination_45997_SpellScript::HandleEffect, EFFECT_1, SPELL_EFFECT_SEND_EVENT);
+            OnEffectHit.Register(&spell_q11719_bloodspore_ruination_45997_SpellScript::HandleEffect, EFFECT_1, SPELL_EFFECT_SEND_EVENT);
         }
     };
 

@@ -383,8 +383,8 @@ class spell_glubtok_blossom_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_glubtok_blossom_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_glubtok_blossom_targeting::HandleBlossomEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnObjectAreaTargetSelect.Register(&spell_glubtok_blossom_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_glubtok_blossom_targeting::HandleBlossomEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 

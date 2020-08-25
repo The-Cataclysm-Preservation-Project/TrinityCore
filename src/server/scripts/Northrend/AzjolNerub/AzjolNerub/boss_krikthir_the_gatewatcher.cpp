@@ -949,7 +949,7 @@ class spell_gatewatcher_subboss_trigger : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_gatewatcher_subboss_trigger_SpellScript::HandleTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnObjectAreaTargetSelect.Register(&spell_gatewatcher_subboss_trigger_SpellScript::HandleTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
             }
         };
 
@@ -979,7 +979,7 @@ class spell_anub_ar_skirmisher_fixate : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_anub_ar_skirmisher_fixate_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_anub_ar_skirmisher_fixate_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1012,7 +1012,7 @@ class spell_gatewatcher_web_wrap : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_gatewatcher_web_wrap_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_ROOT, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(&spell_gatewatcher_web_wrap_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_ROOT, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

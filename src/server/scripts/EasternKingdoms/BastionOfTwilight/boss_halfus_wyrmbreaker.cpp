@@ -642,7 +642,7 @@ class spell_halfus_bind_will : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_halfus_bind_will_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_halfus_bind_will_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -689,8 +689,8 @@ class spell_halfus_fireball : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_halfus_fireball_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_halfus_fireball_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_halfus_fireball_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_halfus_fireball_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -720,7 +720,7 @@ class spell_halfus_stone_touch : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_halfus_stone_touch_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_halfus_stone_touch_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -753,7 +753,7 @@ class spell_halfus_cyclone_winds : public SpellScriptLoader
 
             void Register()
             {
-                OnEffectLaunch.Register(this, &spell_halfus_cyclone_winds_SpellScript::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
+                OnEffectLaunch.Register(&spell_halfus_cyclone_winds_SpellScript::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
             }
         };
 
@@ -799,7 +799,7 @@ class spell_halfus_dancing_flames : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_halfus_dancing_flames_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnObjectAreaTargetSelect.Register(&spell_halfus_dancing_flames_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
             }
         };
 

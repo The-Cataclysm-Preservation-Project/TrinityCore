@@ -1708,7 +1708,7 @@ class spell_thorim_blizzard_effect : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckAreaTarget.Register(this, &spell_thorim_blizzard_effect_AuraScript::CheckAreaTarget);
+                DoCheckAreaTarget.Register(&spell_thorim_blizzard_effect_AuraScript::CheckAreaTarget);
             }
         };
 
@@ -1733,7 +1733,7 @@ class spell_thorim_frostbolt_volley : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_thorim_frostbolt_volley_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_thorim_frostbolt_volley_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1776,8 +1776,8 @@ class spell_thorim_charge_orb : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_thorim_charge_orb_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                AfterHit.Register(this, &spell_thorim_charge_orb_SpellScript::HandleScript);
+                OnObjectAreaTargetSelect.Register(&spell_thorim_charge_orb_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                AfterHit.Register(&spell_thorim_charge_orb_SpellScript::HandleScript);
             }
         };
 
@@ -1814,8 +1814,8 @@ class spell_thorim_lightning_charge : public SpellScriptLoader
 
             void Register() override
             {
-                BeforeCast.Register(this, &spell_thorim_lightning_charge_SpellScript::HandleFocus);
-                AfterCast.Register(this, &spell_thorim_lightning_charge_SpellScript::HandleCharge);
+                BeforeCast.Register(&spell_thorim_lightning_charge_SpellScript::HandleFocus);
+                AfterCast.Register(&spell_thorim_lightning_charge_SpellScript::HandleCharge);
             }
         };
 
@@ -1846,7 +1846,7 @@ class spell_thorim_arena_leap : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectLaunch.Register(this, &spell_thorim_arena_leap_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_JUMP_DEST);
+                OnEffectLaunch.Register(&spell_thorim_arena_leap_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_JUMP_DEST);
             }
         };
 
@@ -1908,9 +1908,9 @@ class spell_thorim_stormhammer : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_thorim_stormhammer_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
-                AfterCast.Register(this, &spell_thorim_stormhammer_SpellScript::LoseHammer);
-                OnEffectHitTarget.Register(this, &spell_thorim_stormhammer_SpellScript::HandleScript, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_thorim_stormhammer_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+                AfterCast.Register(&spell_thorim_stormhammer_SpellScript::LoseHammer);
+                OnEffectHitTarget.Register(&spell_thorim_stormhammer_SpellScript::HandleScript, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1949,8 +1949,8 @@ class spell_thorim_stormhammer_sif : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_thorim_stormhammer_sif_SpellScript::LoseHammer);
-                OnEffectHitTarget.Register(this, &spell_thorim_stormhammer_sif_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                AfterCast.Register(&spell_thorim_stormhammer_sif_SpellScript::LoseHammer);
+                OnEffectHitTarget.Register(&spell_thorim_stormhammer_sif_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1976,7 +1976,7 @@ class spell_thorim_stormhammer_boomerang : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_thorim_stormhammer_boomerang_SpellScript::RecoverHammer, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_thorim_stormhammer_boomerang_SpellScript::RecoverHammer, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2014,7 +2014,7 @@ class spell_thorim_runic_smash : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_thorim_runic_smash_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_TRIGGER_SPELL);
+                OnEffectHitTarget.Register(&spell_thorim_runic_smash_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_TRIGGER_SPELL);
             }
         };
 
@@ -2077,7 +2077,7 @@ class spell_thorim_activate_lightning_orb_periodic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_thorim_activate_lightning_orb_periodic_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_thorim_activate_lightning_orb_periodic_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -2106,7 +2106,7 @@ class spell_iron_ring_guard_impale : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_iron_ring_guard_impale_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                OnEffectPeriodic.Register(&spell_iron_ring_guard_impale_AuraScript::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
             }
         };
 

@@ -832,8 +832,8 @@ class spell_magmaw_magma_spit: public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_magmaw_magma_spit::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_magmaw_magma_spit::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_magmaw_magma_spit::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_magmaw_magma_spit::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -877,8 +877,8 @@ class spell_magmaw_mangle : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_magmaw_mangle::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_magmaw_mangle::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_magmaw_mangle::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_magmaw_mangle::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -905,7 +905,7 @@ class spell_magmaw_pillar_of_flame_dummy : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_magmaw_pillar_of_flame_dummy::HandleHit, EFFECT_1, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_magmaw_pillar_of_flame_dummy::HandleHit, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -948,7 +948,7 @@ class spell_magmaw_pillar_of_flame_forcecast : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_magmaw_pillar_of_flame_forcecast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_magmaw_pillar_of_flame_forcecast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -970,7 +970,7 @@ class spell_magmaw_ride_vehicle : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_magmaw_ride_vehicle::SetTarget, EFFECT_0, TARGET_UNIT_TARGET_ANY);
+        OnObjectTargetSelect.Register(&spell_magmaw_ride_vehicle::SetTarget, EFFECT_0, TARGET_UNIT_TARGET_ANY);
     }
 };
 
@@ -1006,7 +1006,7 @@ class spell_magmaw_launch_hook : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_magmaw_launch_hook::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_magmaw_launch_hook::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1024,7 +1024,7 @@ class spell_magmaw_eject_passenger : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_magmaw_eject_passenger::EjectPassenger, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_magmaw_eject_passenger::EjectPassenger, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1059,7 +1059,7 @@ class spell_magmaw_lava_parasite : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_magmaw_lava_parasite::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_magmaw_lava_parasite::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1105,8 +1105,8 @@ class spell_magmaw_blazing_inferno_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_magmaw_blazing_inferno_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_magmaw_blazing_inferno_targeting::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_magmaw_blazing_inferno_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_magmaw_blazing_inferno_targeting::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1138,8 +1138,8 @@ class spell_magmaw_shadow_breath_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_magmaw_shadow_breath_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_magmaw_shadow_breath_targeting::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_magmaw_shadow_breath_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_magmaw_shadow_breath_targeting::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1152,7 +1152,7 @@ class spell_magmaw_lava_parasite_summon : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_magmaw_lava_parasite_summon::SetDest, EFFECT_0, TARGET_DEST_DEST_RANDOM);
+        OnDestinationTargetSelect.Register(&spell_magmaw_lava_parasite_summon::SetDest, EFFECT_0, TARGET_DEST_DEST_RANDOM);
     }
 };
 
@@ -1174,8 +1174,8 @@ class spell_magmaw_massive_crash : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_magmaw_massive_crash::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_magmaw_massive_crash::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_magmaw_massive_crash::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_magmaw_massive_crash::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1197,8 +1197,8 @@ class spell_magmaw_impale_self : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_magmaw_impale_self::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_magmaw_impale_self::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_magmaw_impale_self::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_magmaw_impale_self::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1220,7 +1220,7 @@ class spell_magmaw_captured : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_magmaw_captured::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_magmaw_captured::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 

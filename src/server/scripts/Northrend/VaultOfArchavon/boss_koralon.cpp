@@ -204,7 +204,7 @@ class spell_koralon_meteor_fists : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_koralon_meteor_fists_AuraScript::TriggerFists, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_koralon_meteor_fists_AuraScript::TriggerFists, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -241,8 +241,8 @@ class spell_koralon_meteor_fists_damage : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_koralon_meteor_fists_damage_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_TARGET_ENEMY);
-                OnHit.Register(this, &spell_koralon_meteor_fists_damage_SpellScript::CalculateSplitDamage);
+                OnObjectAreaTargetSelect.Register(&spell_koralon_meteor_fists_damage_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_TARGET_ENEMY);
+                OnHit.Register(&spell_koralon_meteor_fists_damage_SpellScript::CalculateSplitDamage);
             }
 
         private:
@@ -275,7 +275,7 @@ class spell_flame_warder_meteor_fists : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_flame_warder_meteor_fists_AuraScript::TriggerFists, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_flame_warder_meteor_fists_AuraScript::TriggerFists, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 

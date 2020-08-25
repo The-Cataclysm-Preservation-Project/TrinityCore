@@ -799,7 +799,7 @@ class spell_deathwhisper_mana_barrier : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_deathwhisper_mana_barrier_AuraScript::HandlePeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_deathwhisper_mana_barrier_AuraScript::HandlePeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -845,7 +845,7 @@ class spell_deathwhisper_dominated_mind : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_deathwhisper_dominated_mind_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_AOE_CHARM, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectApply.Register(&spell_deathwhisper_dominated_mind_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_AOE_CHARM, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -874,7 +874,7 @@ class spell_deathwhisper_summon_spirits : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_deathwhisper_summon_spirits_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_deathwhisper_summon_spirits_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 

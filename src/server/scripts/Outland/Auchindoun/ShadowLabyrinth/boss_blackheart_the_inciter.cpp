@@ -217,7 +217,7 @@ class spell_blackheart_incite_chaos : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_blackheart_incite_chaos::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_blackheart_incite_chaos::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 const uint32 spell_blackheart_incite_chaos::INCITE_SPELLS[spell_blackheart_incite_chaos::NUM_INCITE_SPELLS] = { 33677,33680,33681,33682,33683 };

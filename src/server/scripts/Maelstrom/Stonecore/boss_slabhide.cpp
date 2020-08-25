@@ -361,7 +361,7 @@ class spell_slabhide_stalactite : public SpellScript
 
     void Register() override
     {
-        OnHit.Register(this, &spell_slabhide_stalactite::SummonStalactiteTrigger);
+        OnHit.Register(&spell_slabhide_stalactite::SummonStalactiteTrigger);
     }
 };
 
@@ -374,7 +374,7 @@ class spell_slabhide_stalactite_summon : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_slabhide_stalactite_summon::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
+        OnDestinationTargetSelect.Register(&spell_slabhide_stalactite_summon::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
     }
 };
 
@@ -395,7 +395,7 @@ class spell_slabhide_stalactite_dest_relocation : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_slabhide_stalactite_dest_relocation::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_slabhide_stalactite_dest_relocation::SetDest, EFFECT_0, TARGET_DEST_CASTER);
     }
 };
 
@@ -414,7 +414,7 @@ class spell_slabhide_crystal_storm_periodic : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_slabhide_crystal_storm_periodic::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_slabhide_crystal_storm_periodic::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 

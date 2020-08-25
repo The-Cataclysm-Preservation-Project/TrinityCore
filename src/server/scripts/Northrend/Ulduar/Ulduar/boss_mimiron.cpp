@@ -1705,8 +1705,8 @@ class spell_mimiron_bomb_bot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_bomb_bot_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-                OnEffectHitTarget.Register(this, &spell_mimiron_bomb_bot_SpellScript::HandleDespawn, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(&spell_mimiron_bomb_bot_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnEffectHitTarget.Register(&spell_mimiron_bomb_bot_SpellScript::HandleDespawn, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -1732,7 +1732,7 @@ class spell_mimiron_clear_fires : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_clear_fires_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mimiron_clear_fires_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1758,7 +1758,7 @@ class spell_mimiron_despawn_assault_bots : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_despawn_assault_bots_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_mimiron_despawn_assault_bots_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1827,9 +1827,9 @@ class spell_mimiron_fire_search : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_mimiron_fire_search_SpellScript::HandleAftercast);
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_fire_search_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_mimiron_fire_search_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                AfterCast.Register(&spell_mimiron_fire_search_SpellScript::HandleAftercast);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_fire_search_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_mimiron_fire_search_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
 
         private:
@@ -1857,7 +1857,7 @@ class spell_mimiron_magnetic_core : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_magnetic_core_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_magnetic_core_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
             }
         };
 
@@ -1899,9 +1899,9 @@ class spell_mimiron_magnetic_core : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_mimiron_magnetic_core_AuraScript::OnApply, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_mimiron_magnetic_core_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_mimiron_magnetic_core_AuraScript::OnRemoveSelf, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectApply.Register(&spell_mimiron_magnetic_core_AuraScript::OnApply, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_mimiron_magnetic_core_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_mimiron_magnetic_core_AuraScript::OnRemoveSelf, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1947,8 +1947,8 @@ class spell_mimiron_napalm_shell : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_napalm_shell_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_mimiron_napalm_shell_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_napalm_shell_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_mimiron_napalm_shell_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1973,7 +1973,7 @@ class spell_mimiron_p3wx2_laser_barrage : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_p3wx2_laser_barrage_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(&spell_mimiron_p3wx2_laser_barrage_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -2009,7 +2009,7 @@ class spell_mimiron_plasma_blast : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_plasma_blast_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_mimiron_plasma_blast_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2042,8 +2042,8 @@ class spell_mimiron_proximity_explosion : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_proximity_explosion_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-                OnEffectHitTarget.Register(this, &spell_mimiron_proximity_explosion_SpellScript::HandleAura, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(&spell_mimiron_proximity_explosion_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnEffectHitTarget.Register(&spell_mimiron_proximity_explosion_SpellScript::HandleAura, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -2074,7 +2074,7 @@ class spell_mimiron_proximity_mines : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_proximity_mines_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_mimiron_proximity_mines_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2112,8 +2112,8 @@ class spell_mimiron_proximity_trigger : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_proximity_trigger_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHit.Register(this, &spell_mimiron_proximity_trigger_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_proximity_trigger_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHit.Register(&spell_mimiron_proximity_trigger_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2150,8 +2150,8 @@ class spell_mimiron_rapid_burst : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_mimiron_rapid_burst_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                OnEffectPeriodic.Register(this, &spell_mimiron_rapid_burst_AuraScript::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+                AfterEffectRemove.Register(&spell_mimiron_rapid_burst_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectPeriodic.Register(&spell_mimiron_rapid_burst_AuraScript::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -2194,8 +2194,8 @@ class spell_mimiron_rocket_strike : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_rocket_strike_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_mimiron_rocket_strike_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_rocket_strike_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_mimiron_rocket_strike_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2239,9 +2239,9 @@ class spell_mimiron_rocket_strike_damage : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_mimiron_rocket_strike_damage_SpellScript::HandleAfterCast);
-                OnEffectHitTarget.Register(this, &spell_mimiron_rocket_strike_damage_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-                OnEffectHitTarget.Register(this, &spell_mimiron_rocket_strike_damage_SpellScript::HandleFriendlyFire, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+                AfterCast.Register(&spell_mimiron_rocket_strike_damage_SpellScript::HandleAfterCast);
+                OnEffectHitTarget.Register(&spell_mimiron_rocket_strike_damage_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnEffectHitTarget.Register(&spell_mimiron_rocket_strike_damage_SpellScript::HandleFriendlyFire, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
             }
         };
 
@@ -2289,8 +2289,8 @@ class spell_mimiron_rocket_strike_target_select : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_rocket_strike_target_select_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_mimiron_rocket_strike_target_select_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_rocket_strike_target_select_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_mimiron_rocket_strike_target_select_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2316,7 +2316,7 @@ class spell_mimiron_self_repair : public SpellScriptLoader
 
             void Register() override
             {
-                AfterHit.Register(this, &spell_mimiron_self_repair_SpellScript::HandleScript);
+                AfterHit.Register(&spell_mimiron_self_repair_SpellScript::HandleScript);
             }
         };
 
@@ -2343,7 +2343,7 @@ class spell_mimiron_spinning_up : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_spinning_up_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(&spell_mimiron_spinning_up_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -2376,7 +2376,7 @@ class spell_mimiron_summon_assault_bot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_mimiron_summon_assault_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(&spell_mimiron_summon_assault_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2406,7 +2406,7 @@ class spell_mimiron_summon_assault_bot_target : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_summon_assault_bot_target_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mimiron_summon_assault_bot_target_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2439,7 +2439,7 @@ class spell_mimiron_summon_fire_bot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_mimiron_summon_fire_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(&spell_mimiron_summon_fire_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2469,7 +2469,7 @@ class spell_mimiron_summon_fire_bot_target : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_summon_fire_bot_target_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mimiron_summon_fire_bot_target_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2510,8 +2510,8 @@ class spell_mimiron_summon_flames_spread : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_summon_flames_spread_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_mimiron_summon_flames_spread_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_summon_flames_spread_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_mimiron_summon_flames_spread_SpellScript::OnHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -2537,7 +2537,7 @@ class spell_mimiron_summon_flames_spread : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_mimiron_summon_flames_spread_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_mimiron_summon_flames_spread_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -2583,8 +2583,8 @@ class spell_mimiron_summon_frost_bomb_target : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mimiron_summon_frost_bomb_target_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_mimiron_summon_frost_bomb_target_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_mimiron_summon_frost_bomb_target_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_mimiron_summon_frost_bomb_target_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2617,7 +2617,7 @@ class spell_mimiron_summon_junk_bot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_mimiron_summon_junk_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(&spell_mimiron_summon_junk_bot_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2647,7 +2647,7 @@ class spell_mimiron_summon_junk_bot_target : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mimiron_summon_junk_bot_target_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mimiron_summon_junk_bot_target_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2678,7 +2678,7 @@ class spell_mimiron_weld : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_mimiron_weld_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_mimiron_weld_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 

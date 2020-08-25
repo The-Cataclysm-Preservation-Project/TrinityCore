@@ -1835,8 +1835,8 @@ class spell_igb_rocket_pack : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_igb_rocket_pack_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-                OnEffectRemove.Register(this, &spell_igb_rocket_pack_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectPeriodic.Register(&spell_igb_rocket_pack_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectRemove.Register(&spell_igb_rocket_pack_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1881,9 +1881,9 @@ class spell_igb_rocket_pack_useable : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckAreaTarget.Register(this, &spell_igb_rocket_pack_useable_AuraScript::CheckAreaTarget);
-                AfterEffectApply.Register(this, &spell_igb_rocket_pack_useable_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_igb_rocket_pack_useable_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                DoCheckAreaTarget.Register(&spell_igb_rocket_pack_useable_AuraScript::CheckAreaTarget);
+                AfterEffectApply.Register(&spell_igb_rocket_pack_useable_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_igb_rocket_pack_useable_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1923,8 +1923,8 @@ class spell_igb_on_gunship_deck : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckAreaTarget.Register(this, &spell_igb_on_gunship_deck_AuraScript::CheckAreaTarget);
-                AfterEffectApply.Register(this, &spell_igb_on_gunship_deck_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                DoCheckAreaTarget.Register(&spell_igb_on_gunship_deck_AuraScript::CheckAreaTarget);
+                AfterEffectApply.Register(&spell_igb_on_gunship_deck_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
 
             uint32 _teamInInstance = 0;
@@ -1951,7 +1951,7 @@ class spell_igb_periodic_trigger_with_power_cost : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_igb_periodic_trigger_with_power_cost_AuraScript::HandlePeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_igb_periodic_trigger_with_power_cost_AuraScript::HandlePeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -1986,7 +1986,7 @@ class spell_igb_cannon_blast : public SpellScriptLoader
 
             void Register() override
             {
-                AfterHit.Register(this, &spell_igb_cannon_blast_SpellScript::CheckEnergy);
+                AfterHit.Register(&spell_igb_cannon_blast_SpellScript::CheckEnergy);
             }
         };
 
@@ -2020,9 +2020,9 @@ class spell_igb_incinerating_blast : public SpellScriptLoader
 
             void Register() override
             {
-                OnCast.Register(this, &spell_igb_incinerating_blast_SpellScript::StoreEnergy);
-                AfterCast.Register(this, &spell_igb_incinerating_blast_SpellScript::RemoveEnergy);
-                OnEffectLaunchTarget.Register(this, &spell_igb_incinerating_blast_SpellScript::CalculateDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnCast.Register(&spell_igb_incinerating_blast_SpellScript::StoreEnergy);
+                AfterCast.Register(&spell_igb_incinerating_blast_SpellScript::RemoveEnergy);
+                OnEffectLaunchTarget.Register(&spell_igb_incinerating_blast_SpellScript::CalculateDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
             }
 
             uint32 _energyLeft = 0;
@@ -2077,8 +2077,8 @@ class spell_igb_overheat : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_igb_overheat_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_igb_overheat_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectApply.Register(&spell_igb_overheat_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_igb_overheat_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2102,7 +2102,7 @@ class spell_igb_below_zero : public SpellScriptLoader
 
             void Register() override
             {
-                BeforeHit.Register(this, &spell_igb_below_zero_SpellScript::RemovePassengers);
+                BeforeHit.Register(&spell_igb_below_zero_SpellScript::RemovePassengers);
             }
         };
 
@@ -2134,7 +2134,7 @@ class spell_igb_teleport_to_enemy_ship : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_igb_teleport_to_enemy_ship_SpellScript::RelocateTransportOffset, EFFECT_0, SPELL_EFFECT_TELEPORT_UNITS);
+                OnEffectHitTarget.Register(&spell_igb_teleport_to_enemy_ship_SpellScript::RelocateTransportOffset, EFFECT_0, SPELL_EFFECT_TELEPORT_UNITS);
             }
         };
 
@@ -2180,8 +2180,8 @@ class spell_igb_burning_pitch_selector : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_igb_burning_pitch_selector_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_igb_burning_pitch_selector_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_igb_burning_pitch_selector_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_igb_burning_pitch_selector_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2207,7 +2207,7 @@ class spell_igb_burning_pitch : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_igb_burning_pitch_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_igb_burning_pitch_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2242,8 +2242,8 @@ class spell_igb_rocket_artillery : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_igb_rocket_artillery_SpellScript::SelectRandomTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_igb_rocket_artillery_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_igb_rocket_artillery_SpellScript::SelectRandomTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_igb_rocket_artillery_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2268,7 +2268,7 @@ class spell_igb_rocket_artillery_explosion : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_igb_rocket_artillery_explosion_SpellScript::DamageGunship, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE);
+                OnEffectHit.Register(&spell_igb_rocket_artillery_explosion_SpellScript::DamageGunship, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE);
             }
         };
 
@@ -2306,8 +2306,8 @@ class spell_igb_gunship_fall_teleport : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectTargetSelect.Register(this, &spell_igb_gunship_fall_teleport_SpellScript::SelectTransport, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
-                OnEffectLaunch.Register(this, &spell_igb_gunship_fall_teleport_SpellScript::RelocateDest, EFFECT_0, SPELL_EFFECT_TELEPORT_UNITS);
+                OnObjectTargetSelect.Register(&spell_igb_gunship_fall_teleport_SpellScript::SelectTransport, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
+                OnEffectLaunch.Register(&spell_igb_gunship_fall_teleport_SpellScript::RelocateDest, EFFECT_0, SPELL_EFFECT_TELEPORT_UNITS);
             }
         };
 
@@ -2348,9 +2348,9 @@ class spell_igb_check_for_players : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_igb_check_for_players_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                AfterCast.Register(this, &spell_igb_check_for_players_SpellScript::TriggerWipe);
-                OnEffectHitTarget.Register(this, &spell_igb_check_for_players_SpellScript::TeleportPlayer, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_igb_check_for_players_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                AfterCast.Register(&spell_igb_check_for_players_SpellScript::TriggerWipe);
+                OnEffectHitTarget.Register(&spell_igb_check_for_players_SpellScript::TeleportPlayer, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
 
             uint32 _playerCount = 0;
@@ -2385,7 +2385,7 @@ class spell_igb_teleport_players_on_victory : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_igb_teleport_players_on_victory_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENTRY);
+                OnObjectAreaTargetSelect.Register(&spell_igb_teleport_players_on_victory_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENTRY);
             }
         };
 
@@ -2410,7 +2410,7 @@ public:
 
         void Register() override
         {
-            DoCheckProc.Register(this, &spell_igb_battle_experience_check_AuraScript::CheckProc);
+            DoCheckProc.Register(&spell_igb_battle_experience_check_AuraScript::CheckProc);
         }
     };
 

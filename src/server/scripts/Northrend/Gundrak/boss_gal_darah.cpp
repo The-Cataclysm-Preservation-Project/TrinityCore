@@ -270,7 +270,7 @@ class spell_gal_darah_impaling_charge : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_gal_darah_impaling_charge_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_CHARGE);
+                OnEffectHitTarget.Register(&spell_gal_darah_impaling_charge_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_CHARGE);
             }
         };
 
@@ -296,7 +296,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_gal_darah_stampede_charge_SpellScript::OnHit, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+            OnEffectHitTarget.Register(&spell_gal_darah_stampede_charge_SpellScript::OnHit, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
         }
     };
 

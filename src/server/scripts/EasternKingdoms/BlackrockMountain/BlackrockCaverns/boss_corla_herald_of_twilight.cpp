@@ -350,7 +350,7 @@ class spell_corla_nether_dragon_essence : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_corla_nether_dragon_essence::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_corla_nether_dragon_essence::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -380,7 +380,7 @@ class spell_corla_nether_dragon_essence_visual : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_corla_nether_dragon_essence_visual::ModDestHeight, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
+        OnDestinationTargetSelect.Register(&spell_corla_nether_dragon_essence_visual::ModDestHeight, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
     }
 };
 
@@ -448,8 +448,8 @@ class spell_corla_nether_beam : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_corla_nether_beam::FilterTargets, EFFECT_0, TARGET_UNIT_CONE_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_corla_nether_beam::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_corla_nether_beam::FilterTargets, EFFECT_0, TARGET_UNIT_CONE_ENTRY);
+        OnEffectHitTarget.Register(&spell_corla_nether_beam::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 private:
     uint32 _evolutionSpellId = SPELL_EVOLUTION_STACKS_N;
@@ -499,7 +499,7 @@ class spell_corla_evolution : public SpellScript
 
     void Register() override
     {
-        AfterHit.Register(this, &spell_corla_evolution::HandleEvolve);
+        AfterHit.Register(&spell_corla_evolution::HandleEvolve);
     }
 };
 
@@ -513,7 +513,7 @@ class spell_corla_grievous_whirl : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_corla_grievous_whirl::HandleProc, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectProc.Register(&spell_corla_grievous_whirl::HandleProc, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 

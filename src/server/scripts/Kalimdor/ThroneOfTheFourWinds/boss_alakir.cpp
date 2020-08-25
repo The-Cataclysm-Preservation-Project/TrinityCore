@@ -782,7 +782,7 @@ class spell_alakir_lightning_strike_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_alakir_lightning_strike_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_alakir_lightning_strike_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -817,7 +817,7 @@ class spell_alakir_lightning_strike_periodic : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_alakir_lightning_strike_periodic::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_alakir_lightning_strike_periodic::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -834,7 +834,7 @@ class spell_alakir_lightning_strike_damage : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_alakir_lightning_strike_damage::HandleDamageReuction, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_alakir_lightning_strike_damage::HandleDamageReuction, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -864,7 +864,7 @@ class spell_alakir_electrocute : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_alakir_electrocute::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectPeriodic.Register(&spell_alakir_electrocute::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
@@ -907,7 +907,7 @@ class spell_alakir_squall_line_pre_aura : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_alakir_squall_line_pre_aura::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_alakir_squall_line_pre_aura::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -929,7 +929,7 @@ class spell_alakir_squall_line_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_alakir_squall_line_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_alakir_squall_line_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -949,7 +949,7 @@ class spell_alakir_relentless_storm_initial_vehicle_ride_trigger : public SpellS
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_alakir_relentless_storm_initial_vehicle_ride_trigger::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_alakir_relentless_storm_initial_vehicle_ride_trigger::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -965,7 +965,7 @@ class spell_alakir_relentless_storm_initial_vehicle_ride : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_alakir_relentless_storm_initial_vehicle_ride::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_alakir_relentless_storm_initial_vehicle_ride::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -978,7 +978,7 @@ class spell_alakir_wind_burst : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_alakir_wind_burst::HandlePeriodic, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_alakir_wind_burst::HandlePeriodic, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -1000,7 +1000,7 @@ class spell_alakir_lightning_clouds_periodic : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_alakir_lightning_clouds_periodic::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_alakir_lightning_clouds_periodic::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -1029,7 +1029,7 @@ class spell_alakir_lightning_clouds_damage : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_alakir_lightning_clouds_damage::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_alakir_lightning_clouds_damage::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -1054,7 +1054,7 @@ class spell_alakir_lightning_clouds_targeting : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_alakir_lightning_clouds_targeting::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_alakir_lightning_clouds_targeting::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1070,7 +1070,7 @@ class spell_alakir_lightning_clouds_dummy : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_alakir_lightning_clouds_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_alakir_lightning_clouds_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -1099,7 +1099,7 @@ class spell_alakir_lightning_rod_damage : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_alakir_lightning_rod_damage::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_alakir_lightning_rod_damage::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
     }
 };
 
@@ -1115,7 +1115,7 @@ class spell_alakir_relentless_storm : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_alakir_relentless_storm::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_alakir_relentless_storm::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -1154,8 +1154,8 @@ class spell_alakir_storm_distance_check: public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_alakir_storm_distance_check::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_alakir_storm_distance_check::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_alakir_storm_distance_check::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_alakir_storm_distance_check::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1172,7 +1172,7 @@ class spell_alakir_lightning_script: public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_alakir_lightning_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_alakir_lightning_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 

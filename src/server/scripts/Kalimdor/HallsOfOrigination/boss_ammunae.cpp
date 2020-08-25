@@ -500,8 +500,8 @@ class spell_ammunae_consume_life_energy : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_ammunae_consume_life_energy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_ammunae_consume_life_energy::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_ammunae_consume_life_energy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_ammunae_consume_life_energy::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -523,8 +523,8 @@ class spell_ammunae_summon_bloodpetal_blossom : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_ammunae_summon_bloodpetal_blossom::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
-        OnEffectHitTarget.Register(this, &spell_ammunae_summon_bloodpetal_blossom::HandleDespawn, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+        OnObjectAreaTargetSelect.Register(&spell_ammunae_summon_bloodpetal_blossom::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnEffectHitTarget.Register(&spell_ammunae_summon_bloodpetal_blossom::HandleDespawn, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
 
@@ -538,7 +538,7 @@ class spell_ammunae_rampant_growth : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_ammunae_rampant_growth::HandleDespawn, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+        OnEffectHitTarget.Register(&spell_ammunae_rampant_growth::HandleDespawn, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
 
@@ -552,7 +552,7 @@ class spell_ammunae_fixate : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_ammunae_fixate::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_ammunae_fixate::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 

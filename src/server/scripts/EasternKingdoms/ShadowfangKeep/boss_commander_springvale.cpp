@@ -447,7 +447,7 @@ class spell_sfk_forsaken_ability : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_sfk_forsaken_ability_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_sfk_forsaken_ability_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -492,7 +492,7 @@ public:
         void Register() override
         {
             
-            AfterHit.Register(this, &spell_sfk_unholy_power_SpellScript::HandleStacks);
+            AfterHit.Register(&spell_sfk_unholy_power_SpellScript::HandleStacks);
         }
     };
 
@@ -541,7 +541,7 @@ public:
 
         void Register() override
         {
-            AfterHit.Register(this, &spell_sfk_unholy_empowerment_SpellScript::HandleStacks);
+            AfterHit.Register(&spell_sfk_unholy_empowerment_SpellScript::HandleStacks);
         }
     };
 

@@ -258,7 +258,7 @@ class spell_obsidius_twitchy : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_obsidius_twitchy::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_obsidius_twitchy::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -274,7 +274,7 @@ class spell_obsidius_transformation : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_obsidius_transformation::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_obsidius_transformation::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -298,7 +298,7 @@ class spell_obsidius_transformation_not_selectable : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_obsidius_transformation_not_selectable::AfterRemmove, EFFECT_0, SPELL_AURA_MOD_UNATTACKABLE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_obsidius_transformation_not_selectable::AfterRemmove, EFFECT_0, SPELL_AURA_MOD_UNATTACKABLE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -314,7 +314,7 @@ class spell_obsidius_transformation_scale : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_obsidius_transformation_scale::HandlePeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_obsidius_transformation_scale::HandlePeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -343,7 +343,7 @@ class spell_obsidius_crepuscular_veil : public SpellScript
 
     void Register() override
     {
-        AfterHit.Register(this, &spell_obsidius_crepuscular_veil::HandleAchievement);
+        AfterHit.Register(&spell_obsidius_crepuscular_veil::HandleAchievement);
     }
 };
 
@@ -361,8 +361,8 @@ class spell_obsidius_shadow_of_obsidius : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_obsidius_shadow_of_obsidius::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectAbsorb.Register(this, &spell_obsidius_shadow_of_obsidius::Absorb, EFFECT_0);
+        DoEffectCalcAmount.Register(&spell_obsidius_shadow_of_obsidius::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb.Register(&spell_obsidius_shadow_of_obsidius::Absorb, EFFECT_0);
     }
 };
 

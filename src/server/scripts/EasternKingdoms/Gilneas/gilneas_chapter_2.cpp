@@ -219,9 +219,9 @@ class spell_gilneas_quest_save_the_children : public SpellScript
     void Register() override
     {
         if (m_scriptSpellId == SPELL_GILNEAS_QUEST_SAVE_JAMES)
-            OnEffectHitTarget.Register(this, &spell_gilneas_quest_save_the_children::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnEffectHitTarget.Register(&spell_gilneas_quest_save_the_children::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         else
-            OnEffectHitTarget.Register(this, &spell_gilneas_quest_save_the_children::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+            OnEffectHitTarget.Register(&spell_gilneas_quest_save_the_children::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -490,7 +490,7 @@ class spell_gilneas_launch : public SpellScript
 
     void Register()
     {
-        OnEffectLaunch.Register(this, &spell_gilneas_launch::TransferDestination, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectLaunch.Register(&spell_gilneas_launch::TransferDestination, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -528,7 +528,7 @@ class spell_gilneas_fiery_boulder : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_gilneas_fiery_boulder::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_gilneas_fiery_boulder::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -565,7 +565,7 @@ class spell_gilneas_call_attack_mastiff : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_gilneas_call_attack_mastiff::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_gilneas_call_attack_mastiff::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -580,7 +580,7 @@ class spell_gilneas_forcecast_cataclysm_1 : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_gilneas_forcecast_cataclysm_1::HandleForcecast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+        OnEffectHitTarget.Register(&spell_gilneas_forcecast_cataclysm_1::HandleForcecast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
 
@@ -617,7 +617,7 @@ class spell_gilneas_worgen_intro_completion : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_gilneas_worgen_intro_completion::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_gilneas_worgen_intro_completion::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 

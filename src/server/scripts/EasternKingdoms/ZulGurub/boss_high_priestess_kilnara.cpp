@@ -364,7 +364,7 @@ class spell_kilnara_tears_of_blood : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_kilnara_tears_of_blood::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_kilnara_tears_of_blood::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -404,8 +404,8 @@ class spell_kilnara_wave_of_agony : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_kilnara_wave_of_agony::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
-        OnObjectAreaTargetSelect.Register(this, &spell_kilnara_wave_of_agony::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_kilnara_wave_of_agony::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_kilnara_wave_of_agony::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -425,7 +425,7 @@ class spell_kilnara_wave_of_agony_dummy : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_kilnara_wave_of_agony_dummy::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_kilnara_wave_of_agony_dummy::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -440,7 +440,7 @@ class spell_kilnara_primal_awakening : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_kilnara_primal_awakening::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_kilnara_primal_awakening::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -461,7 +461,7 @@ class spell_kilnara_gaping_wound : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_kilnara_gaping_wound::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_kilnara_gaping_wound::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 

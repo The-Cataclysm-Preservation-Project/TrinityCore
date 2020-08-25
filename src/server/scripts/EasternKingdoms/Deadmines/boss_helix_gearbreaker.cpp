@@ -589,8 +589,8 @@ class spell_helix_throw_bomb_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_helix_throw_bomb_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_helix_throw_bomb_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_helix_throw_bomb_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_helix_throw_bomb_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -619,7 +619,7 @@ class spell_helix_sticky_bomb_periodic_trigger : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_helix_sticky_bomb_periodic_trigger::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_helix_sticky_bomb_periodic_trigger::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -641,8 +641,8 @@ class spell_helix_oaf_grab_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_helix_oaf_grab_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_helix_oaf_grab_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_helix_oaf_grab_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_helix_oaf_grab_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -656,7 +656,7 @@ class spell_helix_force_player_to_ride_oaf : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_helix_force_player_to_ride_oaf::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_helix_force_player_to_ride_oaf::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -686,7 +686,7 @@ class spell_helix_oaf_smash : public SpellScript
 
     void Register()
     {
-        OnEffectLaunch.Register(this, &spell_helix_oaf_smash::HandleLaunch, EFFECT_0, SPELL_EFFECT_KNOCK_BACK);
+        OnEffectLaunch.Register(&spell_helix_oaf_smash::HandleLaunch, EFFECT_0, SPELL_EFFECT_KNOCK_BACK);
     }
 };
 
@@ -699,7 +699,7 @@ class spell_helix_helix_ride : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_helix_helix_ride::AfterApply, EFFECT_0, SPELL_AURA_SET_VEHICLE_ID, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_helix_helix_ride::AfterApply, EFFECT_0, SPELL_AURA_SET_VEHICLE_ID, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -757,8 +757,8 @@ class spell_helix_ride_face_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_helix_ride_face_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_helix_ride_face_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_helix_ride_face_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_helix_ride_face_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -800,7 +800,7 @@ class spell_helix_helix_ride_face_timer_aura : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_helix_helix_ride_face_timer_aura::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_helix_helix_ride_face_timer_aura::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -816,7 +816,7 @@ class spell_helix_chest_bomb_emote : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_helix_chest_bomb_emote::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_helix_chest_bomb_emote::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -835,7 +835,7 @@ class spell_helix_chest_bomb : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_helix_chest_bomb::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_helix_chest_bomb::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -848,7 +848,7 @@ class spell_helix_ride_vehicle : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_helix_ride_vehicle::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_helix_ride_vehicle::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

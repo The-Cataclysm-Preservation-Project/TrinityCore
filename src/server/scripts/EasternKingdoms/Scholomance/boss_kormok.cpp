@@ -164,7 +164,7 @@ class spell_kormok_summon_bone_mages : SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_kormok_summon_bone_magesSpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_kormok_summon_bone_magesSpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -198,7 +198,7 @@ class spell_kormok_summon_bone_minions : SpellScriptLoader
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_kormok_summon_bone_minionsSpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectHitTarget.Register(&spell_kormok_summon_bone_minionsSpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 

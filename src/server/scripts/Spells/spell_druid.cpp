@@ -148,7 +148,7 @@ class spell_dru_berserk : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_berserk::HandleEffectApply, EFFECT_1, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_dru_berserk::HandleEffectApply, EFFECT_1, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -174,7 +174,7 @@ class spell_dru_dash : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_dash::HandleFeralSwiftness, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_dru_dash::HandleFeralSwiftness, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -189,7 +189,7 @@ class spell_dru_dash_AuraScript : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dru_dash_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_INCREASE_SPEED);
+        DoEffectCalcAmount.Register(&spell_dru_dash_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_INCREASE_SPEED);
     }
 };
 
@@ -262,8 +262,8 @@ class spell_dru_eclipse : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_eclipse::ApplyEffect, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_dru_eclipse::RemoveEffect, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_dru_eclipse::ApplyEffect, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dru_eclipse::RemoveEffect, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -383,9 +383,9 @@ class spell_dru_eclipse_energize : public SpellScript
     void Register() override
     {
         if (m_scriptSpellId == SPELL_DRUID_MOONFIRE || m_scriptSpellId == SPELL_DRUID_SUNFIRE)
-            OnEffectLaunch.Register(this, &spell_dru_eclipse_energize::HandleEnergize, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+            OnEffectLaunch.Register(&spell_dru_eclipse_energize::HandleEnergize, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
         else
-            OnEffectLaunch.Register(this, &spell_dru_eclipse_energize::HandleEnergize, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+            OnEffectLaunch.Register(&spell_dru_eclipse_energize::HandleEnergize, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -408,7 +408,7 @@ class spell_dru_eclipse_mastery_driver_passive : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dru_eclipse_mastery_driver_passive::CheckProc);
+        DoCheckProc.Register(&spell_dru_eclipse_mastery_driver_passive::CheckProc);
     }
 };
 
@@ -464,8 +464,8 @@ class spell_dru_enrage : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_enrage::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_dru_enrage::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_dru_enrage::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dru_enrage::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -502,7 +502,7 @@ class spell_dru_glyph_of_starfire : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_glyph_of_starfire::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_dru_glyph_of_starfire::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -535,8 +535,8 @@ class spell_dru_glyph_of_starfire_proc : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dru_glyph_of_starfire_proc::CheckProc);
-        OnEffectProc.Register(this, &spell_dru_glyph_of_starfire_proc::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_dru_glyph_of_starfire_proc::CheckProc);
+        OnEffectProc.Register(&spell_dru_glyph_of_starfire_proc::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 private:
     ObjectGuid _lastMoonFireTargetGuid;
@@ -561,7 +561,7 @@ class spell_dru_idol_lifebloom : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcSpellMod.Register(this, &spell_dru_idol_lifebloom::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
+        DoEffectCalcSpellMod.Register(&spell_dru_idol_lifebloom::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -605,7 +605,7 @@ class spell_dru_innervate : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dru_innervate::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE);
+        DoEffectCalcAmount.Register(&spell_dru_innervate::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE);
     }
 };
 
@@ -621,7 +621,7 @@ class spell_dru_insect_swarm : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dru_insect_swarm::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        DoEffectCalcAmount.Register(&spell_dru_insect_swarm::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
@@ -690,8 +690,8 @@ class spell_dru_lifebloom : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dru_lifebloom::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterDispel.Register(this, &spell_dru_lifebloom::HandleDispel);
+        AfterEffectRemove.Register(&spell_dru_lifebloom::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterDispel.Register(&spell_dru_lifebloom::HandleDispel);
     }
 };
 
@@ -712,7 +712,7 @@ class spell_dru_living_seed : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_living_seed::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dru_living_seed::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -732,7 +732,7 @@ class spell_dru_living_seed_proc : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_living_seed_proc::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dru_living_seed_proc::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -771,7 +771,7 @@ class spell_dru_rip : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dru_rip::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        DoEffectCalcAmount.Register(&spell_dru_rip::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
@@ -793,7 +793,7 @@ class spell_dru_savage_defense : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_savage_defense::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_dru_savage_defense::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -811,7 +811,7 @@ class spell_dru_savage_roar : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_dru_savage_roar::CheckCast);
+        OnCheckCast.Register(&spell_dru_savage_roar::CheckCast);
     }
 };
 
@@ -835,8 +835,8 @@ class spell_dru_savage_roar_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_savage_roar_AuraScript::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_dru_savage_roar_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_dru_savage_roar_AuraScript::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dru_savage_roar_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -868,8 +868,8 @@ class spell_dru_starfall_dummy : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_dru_starfall_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_dru_starfall_dummy::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_dru_starfall_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_dru_starfall_dummy::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -909,8 +909,8 @@ class spell_dru_stampede : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_stampede::HandleEffectCatProc, EFFECT_0, SPELL_AURA_DUMMY);
-        OnEffectProc.Register(this, &spell_dru_stampede::HandleEffectBearProc, EFFECT_1, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dru_stampede::HandleEffectCatProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dru_stampede::HandleEffectBearProc, EFFECT_1, SPELL_AURA_DUMMY);
     }
 };
 
@@ -928,7 +928,7 @@ class spell_dru_survival_instincts : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_dru_survival_instincts::CheckCast);
+        OnCheckCast.Register(&spell_dru_survival_instincts::CheckCast);
     }
 };
 
@@ -951,8 +951,8 @@ class spell_dru_survival_instincts_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_survival_instincts_AuraScript::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
-        AfterEffectRemove.Register(this, &spell_dru_survival_instincts_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
+        AfterEffectApply.Register(&spell_dru_survival_instincts_AuraScript::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
+        AfterEffectRemove.Register(&spell_dru_survival_instincts_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
     }
 };
 
@@ -973,7 +973,7 @@ class spell_dru_swift_flight_passive : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dru_swift_flight_passive::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED);
+        DoEffectCalcAmount.Register(&spell_dru_swift_flight_passive::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED);
     }
 };
 
@@ -991,7 +991,7 @@ class spell_dru_flight_form : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_dru_flight_form::CheckCast);
+        OnCheckCast.Register(&spell_dru_flight_form::CheckCast);
     }
 };
 
@@ -1017,7 +1017,7 @@ class spell_dru_swift_flight_form : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dru_swift_flight_form::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT);
+        DoEffectCalcAmount.Register(&spell_dru_swift_flight_form::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT);
     }
 };
 
@@ -1032,7 +1032,7 @@ class spell_dru_tiger_s_fury : public SpellScript
 
     void Register() override
     {
-        AfterHit.Register(this, &spell_dru_tiger_s_fury::OnHit);
+        AfterHit.Register(&spell_dru_tiger_s_fury::OnHit);
     }
 };
 
@@ -1048,7 +1048,7 @@ class spell_dru_typhoon : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_typhoon::HandleKnockBack, EFFECT_0, SPELL_EFFECT_KNOCK_BACK);
+        OnEffectHitTarget.Register(&spell_dru_typhoon::HandleKnockBack, EFFECT_0, SPELL_EFFECT_KNOCK_BACK);
     }
 };
 
@@ -1090,7 +1090,7 @@ class spell_dru_t10_restoration_4p_bonus : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_dru_t10_restoration_4p_bonus::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_dru_t10_restoration_4p_bonus::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
     }
 };
 
@@ -1145,8 +1145,8 @@ class spell_dru_wild_growth : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_dru_wild_growth::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
-        OnObjectAreaTargetSelect.Register(this, &spell_dru_wild_growth::SetTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_dru_wild_growth::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_dru_wild_growth::SetTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
     }
 
 private:
@@ -1169,7 +1169,7 @@ class spell_dru_solar_beam : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_dru_solar_beam::HandleEffectPeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_dru_solar_beam::HandleEffectPeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1191,7 +1191,7 @@ class spell_dru_effloresence : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_effloresence::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_dru_effloresence::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -1212,7 +1212,7 @@ class spell_dru_effloresence_aoe : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_dru_effloresence_aoe::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_dru_effloresence_aoe::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1244,8 +1244,8 @@ class spell_dru_effloresence_heal : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_dru_effloresence_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
-        OnEffectHitTarget.Register(this, &spell_dru_effloresence_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+        OnObjectAreaTargetSelect.Register(&spell_dru_effloresence_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnEffectHitTarget.Register(&spell_dru_effloresence_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
     }
 };
 
@@ -1290,8 +1290,8 @@ class spell_dru_rejuvenation : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_rejuvenation::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_dru_rejuvenation::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_dru_rejuvenation::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dru_rejuvenation::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1331,8 +1331,8 @@ class spell_dru_tree_of_life : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dru_tree_of_life::AfterApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_dru_tree_of_life::AfterRemove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_dru_tree_of_life::AfterApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dru_tree_of_life::AfterRemove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1353,7 +1353,7 @@ class spell_dru_harmony : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_harmony::HandleProc, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER);
+        OnEffectProc.Register(&spell_dru_harmony::HandleProc, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER);
     }
 };
 
@@ -1399,8 +1399,8 @@ class spell_dru_leader_of_the_pack : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dru_leader_of_the_pack::CheckProc);
-        OnEffectProc.Register(this, &spell_dru_leader_of_the_pack::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_dru_leader_of_the_pack::CheckProc);
+        OnEffectProc.Register(&spell_dru_leader_of_the_pack::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1441,7 +1441,7 @@ class spell_dru_wild_mushroom : public SpellScript
 
     void Register() override
     {
-        AfterCast.Register(this, &spell_dru_wild_mushroom::HandleSummon);
+        AfterCast.Register(&spell_dru_wild_mushroom::HandleSummon);
     }
 };
 
@@ -1496,7 +1496,7 @@ class spell_dru_wild_mushroom_detonate : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_wild_mushroom_detonate::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_dru_wild_mushroom_detonate::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1531,7 +1531,7 @@ class spell_dru_moonfire : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dru_moonfire::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dru_moonfire::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1567,8 +1567,8 @@ class spell_dru_furor : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dru_furor::CheckProc);
-        OnEffectProc.Register(this, &spell_dru_furor::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_dru_furor::CheckProc);
+        OnEffectProc.Register(&spell_dru_furor::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1620,7 +1620,7 @@ class spell_dru_ferocious_bite : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_dru_ferocious_bite::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(&spell_dru_ferocious_bite::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -1646,8 +1646,8 @@ class spell_dru_empowered_touch : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dru_empowered_touch::CheckProc);
-        OnEffectProc.Register(this, &spell_dru_empowered_touch::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_dru_empowered_touch::CheckProc);
+        OnEffectProc.Register(&spell_dru_empowered_touch::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1668,7 +1668,7 @@ class spell_dru_empowered_touch_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_empowered_touch_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_dru_empowered_touch_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1687,7 +1687,7 @@ class spell_dru_shooting_stars : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_shooting_stars::HandleCooldownReset, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_dru_shooting_stars::HandleCooldownReset, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -1729,7 +1729,7 @@ class spell_dru_pulverize : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_dru_pulverize::ChangeDamage, EFFECT_2, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
+        OnEffectLaunchTarget.Register(&spell_dru_pulverize::ChangeDamage, EFFECT_2, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
     }
 };
 
@@ -1768,8 +1768,8 @@ class spell_dru_frenzied_regeneration : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_dru_frenzied_regeneration::HandleRegeneration, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-        AfterEffectApply.Register(this, &spell_dru_frenzied_regeneration::HandleHealthAfterApply, EFFECT_1, SPELL_AURA_MOD_INCREASE_HEALTH_2, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_dru_frenzied_regeneration::HandleRegeneration, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        AfterEffectApply.Register(&spell_dru_frenzied_regeneration::HandleHealthAfterApply, EFFECT_1, SPELL_AURA_MOD_INCREASE_HEALTH_2, AURA_EFFECT_HANDLE_REAL);
 
     }
 };
@@ -1798,7 +1798,7 @@ class spell_dru_stampeding_roar : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_stampeding_roar::HandleFeralSwiftness, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_dru_stampeding_roar::HandleFeralSwiftness, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -1816,7 +1816,7 @@ class spell_dru_feral_swiftness_clear : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_feral_swiftness_clear::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_dru_feral_swiftness_clear::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1854,8 +1854,8 @@ class spell_dru_blood_in_the_water : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dru_blood_in_the_water::CheckProc);
-        OnEffectProc.Register(this, &spell_dru_blood_in_the_water::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_dru_blood_in_the_water::CheckProc);
+        OnEffectProc.Register(&spell_dru_blood_in_the_water::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1876,7 +1876,7 @@ class spell_dru_blood_in_the_water_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dru_blood_in_the_water_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_dru_blood_in_the_water_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1891,7 +1891,7 @@ class spell_dru_astral_alignment : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_astral_alignment::HandleProc, EFFECT_0, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
+        OnEffectProc.Register(&spell_dru_astral_alignment::HandleProc, EFFECT_0, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
     }
 };
 
@@ -1910,7 +1910,7 @@ class spell_dru_harmony_triggered : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dru_harmony_triggered::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dru_harmony_triggered::RemoveEffect, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1930,7 +1930,7 @@ class spell_dru_item_t11_feral_4p_bonus : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dru_item_t11_feral_4p_bonus::HandleProc, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER);
+        OnEffectProc.Register(&spell_dru_item_t11_feral_4p_bonus::HandleProc, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER);
     }
 };
 

@@ -581,7 +581,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_sfk_summon_worgen_spirit_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectLaunch.Register(&spell_sfk_summon_worgen_spirit_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 

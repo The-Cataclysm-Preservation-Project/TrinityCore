@@ -943,8 +943,8 @@ class spell_theralion_dazzling_destruction_dummy : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_dazzling_destruction_dummy_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_theralion_dazzling_destruction_dummy_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_dazzling_destruction_dummy_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_theralion_dazzling_destruction_dummy_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1029,11 +1029,11 @@ class spell_theralion_dazzling_destruction : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_dazzling_destruction_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_dazzling_destruction_SpellScript::FilterTargets, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_theralion_dazzling_destruction_SpellScript::HandleActionEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-                OnEffectHitTarget.Register(this, &spell_theralion_dazzling_destruction_SpellScript::HandleScriptEffectTrigger, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
-                OnEffectHitTarget.Register(this, &spell_theralion_dazzling_destruction_SpellScript::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_dazzling_destruction_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_dazzling_destruction_SpellScript::FilterTargets, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_theralion_dazzling_destruction_SpellScript::HandleActionEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnEffectHitTarget.Register(&spell_theralion_dazzling_destruction_SpellScript::HandleScriptEffectTrigger, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_theralion_dazzling_destruction_SpellScript::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1071,7 +1071,7 @@ class spell_theralion_dazzling_destruction_twilight_realm: public SpellScriptLoa
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_dazzling_destruction_twilight_realm_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_dazzling_destruction_twilight_realm_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
             }
         };
 
@@ -1109,8 +1109,8 @@ class spell_theralion_fabulous_flames_targeting : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_theralion_fabulous_flames_targeting_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_fabulous_flames_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_theralion_fabulous_flames_targeting_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_fabulous_flames_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1165,7 +1165,7 @@ class spell_theralion_engulfing_magic_targeting : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_engulfing_magic_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_engulfing_magic_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1203,7 +1203,7 @@ class spell_theralion_engulfing_magic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_theralion_engulfing_magic_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
+                OnEffectProc.Register(&spell_theralion_engulfing_magic_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
             }
         };
 
@@ -1233,8 +1233,8 @@ class spell_valiona_blackout_dummy : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_valiona_blackout_dummy_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_blackout_dummy_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_valiona_blackout_dummy_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_blackout_dummy_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1265,7 +1265,7 @@ class spell_valiona_blackout: public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_valiona_blackout_AuraScript::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_valiona_blackout_AuraScript::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1303,8 +1303,8 @@ class spell_valiona_blackout_damage : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_blackout_damage_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
-                OnHit.Register(this, &spell_valiona_blackout_damage_SpellScript::SplitDamage);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_blackout_damage_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+                OnHit.Register(&spell_valiona_blackout_damage_SpellScript::SplitDamage);
             }
 
         private:
@@ -1335,7 +1335,7 @@ class spell_valiona_devouring_flames : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_valiona_devouring_flames_SpellScript::ChangeDamage);
+                OnHit.Register(&spell_valiona_devouring_flames_SpellScript::ChangeDamage);
             }
         };
 
@@ -1367,7 +1367,7 @@ class spell_valiona_devouring_flames_targeting : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_devouring_flames_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_devouring_flames_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1437,8 +1437,8 @@ class spell_valiona_twilight_meteorite_targeting : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_twilight_meteorite_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_valiona_twilight_meteorite_targeting_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_twilight_meteorite_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_valiona_twilight_meteorite_targeting_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -1476,8 +1476,8 @@ class spell_valiona_twilight_meteorite : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_twilight_meteorite_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-                OnHit.Register(this, &spell_valiona_twilight_meteorite_SpellScript::SplitDamage);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_twilight_meteorite_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnHit.Register(&spell_valiona_twilight_meteorite_SpellScript::SplitDamage);
             }
 
         private:
@@ -1547,7 +1547,7 @@ class spell_valiona_strafe : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectTargetSelect.Register(this, &spell_valiona_strafe_SpellScript::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+                OnObjectTargetSelect.Register(&spell_valiona_strafe_SpellScript::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
             }
         };
 
@@ -1577,8 +1577,8 @@ class spell_valiona_strafe : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_valiona_strafe_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_valiona_strafe_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectApply.Register(&spell_valiona_strafe_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_valiona_strafe_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1616,7 +1616,7 @@ class spell_valiona_summon_twilight_portal : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_valiona_summon_twilight_portal_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_valiona_summon_twilight_portal_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -1648,7 +1648,7 @@ class spell_valiona_summon_twilight_sentry : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_valiona_summon_twilight_sentry_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_valiona_summon_twilight_sentry_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -1692,10 +1692,10 @@ class spell_valiona_twilight_flames : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_twilight_flames_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_twilight_flames_SpellScript::FilterTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_valiona_twilight_flames_SpellScript::HandleActionEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-                OnEffectHitTarget.Register(this, &spell_valiona_twilight_flames_SpellScript::HandleEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_twilight_flames_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_twilight_flames_SpellScript::FilterTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_valiona_twilight_flames_SpellScript::HandleActionEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnEffectHitTarget.Register(&spell_valiona_twilight_flames_SpellScript::HandleEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1734,7 +1734,7 @@ class spell_valiona_twilight_flame_twilight_realm: public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_valiona_twilight_flame_twilight_realm_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_valiona_twilight_flame_twilight_realm_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1777,7 +1777,7 @@ class spell_theralion_and_valiona_twilight_shift : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_theralion_and_valiona_twilight_shift_SpellScript::HandleEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_theralion_and_valiona_twilight_shift_SpellScript::HandleEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1804,7 +1804,7 @@ class spell_theralion_and_valiona_twilight_shift_phase: public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_and_valiona_twilight_shift_phase_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_and_valiona_twilight_shift_phase_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1831,7 +1831,7 @@ class spell_theralion_and_valiona_twilight_shift_phase_ally: public SpellScriptL
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_theralion_and_valiona_twilight_shift_phase_ally_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
+                OnObjectAreaTargetSelect.Register(&spell_theralion_and_valiona_twilight_shift_phase_ally_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
             }
         };
 
@@ -1865,8 +1865,8 @@ class spell_theralion_and_valiona_twilight_shift_spellclick : public SpellScript
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_theralion_and_valiona_twilight_shift_spellclick_SpellScript::HandleEffectScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-                OnEffectHitTarget.Register(this, &spell_theralion_and_valiona_twilight_shift_spellclick_SpellScript::HandleEffectScript, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_theralion_and_valiona_twilight_shift_spellclick_SpellScript::HandleEffectScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_theralion_and_valiona_twilight_shift_spellclick_SpellScript::HandleEffectScript, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1903,7 +1903,7 @@ class spell_theralion_and_valiona_shifting_reality : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_theralion_and_valiona_shifting_reality_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnEffectHitTarget.Register(&spell_theralion_and_valiona_shifting_reality_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
             }
         };
 
@@ -1940,8 +1940,8 @@ class spell_theralion_and_valiona_collapsing_twilight_portal : public SpellScrip
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_theralion_and_valiona_collapsing_twilight_portal_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-                AfterEffectApply.Register(this, &spell_theralion_and_valiona_collapsing_twilight_portal_AuraScript::Apply, EFFECT_1, SPELL_AURA_MOD_SCALE, AURA_EFFECT_HANDLE_REAL);
+                OnEffectPeriodic.Register(&spell_theralion_and_valiona_collapsing_twilight_portal_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                AfterEffectApply.Register(&spell_theralion_and_valiona_collapsing_twilight_portal_AuraScript::Apply, EFFECT_1, SPELL_AURA_MOD_SCALE, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

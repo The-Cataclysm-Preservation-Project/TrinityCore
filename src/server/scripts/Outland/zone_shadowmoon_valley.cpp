@@ -1614,7 +1614,7 @@ class spell_unlocking_zuluheds_chains : public SpellScriptLoader
 
             void Register() override
             {
-                AfterHit.Register(this, &spell_unlocking_zuluheds_chains_SpellScript::HandleAfterHit);
+                AfterHit.Register(&spell_unlocking_zuluheds_chains_SpellScript::HandleAfterHit);
             }
         };
 

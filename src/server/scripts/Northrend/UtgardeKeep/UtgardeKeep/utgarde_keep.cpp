@@ -142,7 +142,7 @@ class spell_ticking_time_bomb : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_ticking_time_bomb_AuraScript::HandleOnEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(&spell_ticking_time_bomb_AuraScript::HandleOnEffectRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -176,7 +176,7 @@ class spell_fixate : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_fixate_SpellScript::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_fixate_SpellScript::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -222,8 +222,8 @@ class spell_uk_second_wind : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_uk_second_wind_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_uk_second_wind_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_uk_second_wind_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_uk_second_wind_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 

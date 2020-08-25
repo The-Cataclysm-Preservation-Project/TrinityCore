@@ -50,7 +50,7 @@ class spell_mark_of_malice : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_mark_of_malice_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_mark_of_malice_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 

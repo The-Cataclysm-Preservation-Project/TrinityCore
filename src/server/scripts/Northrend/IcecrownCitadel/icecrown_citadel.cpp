@@ -1696,8 +1696,8 @@ class spell_icc_stoneform : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_icc_stoneform_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                OnEffectRemove.Register(this, &spell_icc_stoneform_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectApply.Register(&spell_icc_stoneform_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(&spell_icc_stoneform_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1757,7 +1757,7 @@ class spell_icc_sprit_alarm : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_icc_sprit_alarm_SpellScript::HandleEvent, EFFECT_2, SPELL_EFFECT_SEND_EVENT);
+                OnEffectHit.Register(&spell_icc_sprit_alarm_SpellScript::HandleEvent, EFFECT_2, SPELL_EFFECT_SEND_EVENT);
             }
         };
 
@@ -1806,8 +1806,8 @@ class spell_svalna_revive_champion : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_svalna_revive_champion_SpellScript::RemoveAliveTarget, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
-                OnEffectHit.Register(this, &spell_svalna_revive_champion_SpellScript::Land, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_svalna_revive_champion_SpellScript::RemoveAliveTarget, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+                OnEffectHit.Register(&spell_svalna_revive_champion_SpellScript::Land, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1837,7 +1837,7 @@ class spell_svalna_remove_spear : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_svalna_remove_spear_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_svalna_remove_spear_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1863,7 +1863,7 @@ class spell_icc_soul_missile : public SpellScriptLoader
 
             void Register() override
             {
-                OnDestinationTargetSelect.Register(this, &spell_icc_soul_missile_SpellScript::RelocateDest, EFFECT_0, TARGET_DEST_CASTER);
+                OnDestinationTargetSelect.Register(&spell_icc_soul_missile_SpellScript::RelocateDest, EFFECT_0, TARGET_DEST_CASTER);
             }
         };
 
@@ -1892,7 +1892,7 @@ class spell_trigger_spell_from_caster_SpellScript : public SpellScript
 
         void Register() override
         {
-            AfterHit.Register(this, &spell_trigger_spell_from_caster_SpellScript::HandleTrigger);
+            AfterHit.Register(&spell_trigger_spell_from_caster_SpellScript::HandleTrigger);
         }
 
         uint32 _triggerId;

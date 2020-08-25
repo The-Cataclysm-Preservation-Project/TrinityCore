@@ -441,7 +441,7 @@ class spell_venoxis_venomous_effusion : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_venoxis_venomous_effusion::SetDest, EFFECT_1, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_venoxis_venomous_effusion::SetDest, EFFECT_1, TARGET_DEST_CASTER);
     }
 };
 
@@ -457,7 +457,7 @@ class spell_venoxis_whispers_of_hethiss : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_venoxis_whispers_of_hethiss::HandleTick, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_venoxis_whispers_of_hethiss::HandleTick, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -477,8 +477,8 @@ class spell_venoxis_toxic_link_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_venoxis_toxic_link_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_venoxis_toxic_link_targeting::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_venoxis_toxic_link_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_venoxis_toxic_link_targeting::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -492,7 +492,7 @@ class spell_venoxis_toxic_link : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_venoxis_toxic_link::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_venoxis_toxic_link::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -520,7 +520,7 @@ class spell_venoxis_toxic_link_ally : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_venoxis_toxic_link_ally::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_venoxis_toxic_link_ally::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
     }
 };
 
@@ -539,7 +539,7 @@ class spell_venoxis_pool_of_acrid_tears : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_venoxis_pool_of_acrid_tears::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_venoxis_pool_of_acrid_tears::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -562,8 +562,8 @@ class spell_venoxis_blood_venom_forcecast : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_venoxis_blood_venom_forcecast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_venoxis_blood_venom_forcecast::HandleSummon, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+        OnObjectAreaTargetSelect.Register(&spell_venoxis_blood_venom_forcecast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_venoxis_blood_venom_forcecast::HandleSummon, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
 
@@ -586,7 +586,7 @@ class spell_venom_withdrawal : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_venom_withdrawal::HandleKnockback, EFFECT_2, SPELL_EFFECT_LEAP_BACK);
+        OnEffectHitTarget.Register(&spell_venom_withdrawal::HandleKnockback, EFFECT_2, SPELL_EFFECT_LEAP_BACK);
     }
 };
 

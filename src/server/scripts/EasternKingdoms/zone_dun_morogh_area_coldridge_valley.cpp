@@ -381,7 +381,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_a_trip_to_ironforge_quest_complete_SpellScript::HandleForceCast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+            OnEffectHitTarget.Register(&spell_a_trip_to_ironforge_quest_complete_SpellScript::HandleForceCast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
         }
     };
 
@@ -411,7 +411,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_follow_that_gyrocopter_quest_start_SpellScript::HandleForceCast, EFFECT_1, SPELL_EFFECT_FORCE_CAST);
+            OnEffectHitTarget.Register(&spell_follow_that_gyrocopter_quest_start_SpellScript::HandleForceCast, EFFECT_1, SPELL_EFFECT_FORCE_CAST);
         }
     };
 
@@ -444,7 +444,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_low_health_SpellScript::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+            OnEffectHitTarget.Register(&spell_low_health_SpellScript::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
         }
     };
 

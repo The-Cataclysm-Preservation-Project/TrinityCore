@@ -288,7 +288,7 @@ class spell_grim_batol_engulfing_flames : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_grim_batol_engulfing_flames::HandleEffect, EFFECT_1, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_grim_batol_engulfing_flames::HandleEffect, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 

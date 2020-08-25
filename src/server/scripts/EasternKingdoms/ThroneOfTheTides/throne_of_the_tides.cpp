@@ -329,7 +329,7 @@ class spell_tott_trigger_murloc : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_tott_trigger_murloc::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_tott_trigger_murloc::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -376,7 +376,7 @@ class spell_tott_camera: public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_tott_camera::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_tott_camera::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -400,7 +400,7 @@ class spell_tott_shock_defense_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_tott_shock_defense_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_tott_shock_defense_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -414,7 +414,7 @@ class spell_tott_ulthok_intro_visual_impact: public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_tott_ulthok_intro_visual_impact::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_tott_ulthok_intro_visual_impact::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -435,7 +435,7 @@ class spell_tott_shock_defense : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_tott_shock_defense::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
+        OnDestinationTargetSelect.Register(&spell_tott_shock_defense::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
     }
 };
 

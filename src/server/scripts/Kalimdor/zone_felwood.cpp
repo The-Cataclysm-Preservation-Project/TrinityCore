@@ -153,8 +153,8 @@ public:
 
         void Register() override
         {
-            OnCheckCast.Register(this, &spell_swipe_honey_SpellScript::CheckTarget);
-            OnEffectHitTarget.Register(this, &spell_swipe_honey_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnCheckCast.Register(&spell_swipe_honey_SpellScript::CheckTarget);
+            OnEffectHitTarget.Register(&spell_swipe_honey_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
 
@@ -196,7 +196,7 @@ class spell_beesbees : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_beesbees_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_beesbees_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -243,7 +243,7 @@ class spell_ruumbos_silly_dance : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_ruumbos_silly_dance_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_ruumbos_silly_dance_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 

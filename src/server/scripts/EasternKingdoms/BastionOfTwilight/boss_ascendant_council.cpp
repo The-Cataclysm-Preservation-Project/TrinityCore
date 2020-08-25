@@ -1900,7 +1900,7 @@ class spell_feludius_water_bomb_targeting : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_feludius_water_bomb_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_feludius_water_bomb_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1922,7 +1922,7 @@ class spell_feludius_water_bomb : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_feludius_water_bomb::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_feludius_water_bomb::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1965,8 +1965,8 @@ class spell_feludius_glaciate : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_feludius_glaciate::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget.Register(this, &spell_feludius_glaciate::FreezeTarget, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_feludius_glaciate::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_feludius_glaciate::FreezeTarget, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -2000,8 +2000,8 @@ class spell_feludius_heart_of_ice : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_feludius_heart_of_ice::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE, AURA_EFFECT_HANDLE_REAL);
-        OnEffectPeriodic.Register(this, &spell_feludius_heart_of_ice::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE);
+        AfterEffectApply.Register(&spell_feludius_heart_of_ice::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_feludius_heart_of_ice::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE);
     }
 };
 
@@ -2017,7 +2017,7 @@ class spell_feludius_frost_imbued : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_feludius_frost_imbued::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_feludius_frost_imbued::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
     }
 };
 
@@ -2039,8 +2039,8 @@ class spell_feludius_frost_imbued_AuraScript : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_feludius_frost_imbued_AuraScript::CheckProc);
-        OnEffectProc.Register(this, &spell_feludius_frost_imbued_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_feludius_frost_imbued_AuraScript::CheckProc);
+        OnEffectProc.Register(&spell_feludius_frost_imbued_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -2056,7 +2056,7 @@ class spell_feludius_frozen_orb_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_feludius_frozen_orb_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_feludius_frozen_orb_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -2084,8 +2084,8 @@ class spell_ignacious_rising_flames : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_ignacious_rising_flames::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-        AfterEffectRemove.Register(this, &spell_ignacious_rising_flames::HandleAuraRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_ignacious_rising_flames::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove.Register(&spell_ignacious_rising_flames::HandleAuraRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -2119,8 +2119,8 @@ class spell_ignacious_burning_blood : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_ignacious_burning_blood::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE, AURA_EFFECT_HANDLE_REAL);
-        OnEffectPeriodic.Register(this, &spell_ignacious_burning_blood::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE);
+        AfterEffectApply.Register(&spell_ignacious_burning_blood::AfterApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_ignacious_burning_blood::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE);
     }
 };
 
@@ -2136,7 +2136,7 @@ class spell_ignacious_flame_imbued : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_ignacious_flame_imbued::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_ignacious_flame_imbued::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
     }
 };
 
@@ -2158,8 +2158,8 @@ class spell_ignacious_flame_imbued_AuraScript : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_ignacious_flame_imbued_AuraScript::CheckProc);
-        OnEffectProc.Register(this, &spell_ignacious_flame_imbued_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_ignacious_flame_imbued_AuraScript::CheckProc);
+        OnEffectProc.Register(&spell_ignacious_flame_imbued_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -2175,7 +2175,7 @@ class spell_ignacious_inferno_leap : public SpellScript
 
     void Register()
     {
-        AfterCast.Register(this, &spell_ignacious_inferno_leap::HandleInfernoRush);
+        AfterCast.Register(&spell_ignacious_inferno_leap::HandleInfernoRush);
     }
 };
 
@@ -2199,7 +2199,7 @@ class spell_ignacious_inferno_rush : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_ignacious_inferno_rush::HandleAuraRemoval, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_ignacious_inferno_rush::HandleAuraRemoval, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -2221,8 +2221,8 @@ class spell_ignacious_flame_strike : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_ignacious_flame_strike::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_ignacious_flame_strike::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_ignacious_flame_strike::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_ignacious_flame_strike::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -2251,7 +2251,7 @@ class spell_arion_lashing_winds : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_arion_lashing_winds::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_arion_lashing_winds::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -2270,7 +2270,7 @@ class spell_arion_thundershock : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_arion_thundershock::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_arion_thundershock::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -2287,7 +2287,7 @@ class spell_arion_lightning_rod : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_arion_lightning_rod::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_arion_lightning_rod::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -2310,7 +2310,7 @@ class spell_arion_chain_lightning_targeting : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_arion_chain_lightning_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_arion_chain_lightning_targeting::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -2357,8 +2357,8 @@ class spell_arion_disperse : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_arion_disperse::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-        OnObjectAreaTargetSelect.Register(this, &spell_arion_disperse::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_arion_disperse::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_arion_disperse::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -2374,8 +2374,8 @@ class spell_arion_lightning_blast : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_arion_lightning_blast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(this, &spell_arion_lightning_blast::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_arion_lightning_blast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_arion_lightning_blast::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -2391,7 +2391,7 @@ class spell_arion_lightning_blast_dummy : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_arion_lightning_blast_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_arion_lightning_blast_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -2417,7 +2417,7 @@ class spell_arion_static_overload : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_arion_static_overload::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_arion_static_overload::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -2442,7 +2442,7 @@ class spell_arion_static_overload_triggered : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_arion_static_overload_triggered::HandleHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_arion_static_overload_triggered::HandleHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -2464,7 +2464,7 @@ class spell_terrastra_gravity_well : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_terrastra_gravity_well::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_terrastra_gravity_well::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -2498,8 +2498,8 @@ private:
 
     void Register() override
     {
-        OnEffectAbsorb.Register(this, &spell_terrastra_harden_skin::OnAbsorb, EFFECT_1);
-        AfterEffectRemove.Register(this, &spell_terrastra_harden_skin::OnAuraRemoveHandler, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
+        OnEffectAbsorb.Register(&spell_terrastra_harden_skin::OnAbsorb, EFFECT_1);
+        AfterEffectRemove.Register(&spell_terrastra_harden_skin::OnAuraRemoveHandler, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -2520,7 +2520,7 @@ class spell_terrastra_quake : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_terrastra_quake::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_terrastra_quake::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -2551,7 +2551,7 @@ class spell_terrastra_eruption : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_terrastra_eruption::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_terrastra_eruption::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -2577,7 +2577,7 @@ class spell_terrastra_gravity_core : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_terrastra_gravity_core::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_terrastra_gravity_core::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -2602,7 +2602,7 @@ class spell_terrastra_gravity_core_triggered : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_terrastra_gravity_core_triggered::HandleHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_terrastra_gravity_core_triggered::HandleHit, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -2621,7 +2621,7 @@ class spell_elementium_monstrosity_lava_seed : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_elementium_monstrosity_lava_seed::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_elementium_monstrosity_lava_seed::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -2653,7 +2653,7 @@ class spell_elementium_monstrosity_cryogenic_aura : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_elementium_monstrosity_cryogenic_aura::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_elementium_monstrosity_cryogenic_aura::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -2672,7 +2672,7 @@ class spell_elementium_monstrosity_liquid_ice : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_elementium_monstrosity_liquid_ice::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_elementium_monstrosity_liquid_ice::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -2710,8 +2710,8 @@ class spell_elementium_monstrosity_electric_instability : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_elementium_monstrosity_electric_instability::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_elementium_monstrosity_electric_instability::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_elementium_monstrosity_electric_instability::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_elementium_monstrosity_electric_instability::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -2732,7 +2732,7 @@ class spell_elementium_monstrosity_gravity_crush : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_elementium_monstrosity_gravity_crush::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_elementium_monstrosity_gravity_crush::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 

@@ -579,8 +579,8 @@ class spell_akilzon_electrical_storm : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_akilzon_electrical_storm::AfterApply, EFFECT_0, SPELL_AURA_BLOCK_SPELL_FAMILY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_akilzon_electrical_storm::AfterRemove, EFFECT_0, SPELL_AURA_BLOCK_SPELL_FAMILY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_akilzon_electrical_storm::AfterApply, EFFECT_0, SPELL_AURA_BLOCK_SPELL_FAMILY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_akilzon_electrical_storm::AfterRemove, EFFECT_0, SPELL_AURA_BLOCK_SPELL_FAMILY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -599,8 +599,8 @@ class spell_akilzon_electrical_storm_damage : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_akilzon_electrical_storm_damage::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
-        OnObjectAreaTargetSelect.Register(this, &spell_akilzon_electrical_storm_damage::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_akilzon_electrical_storm_damage::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_akilzon_electrical_storm_damage::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ALLY);
     }
 };
 
@@ -626,7 +626,7 @@ class spell_akilzon_electrical_overloard_graphic_pulse : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_akilzon_electrical_overloard_graphic_pulse::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_akilzon_electrical_overloard_graphic_pulse::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -639,7 +639,7 @@ class spell_akilzon_teleport_self : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_akilzon_teleport_self::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_akilzon_teleport_self::SetDest, EFFECT_0, TARGET_DEST_CASTER);
     }
 };
 
@@ -653,7 +653,7 @@ class spell_akilzon_grab_passenger : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_akilzon_grab_passenger::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_akilzon_grab_passenger::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -666,7 +666,7 @@ class spell_akilzon_summon_amani_kidnapper : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_akilzon_summon_amani_kidnapper::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_akilzon_summon_amani_kidnapper::SetDest, EFFECT_0, TARGET_DEST_CASTER);
     }
 };
 

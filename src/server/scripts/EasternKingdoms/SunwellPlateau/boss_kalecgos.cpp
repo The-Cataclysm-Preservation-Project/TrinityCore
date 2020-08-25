@@ -609,7 +609,7 @@ class spell_kalecgos_tap_check : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_kalecgos_tap_check::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_kalecgos_tap_check::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -657,8 +657,8 @@ class spell_kalecgos_spectral_blast : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_kalecgos_spectral_blast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_kalecgos_spectral_blast::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_kalecgos_spectral_blast::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_kalecgos_spectral_blast::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -687,7 +687,7 @@ class spell_kalecgos_spectral_realm_trigger : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_kalecgos_spectral_realm_trigger::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_kalecgos_spectral_realm_trigger::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -714,7 +714,7 @@ class spell_kalecgos_spectral_realm_aura : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_kalecgos_spectral_realm_aura::OnRemove, EFFECT_0, SPELL_AURA_MOD_INVISIBILITY_DETECT, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_kalecgos_spectral_realm_aura::OnRemove, EFFECT_0, SPELL_AURA_MOD_INVISIBILITY_DETECT, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -765,10 +765,10 @@ class spell_kalecgos_curse_of_boundless_agony : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_kalecgos_curse_of_boundless_agony::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
-        OnEffectPeriodic.Register(this, &spell_kalecgos_curse_of_boundless_agony::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
-        OnEffectUpdatePeriodic.Register(this, &spell_kalecgos_curse_of_boundless_agony::HandleEffectPeriodicUpdate, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
-        AfterEffectRemove.Register(this, &spell_kalecgos_curse_of_boundless_agony::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_kalecgos_curse_of_boundless_agony::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_kalecgos_curse_of_boundless_agony::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectUpdatePeriodic.Register(&spell_kalecgos_curse_of_boundless_agony::HandleEffectPeriodicUpdate, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        AfterEffectRemove.Register(&spell_kalecgos_curse_of_boundless_agony::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

@@ -513,7 +513,7 @@ class spell_magtheridon_blaze_target : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_magtheridon_blaze_target_SpellScript::HandleAura);
+                OnHit.Register(&spell_magtheridon_blaze_target_SpellScript::HandleAura);
             }
 
         };
@@ -546,7 +546,7 @@ class spell_magtheridon_shadow_grasp : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_magtheridon_shadow_grasp_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_magtheridon_shadow_grasp_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -584,8 +584,8 @@ class spell_magtheridon_shadow_grasp_visual : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_magtheridon_shadow_grasp_visual_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_magtheridon_shadow_grasp_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectApply.Register(&spell_magtheridon_shadow_grasp_visual_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_magtheridon_shadow_grasp_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

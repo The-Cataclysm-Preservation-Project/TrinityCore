@@ -1084,8 +1084,8 @@ class spell_algalon_phase_punch : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_algalon_phase_punch_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-                OnEffectRemove.Register(this, &spell_algalon_phase_punch_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectPeriodic.Register(&spell_algalon_phase_punch_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectRemove.Register(&spell_algalon_phase_punch_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1125,7 +1125,7 @@ class spell_algalon_arcane_barrage : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_algalon_arcane_barrage_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_algalon_arcane_barrage_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1168,8 +1168,8 @@ class spell_algalon_trigger_3_adds : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_algalon_trigger_3_adds_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_algalon_trigger_3_adds_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_algalon_trigger_3_adds_SpellScript::SelectTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_algalon_trigger_3_adds_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1194,7 +1194,7 @@ class spell_algalon_collapse : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_algalon_collapse_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_algalon_collapse_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -1236,8 +1236,8 @@ class spell_algalon_big_bang : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_algalon_big_bang_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                AfterCast.Register(this, &spell_algalon_big_bang_SpellScript::CheckTargets);
+                OnObjectAreaTargetSelect.Register(&spell_algalon_big_bang_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                AfterCast.Register(&spell_algalon_big_bang_SpellScript::CheckTargets);
             }
 
             uint32 _targetCount;
@@ -1264,7 +1264,7 @@ class spell_algalon_remove_phase : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_algalon_remove_phase_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_algalon_remove_phase_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -1290,7 +1290,7 @@ class spell_algalon_cosmic_smash : public SpellScriptLoader
 
             void Register() override
             {
-                OnDestinationTargetSelect.Register(this, &spell_algalon_cosmic_smash_SpellScript::ModDestHeight, EFFECT_0, TARGET_DEST_CASTER_SUMMON);
+                OnDestinationTargetSelect.Register(&spell_algalon_cosmic_smash_SpellScript::ModDestHeight, EFFECT_0, TARGET_DEST_CASTER_SUMMON);
             }
         };
 
@@ -1319,7 +1319,7 @@ class spell_algalon_cosmic_smash_damage : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_algalon_cosmic_smash_damage_SpellScript::RecalculateDamage);
+                OnHit.Register(&spell_algalon_cosmic_smash_damage_SpellScript::RecalculateDamage);
             }
         };
 
@@ -1346,7 +1346,7 @@ class spell_algalon_supermassive_fail : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_algalon_supermassive_fail_SpellScript::RecalculateDamage);
+                OnHit.Register(&spell_algalon_supermassive_fail_SpellScript::RecalculateDamage);
             }
         };
 

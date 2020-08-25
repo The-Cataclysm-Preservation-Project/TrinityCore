@@ -129,8 +129,8 @@ class spell_dk_anti_magic_shell : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_anti_magic_shell::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectAbsorb.Register(this, &spell_dk_anti_magic_shell::Absorb, EFFECT_0);
+        DoEffectCalcAmount.Register(&spell_dk_anti_magic_shell::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb.Register(&spell_dk_anti_magic_shell::Absorb, EFFECT_0);
     }
 private:
     int32 absorbPct;
@@ -166,8 +166,8 @@ class spell_dk_anti_magic_zone : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_anti_magic_zone::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectAbsorb.Register(this, &spell_dk_anti_magic_zone::Absorb, EFFECT_0);
+        DoEffectCalcAmount.Register(&spell_dk_anti_magic_zone::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb.Register(&spell_dk_anti_magic_zone::Absorb, EFFECT_0);
     }
 private:
     uint32 absorbPct = 0;
@@ -198,7 +198,7 @@ class spell_dk_blood_boil : public SpellScript
 
     void Register() override
     {
-        AfterHit.Register(this, &spell_dk_blood_boil::HandleAfterHit);
+        AfterHit.Register(&spell_dk_blood_boil::HandleAfterHit);
     }
 
 private:
@@ -226,7 +226,7 @@ class spell_dk_blood_gorged : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dk_blood_gorged::HandleBloodBurst, EFFECT_0, SPELL_AURA_MOD_SCALE, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
+        AfterEffectApply.Register(&spell_dk_blood_gorged::HandleBloodBurst, EFFECT_0, SPELL_AURA_MOD_SCALE, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
     }
 };
 
@@ -246,7 +246,7 @@ class spell_dk_butchery : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_butchery::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dk_butchery::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -265,7 +265,7 @@ class spell_dk_death_and_decay : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_dk_death_and_decay::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_dk_death_and_decay::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -324,8 +324,8 @@ class spell_dk_death_coil : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_dk_death_coil::CheckCast);
-        OnEffectHitTarget.Register(this, &spell_dk_death_coil::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnCheckCast.Register(&spell_dk_death_coil::CheckCast);
+        OnEffectHitTarget.Register(&spell_dk_death_coil::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -352,8 +352,8 @@ class spell_dk_death_gate : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_dk_death_gate::CheckClass);
-        OnEffectHitTarget.Register(this, &spell_dk_death_gate::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnCheckCast.Register(&spell_dk_death_gate::CheckClass);
+        OnEffectHitTarget.Register(&spell_dk_death_gate::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -373,7 +373,7 @@ class spell_dk_death_grip : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dk_death_grip::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_dk_death_grip::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 
 };
@@ -418,8 +418,8 @@ class spell_dk_death_pact : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_dk_death_pact::CheckCast);
-        OnObjectAreaTargetSelect.Register(this, &spell_dk_death_pact::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
+        OnCheckCast.Register(&spell_dk_death_pact::CheckCast);
+        OnObjectAreaTargetSelect.Register(&spell_dk_death_pact::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
     }
 };
 
@@ -469,7 +469,7 @@ class spell_dk_death_strike : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dk_death_strike::HandleDummy, EFFECT_2, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_dk_death_strike::HandleDummy, EFFECT_2, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -526,11 +526,11 @@ class spell_dk_death_strike_enabler : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_death_strike_enabler::CheckProc);
-        OnEffectProc.Register(this, &spell_dk_death_strike_enabler::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-        DoEffectCalcPeriodic.Register(this, &spell_dk_death_strike_enabler::CalcPeriodic, EFFECT_0, SPELL_AURA_DUMMY);
-        OnEffectUpdatePeriodic.Register(this, &spell_dk_death_strike_enabler::Update, EFFECT_0, SPELL_AURA_DUMMY);
-        DoEffectCalcAmount.Register(this, &spell_dk_death_strike_enabler::HandleCalcAmount, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_dk_death_strike_enabler::CheckProc);
+        OnEffectProc.Register(&spell_dk_death_strike_enabler::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoEffectCalcPeriodic.Register(&spell_dk_death_strike_enabler::CalcPeriodic, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectUpdatePeriodic.Register(&spell_dk_death_strike_enabler::Update, EFFECT_0, SPELL_AURA_DUMMY);
+        DoEffectCalcAmount.Register(&spell_dk_death_strike_enabler::HandleCalcAmount, EFFECT_0, SPELL_AURA_DUMMY);
     }
 private:
     uint32 _damagePerSecond[5];
@@ -555,7 +555,7 @@ class spell_dk_ghoul_explode : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dk_ghoul_explode::Suicide, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_dk_ghoul_explode::Suicide, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -591,7 +591,7 @@ class spell_dk_icebound_fortitude : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_icebound_fortitude::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
+        DoEffectCalcAmount.Register(&spell_dk_icebound_fortitude::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
     }
 };
 
@@ -606,7 +606,7 @@ class spell_dk_necrotic_strike : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_necrotic_strike::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB);
+        DoEffectCalcAmount.Register(&spell_dk_necrotic_strike::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB);
     }
 };
 
@@ -699,9 +699,9 @@ class spell_dk_pestilence : public SpellScript
 
     void Register() override
     {
-        BeforeCast.Register(this, &spell_dk_pestilence::HandleAuraApply);
-        OnEffectHitTarget.Register(this, &spell_dk_pestilence::OnHit, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
-        AfterCast.Register(this, &spell_dk_pestilence::HandleAuraRemoval);
+        BeforeCast.Register(&spell_dk_pestilence::HandleAuraApply);
+        OnEffectHitTarget.Register(&spell_dk_pestilence::OnHit, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+        AfterCast.Register(&spell_dk_pestilence::HandleAuraRemoval);
     }
 
 private:
@@ -787,8 +787,8 @@ class spell_dk_presence : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_dk_presence::HandlePresenceEffects, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_dk_presence::HandleEffectRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_dk_presence::HandlePresenceEffects, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dk_presence::HandleEffectRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -822,7 +822,7 @@ class spell_dk_improved_presence : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_dk_improved_presence::HandleEffectRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_dk_improved_presence::HandleEffectRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -863,7 +863,7 @@ class spell_dk_raise_dead : public SpellScript
 
     void Register() override
     {
-        OnCast.Register(this, &spell_dk_raise_dead::HandleRaiseDead);
+        OnCast.Register(&spell_dk_raise_dead::HandleRaiseDead);
     }
 };
 
@@ -877,7 +877,7 @@ class spell_dk_rune_tap_party : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_dk_rune_tap_party::CheckTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_PARTY);
+        OnObjectAreaTargetSelect.Register(&spell_dk_rune_tap_party::CheckTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_PARTY);
     }
 };
 
@@ -898,7 +898,7 @@ class spell_dk_scent_of_blood : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_scent_of_blood::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_dk_scent_of_blood::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -933,7 +933,7 @@ class spell_dk_scourge_strike : public SpellScript
 
     void Register() override
     {
-        AfterHit.Register(this, &spell_dk_scourge_strike::HandleAfterHit);
+        AfterHit.Register(&spell_dk_scourge_strike::HandleAfterHit);
     }
 private:
     float multiplier = 1.0f;
@@ -949,7 +949,7 @@ class spell_dk_vampiric_blood : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_vampiric_blood::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_INCREASE_HEALTH);
+        DoEffectCalcAmount.Register(&spell_dk_vampiric_blood::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_INCREASE_HEALTH);
     }
 };
 
@@ -981,8 +981,8 @@ class spell_dk_will_of_the_necropolis : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_will_of_the_necropolis::CheckProc);
-        OnEffectProc.Register(this, &spell_dk_will_of_the_necropolis::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE);
+        DoCheckProc.Register(&spell_dk_will_of_the_necropolis::CheckProc);
+        OnEffectProc.Register(&spell_dk_will_of_the_necropolis::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE);
     }
 };
 
@@ -1012,8 +1012,8 @@ class spell_dk_death_grip_initial : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_dk_death_grip_initial::CheckCast);
-        OnEffectHitTarget.Register(this, &spell_dk_death_grip_initial::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnCheckCast.Register(&spell_dk_death_grip_initial::CheckCast);
+        OnEffectHitTarget.Register(&spell_dk_death_grip_initial::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1057,8 +1057,8 @@ class spell_dk_shadow_infusion : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_shadow_infusion::CheckProc);
-        OnEffectProc.Register(this, &spell_dk_shadow_infusion::HandleEffectProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        DoCheckProc.Register(&spell_dk_shadow_infusion::CheckProc);
+        OnEffectProc.Register(&spell_dk_shadow_infusion::HandleEffectProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -1087,7 +1087,7 @@ class spell_dk_dark_transformation : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_dk_dark_transformation::HandleLaunch, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectLaunchTarget.Register(&spell_dk_dark_transformation::HandleLaunch, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -1110,7 +1110,7 @@ class spell_dk_dark_transformation_aura : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_dk_dark_transformation_aura::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_dk_dark_transformation_aura::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1189,8 +1189,8 @@ class spell_dk_runic_empowerment : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_runic_empowerment::CheckProc);
-        OnEffectProc.Register(this, &spell_dk_runic_empowerment::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_dk_runic_empowerment::CheckProc);
+        OnEffectProc.Register(&spell_dk_runic_empowerment::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1206,7 +1206,7 @@ class spell_dk_howling_blast : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dk_howling_blast::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_dk_howling_blast::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -1275,7 +1275,7 @@ class spell_dk_threat_of_thassarian : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_threat_of_thassarian::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dk_threat_of_thassarian::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1318,7 +1318,7 @@ class spell_dk_reaping : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_reaping::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectProc.Register(&spell_dk_reaping::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1345,7 +1345,7 @@ class spell_dk_blood_rites : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_blood_rites::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectProc.Register(&spell_dk_blood_rites::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1367,7 +1367,7 @@ class spell_dk_crimson_scourge : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_crimson_scourge::CheckProc);
+        DoCheckProc.Register(&spell_dk_crimson_scourge::CheckProc);
     }
 };
 
@@ -1386,7 +1386,7 @@ class spell_dk_army_of_the_dead : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_army_of_the_dead::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
+        DoEffectCalcAmount.Register(&spell_dk_army_of_the_dead::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
     }
 };
 
@@ -1405,7 +1405,7 @@ class spell_dk_unholy_command : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_unholy_command::HandleProc, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER);
+        OnEffectProc.Register(&spell_dk_unholy_command::HandleProc, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER);
     }
 };
 
@@ -1457,8 +1457,8 @@ class spell_dk_disease : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_disease::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
-        AfterDispel.Register(this, &spell_dk_disease::HandleResilientInfection);
+        DoEffectCalcAmount.Register(&spell_dk_disease::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        AfterDispel.Register(&spell_dk_disease::HandleResilientInfection);
     }
 };
 
@@ -1479,7 +1479,7 @@ class spell_dk_desecration : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_desecration::CheckProc);
+        DoCheckProc.Register(&spell_dk_desecration::CheckProc);
     }
 };
 
@@ -1507,7 +1507,7 @@ class spell_dk_deaths_advance : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_deaths_advance::CheckProc);
+        DoCheckProc.Register(&spell_dk_deaths_advance::CheckProc);
     }
 };
 
@@ -1535,7 +1535,7 @@ class spell_dk_deaths_advance_aura : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_dk_deaths_advance_aura::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_dk_deaths_advance_aura::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1562,7 +1562,7 @@ class spell_dk_ebon_plaguebringer : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_ebon_plaguebringer::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dk_ebon_plaguebringer::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1579,7 +1579,7 @@ class spell_dk_ghoul_taunt : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dk_ghoul_taunt::HandleTaunt, EFFECT_0, SPELL_EFFECT_ATTACK_ME);
+        OnEffectHitTarget.Register(&spell_dk_ghoul_taunt::HandleTaunt, EFFECT_0, SPELL_EFFECT_ATTACK_ME);
     }
 };
 
@@ -1600,7 +1600,7 @@ class spell_dk_unoly_blight : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_dk_unoly_blight::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_dk_unoly_blight::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1646,7 +1646,7 @@ class spell_dk_festering_strike : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dk_festering_strike::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_dk_festering_strike::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1671,7 +1671,7 @@ class spell_dk_killing_machine : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_dk_killing_machine::HandleT11Bonus, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_dk_killing_machine::HandleT11Bonus, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 

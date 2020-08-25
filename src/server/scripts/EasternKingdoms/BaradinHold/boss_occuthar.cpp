@@ -246,7 +246,7 @@ class spell_occuthar_focused_fire : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_occuthar_focused_fire_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_occuthar_focused_fire_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -291,8 +291,8 @@ class spell_occuthar_eyes_of_occuthar : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_occuthar_eyes_of_occuthar_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_occuthar_eyes_of_occuthar_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_occuthar_eyes_of_occuthar_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_occuthar_eyes_of_occuthar_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -328,7 +328,7 @@ class spell_occuthar_eyes_of_occuthar_vehicle : public SpellScriptLoader
 
             void Register() override
             {
-                AfterHit.Register(this, &spell_occuthar_eyes_of_occuthar_vehicle_SpellScript::HandleScript);
+                AfterHit.Register(&spell_occuthar_eyes_of_occuthar_vehicle_SpellScript::HandleScript);
             }
         };
 
@@ -364,7 +364,7 @@ class spell_occuthar_occuthars_destruction : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove.Register(this, &spell_occuthar_occuthars_destruction_AuraScript::OnRemove, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+                OnEffectRemove.Register(&spell_occuthar_occuthars_destruction_AuraScript::OnRemove, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
             }
         };
 

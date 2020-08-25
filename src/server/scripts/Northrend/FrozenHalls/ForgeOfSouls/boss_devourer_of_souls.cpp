@@ -372,7 +372,7 @@ class spell_devourer_of_souls_mirrored_soul : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_devourer_of_souls_mirrored_soul_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_devourer_of_souls_mirrored_soul_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -413,8 +413,8 @@ class spell_devourer_of_souls_mirrored_soul_proc : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_devourer_of_souls_mirrored_soul_proc_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_devourer_of_souls_mirrored_soul_proc_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+                DoCheckProc.Register(&spell_devourer_of_souls_mirrored_soul_proc_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_devourer_of_souls_mirrored_soul_proc_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
             }
         };
 
@@ -455,8 +455,8 @@ class spell_devourer_of_souls_mirrored_soul_target_selector : public SpellScript
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_devourer_of_souls_mirrored_soul_target_selector_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_devourer_of_souls_mirrored_soul_target_selector_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_devourer_of_souls_mirrored_soul_target_selector_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_devourer_of_souls_mirrored_soul_target_selector_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -475,7 +475,7 @@ class spell_devourer_of_souls_well_of_souls_periodic_visual_effect : public Spel
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_devourer_of_souls_well_of_souls_periodic_visual_effect::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
+        OnDestinationTargetSelect.Register(&spell_devourer_of_souls_well_of_souls_periodic_visual_effect::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
     }
 };
 

@@ -1137,7 +1137,7 @@ class spell_ulduar_teleporter : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_ulduar_teleporter_SpellScript::CheckRequirement);
+                OnCheckCast.Register(&spell_ulduar_teleporter_SpellScript::CheckRequirement);
             }
         };
 

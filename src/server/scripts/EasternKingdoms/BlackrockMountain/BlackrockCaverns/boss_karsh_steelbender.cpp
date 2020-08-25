@@ -196,7 +196,7 @@ class spell_karsh_quicksilver_armor : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_karsh_quicksilver_armor::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_karsh_quicksilver_armor::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -224,7 +224,7 @@ class spell_karsh_superheated_quicksilver_armor : public SpellScript
 
     void Register() override
     {
-        AfterHit.Register(this, &spell_karsh_superheated_quicksilver_armor::HandleHeatWave);
+        AfterHit.Register(&spell_karsh_superheated_quicksilver_armor::HandleHeatWave);
     }
 };
 
@@ -261,8 +261,8 @@ class spell_karsh_superheated_quicksilver_armor_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_karsh_superheated_quicksilver_armor_AuraScript::AfterApply, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_karsh_superheated_quicksilver_armor_AuraScript::AfterRemmove, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_karsh_superheated_quicksilver_armor_AuraScript::AfterApply, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_karsh_superheated_quicksilver_armor_AuraScript::AfterRemmove, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -297,8 +297,8 @@ class spell_karsh_superheated_quicksilver_armor_proc : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_karsh_superheated_quicksilver_armor_proc::CheckProc);
-        OnEffectProc.Register(this, &spell_karsh_superheated_quicksilver_armor_proc::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        DoCheckProc.Register(&spell_karsh_superheated_quicksilver_armor_proc::CheckProc);
+        OnEffectProc.Register(&spell_karsh_superheated_quicksilver_armor_proc::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 

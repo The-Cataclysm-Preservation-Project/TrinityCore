@@ -1212,7 +1212,7 @@ public:
 
         void Register() override
         {
-            AfterEffectRemove.Register(this, &spell_shade_soul_channel_serverside_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_shade_soul_channel_serverside_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -1240,7 +1240,7 @@ public:
 
         void Register() override
         {
-            AfterEffectApply.Register(this, &spell_shade_soul_channel_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+            AfterEffectApply.Register(&spell_shade_soul_channel_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
         }
     };
 

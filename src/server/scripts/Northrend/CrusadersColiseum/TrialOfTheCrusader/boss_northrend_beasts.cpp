@@ -867,7 +867,7 @@ class spell_gormok_fire_bomb : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_gormok_fire_bomb_SpellScript::TriggerFireBomb, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE);
+                OnEffectHit.Register(&spell_gormok_fire_bomb_SpellScript::TriggerFireBomb, EFFECT_0, SPELL_EFFECT_TRIGGER_MISSILE);
             }
         };
 
@@ -1202,7 +1202,7 @@ public:
 
         void Register() override
         {
-            AfterEffectRemove.Register(this, &spell_gormok_jump_to_hand_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_gormok_jump_to_hand_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -1246,8 +1246,8 @@ public:
 
         void Register() override
         {
-            OnEffectApply.Register(this, &spell_gormok_ride_player_AuraScript::OnApply, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
-            AfterEffectRemove.Register(this, &spell_gormok_ride_player_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
+            OnEffectApply.Register(&spell_gormok_ride_player_AuraScript::OnApply, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_gormok_ride_player_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -1277,7 +1277,7 @@ public:
 
         void Register() override
         {
-            OnEffectPeriodic.Register(this, &spell_gormok_snobolled_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+            OnEffectPeriodic.Register(&spell_gormok_snobolled_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
         }
     };
 
@@ -1338,10 +1338,10 @@ public:
 
         void Register() override
         {
-            AfterEffectApply.Register(this, &spell_jormungars_paralytic_toxin_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL);
-            AfterEffectRemove.Register(this, &spell_jormungars_paralytic_toxin_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL);
-            DoEffectCalcAmount.Register(this, &spell_jormungars_paralytic_toxin_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED);
-            OnEffectPeriodic.Register(this, &spell_jormungars_paralytic_toxin_AuraScript::HandleDummy, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
+            AfterEffectApply.Register(&spell_jormungars_paralytic_toxin_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_jormungars_paralytic_toxin_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL);
+            DoEffectCalcAmount.Register(&spell_jormungars_paralytic_toxin_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED);
+            OnEffectPeriodic.Register(&spell_jormungars_paralytic_toxin_AuraScript::HandleDummy, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
         }
     };
 
@@ -1374,7 +1374,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_jormungars_snakes_spray_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+            OnEffectHitTarget.Register(&spell_jormungars_snakes_spray_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
         }
 
     private:
@@ -1409,7 +1409,7 @@ public:
 
         void Register() override
         {
-            AfterEffectApply.Register(this, &spell_jormungars_paralysis_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectApply.Register(&spell_jormungars_paralysis_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

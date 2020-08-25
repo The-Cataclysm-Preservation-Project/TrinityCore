@@ -265,7 +265,7 @@ class spell_force_of_earth : public SpellScriptLoader
 
             void Register()
             {
-                OnEffectLaunch.Register(this, &spell_force_of_earth_SpellScript::DummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectLaunch.Register(&spell_force_of_earth_SpellScript::DummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -291,7 +291,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_sc_anchor_here_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectHitTarget.Register(&spell_sc_anchor_here_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -324,7 +324,7 @@ class spell_sc_twilight_documents : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_sc_twilight_documents_SpellScript::SpawnGameObject, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_sc_twilight_documents_SpellScript::SpawnGameObject, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -363,7 +363,7 @@ class spell_sc_quake : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_sc_quake_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_sc_quake_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -388,7 +388,7 @@ class spell_sc_ring_wyrm_knockback : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_sc_ring_wyrm_knockback::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
+        OnDestinationTargetSelect.Register(&spell_sc_ring_wyrm_knockback::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
     }
 };
 

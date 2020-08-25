@@ -459,7 +459,7 @@ class spell_prince_taldaram_conjure_flame_sphere : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_prince_taldaram_conjure_flame_sphere_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_prince_taldaram_conjure_flame_sphere_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -485,7 +485,7 @@ class spell_prince_taldaram_flame_sphere_summon : public SpellScriptLoader
 
             void Register() override
             {
-                OnDestinationTargetSelect.Register(this, &spell_prince_taldaram_flame_sphere_summon_SpellScript::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+                OnDestinationTargetSelect.Register(&spell_prince_taldaram_flame_sphere_summon_SpellScript::SetDest, EFFECT_0, TARGET_DEST_CASTER);
             }
         };
 

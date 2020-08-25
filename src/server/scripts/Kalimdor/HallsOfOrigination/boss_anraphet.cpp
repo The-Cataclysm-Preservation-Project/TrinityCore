@@ -545,9 +545,9 @@ class spell_anraphet_destruction_protocol : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_anraphet_destruction_protocol::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_anraphet_destruction_protocol::HandlePlayerDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget.Register(this, &spell_anraphet_destruction_protocol::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_anraphet_destruction_protocol::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_anraphet_destruction_protocol::HandlePlayerDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_anraphet_destruction_protocol::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -563,7 +563,7 @@ class spell_anraphet_alpha_beams : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_anraphet_alpha_beams::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_anraphet_alpha_beams::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -582,8 +582,8 @@ class spell_anraphet_omega_stance : public AuraScript
 
     void Register() override
     {
-        OnEffectApply.Register(this, &spell_anraphet_omega_stance::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
-        OnEffectRemove.Register(this, &spell_anraphet_omega_stance::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectApply.Register(&spell_anraphet_omega_stance::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove.Register(&spell_anraphet_omega_stance::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -605,7 +605,7 @@ class spell_anraphet_omega_stance_summon : public SpellScript
 
     void Register()
     {
-        OnEffectLaunch.Register(this, &spell_anraphet_omega_stance_summon::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
+        OnEffectLaunch.Register(&spell_anraphet_omega_stance_summon::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
     }
 };
 
@@ -628,7 +628,7 @@ class spell_anraphet_omega_stance_spider_effect : public SpellScript
 
     void Register()
     {
-        OnEffectLaunch.Register(this, &spell_anraphet_omega_stance_spider_effect::SetDestPosition, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectLaunch.Register(&spell_anraphet_omega_stance_spider_effect::SetDestPosition, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 

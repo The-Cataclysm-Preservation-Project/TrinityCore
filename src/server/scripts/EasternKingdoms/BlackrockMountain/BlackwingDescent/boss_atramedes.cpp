@@ -708,7 +708,7 @@ class spell_atramedes_modulation : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_atramedes_modulation::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(&spell_atramedes_modulation::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -722,7 +722,7 @@ class spell_atramedes_roaring_flame_breath_reverse_cast : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_atramedes_roaring_flame_breath_reverse_cast::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_atramedes_roaring_flame_breath_reverse_cast::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -736,7 +736,7 @@ class spell_atramedes_roaring_flame_breath : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_atramedes_roaring_flame_breath::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_atramedes_roaring_flame_breath::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -755,7 +755,7 @@ class spell_atramedes_roaring_flame_breath_fire_periodic : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_atramedes_roaring_flame_breath_fire_periodic::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_atramedes_roaring_flame_breath_fire_periodic::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -778,7 +778,7 @@ class spell_atramedes_resonating_clash_ground : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_atramedes_resonating_clash_ground::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_atramedes_resonating_clash_ground::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -802,7 +802,7 @@ class spell_atramedes_resonating_clash_air : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_atramedes_resonating_clash_air::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_atramedes_resonating_clash_air::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -815,7 +815,7 @@ class spell_atramedes_resonating_clash: public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_atramedes_resonating_clash::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_atramedes_resonating_clash::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -848,7 +848,7 @@ class spell_atramedes_sound_bar : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_atramedes_sound_bar::HandleNoisyAura, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_atramedes_sound_bar::HandleNoisyAura, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -863,7 +863,7 @@ class spell_atramedes_noisy : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_atramedes_noisy::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_atramedes_noisy::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -893,7 +893,7 @@ class spell_atramedes_vertigo : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_atramedes_vertigo::AfterRemove, EFFECT_1, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_atramedes_vertigo::AfterRemove, EFFECT_1, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -909,7 +909,7 @@ class spell_atramedes_sonic_flames : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_atramedes_sonic_flames::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_atramedes_sonic_flames::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -927,7 +927,7 @@ class spell_atramedes_sonic_flames_AuraScript : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_atramedes_sonic_flames_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_atramedes_sonic_flames_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -956,7 +956,7 @@ class spell_atramedes_devastation_trigger : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_atramedes_devastation_trigger::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_atramedes_devastation_trigger::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -975,7 +975,7 @@ class spell_atramedes_sonic_breath : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_atramedes_sonic_breath::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_atramedes_sonic_breath::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -997,7 +997,7 @@ class spell_atramedes_destroy_shield : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_atramedes_destroy_shield::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_atramedes_destroy_shield::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -1021,8 +1021,8 @@ class spell_atramedes_pestered : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_atramedes_pestered::AfterApply, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_atramedes_pestered::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_atramedes_pestered::AfterApply, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_atramedes_pestered::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1035,7 +1035,7 @@ class spell_atramedes_apply_vehicle_periodic : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_atramedes_apply_vehicle_periodic::AfterApply, EFFECT_0, SPELL_AURA_SET_VEHICLE_ID, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_atramedes_apply_vehicle_periodic::AfterApply, EFFECT_0, SPELL_AURA_SET_VEHICLE_ID, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

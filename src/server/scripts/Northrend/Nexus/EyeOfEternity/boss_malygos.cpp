@@ -1617,8 +1617,8 @@ class spell_malygos_portal_beam : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_malygos_portal_beam_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_malygos_portal_beam_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectApply.Register(&spell_malygos_portal_beam_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_malygos_portal_beam_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1654,7 +1654,7 @@ class spell_malygos_random_portal : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_malygos_random_portal_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_malygos_random_portal_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1726,8 +1726,8 @@ class spell_malygos_arcane_storm : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_malygos_arcane_storm_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnEffectLaunchTarget.Register(this, &spell_malygos_arcane_storm_SpellScript::HandleVisual, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+                OnObjectAreaTargetSelect.Register(&spell_malygos_arcane_storm_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectLaunchTarget.Register(&spell_malygos_arcane_storm_SpellScript::HandleVisual, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
             }
         };
 
@@ -1762,7 +1762,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_malygos_vortex_dummy_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnEffectHitTarget.Register(&spell_malygos_vortex_dummy_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
 
@@ -1819,7 +1819,7 @@ class spell_malygos_vortex_visual : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_malygos_vortex_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_malygos_vortex_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1865,7 +1865,7 @@ class spell_arcane_overload : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_arcane_overload_SpellScript::ResizeEffectRadiusTargetChecker, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_arcane_overload_SpellScript::ResizeEffectRadiusTargetChecker, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1896,7 +1896,7 @@ class spell_nexus_lord_align_disk_aggro : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_nexus_lord_align_disk_aggro_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_nexus_lord_align_disk_aggro_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1991,8 +1991,8 @@ class spell_scion_of_eternity_arcane_barrage : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_scion_of_eternity_arcane_barrage_SpellScript::FilterMeleeHoverDiskPassangers, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnHit.Register(this, &spell_scion_of_eternity_arcane_barrage_SpellScript::TriggerDamageSpellFromPlayer);
+                OnObjectAreaTargetSelect.Register(&spell_scion_of_eternity_arcane_barrage_SpellScript::FilterMeleeHoverDiskPassangers, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnHit.Register(&spell_scion_of_eternity_arcane_barrage_SpellScript::TriggerDamageSpellFromPlayer);
             }
         };
 
@@ -2029,7 +2029,7 @@ class spell_malygos_destroy_platform_channel : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_malygos_destroy_platform_channel_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_malygos_destroy_platform_channel_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2064,7 +2064,7 @@ class spell_alexstrasza_bunny_destroy_platform_boom_visual : public SpellScriptL
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_alexstrasza_bunny_destroy_platform_boom_visual_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_alexstrasza_bunny_destroy_platform_boom_visual_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -2101,8 +2101,8 @@ class spell_alexstrasza_bunny_destroy_platform_event : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_alexstrasza_bunny_destroy_platform_event_SpellScript::HandleSendEvent, EFFECT_0, SPELL_EFFECT_SEND_EVENT);
-                OnEffectHit.Register(this, &spell_alexstrasza_bunny_destroy_platform_event_SpellScript::HandleScript, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHit.Register(&spell_alexstrasza_bunny_destroy_platform_event_SpellScript::HandleSendEvent, EFFECT_0, SPELL_EFFECT_SEND_EVENT);
+                OnEffectHit.Register(&spell_alexstrasza_bunny_destroy_platform_event_SpellScript::HandleScript, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2134,7 +2134,7 @@ class spell_wyrmrest_skytalon_summon_red_dragon_buddy : public SpellScriptLoader
 
             void Register() override
             {
-                OnDestinationTargetSelect.Register(this, &spell_wyrmrest_skytalon_summon_red_dragon_buddy_SpellScript::SetDest, EFFECT_0, TARGET_DEST_CASTER_RADIUS);
+                OnDestinationTargetSelect.Register(&spell_wyrmrest_skytalon_summon_red_dragon_buddy_SpellScript::SetDest, EFFECT_0, TARGET_DEST_CASTER_RADIUS);
             }
         };
 
@@ -2164,7 +2164,7 @@ class spell_wyrmrest_skytalon_ride_red_dragon_buddy_trigger : public SpellScript
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_wyrmrest_skytalon_ride_red_dragon_buddy_trigger_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_wyrmrest_skytalon_ride_red_dragon_buddy_trigger_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2224,8 +2224,8 @@ class spell_malygos_surge_of_power_warning_selector_25 : public SpellScriptLoade
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_malygos_surge_of_power_warning_selector_25_SpellScript::SendThreeTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-                AfterHit.Register(this, &spell_malygos_surge_of_power_warning_selector_25_SpellScript::ExecuteMainSpell);
+                OnObjectAreaTargetSelect.Register(&spell_malygos_surge_of_power_warning_selector_25_SpellScript::SendThreeTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                AfterHit.Register(&spell_malygos_surge_of_power_warning_selector_25_SpellScript::ExecuteMainSpell);
             }
         };
 
@@ -2274,7 +2274,7 @@ class spell_malygos_surge_of_power_25 : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_malygos_surge_of_power_25_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_malygos_surge_of_power_25_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -2315,8 +2315,8 @@ class spell_alexstrasza_gift_beam : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_alexstrasza_gift_beam_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_alexstrasza_gift_beam_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectApply.Register(&spell_alexstrasza_gift_beam_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_alexstrasza_gift_beam_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -2374,8 +2374,8 @@ class spell_alexstrasza_gift_beam_visual : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_alexstrasza_gift_beam_visual_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_alexstrasza_gift_beam_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectApply.Register(&spell_alexstrasza_gift_beam_visual_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_alexstrasza_gift_beam_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
 
             GameObject* _alexstraszaGift;

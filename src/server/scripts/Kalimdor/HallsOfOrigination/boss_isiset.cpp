@@ -508,7 +508,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_isiset_astral_rain_controller_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectLaunch.Register(&spell_isiset_astral_rain_controller_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -552,7 +552,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_isiset_mana_shield_controller_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectLaunch.Register(&spell_isiset_mana_shield_controller_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -596,7 +596,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_isiset_astral_familiar_controller_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectLaunch.Register(&spell_isiset_astral_familiar_controller_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -636,7 +636,7 @@ public:
 
         void Register() override
         {
-            AfterEffectManaShield.Register(this, &spell_isiset_veil_of_sky_AuraScript::Trigger, EFFECT_0);
+            AfterEffectManaShield.Register(&spell_isiset_veil_of_sky_AuraScript::Trigger, EFFECT_0);
         }
 
     private:
@@ -666,7 +666,7 @@ public:
 
         void Register() override
         {
-            OnObjectAreaTargetSelect.Register(this, &spell_isiset_supernova_filter_SpellScript::FilterTargets, m_scriptSpellId == SPELL_SUPERNOVA_EFFECT ? EFFECT_1 : EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+            OnObjectAreaTargetSelect.Register(&spell_isiset_supernova_filter_SpellScript::FilterTargets, m_scriptSpellId == SPELL_SUPERNOVA_EFFECT ? EFFECT_1 : EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
         }
     };
 
@@ -705,7 +705,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_isiset_mirror_image_starry_sky_spawner_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectLaunch.Register(&spell_isiset_mirror_image_starry_sky_spawner_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -744,7 +744,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_isiset_mirror_image_spawner_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectLaunch.Register(&spell_isiset_mirror_image_spawner_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
 
     };
@@ -788,7 +788,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_isiset_image_explosion_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnEffectLaunch.Register(&spell_isiset_image_explosion_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
 
@@ -815,7 +815,7 @@ public:
 
         void Register() override
         {
-            OnEffectLaunch.Register(this, &spell_isiset_call_of_sky_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnEffectLaunch.Register(&spell_isiset_call_of_sky_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
 

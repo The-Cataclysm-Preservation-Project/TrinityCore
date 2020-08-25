@@ -314,7 +314,7 @@ class spell_earthrager_ptah_flame_bolt : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_earthrager_ptah_flame_bolt::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_earthrager_ptah_flame_bolt::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -328,7 +328,7 @@ class spell_earthrager_ptah_sandstorm : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_earthrager_ptah_sandstorm::PlaySoundID, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_earthrager_ptah_sandstorm::PlaySoundID, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -350,8 +350,8 @@ class spell_earthrager_ptah_explosion : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_earthrager_ptah_explosion::SetFlags, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_earthrager_ptah_explosion::RemoveFlags, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_earthrager_ptah_explosion::SetFlags, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_earthrager_ptah_explosion::RemoveFlags, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -384,7 +384,7 @@ class spell_earthrager_ptah_consume : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_earthrager_ptah_consume::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_earthrager_ptah_consume::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 

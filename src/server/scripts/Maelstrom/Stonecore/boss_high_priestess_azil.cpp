@@ -580,7 +580,7 @@ class spell_azil_summon_wave_south : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_azil_summon_wave_south::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_azil_summon_wave_south::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -600,7 +600,7 @@ class spell_azil_summon_wave_west : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_azil_summon_wave_west::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_azil_summon_wave_west::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -621,7 +621,7 @@ class spell_azil_summon_follower : public SpellScript
 
     void Register()
     {
-        OnEffectLaunch.Register(this, &spell_azil_summon_follower::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
+        OnEffectLaunch.Register(&spell_azil_summon_follower::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
     }
 };
 
@@ -656,9 +656,9 @@ class spell_azil_gravity_well_damage_nearby : public SpellScript
 
     void Register() override
     {
-        BeforeCast.Register(this, &spell_azil_gravity_well_damage_nearby::SetRadiusMod);
-        OnObjectAreaTargetSelect.Register(this, &spell_azil_gravity_well_damage_nearby::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_azil_gravity_well_damage_nearby::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        BeforeCast.Register(&spell_azil_gravity_well_damage_nearby::SetRadiusMod);
+        OnObjectAreaTargetSelect.Register(&spell_azil_gravity_well_damage_nearby::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_azil_gravity_well_damage_nearby::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -680,7 +680,7 @@ class spell_azil_gravity_well_damage : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_azil_gravity_well_damage::CalculateDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_azil_gravity_well_damage::CalculateDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -693,7 +693,7 @@ class spell_azil_gravity_well_pull : public SpellScript
 
     void Register() override
     {
-        BeforeCast.Register(this, &spell_azil_gravity_well_pull::SetRadiusMod);
+        BeforeCast.Register(&spell_azil_gravity_well_pull::SetRadiusMod);
     }
 };
 
@@ -706,7 +706,7 @@ class spell_azil_seismic_shard_change_seat : public SpellScript
 
     void Register() override
     {
-        BeforeCast.Register(this, &spell_azil_seismic_shard_change_seat::ExitVehicle);
+        BeforeCast.Register(&spell_azil_seismic_shard_change_seat::ExitVehicle);
     }
 };
 
@@ -725,7 +725,7 @@ class spell_azil_seismic_shard : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_azil_seismic_shard::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_azil_seismic_shard::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -745,7 +745,7 @@ class spell_azil_force_grip : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_azil_force_grip::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_azil_force_grip::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -764,7 +764,7 @@ class spell_azil_force_grip_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_azil_force_grip_AuraScript::OnAuraRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_azil_force_grip_AuraScript::OnAuraRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -779,7 +779,7 @@ class spell_azil_force_grip_change_seat : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_azil_force_grip_change_seat::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_azil_force_grip_change_seat::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 

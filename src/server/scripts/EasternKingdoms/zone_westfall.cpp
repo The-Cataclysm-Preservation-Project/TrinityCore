@@ -45,7 +45,7 @@ class spell_westfall_unbound_energy : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_westfall_unbound_energy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_westfall_unbound_energy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -119,7 +119,7 @@ class spell_westfall_reaping_blows : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_westfall_reaping_blows::HandlePeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_westfall_reaping_blows::HandlePeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -149,8 +149,8 @@ class spell_westfall_wake_harvest_golem : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_westfall_wake_harvest_golem::CheckTarget);
-        OnEffectHitTarget.Register(this, &spell_westfall_wake_harvest_golem::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnCheckCast.Register(&spell_westfall_wake_harvest_golem::CheckTarget);
+        OnEffectHitTarget.Register(&spell_westfall_wake_harvest_golem::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -163,7 +163,7 @@ class spell_westfall_quest_credit_jangolode_event : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_westfall_quest_credit_jangolode_event::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_westfall_quest_credit_jangolode_event::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -502,7 +502,7 @@ class spell_westfall_summon_ragamuffin_looter : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunch.Register(this, &spell_westfall_summon_ragamuffin_looter::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectLaunch.Register(&spell_westfall_summon_ragamuffin_looter::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -517,7 +517,7 @@ class spell_westfall_aggro_hobo : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_westfall_aggro_hobo::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_westfall_aggro_hobo::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 

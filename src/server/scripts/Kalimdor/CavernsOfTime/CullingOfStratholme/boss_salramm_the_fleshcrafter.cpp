@@ -149,7 +149,7 @@ class spell_salramm_steal_flesh : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_salramm_steal_flesh::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_salramm_steal_flesh::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 

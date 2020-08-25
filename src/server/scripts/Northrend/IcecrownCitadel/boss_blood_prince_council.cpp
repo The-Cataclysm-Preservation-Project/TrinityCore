@@ -1189,7 +1189,7 @@ class spell_taldaram_glittering_sparks : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_taldaram_glittering_sparks_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_taldaram_glittering_sparks_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1216,7 +1216,7 @@ class spell_taldaram_summon_flame_ball : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_taldaram_summon_flame_ball_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_taldaram_summon_flame_ball_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1265,7 +1265,7 @@ class spell_taldaram_flame_ball_visual : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_flame_ball_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_flame_ball_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1294,7 +1294,7 @@ class spell_taldaram_ball_of_inferno_flame : public SpellScriptLoader
 
             void Register() override
             {
-                AfterHit.Register(this, &spell_taldaram_ball_of_inferno_flame_SpellScript::ModAuraStack);
+                AfterHit.Register(&spell_taldaram_ball_of_inferno_flame_SpellScript::ModAuraStack);
             }
         };
 
@@ -1312,7 +1312,7 @@ class spell_taldaram_ball_of_inferno_flame : public SpellScriptLoader
 
             void Register() override
             {
-                OnProc.Register(this, &spell_taldaram_ball_of_inferno_flame_AuraScript::HandleStackDrop);
+                OnProc.Register(&spell_taldaram_ball_of_inferno_flame_AuraScript::HandleStackDrop);
             }
         };
 
@@ -1338,7 +1338,7 @@ class spell_valanar_kinetic_bomb : public SpellScriptLoader
 
             void Register() override
             {
-                OnDestinationTargetSelect.Register(this, &spell_valanar_kinetic_bomb_SpellScript::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+                OnDestinationTargetSelect.Register(&spell_valanar_kinetic_bomb_SpellScript::SetDest, EFFECT_0, TARGET_DEST_CASTER);
             }
         };
 
@@ -1366,7 +1366,7 @@ class spell_valanar_kinetic_bomb : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_valanar_kinetic_bomb_AuraScript::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_valanar_kinetic_bomb_AuraScript::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -1397,7 +1397,7 @@ class spell_valanar_kinetic_bomb_knockback : public SpellScriptLoader
 
             void Register() override
             {
-                BeforeHit.Register(this, &spell_valanar_kinetic_bomb_knockback_SpellScript::KnockIntoAir);
+                BeforeHit.Register(&spell_valanar_kinetic_bomb_knockback_SpellScript::KnockIntoAir);
             }
         };
 
@@ -1424,7 +1424,7 @@ class spell_valanar_kinetic_bomb_absorb : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectAbsorb.Register(this, &spell_valanar_kinetic_bomb_absorb_AuraScript::OnAbsorb, EFFECT_0);
+                OnEffectAbsorb.Register(&spell_valanar_kinetic_bomb_absorb_AuraScript::OnAbsorb, EFFECT_0);
             }
         };
 
@@ -1455,7 +1455,7 @@ class spell_blood_council_shadow_prison : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_blood_council_shadow_prison_AuraScript::HandleDummyTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_blood_council_shadow_prison_AuraScript::HandleDummyTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -1482,7 +1482,7 @@ class spell_blood_council_shadow_prison_damage : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_blood_council_shadow_prison_SpellScript::AddExtraDamage);
+                OnHit.Register(&spell_blood_council_shadow_prison_SpellScript::AddExtraDamage);
             }
         };
 

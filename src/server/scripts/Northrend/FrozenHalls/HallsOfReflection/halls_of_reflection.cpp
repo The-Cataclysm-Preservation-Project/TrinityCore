@@ -2754,7 +2754,7 @@ class spell_hor_start_halls_of_reflection_quest_ae : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hor_start_halls_of_reflection_quest_ae_SpellScript::StartQuests, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_hor_start_halls_of_reflection_quest_ae_SpellScript::StartQuests, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -2796,7 +2796,7 @@ class spell_hor_evasion : public SpellScriptLoader
 
             void Register() override
             {
-                OnDestinationTargetSelect.Register(this, &spell_hor_evasion_SpellScript::SetDest, EFFECT_0, TARGET_DEST_TARGET_RADIUS);
+                OnDestinationTargetSelect.Register(&spell_hor_evasion_SpellScript::SetDest, EFFECT_0, TARGET_DEST_TARGET_RADIUS);
             }
         };
 
@@ -2827,7 +2827,7 @@ class spell_hor_gunship_cannon_fire : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_hor_gunship_cannon_fire_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_hor_gunship_cannon_fire_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -2855,7 +2855,7 @@ class spell_hor_quel_delars_will : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_hor_quel_delars_will::HandleReagent, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+        OnEffectHitTarget.Register(&spell_hor_quel_delars_will::HandleReagent, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
 

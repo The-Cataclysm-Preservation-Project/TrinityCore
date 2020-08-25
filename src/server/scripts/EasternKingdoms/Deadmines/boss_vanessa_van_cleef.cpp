@@ -725,8 +725,8 @@ class spell_vanessa_backslash_targeting : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_vanessa_backslash_targeting_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnObjectAreaTargetSelect.Register(this, &spell_vanessa_backslash_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_vanessa_backslash_targeting_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_vanessa_backslash_targeting_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 

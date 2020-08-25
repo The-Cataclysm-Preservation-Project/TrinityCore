@@ -189,8 +189,8 @@ class spell_pri_body_and_soul : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_body_and_soul::HandleEffectSpeedProc, EFFECT_0, SPELL_AURA_DUMMY);
-        OnEffectProc.Register(this, &spell_pri_body_and_soul::HandleEffectDispelProc, EFFECT_1, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_pri_body_and_soul::HandleEffectSpeedProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_pri_body_and_soul::HandleEffectDispelProc, EFFECT_1, SPELL_AURA_DUMMY);
     }
 };
 
@@ -217,7 +217,7 @@ class spell_pri_circle_of_healing : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_pri_circle_of_healing::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_pri_circle_of_healing::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
     }
 };
 
@@ -261,8 +261,8 @@ class spell_pri_dispel_magic : public SpellScript
 
     void Register() override
     {
-        OnCheckCast.Register(this, &spell_pri_dispel_magic::CheckCast);
-        OnEffectHitTarget.Register(this, &spell_pri_dispel_magic::AfterEffectHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnCheckCast.Register(&spell_pri_dispel_magic::CheckCast);
+        OnEffectHitTarget.Register(&spell_pri_dispel_magic::AfterEffectHit, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -299,8 +299,8 @@ class spell_pri_divine_aegis : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_pri_divine_aegis::CheckProc);
-        OnEffectProc.Register(this, &spell_pri_divine_aegis::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_pri_divine_aegis::CheckProc);
+        OnEffectProc.Register(&spell_pri_divine_aegis::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -322,7 +322,7 @@ class spell_pri_divine_hymn : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_pri_divine_hymn::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_pri_divine_hymn::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
     }
 };
 
@@ -345,7 +345,7 @@ class spell_pri_glyph_of_prayer_of_healing : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_glyph_of_prayer_of_healing::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_pri_glyph_of_prayer_of_healing::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -367,7 +367,7 @@ class spell_pri_improved_power_word_shield : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcSpellMod.Register(this, &spell_pri_improved_power_word_shield::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
+        DoEffectCalcSpellMod.Register(&spell_pri_improved_power_word_shield::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -387,7 +387,7 @@ class spell_pri_item_greater_heal_refund : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_item_greater_heal_refund::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_pri_item_greater_heal_refund::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -428,8 +428,8 @@ class spell_pri_guardian_spirit : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_pri_guardian_spirit::CalculateAmount, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectAbsorb.Register(this, &spell_pri_guardian_spirit::Absorb, EFFECT_1);
+        DoEffectCalcAmount.Register(&spell_pri_guardian_spirit::CalculateAmount, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb.Register(&spell_pri_guardian_spirit::Absorb, EFFECT_1);
     }
 
 private:
@@ -455,7 +455,7 @@ class spell_pri_hymn_of_hope : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_pri_hymn_of_hope::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_pri_hymn_of_hope::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
     }
 };
 
@@ -479,7 +479,7 @@ class spell_pri_leap_of_faith_effect_trigger : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_leap_of_faith_effect_trigger::HandleEffectDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_pri_leap_of_faith_effect_trigger::HandleEffectDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -498,7 +498,7 @@ class spell_pri_lightwell_renew : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_pri_lightwell_renew::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
+        DoEffectCalcAmount.Register(&spell_pri_lightwell_renew::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
     }
 };
 
@@ -524,8 +524,8 @@ class spell_pri_mana_leech : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_pri_mana_leech::CheckProc);
-        OnEffectProc.Register(this, &spell_pri_mana_leech::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_pri_mana_leech::CheckProc);
+        OnEffectProc.Register(&spell_pri_mana_leech::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 
     Unit* _procTarget = nullptr;
@@ -541,7 +541,7 @@ class spell_pri_mind_sear : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_pri_mind_sear::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_pri_mind_sear::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
     }
 };
 
@@ -561,7 +561,7 @@ class spell_pri_pain_and_suffering_proc : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_pain_and_suffering_proc::HandleEffectScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_pri_pain_and_suffering_proc::HandleEffectScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -623,8 +623,8 @@ class spell_pri_penance : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_penance::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-        OnCheckCast.Register(this, &spell_pri_penance::CheckCast);
+        OnEffectHitTarget.Register(&spell_pri_penance::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnCheckCast.Register(&spell_pri_penance::CheckCast);
     }
 };
 
@@ -644,8 +644,8 @@ class spell_pri_phantasm : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_pri_phantasm::CheckProc);
-        OnEffectProc.Register(this, &spell_pri_phantasm::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_pri_phantasm::CheckProc);
+        OnEffectProc.Register(&spell_pri_phantasm::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -665,7 +665,7 @@ class spell_pri_power_word_shield : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_power_word_shield::HandleWeakenedSoul, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_pri_power_word_shield::HandleWeakenedSoul, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -740,8 +740,8 @@ class spell_pri_power_word_shield_AuraScript : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_pri_power_word_shield_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        AfterEffectAbsorb.Register(this, &spell_pri_power_word_shield_AuraScript::ReflectDamage, EFFECT_0);
+        DoEffectCalcAmount.Register(&spell_pri_power_word_shield_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        AfterEffectAbsorb.Register(&spell_pri_power_word_shield_AuraScript::ReflectDamage, EFFECT_0);
     }
 };
 
@@ -763,7 +763,7 @@ class spell_pri_prayer_of_mending_heal : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_prayer_of_mending_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+        OnEffectHitTarget.Register(&spell_pri_prayer_of_mending_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
     }
 };
 
@@ -797,7 +797,7 @@ class spell_pri_renew : public AuraScript
 
     void Register() override
     {
-        OnEffectApply.Register(this, &spell_pri_renew::HandleApplyEffect, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        OnEffectApply.Register(&spell_pri_renew::HandleApplyEffect, EFFECT_0, SPELL_AURA_PERIODIC_HEAL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
 
@@ -845,8 +845,8 @@ class spell_pri_shadow_word_death : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_pri_shadow_word_death::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget.Register(this, &spell_pri_shadow_word_death::HandleSelfDamagingEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(&spell_pri_shadow_word_death::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_pri_shadow_word_death::HandleSelfDamagingEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -875,8 +875,8 @@ class spell_pri_shadowform : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_pri_shadowform::HandleEffectApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-        AfterEffectRemove.Register(this, &spell_pri_shadowform::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectApply.Register(&spell_pri_shadowform::HandleEffectApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectRemove.Register(&spell_pri_shadowform::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
 
@@ -905,8 +905,8 @@ class spell_pri_vampiric_embrace : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_pri_vampiric_embrace::CheckProc);
-        OnEffectProc.Register(this, &spell_pri_vampiric_embrace::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_pri_vampiric_embrace::CheckProc);
+        OnEffectProc.Register(&spell_pri_vampiric_embrace::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -920,7 +920,7 @@ class spell_pri_vampiric_embrace_target : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_pri_vampiric_embrace_target::FilterTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_PARTY);
+        OnObjectAreaTargetSelect.Register(&spell_pri_vampiric_embrace_target::FilterTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_PARTY);
     }
 };
 
@@ -960,9 +960,9 @@ class spell_pri_vampiric_touch : public AuraScript
 
     void Register() override
     {
-        AfterDispel.Register(this, &spell_pri_vampiric_touch::HandleDispel);
-        DoCheckProc.Register(this, &spell_pri_vampiric_touch::CheckProc);
-        OnEffectProc.Register(this, &spell_pri_vampiric_touch::HandleEffectProc, EFFECT_2, SPELL_AURA_DUMMY);
+        AfterDispel.Register(&spell_pri_vampiric_touch::HandleDispel);
+        DoCheckProc.Register(&spell_pri_vampiric_touch::CheckProc);
+        OnEffectProc.Register(&spell_pri_vampiric_touch::HandleEffectProc, EFFECT_2, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1000,8 +1000,8 @@ class spell_pri_echo_of_light : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_pri_echo_of_light::CheckProc);
-        OnEffectProc.Register(this, &spell_pri_echo_of_light::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_pri_echo_of_light::CheckProc);
+        OnEffectProc.Register(&spell_pri_echo_of_light::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1040,8 +1040,8 @@ class spell_pri_shadow_orbs : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_pri_shadow_orbs::CheckProc);
-        OnEffectProc.Register(this, &spell_pri_shadow_orbs::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_pri_shadow_orbs::CheckProc);
+        OnEffectProc.Register(&spell_pri_shadow_orbs::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1062,7 +1062,7 @@ class spell_pri_shadow_orb_power : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_shadow_orb_power::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_pri_shadow_orb_power::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -1102,9 +1102,9 @@ class spell_pri_shadow_orb : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_pri_shadow_orb::HandleEffectApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-        AfterEffectRemove.Register(this, &spell_pri_shadow_orb::HandleEffectRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-        OnEffectProc.Register(this, &spell_pri_shadow_orb::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectApply.Register(&spell_pri_shadow_orb::HandleEffectApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectRemove.Register(&spell_pri_shadow_orb::HandleEffectRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        OnEffectProc.Register(&spell_pri_shadow_orb::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1174,8 +1174,8 @@ class spell_pri_chakra : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_pri_chakra::HandleEffectApply, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-        OnEffectProc.Register(this, &spell_pri_chakra::HandleProc, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER);
+        AfterEffectApply.Register(&spell_pri_chakra::HandleEffectApply, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        OnEffectProc.Register(&spell_pri_chakra::HandleProc, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER);
     }
 };
 
@@ -1200,7 +1200,7 @@ class spell_pri_chakra_sanctuary : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_pri_chakra_sanctuary::HandleEffectRemove, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectRemove.Register(&spell_pri_chakra_sanctuary::HandleEffectRemove, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
 
@@ -1226,9 +1226,9 @@ class spell_pri_chakra_flow_removal: public AuraScript
     void Register() override
     {
         if (m_scriptSpellId == SPELL_PRIEST_CHAKRA_SERENITY)
-            AfterEffectRemove.Register(this, &spell_pri_chakra_flow_removal::HandleEffectRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+            AfterEffectRemove.Register(&spell_pri_chakra_flow_removal::HandleEffectRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
         else if (m_scriptSpellId == SPELL_PRIEST_CHAKRA_CHASTISE)
-            AfterEffectRemove.Register(this, &spell_pri_chakra_flow_removal::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+            AfterEffectRemove.Register(&spell_pri_chakra_flow_removal::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
 
@@ -1248,7 +1248,7 @@ class spell_pri_chakra_serenity_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_chakra_serenity_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_pri_chakra_serenity_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1268,7 +1268,7 @@ class spell_pri_holy_word_sanctuary : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_pri_holy_word_sanctuary::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_pri_holy_word_sanctuary::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1288,8 +1288,8 @@ class spell_pri_holy_word_sanctuary_triggered : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_pri_holy_word_sanctuary_triggered::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
-        OnEffectHitTarget.Register(this, &spell_pri_holy_word_sanctuary_triggered::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+        OnObjectAreaTargetSelect.Register(&spell_pri_holy_word_sanctuary_triggered::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnEffectHitTarget.Register(&spell_pri_holy_word_sanctuary_triggered::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
     }
 
 private:
@@ -1337,7 +1337,7 @@ class spell_pri_evangelism : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_evangelism::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_pri_evangelism::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1363,7 +1363,7 @@ class spell_pri_evangelism_triggered : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_pri_evangelism_triggered::AfterRemove, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_pri_evangelism_triggered::AfterRemove, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1428,7 +1428,7 @@ class spell_pri_archangel : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_archangel::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_pri_archangel::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1457,7 +1457,7 @@ class spell_power_word_barrier : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_power_word_barrier::HandleGlyph, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_power_word_barrier::HandleGlyph, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 
 private:
@@ -1500,7 +1500,7 @@ class spell_pri_strength_of_soul : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_strength_of_soul::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_pri_strength_of_soul::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -1519,7 +1519,7 @@ class spell_pri_strength_of_soul_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_strength_of_soul_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_pri_strength_of_soul_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1559,7 +1559,7 @@ class spell_pri_atonement : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_atonement::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_pri_atonement::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1579,7 +1579,7 @@ class spell_pri_atonement_heal : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_pri_atonement_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect.Register(&spell_pri_atonement_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
     }
 };
 
@@ -1609,8 +1609,8 @@ class spell_pri_spirit_of_redemption : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_pri_spirit_of_redemption::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectAbsorb.Register(this, &spell_pri_spirit_of_redemption::Absorb, EFFECT_0);
+        DoEffectCalcAmount.Register(&spell_pri_spirit_of_redemption::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb.Register(&spell_pri_spirit_of_redemption::Absorb, EFFECT_0);
     }
 };
 
@@ -1654,8 +1654,8 @@ class spell_pri_mind_blast : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_mind_blast::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget.Register(this, &spell_pri_mind_blast::HandleImprovedMindBlast, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_pri_mind_blast::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_pri_mind_blast::HandleImprovedMindBlast, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -1684,7 +1684,7 @@ class spell_pri_mind_spike : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_pri_mind_spike::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_pri_mind_spike::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -1715,7 +1715,7 @@ class spell_pri_masochism : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_pri_masochism::CheckProc);
+        DoCheckProc.Register(&spell_pri_masochism::CheckProc);
     }
 };
 
@@ -1739,7 +1739,7 @@ class spell_pri_harnessed_shadows : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_pri_harnessed_shadows::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_pri_harnessed_shadows::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 

@@ -564,7 +564,7 @@ class spell_bwd_dragon_orb : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_bwd_dragon_orb::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
+        OnDestinationTargetSelect.Register(&spell_bwd_dragon_orb::SetDest, EFFECT_0, TARGET_DEST_CASTER_RANDOM);
     }
 };
 
@@ -581,7 +581,7 @@ class spell_bwd_grievous_wound : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_bwd_grievous_wound::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectPeriodic.Register(&spell_bwd_grievous_wound::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
@@ -594,7 +594,7 @@ class spell_bwd_execution_sentence_visual : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_bwd_execution_sentence_visual::SetDest, EFFECT_0, TARGET_DEST_TARGET_ENEMY);
+        OnDestinationTargetSelect.Register(&spell_bwd_execution_sentence_visual::SetDest, EFFECT_0, TARGET_DEST_TARGET_ENEMY);
     }
 };
 
@@ -614,7 +614,7 @@ class spell_bwd_execution_sentence_dummy : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_bwd_execution_sentence_dummy::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_bwd_execution_sentence_dummy::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -634,7 +634,7 @@ class spell_bwd_execution_sentence : public AuraScript
 
     void Register() override
     {
-        OnEffectRemove.Register(this, &spell_bwd_execution_sentence::HandleRemove, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove.Register(&spell_bwd_execution_sentence::HandleRemove, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -665,7 +665,7 @@ class spell_bwd_stoneblood : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_bwd_stoneblood::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_bwd_stoneblood::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 

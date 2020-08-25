@@ -572,8 +572,8 @@ class spell_asaad_sots_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_asaad_sots_targeting::SelectRandom, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_asaad_sots_targeting::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_asaad_sots_targeting::SelectRandom, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_asaad_sots_targeting::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -592,7 +592,7 @@ class spell_asaad_sots_trigger : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_asaad_sots_trigger::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_asaad_sots_trigger::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -631,7 +631,7 @@ class spell_asaad_storm_rune_beam : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_asaad_storm_rune_beam::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_asaad_storm_rune_beam::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -655,9 +655,9 @@ class spell_asaad_grounding_field_visual_beams : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_asaad_grounding_field_visual_beams::SetTargetA, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
-        OnObjectTargetSelect.Register(this, &spell_asaad_grounding_field_visual_beams::SetTargetB, EFFECT_1, TARGET_UNIT_NEARBY_ENTRY);
-        OnObjectTargetSelect.Register(this, &spell_asaad_grounding_field_visual_beams::SetTargetC, EFFECT_2, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_asaad_grounding_field_visual_beams::SetTargetA, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_asaad_grounding_field_visual_beams::SetTargetB, EFFECT_1, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_asaad_grounding_field_visual_beams::SetTargetC, EFFECT_2, TARGET_UNIT_NEARBY_ENTRY);
     }
 private:
     Creature * GetStormTarget(uint32 point)
@@ -699,7 +699,7 @@ class spell_asaad_supremacy_of_the_storm : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_asaad_supremacy_of_the_storm::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_asaad_supremacy_of_the_storm::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -751,7 +751,7 @@ class spell_asaad_supremacy_of_the_storm_visual : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_asaad_supremacy_of_the_storm_visual::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_asaad_supremacy_of_the_storm_visual::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -764,8 +764,8 @@ class spell_asaad_static_cling : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_asaad_static_cling::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnObjectAreaTargetSelect.Register(this, &spell_asaad_static_cling::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_asaad_static_cling::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_asaad_static_cling::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -789,7 +789,7 @@ class spell_asaad_summon_skyfall_star : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_asaad_summon_skyfall_star::SetDest, EFFECT_0, TARGET_DEST_DEST_RADIUS);
+        OnDestinationTargetSelect.Register(&spell_asaad_summon_skyfall_star::SetDest, EFFECT_0, TARGET_DEST_DEST_RADIUS);
     }
 };
 

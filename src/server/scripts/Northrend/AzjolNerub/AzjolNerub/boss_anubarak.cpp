@@ -658,7 +658,7 @@ class spell_anubarak_pound : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_anubarak_pound_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(&spell_anubarak_pound_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -689,7 +689,7 @@ class spell_anubarak_carrion_beetles : public SpellScriptLoader
 
                 void Register() override
                 {
-                    OnEffectPeriodic.Register(this, &spell_anubarak_carrion_beetles_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                    OnEffectPeriodic.Register(&spell_anubarak_carrion_beetles_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
                 }
         };
 

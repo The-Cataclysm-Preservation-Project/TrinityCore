@@ -478,7 +478,7 @@ class spell_murozond_rewind_time_forcecast : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_murozond_rewind_time_forcecast::HandleSummon, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+        OnEffectHitTarget.Register(&spell_murozond_rewind_time_forcecast::HandleSummon, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
 
@@ -497,7 +497,7 @@ class spell_murozond_rewind_time : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_murozond_rewind_time::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_murozond_rewind_time::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -520,7 +520,7 @@ class spell_murozond_clone_master_health : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_murozond_clone_master_health::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_murozond_clone_master_health::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 

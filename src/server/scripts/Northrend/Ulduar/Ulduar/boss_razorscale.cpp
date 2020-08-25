@@ -1108,7 +1108,7 @@ class spell_razorscale_devouring_flame : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_razorscale_devouring_flame_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
+                OnEffectHit.Register(&spell_razorscale_devouring_flame_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
             }
         };
 
@@ -1137,7 +1137,7 @@ class spell_razorscale_flame_breath : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_razorscale_flame_breath_SpellScript::CheckDamage);
+                OnHit.Register(&spell_razorscale_flame_breath_SpellScript::CheckDamage);
             }
         };
 

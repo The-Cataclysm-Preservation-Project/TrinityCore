@@ -351,7 +351,7 @@ class spell_anhuur_divine_reckoning : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_anhuur_divine_reckoning::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_anhuur_divine_reckoning::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -373,7 +373,7 @@ class spell_anhuur_shield_of_light : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_anhuur_shield_of_light::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_anhuur_shield_of_light::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -390,7 +390,7 @@ class spell_anhuur_reverberating_hymn : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_anhuur_reverberating_hymn::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_anhuur_reverberating_hymn::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -412,8 +412,8 @@ class spell_anhuur_disable_beacon_beams : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_anhuur_disable_beacon_beams::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-        OnEffectHit.Register(this, &spell_anhuur_disable_beacon_beams::Notify, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_anhuur_disable_beacon_beams::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHit.Register(&spell_anhuur_disable_beacon_beams::Notify, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -436,7 +436,7 @@ class spell_anhuur_burning_light_forcecast : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_anhuur_burning_light_forcecast::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_anhuur_burning_light_forcecast::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 

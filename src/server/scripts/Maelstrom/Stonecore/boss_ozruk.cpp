@@ -210,7 +210,7 @@ class spell_ozruk_rupture : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_ozruk_rupture::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_ozruk_rupture::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -234,7 +234,7 @@ class spell_ozuruk_rupture_summon : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_ozuruk_rupture_summon::SetDest, EFFECT_0, TARGET_DEST_CASTER_FRONT);
+        OnDestinationTargetSelect.Register(&spell_ozuruk_rupture_summon::SetDest, EFFECT_0, TARGET_DEST_CASTER_FRONT);
     }
 };
 
@@ -254,7 +254,7 @@ class spell_ozruk_elementium_spike_shield : public SpellScript
 
     void Register() override
     {
-        OnCast.Register(this, &spell_ozruk_elementium_spike_shield::HandleBouncerSpikes);
+        OnCast.Register(&spell_ozruk_elementium_spike_shield::HandleBouncerSpikes);
     }
 };
 
@@ -273,7 +273,7 @@ class spell_ozruk_paralyze : public SpellScript
 
     void Register() override
     {
-        OnHit.Register(this, &spell_ozruk_paralyze::HandleDummy);
+        OnHit.Register(&spell_ozruk_paralyze::HandleDummy);
     }
 };
 
@@ -293,7 +293,7 @@ class spell_ozruk_paralyze_stun : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_ozruk_paralyze_stun::OnAuraRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_ozruk_paralyze_stun::OnAuraRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

@@ -1085,7 +1085,7 @@ class spell_conclave_of_wind_winds_pre_effect_warning : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_conclave_of_wind_winds_pre_effect_warning::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_conclave_of_wind_winds_pre_effect_warning::OnAuraRemoveHandler, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1099,7 +1099,7 @@ class spell_conclave_of_wind_teleport_to_center : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_conclave_of_wind_teleport_to_center::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
+        OnDestinationTargetSelect.Register(&spell_conclave_of_wind_teleport_to_center::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
     }
 };
 
@@ -1142,7 +1142,7 @@ class spell_conclave_of_wind_winds : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_conclave_of_wind_winds::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_conclave_of_wind_winds::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1158,7 +1158,7 @@ class spell_conclave_of_wind_wind_blast : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_conclave_of_wind_wind_blast::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_conclave_of_wind_wind_blast::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -1173,7 +1173,7 @@ class spell_conclave_of_wind_wind_blast_AuraScript : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_conclave_of_wind_wind_blast_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_conclave_of_wind_wind_blast_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -1189,7 +1189,7 @@ class spell_conclave_of_wind_wind_blast_triggered : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_conclave_of_wind_wind_blast_triggered::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_conclave_of_wind_wind_blast_triggered::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -1207,7 +1207,7 @@ class spell_conclave_of_wind_hurricane : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_conclave_of_wind_hurricane::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_conclave_of_wind_hurricane::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1223,7 +1223,7 @@ class spell_conclave_of_wind_hurricane_ride_vehicle : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_conclave_of_wind_hurricane_ride_vehicle::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_conclave_of_wind_hurricane_ride_vehicle::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -1237,7 +1237,7 @@ class spell_conclave_of_wind_toxic_spores : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_conclave_of_wind_toxic_spores::HandleCast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+        OnEffectHitTarget.Register(&spell_conclave_of_wind_toxic_spores::HandleCast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
 
@@ -1264,8 +1264,8 @@ class spell_conclave_of_wind_sleet_storm : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_conclave_of_wind_sleet_storm::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnHit.Register(this, &spell_conclave_of_wind_sleet_storm::SplitDamage);
+        OnObjectAreaTargetSelect.Register(&spell_conclave_of_wind_sleet_storm::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnHit.Register(&spell_conclave_of_wind_sleet_storm::SplitDamage);
     }
 
 private:

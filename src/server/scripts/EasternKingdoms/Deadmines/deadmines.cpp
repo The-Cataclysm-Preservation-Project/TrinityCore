@@ -574,7 +574,7 @@ class spell_deadmines_on_fire : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_deadmines_on_fire::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE_PERCENT, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_deadmines_on_fire::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE_PERCENT, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -593,7 +593,7 @@ class spell_deadmines_ride_magma_vehicle : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_deadmines_ride_magma_vehicle_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_deadmines_ride_magma_vehicle_SpellScript::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -619,7 +619,7 @@ class spell_deadmines_magma_trap_throw_to_location : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectLaunch.Register(this, &spell_deadmines_magma_trap_throw_to_location_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_JUMP_DEST);
+                OnEffectLaunch.Register(&spell_deadmines_magma_trap_throw_to_location_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_JUMP_DEST);
             }
         };
 
@@ -646,7 +646,7 @@ class spell_deadmines_bloodbath : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_deadmines_bloodbath_AuraScript::HandleTick, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_deadmines_bloodbath_AuraScript::HandleTick, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 

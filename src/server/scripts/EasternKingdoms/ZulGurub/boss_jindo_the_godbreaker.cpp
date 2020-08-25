@@ -615,7 +615,7 @@ struct spell_jindo_shadow_spike : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_jindo_shadow_spike::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_jindo_shadow_spike::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -633,7 +633,7 @@ struct spell_jindo_call_spirit : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_jindo_call_spirit::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_jindo_call_spirit::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -647,7 +647,7 @@ struct spell_jindo_spirit_warriors_gaze : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_jindo_spirit_warriors_gaze::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_jindo_spirit_warriors_gaze::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -668,7 +668,7 @@ struct spell_jindo_body_slam : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_jindo_body_slam::HandleShieldBreakEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_jindo_body_slam::HandleShieldBreakEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 

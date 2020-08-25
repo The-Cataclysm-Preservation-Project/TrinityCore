@@ -236,7 +236,7 @@ class spell_skeram_arcane_explosion : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_skeram_arcane_explosion_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_skeram_arcane_explosion_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -267,7 +267,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_skeram_true_fulfillment_SpellScript::HandleEffect, EFFECT_0, SPELL_AURA_MOD_CHARM);
+            OnEffectHitTarget.Register(&spell_skeram_true_fulfillment_SpellScript::HandleEffect, EFFECT_0, SPELL_AURA_MOD_CHARM);
         }
     };
 

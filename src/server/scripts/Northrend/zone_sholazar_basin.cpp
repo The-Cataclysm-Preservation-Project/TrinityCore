@@ -436,7 +436,7 @@ public:
 
         void Register() override
         {
-            OnEffectHit.Register(this, &spell_q12620_the_lifewarden_wrath_SpellScript::HandleSendEvent, EFFECT_0, SPELL_EFFECT_SEND_EVENT);
+            OnEffectHit.Register(&spell_q12620_the_lifewarden_wrath_SpellScript::HandleSendEvent, EFFECT_0, SPELL_EFFECT_SEND_EVENT);
         }
     };
 
@@ -553,8 +553,8 @@ public:
 
         void Register() override
         {
-            OnCheckCast.Register(this, &spell_q12589_shoot_rjr_SpellScript::CheckCast);
-            OnEffectHitTarget.Register(this, &spell_q12589_shoot_rjr_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnCheckCast.Register(&spell_q12589_shoot_rjr_SpellScript::CheckCast);
+            OnEffectHitTarget.Register(&spell_q12589_shoot_rjr_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
 
@@ -753,7 +753,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_shango_tracks_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectHitTarget.Register(&spell_shango_tracks_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 

@@ -258,7 +258,7 @@ class spell_ertan_storms_edge : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_ertan_storms_edge::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_ertan_storms_edge::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -272,7 +272,7 @@ class spell_ertan_storms_edge_script : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_ertan_storms_edge_script::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_ertan_storms_edge_script::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 

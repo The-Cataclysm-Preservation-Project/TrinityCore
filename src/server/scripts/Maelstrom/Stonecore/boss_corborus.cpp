@@ -446,8 +446,8 @@ class spell_corborus_crystal_barrage_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_corborus_crystal_barrage_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_corborus_crystal_barrage_targeting::HandleEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_corborus_crystal_barrage_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_corborus_crystal_barrage_targeting::HandleEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -468,7 +468,7 @@ class spell_corborus_crystal_barrage : public AuraScript
 
     void Register() override
     {
-        OnEffectRemove.Register(this, &spell_corborus_crystal_barrage::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove.Register(&spell_corborus_crystal_barrage::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

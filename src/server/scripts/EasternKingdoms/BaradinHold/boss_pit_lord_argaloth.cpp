@@ -226,7 +226,7 @@ class spell_argaloth_consuming_darkness : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_argaloth_consuming_darkness::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_argaloth_consuming_darkness::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -243,7 +243,7 @@ class spell_argaloth_consuming_darkness_AuraScript : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_argaloth_consuming_darkness_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectPeriodic.Register(&spell_argaloth_consuming_darkness_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
@@ -271,8 +271,8 @@ class spell_argaloth_meteor_slash : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_argaloth_meteor_slash::CountTargets, EFFECT_0, TARGET_UNIT_CONE_ENEMY_104);
-        BeforeHit.Register(this, &spell_argaloth_meteor_slash::SplitDamage);
+        OnObjectAreaTargetSelect.Register(&spell_argaloth_meteor_slash::CountTargets, EFFECT_0, TARGET_UNIT_CONE_ENEMY_104);
+        BeforeHit.Register(&spell_argaloth_meteor_slash::SplitDamage);
     }
 
 private:
@@ -289,7 +289,7 @@ class spell_argaloth_fel_firestorm : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_argaloth_fel_firestorm::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_argaloth_fel_firestorm::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 

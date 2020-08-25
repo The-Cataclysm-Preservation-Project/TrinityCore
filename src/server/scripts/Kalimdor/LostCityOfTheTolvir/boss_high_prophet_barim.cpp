@@ -690,7 +690,7 @@ public:
 
         void Register() override
         {
-            OnObjectAreaTargetSelect.Register(this, &spell_barim_plague_of_ages_first_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
+            OnObjectAreaTargetSelect.Register(&spell_barim_plague_of_ages_first_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
         }
     };
 
@@ -717,7 +717,7 @@ public:
 
         void Register() override
         {
-            OnObjectAreaTargetSelect.Register(this, &spell_barim_plague_of_ages_second_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
+            OnObjectAreaTargetSelect.Register(&spell_barim_plague_of_ages_second_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ALLY);
         }
     };
 
@@ -742,7 +742,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_barim_repentance_script_SpellScript::EffectScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectHitTarget.Register(&spell_barim_repentance_script_SpellScript::EffectScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
 
@@ -783,7 +783,7 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_barim_repentance_pull_SpellScript::HandPullEffect, EFFECT_0, SPELL_EFFECT_PULL_TOWARDS);
+            OnEffectHitTarget.Register(&spell_barim_repentance_pull_SpellScript::HandPullEffect, EFFECT_0, SPELL_EFFECT_PULL_TOWARDS);
         }
     };
 

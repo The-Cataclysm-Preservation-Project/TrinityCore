@@ -445,9 +445,9 @@ class spell_countdown_p1 : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_countdown_p1_SpellScript::CastSpellLink);
-                OnEffectHitTarget.Register(this, &spell_countdown_p1_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnObjectAreaTargetSelect.Register(this, &spell_countdown_p1_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                AfterCast.Register(&spell_countdown_p1_SpellScript::CastSpellLink);
+                OnEffectHitTarget.Register(&spell_countdown_p1_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_countdown_p1_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
 
             WorldObject* target1;
@@ -476,7 +476,7 @@ class spell_countdown_p2 : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_countdown_p2_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_countdown_p2_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -518,7 +518,7 @@ class spell_countdown_p3 : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_countdown_p3_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+                OnObjectAreaTargetSelect.Register(&spell_countdown_p3_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
             }
         };
 
@@ -563,7 +563,7 @@ class spell_decimating_strike : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_decimating_strike_SpellScript::ChangeDamage);
+                OnHit.Register(&spell_decimating_strike_SpellScript::ChangeDamage);
             }
         };
 
@@ -611,8 +611,8 @@ class spell_shards_of_torment : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_shards_of_torment_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnObjectAreaTargetSelect.Register(this, &spell_shards_of_torment_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_shards_of_torment_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_shards_of_torment_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -680,7 +680,7 @@ class spell_baleroc_torment : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_baleroc_torment_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_baleroc_torment_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -717,7 +717,7 @@ class spell_baleroc_tormented : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_baleroc_tormented_SpellScript::ChangeDamage);
+                OnHit.Register(&spell_baleroc_tormented_SpellScript::ChangeDamage);
             }
 
         };
@@ -737,7 +737,7 @@ class spell_baleroc_tormented : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_baleroc_tormented_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_baleroc_tormented_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -768,7 +768,7 @@ class spell_baleroc_tormented_debuff : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectApply.Register(this, &spell_baleroc_tormented_debuff_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
+                OnEffectApply.Register(&spell_baleroc_tormented_debuff_AuraScript::OnApply, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -799,7 +799,7 @@ class spell_baleroc_tormented_heroic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_baleroc_tormented_heroic_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_baleroc_tormented_heroic_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 

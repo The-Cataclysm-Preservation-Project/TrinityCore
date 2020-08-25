@@ -236,9 +236,9 @@ class spell_mother_shahraz_fatal_attraction : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mother_shahraz_fatal_attraction_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
-                OnDestinationTargetSelect.Register(this, &spell_mother_shahraz_fatal_attraction_SpellScript::SetDest, EFFECT_1, TARGET_DEST_CASTER_RANDOM);
-                OnEffectHitTarget.Register(this, &spell_mother_shahraz_fatal_attraction_SpellScript::HandleTeleport, EFFECT_1, SPELL_EFFECT_TELEPORT_UNITS);
+                OnObjectAreaTargetSelect.Register(&spell_mother_shahraz_fatal_attraction_SpellScript::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnDestinationTargetSelect.Register(&spell_mother_shahraz_fatal_attraction_SpellScript::SetDest, EFFECT_1, TARGET_DEST_CASTER_RANDOM);
+                OnEffectHitTarget.Register(&spell_mother_shahraz_fatal_attraction_SpellScript::HandleTeleport, EFFECT_1, SPELL_EFFECT_TELEPORT_UNITS);
             }
         };
 
@@ -268,7 +268,7 @@ class spell_mother_shahraz_fatal_attraction_link : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mother_shahraz_fatal_attraction_link_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mother_shahraz_fatal_attraction_link_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -302,7 +302,7 @@ class spell_mother_shahraz_saber_lash : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_mother_shahraz_saber_lash_AuraScript::OnTrigger, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_mother_shahraz_saber_lash_AuraScript::OnTrigger, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -339,7 +339,7 @@ class spell_mother_shahraz_generic_periodic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_mother_shahraz_generic_periodic_AuraScript::OnTrigger, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_mother_shahraz_generic_periodic_AuraScript::OnTrigger, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -370,7 +370,7 @@ class spell_mother_shahraz_random_periodic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_mother_shahraz_random_periodic_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_mother_shahraz_random_periodic_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 

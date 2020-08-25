@@ -1677,7 +1677,7 @@ class spell_stratholme_crusader_strike : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_stratholme_crusader_strike::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_stratholme_crusader_strike::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 

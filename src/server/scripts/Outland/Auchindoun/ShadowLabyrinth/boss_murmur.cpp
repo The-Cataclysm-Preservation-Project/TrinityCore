@@ -177,7 +177,7 @@ class spell_murmur_sonic_boom : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_murmur_sonic_boom_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_murmur_sonic_boom_SpellScript::HandleEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -203,7 +203,7 @@ class spell_murmur_sonic_boom_effect : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_murmur_sonic_boom_effect_SpellScript::CalcDamage);
+                OnHit.Register(&spell_murmur_sonic_boom_effect_SpellScript::CalcDamage);
             }
         };
 
@@ -243,7 +243,7 @@ class spell_murmur_thundering_storm : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_murmur_thundering_storm_SpellScript::FilterTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_murmur_thundering_storm_SpellScript::FilterTarget, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 

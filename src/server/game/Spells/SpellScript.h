@@ -91,11 +91,17 @@ class TC_GAME_API _SpellScript
         template <typename T, typename... CtorArgs>
         struct _HookList : HookList<T>
         {
-            template <typename Base, typename Derived = Base>
-            void Register(Derived* instance, typename T::template HookType<Base> hookFunction, CtorArgs... args)
+            explicit _HookList(_SpellScript* owner) : _owner(owner) { }
+
+            template <typename Derived = _SpellScript>
+            void Register(typename T::template HookType<Derived> hookFunction, CtorArgs... args)
             {
-                return HookList<T>::Register(instance, hookFunction, std::forward<CtorArgs>(args)...);
+                if (Derived* derivedOwner = dynamic_cast<Derived*>(_owner))
+                    return HookList<T>::Register(derivedOwner, hookFunction, std::forward<CtorArgs>(args)...);
             }
+
+        private:
+            _SpellScript* _owner;
         };
 
         /**
@@ -111,11 +117,12 @@ class TC_GAME_API _SpellScript
 
             using HookList = _SpellScript::_HookList<HookHandler<R, Args...>>;
 
-            template <typename Base, typename Derived = Base, typename = std::enable_if_t<std::is_base_of_v<Base, Derived>>>
-            HookHandler(Derived* owner, HookType<Base> hookFunction)
+            template <typename Derived = _SpellScript>
+            HookHandler(Derived* owner, HookType<Derived> hookFunction)
             {
                 _handler = [=](Args&&... args) -> R {
                     // Value capture to avoid taking addresses of temporaries
+
                     return (owner->*hookFunction)(std::forward<Args>(args)...);
                 };
             }
@@ -144,8 +151,8 @@ class TC_GAME_API _SpellScript
                 template <typename T>
                 using HookType = typename HookHandler<R, Args...>::template HookType<T>;
 
-                template <typename Base, typename Derived = Base>
-                Filtered(Derived* owner, HookType<Base> hookFunction) : HookHandler<R, Args...>(owner, hookFunction)
+                template <typename Derived = _SpellScript>
+                Filtered(Derived* owner, HookType<Derived> hookFunction) : HookHandler<R, Args...>(owner, hookFunction)
                 {
                 }
             };
@@ -168,8 +175,8 @@ class TC_GAME_API _SpellScript
             //> Base type shorthand.
             using BaseHookHandler = typename HookHandler<R, Args...>::template Filtered<uint8>;
 
-            template <typename Base, typename Derived = Base>
-            EffectIndexHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex, std::function<bool(SpellEffectInfo const&)> effectInfoFilter)
+            template <typename Derived = _SpellScript>
+            EffectIndexHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, std::function<bool(SpellEffectInfo const&)> effectInfoFilter)
                 : BaseHookHandler(owner, hookFunction), _effIndex(effIndex), _effectInfoFilter(effectInfoFilter)
             {
                 // effect index must be in range <0;2>, allow use of special effindexes
@@ -249,8 +256,8 @@ class TC_GAME_API _SpellScript
             //> Type of the hook container list.
             using HookList = _HookList<EffectNameHookHandler<R, Args...>, uint8, uint16>;
 
-            template <typename Base, typename Derived = Base>
-            EffectNameHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex, uint16 effName)
+            template <typename Derived = _SpellScript>
+            EffectNameHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, uint16 effName)
                 : BaseHookHandler(owner, hookFunction, effIndex, 
                     [_effectName = effName](SpellEffectInfo const& effectInfo) {
                         return _effectName == SPELL_EFFECT_ANY || effectInfo.Effect == _effectName;
@@ -295,8 +302,8 @@ class TC_GAME_API _SpellScript
             //> Type of the hook container list.
             using HookList = _HookList<EffectTargetHookHandler<Area, Dest, R, Args...>, uint8, uint16>;
 
-            template <typename Base, typename Derived = Base>
-            EffectTargetHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex, uint16 targetType)
+            template <typename Derived = _SpellScript>
+            EffectTargetHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, uint16 targetType)
                 : BaseHookHandler(owner, hookFunction, effIndex,
                     [_targetType = targetType](SpellEffectInfo const& effectInfo) {
                         if (!_targetType)
@@ -393,8 +400,8 @@ class TC_GAME_API _SpellScript
             //> Type of the hook container list.
             using HookList = _HookList<EffectNameHookHandler<R, Args...>, uint8, uint16>;
 
-            template <typename Base, typename Derived = Base>
-            AuraNameHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex, uint16 auraName)
+            template <typename Derived = _SpellScript>
+            AuraNameHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, uint16 auraName)
                 : BaseHookHandler(owner, hookFunction, effIndex,
                     [_auraName = auraName](SpellEffectInfo const& effectInfo) {
                         return _auraName == SPELL_AURA_ANY || effectInfo.ApplyAuraName == _auraName;
@@ -504,6 +511,19 @@ class TC_GAME_API SpellScript : public _SpellScript
         using CastHook        = HookHandler<void>;
 
     public:
+        SpellScript()
+            : _SpellScript(), m_spell(nullptr), m_hitPreventDefaultEffectMask(0), m_hitPreventEffectMask(0),
+            OnSpellStart(this),
+            BeforeCast(this),
+            OnCast(this),
+            AfterCast(this),
+            OnCheckCast(this),
+            OnEffectLaunch(this), OnEffectLaunchTarget(this), OnEffectHit(this), OnEffectHitTarget(this), OnEffectSuccessfulDispel(this),
+            BeforeHit(this), OnHit(this), AfterHit(this),
+            OnObjectAreaTargetSelect(this), OnDestinationTargetSelect(this), OnObjectTargetSelect(this)
+        {
+        }
+
         bool _Validate(SpellInfo const* entry) override;
         bool _Load(Spell* spell);
         void _InitHit();
@@ -762,8 +782,8 @@ class TC_GAME_API AuraScript : public _SpellScript
             //> Type of the hook container list.
             using HookList = _HookList<AuraEffectHandleModeHookHandler<R, Args...>, SpellEffIndex, uint16, AuraEffectHandleModes>;
 
-            template <typename Base, typename Derived = Base>
-            AuraEffectHandleModeHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex, uint16 auraName, AuraEffectHandleModes mode)
+            template <typename Derived = _SpellScript>
+            AuraEffectHandleModeHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, uint16 auraName, AuraEffectHandleModes mode)
                 : BaseHookHandler(owner, hookFunction, effIndex, auraName), _mode(mode)
             {
 
@@ -799,8 +819,8 @@ class TC_GAME_API AuraScript : public _SpellScript
             //> Type of the hook container list.
             using HookList = _HookList<AuraEffectAbsorbHookHandler, uint8>;
 
-            template <typename Base, typename Derived = Base>
-            AuraEffectAbsorbHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex)
+            template <typename Derived = _SpellScript>
+            AuraEffectAbsorbHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex)
                 : BaseHookHandler(owner, hookFunction, effIndex, SPELL_AURA_SCHOOL_ABSORB)
             {
             }
@@ -820,8 +840,8 @@ class TC_GAME_API AuraScript : public _SpellScript
             //> Type of the hook container list
             using HookList = _HookList<AuraEffectSplitHookHandler, uint8>;
 
-            template <typename Base, typename Derived = Base>
-            AuraEffectSplitHookHandler(Derived* owner, HookType<Base> hookFunction, uint8 effIndex)
+            template <typename Derived = _SpellScript>
+            AuraEffectSplitHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex)
                 : BaseHookHandler(owner, hookFunction, effIndex, SPELL_AURA_SPLIT_DAMAGE_PCT)
             {
             }
@@ -833,8 +853,23 @@ class TC_GAME_API AuraScript : public _SpellScript
         using AuraEffectProcHookHandler           = AuraNameHookHandler<void, AuraEffect const*, ProcEventInfo&>;
 
     public:
-        AuraScript() : _SpellScript(), m_aura(nullptr), m_auraApplication(nullptr), m_defaultActionPrevented(false)
-        { }
+        AuraScript()
+            : _SpellScript(), m_aura(nullptr), m_auraApplication(nullptr), m_defaultActionPrevented(false),
+            DoCheckAreaTarget(this),
+            OnDispel(this), AfterDispel(this),
+            OnEffectApply(this), AfterEffectApply(this),
+            OnEffectRemove(this), AfterEffectRemove(this),
+            OnEffectPeriodic(this), OnEffectUpdatePeriodic(this),
+            DoEffectCalcAmount(this), DoEffectCalcPeriodic(this), DoEffectCalcSpellMod(this),
+            OnEffectAbsorb(this), AfterEffectAbsorb(this),
+            OnEffectManaShield(this), AfterEffectManaShield(this),
+            OnEffectSplit(this),
+            DoPrepareProc(this),
+            DoCheckProc(this), OnProc(this),
+            DoCheckEffectProc(this), OnEffectProc(this),
+            AfterProc(this), AfterEffectProc(this)
+        {
+        }
         bool _Validate(SpellInfo const* entry) override;
         bool _Load(Aura* aura);
         void _PrepareScriptCall(AuraScriptHookType hookType, AuraApplication const* aurApp = nullptr);

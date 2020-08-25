@@ -298,7 +298,7 @@ class spell_combined_toxins : public AuraScript
 
     void Register() override
     {
-        DoCheckEffectProc.Register(this, &spell_combined_toxins::CheckProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_DAMAGE);
+        DoCheckEffectProc.Register(&spell_combined_toxins::CheckProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_DAMAGE);
     }
 };
 

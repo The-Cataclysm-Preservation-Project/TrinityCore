@@ -160,7 +160,7 @@ class spell_krystallus_shatter : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_krystallus_shatter_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_krystallus_shatter_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -193,7 +193,7 @@ class spell_krystallus_shatter_effect : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_krystallus_shatter_effect_SpellScript::CalculateDamage);
+                OnHit.Register(&spell_krystallus_shatter_effect_SpellScript::CalculateDamage);
             }
         };
 

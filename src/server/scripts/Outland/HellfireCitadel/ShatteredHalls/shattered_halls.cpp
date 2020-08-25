@@ -203,7 +203,7 @@ class spell_kargath_executioner : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckAreaTarget.Register(this, &spell_kargath_executioner_AuraScript::AreaCheck);
+                DoCheckAreaTarget.Register(&spell_kargath_executioner_AuraScript::AreaCheck);
             }
         };
 
@@ -236,7 +236,7 @@ class spell_remove_kargath_executioner : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_remove_kargath_executioner_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_remove_kargath_executioner_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 

@@ -55,7 +55,7 @@ class spell_voodoo : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_voodoo_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_voodoo_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -74,7 +74,7 @@ class spell_zuni_lvl_1_trigger_aura : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_zuni_lvl_1_trigger_aura::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_zuni_lvl_1_trigger_aura::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 

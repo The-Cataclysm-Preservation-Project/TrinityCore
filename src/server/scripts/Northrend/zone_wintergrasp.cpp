@@ -451,7 +451,7 @@ class spell_wintergrasp_force_building : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_wintergrasp_force_building_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_wintergrasp_force_building_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -476,7 +476,7 @@ class spell_wintergrasp_grab_passenger : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_wintergrasp_grab_passenger_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_wintergrasp_grab_passenger_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -534,7 +534,7 @@ class spell_wintergrasp_defender_teleport : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_wintergrasp_defender_teleport_SpellScript::CheckCast);
+                OnCheckCast.Register(&spell_wintergrasp_defender_teleport_SpellScript::CheckCast);
             }
         };
 
@@ -562,7 +562,7 @@ class spell_wintergrasp_defender_teleport_trigger : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_wintergrasp_defender_teleport_trigger_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_wintergrasp_defender_teleport_trigger_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 

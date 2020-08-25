@@ -253,7 +253,7 @@ class spell_archavon_rock_shards : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_archavon_rock_shards_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHit.Register(&spell_archavon_rock_shards_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 

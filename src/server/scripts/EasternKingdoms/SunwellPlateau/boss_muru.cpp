@@ -592,7 +592,7 @@ class spell_summon_blood_elves_script : SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_summon_blood_elves_script_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_summon_blood_elves_script_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -622,7 +622,7 @@ class spell_muru_darkness : SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_muru_darkness_SpellScript::HandleAfterCast);
+                AfterCast.Register(&spell_muru_darkness_SpellScript::HandleAfterCast);
             }
         };
 
@@ -656,7 +656,7 @@ class spell_dark_fiend_skin : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_dark_fiend_skin_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_dark_fiend_skin_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -680,7 +680,7 @@ class spell_transform_visual_missile_periodic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_transform_visual_missile_periodic_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_transform_visual_missile_periodic_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -704,7 +704,7 @@ class spell_summon_blood_elves_periodic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_summon_blood_elves_periodic_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                OnEffectPeriodic.Register(&spell_summon_blood_elves_periodic_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 

@@ -360,7 +360,7 @@ class spell_husam_hammer_fist : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_husam_hammer_fist::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_husam_hammer_fist::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -378,7 +378,7 @@ class spell_husam_shockwave : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_husam_shockwave::EffectScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_husam_shockwave::EffectScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -397,7 +397,7 @@ class spell_husam_shockwave_summon_search : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_husam_shockwave_summon_search::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_husam_shockwave_summon_search::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -413,7 +413,7 @@ class spell_husam_mystic_trap : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_husam_mystic_trap::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_husam_mystic_trap::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -428,7 +428,7 @@ class spell_husam_detonate_traps : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_husam_detonate_traps::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_husam_detonate_traps::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -446,7 +446,7 @@ class spell_husam_bad_intentions : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_husam_bad_intentions::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_husam_bad_intentions::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -468,7 +468,7 @@ class spell_husam_hurl : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_husam_hurl::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_husam_hurl::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -484,7 +484,7 @@ class spell_husam_land_mine_player_search_effect : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_husam_land_mine_player_search_effect::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_husam_land_mine_player_search_effect::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 

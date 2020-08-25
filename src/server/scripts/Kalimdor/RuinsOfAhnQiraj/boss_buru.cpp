@@ -263,8 +263,8 @@ class spell_egg_explosion : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_egg_explosion_SpellScript::HandleAfterCast);
-                OnEffectHitTarget.Register(this, &spell_egg_explosion_SpellScript::HandleDummyHitTarget, EFFECT_0, SPELL_EFFECT_DUMMY);
+                AfterCast.Register(&spell_egg_explosion_SpellScript::HandleAfterCast);
+                OnEffectHitTarget.Register(&spell_egg_explosion_SpellScript::HandleDummyHitTarget, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 

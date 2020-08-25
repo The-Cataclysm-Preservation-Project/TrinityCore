@@ -264,8 +264,8 @@ class spell_ahn_kahet_swarm : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_ahn_kahet_swarm_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
-                OnEffectHit.Register(this, &spell_ahn_kahet_swarm_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_ahn_kahet_swarm_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+                OnEffectHit.Register(&spell_ahn_kahet_swarm_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
 
             uint32 _targetCount = 0;

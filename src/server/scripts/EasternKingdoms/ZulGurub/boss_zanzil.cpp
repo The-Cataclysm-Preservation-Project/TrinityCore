@@ -489,7 +489,7 @@ class spell_zanzil_zanzili_fire : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_zanzil_zanzili_fire::HandlePeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_zanzil_zanzili_fire::HandlePeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -519,7 +519,7 @@ class spell_zanzil_zanzils_resurrection_elixir : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_zanzil_zanzils_resurrection_elixir::HandlePeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_zanzil_zanzils_resurrection_elixir::HandlePeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -589,9 +589,9 @@ class spell_zanzil_zanzils_resurrection_elixir_red_script : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_zanzil_zanzils_resurrection_elixir_red_script::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_zanzil_zanzils_resurrection_elixir_red_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-        OnEffectLaunchTarget.Register(this, &spell_zanzil_zanzils_resurrection_elixir_red_script::HandleGuidReservation, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_zanzil_zanzils_resurrection_elixir_red_script::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_zanzil_zanzils_resurrection_elixir_red_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectLaunchTarget.Register(&spell_zanzil_zanzils_resurrection_elixir_red_script::HandleGuidReservation, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -644,9 +644,9 @@ class spell_zanzil_zanzils_graveyard_gas : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_zanzil_zanzils_graveyard_gas::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_zanzil_zanzils_graveyard_gas::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-        OnEffectLaunchTarget.Register(this, &spell_zanzil_zanzils_graveyard_gas::HandleGuidReservation, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_zanzil_zanzils_graveyard_gas::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_zanzil_zanzils_graveyard_gas::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectLaunchTarget.Register(&spell_zanzil_zanzils_graveyard_gas::HandleGuidReservation, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -663,7 +663,7 @@ class spell_zanzil_frostburn_formula : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_zanzil_frostburn_formula::CheckProc);
+        DoCheckProc.Register(&spell_zanzil_frostburn_formula::CheckProc);
     }
 };
 

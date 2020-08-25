@@ -275,7 +275,7 @@ class spell_soul_fragment_anger : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast.Register(this, &spell_soul_fragment_anger_SpellScript::HandleKill);
+                AfterCast.Register(&spell_soul_fragment_anger_SpellScript::HandleKill);
             }
         };
 
@@ -307,7 +307,7 @@ class spell_illidari_nightlord_shadow_inferno : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_illidari_nightlord_shadow_inferno_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_illidari_nightlord_shadow_inferno_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 

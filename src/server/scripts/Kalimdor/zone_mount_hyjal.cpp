@@ -621,7 +621,7 @@ class spell_mh_summon_emerald_flameweaver : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_mh_summon_emerald_flameweaver::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
+        OnDestinationTargetSelect.Register(&spell_mh_summon_emerald_flameweaver::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
     }
 };
 
@@ -636,7 +636,7 @@ class spell_mh_ragnaros : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_mh_ragnaros::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
+        OnDestinationTargetSelect.Register(&spell_mh_ragnaros::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
     }
 };
 
@@ -652,7 +652,7 @@ class spell_mh_flamebreaker : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_mh_flamebreaker::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_mh_flamebreaker::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -667,7 +667,7 @@ class spell_mh_weakening : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_mh_weakening::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_mh_weakening::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -698,7 +698,7 @@ class spell_mh_inferno : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_mh_inferno::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_mh_inferno::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -713,7 +713,7 @@ class spell_mh_fandral_creator_aura : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_mh_fandral_creator_aura::HandleAuraRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_mh_fandral_creator_aura::HandleAuraRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

@@ -186,7 +186,7 @@ class spell_totfw_jet_stream : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_totfw_jet_stream_SpellScript::HandleForcecast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
+                OnEffectHitTarget.Register(&spell_totfw_jet_stream_SpellScript::HandleForcecast, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
             }
         };
 
@@ -215,7 +215,7 @@ class spell_totfw_catch_fall_summon : public SpellScriptLoader
 
             void Register()
             {
-                OnEffectLaunch.Register(this, &spell_totfw_catch_fall_summon_SpellScript::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
+                OnEffectLaunch.Register(&spell_totfw_catch_fall_summon_SpellScript::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
             }
         };
 

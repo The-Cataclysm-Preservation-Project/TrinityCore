@@ -328,8 +328,8 @@ public:
 
         void Register() override
         {
-            OnEffectHitTarget.Register(this, &spell_gluth_decimate_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            OnEffectHit.Register(this, &spell_gluth_decimate_SpellScript::HandleEvent, EFFECT_2, SPELL_EFFECT_SEND_EVENT);
+            OnEffectHitTarget.Register(&spell_gluth_decimate_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+            OnEffectHit.Register(&spell_gluth_decimate_SpellScript::HandleEvent, EFFECT_2, SPELL_EFFECT_SEND_EVENT);
         }
 
         bool Load() override
@@ -361,7 +361,7 @@ public:
 
         void Register() override
         {
-            AfterHit.Register(this, &spell_gluth_zombiechow_search_SpellScript::HealForEachTargetHit);
+            AfterHit.Register(&spell_gluth_zombiechow_search_SpellScript::HealForEachTargetHit);
         }
 
         bool Load() override

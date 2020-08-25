@@ -207,8 +207,8 @@ class spell_mark_of_kazzak : public SpellScriptLoader
 
             void Register() override
             {
-                DoEffectCalcAmount.Register(this, &spell_mark_of_kazzak_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_MANA_LEECH);
-                OnEffectPeriodic.Register(this, &spell_mark_of_kazzak_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_MANA_LEECH);
+                DoEffectCalcAmount.Register(&spell_mark_of_kazzak_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_MANA_LEECH);
+                OnEffectPeriodic.Register(&spell_mark_of_kazzak_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_MANA_LEECH);
             }
         };
 
@@ -242,7 +242,7 @@ class spell_twisted_reflection : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_twisted_reflection_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_twisted_reflection_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 

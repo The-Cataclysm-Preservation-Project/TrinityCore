@@ -249,7 +249,7 @@ class spell_ashbury_asphyxiate : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_ashbury_asphyxiate::HandleTriggerSpell, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_ashbury_asphyxiate::HandleTriggerSpell, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -272,7 +272,7 @@ class spell_ashbury_pain_and_suffering : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_ashbury_pain_and_suffering::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectPeriodic.Register(&spell_ashbury_pain_and_suffering::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
@@ -294,7 +294,7 @@ class spell_ashbury_dark_archangel_form : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_ashbury_dark_archangel_form::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_ashbury_dark_archangel_form::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

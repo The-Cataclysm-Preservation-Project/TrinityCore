@@ -1418,7 +1418,7 @@ class spell_halion_meteor_strike_marker : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_halion_meteor_strike_marker_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_halion_meteor_strike_marker_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1464,9 +1464,9 @@ class spell_halion_combustion_consumption : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_halion_combustion_consumption_AuraScript::AddMarkStack, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
-                AfterEffectApply.Register(this, &spell_halion_combustion_consumption_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_halion_combustion_consumption_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+                OnEffectPeriodic.Register(&spell_halion_combustion_consumption_AuraScript::AddMarkStack, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+                AfterEffectApply.Register(&spell_halion_combustion_consumption_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_halion_combustion_consumption_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
             }
 
             uint32 _markSpell;
@@ -1508,7 +1508,7 @@ class spell_halion_combustion_consumption_periodic : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_halion_combustion_consumption_periodic_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_halion_combustion_consumption_periodic_AuraScript::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -1557,8 +1557,8 @@ class spell_halion_marks : public SpellScriptLoader
 
             void Register() override
             {
-                OnDispel.Register(this, &spell_halion_marks_AuraScript::BeforeDispel);
-                AfterEffectRemove.Register(this, &spell_halion_marks_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnDispel.Register(&spell_halion_marks_AuraScript::BeforeDispel);
+                AfterEffectRemove.Register(&spell_halion_marks_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
 
             uint32 _summonSpellId;
@@ -1598,7 +1598,7 @@ class spell_halion_damage_aoe_summon : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_halion_damage_aoe_summon_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
+                OnEffectHit.Register(&spell_halion_damage_aoe_summon_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
             }
         };
 
@@ -1649,11 +1649,11 @@ class spell_halion_twilight_realm_handlers : public SpellScriptLoader
             {
                 if (!_isApply)
                 {
-                    AfterEffectApply.Register(this, &spell_halion_twilight_realm_handlers_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                    AfterEffectRemove.Register(this, &spell_halion_twilight_realm_handlers_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                    AfterEffectApply.Register(&spell_halion_twilight_realm_handlers_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                    AfterEffectRemove.Register(&spell_halion_twilight_realm_handlers_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
                 }
                 else
-                    AfterEffectApply.Register(this, &spell_halion_twilight_realm_handlers_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PHASE, AURA_EFFECT_HANDLE_REAL);
+                    AfterEffectApply.Register(&spell_halion_twilight_realm_handlers_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PHASE, AURA_EFFECT_HANDLE_REAL);
             }
 
             bool _isApply;
@@ -1690,7 +1690,7 @@ class spell_halion_clear_debuffs : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_halion_clear_debuffs_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_halion_clear_debuffs_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1740,7 +1740,7 @@ class spell_halion_twilight_cutter : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_halion_twilight_cutter_SpellScript::RemoveNotBetween, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_halion_twilight_cutter_SpellScript::RemoveNotBetween, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
             }
         };
 
@@ -1771,7 +1771,7 @@ class spell_halion_twilight_phasing : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_halion_twilight_phasing_SpellScript::Phase);
+                OnHit.Register(&spell_halion_twilight_phasing_SpellScript::Phase);
             }
         };
 
@@ -1803,8 +1803,8 @@ class spell_halion_summon_exit_portals : public SpellScriptLoader
 
             void Register() override
             {
-                OnDestinationTargetSelect.Register(this, &spell_halion_summon_exit_portals_SpellScript::SetDest0, EFFECT_0, TARGET_DEST_CASTER);
-                OnDestinationTargetSelect.Register(this, &spell_halion_summon_exit_portals_SpellScript::SetDest1, EFFECT_1, TARGET_DEST_CASTER);
+                OnDestinationTargetSelect.Register(&spell_halion_summon_exit_portals_SpellScript::SetDest0, EFFECT_0, TARGET_DEST_CASTER);
+                OnDestinationTargetSelect.Register(&spell_halion_summon_exit_portals_SpellScript::SetDest1, EFFECT_1, TARGET_DEST_CASTER);
             }
         };
 
@@ -1834,8 +1834,8 @@ class spell_halion_spawn_living_embers : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_halion_spawn_living_embers_SpellScript::SelectMeteorFlames, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-                OnEffectHitTarget.Register(this, &spell_halion_spawn_living_embers_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnObjectAreaTargetSelect.Register(&spell_halion_spawn_living_embers_SpellScript::SelectMeteorFlames, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnEffectHitTarget.Register(&spell_halion_spawn_living_embers_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -1860,7 +1860,7 @@ class spell_halion_blazing_aura : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_halion_blazing_aura_SpellScript::HandleScript, EFFECT_1, SPELL_EFFECT_FORCE_CAST);
+                OnEffectHitTarget.Register(&spell_halion_blazing_aura_SpellScript::HandleScript, EFFECT_1, SPELL_EFFECT_FORCE_CAST);
             }
         };
 

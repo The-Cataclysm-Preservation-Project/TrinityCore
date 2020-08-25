@@ -201,8 +201,8 @@ class spell_ruby_sanctum_rallying_shout : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_ruby_sanctum_rallying_shout_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
-                OnEffectHit.Register(this, &spell_ruby_sanctum_rallying_shout_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_ruby_sanctum_rallying_shout_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+                OnEffectHit.Register(&spell_ruby_sanctum_rallying_shout_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
 
         private:

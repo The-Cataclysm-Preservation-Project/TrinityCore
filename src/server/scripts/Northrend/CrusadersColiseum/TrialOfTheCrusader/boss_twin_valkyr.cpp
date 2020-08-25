@@ -727,7 +727,7 @@ class spell_powering_up : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_powering_up_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_powering_up_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -818,7 +818,7 @@ class spell_valkyr_essences : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectAbsorb.Register(this, &spell_valkyr_essences_AuraScript::Absorb, EFFECT_0);
+                OnEffectAbsorb.Register(&spell_valkyr_essences_AuraScript::Absorb, EFFECT_0);
             }
         };
 
@@ -860,8 +860,8 @@ class spell_power_of_the_twins : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_power_of_the_twins_AuraScript::HandleEffectApply, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_power_of_the_twins_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                AfterEffectApply.Register(&spell_power_of_the_twins_AuraScript::HandleEffectApply, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_power_of_the_twins_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
 
             }
         };

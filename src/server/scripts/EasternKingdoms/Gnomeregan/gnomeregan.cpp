@@ -570,8 +570,8 @@ class spell_collecting_fallout : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectLaunch.Register(this, &spell_collecting_fallout_SpellScript::OnLaunch, EFFECT_0, SPELL_EFFECT_TRIGGER_SPELL);
-                OnEffectLaunch.Register(this, &spell_collecting_fallout_SpellScript::HandleFail, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
+                OnEffectLaunch.Register(&spell_collecting_fallout_SpellScript::OnLaunch, EFFECT_0, SPELL_EFFECT_TRIGGER_SPELL);
+                OnEffectLaunch.Register(&spell_collecting_fallout_SpellScript::HandleFail, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
             }
 
             bool _spellFail = true;

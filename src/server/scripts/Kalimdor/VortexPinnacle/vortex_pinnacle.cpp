@@ -504,7 +504,7 @@ class spell_vp_lurk_search_periodic : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_vp_lurk_search_periodic::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_vp_lurk_search_periodic::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -578,8 +578,8 @@ class spell_vp_lurk_search : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_vp_lurk_search::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_vp_lurk_search::HandleLightningBolt, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_vp_lurk_search::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_vp_lurk_search::HandleLightningBolt, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -598,7 +598,7 @@ class spell_vp_feign_death : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_vp_feign_death::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_vp_feign_death::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -616,8 +616,8 @@ class spell_vp_feign_death_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_vp_feign_death_AuraScript::AfterApply, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_vp_feign_death_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_vp_feign_death_AuraScript::AfterApply, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_vp_feign_death_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -638,7 +638,7 @@ class spell_vp_lurk_ressurect : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_vp_lurk_ressurect::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_vp_lurk_ressurect::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -666,7 +666,7 @@ class spell_vp_howling_gale : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_vp_howling_gale::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_vp_howling_gale::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -685,8 +685,8 @@ class spell_vp_howling_gale_knockback : public AuraScript
 
     void Register() override
     {
-        OnEffectApply.Register(this, &spell_vp_howling_gale_knockback::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_vp_howling_gale_knockback::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectApply.Register(&spell_vp_howling_gale_knockback::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_vp_howling_gale_knockback::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -733,7 +733,7 @@ class spell_slipstream : public SpellScript
     }
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_slipstream::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_slipstream::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -771,8 +771,8 @@ class spell_grounding_field : public SpellScript
 
     void Register() override
     {
-        BeforeCast.Register(this, &spell_grounding_field::GetNearbyGroundFields);
-        OnObjectAreaTargetSelect.Register(this, &spell_grounding_field::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        BeforeCast.Register(&spell_grounding_field::GetNearbyGroundFields);
+        OnObjectAreaTargetSelect.Register(&spell_grounding_field::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 private:
     bool prevent = false;
@@ -794,7 +794,7 @@ class spell_skyfall : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_skyfall::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_skyfall::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -809,7 +809,7 @@ class spell_vp_healing_well : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_vp_healing_well::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_vp_healing_well::SetDest, EFFECT_0, TARGET_DEST_CASTER);
     }
 };
 
@@ -834,7 +834,7 @@ class spell_vp_catch_fall : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_vp_catch_fall::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_vp_catch_fall::SetDest, EFFECT_0, TARGET_DEST_CASTER);
     }
 };
 

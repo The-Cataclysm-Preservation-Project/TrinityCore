@@ -747,7 +747,7 @@ class spell_ozumat_charge_to_window : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_ozumat_charge_to_window::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
+        OnDestinationTargetSelect.Register(&spell_ozumat_charge_to_window::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
     }
 };
 
@@ -787,9 +787,9 @@ class spell_ozumat_jump_to_ground : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_ozumat_jump_to_ground::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
-        BeforeCast.Register(this, &spell_ozumat_jump_to_ground::DisableHoverEffects);
-        AfterCast.Register(this, &spell_ozumat_jump_to_ground::PrepareNeptulonAttack);
+        OnDestinationTargetSelect.Register(&spell_ozumat_jump_to_ground::SetDest, EFFECT_0, TARGET_DEST_NEARBY_ENTRY);
+        BeforeCast.Register(&spell_ozumat_jump_to_ground::DisableHoverEffects);
+        AfterCast.Register(&spell_ozumat_jump_to_ground::PrepareNeptulonAttack);
     }
 };
 
@@ -802,7 +802,7 @@ class spell_ozumat_shadow_blast : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_ozumat_shadow_blast::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_ozumat_shadow_blast::SetDest, EFFECT_0, TARGET_DEST_CASTER);
     }
 };
 
@@ -828,7 +828,7 @@ class spell_ozumat_shadow_blast_AuraScript : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_ozumat_shadow_blast_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_ozumat_shadow_blast_AuraScript::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -848,8 +848,8 @@ class spell_ozumat_shadow_blast_missile : public SpellScript
 
     void Register()
     {
-        OnDestinationTargetSelect.Register(this, &spell_ozumat_shadow_blast_missile::SetDest, EFFECT_0, TARGET_DEST_CASTER);
-        OnDestinationTargetSelect.Register(this, &spell_ozumat_shadow_blast_missile::SetDest, EFFECT_1, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_ozumat_shadow_blast_missile::SetDest, EFFECT_0, TARGET_DEST_CASTER);
+        OnDestinationTargetSelect.Register(&spell_ozumat_shadow_blast_missile::SetDest, EFFECT_1, TARGET_DEST_CASTER);
     }
 };
 
@@ -863,7 +863,7 @@ class spell_ozumat_blight_of_ozumat : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_ozumat_blight_of_ozumat::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_ozumat_blight_of_ozumat::HandleHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -890,7 +890,7 @@ class spell_ozumat_purify : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_ozumat_purify::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_ozumat_purify::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 

@@ -186,7 +186,7 @@ class spell_mage_arcane_potency : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_mage_arcane_potency::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_mage_arcane_potency::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -231,8 +231,8 @@ class spell_mage_blast_wave : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mage_blast_wave_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-                AfterCast.Register(this, &spell_mage_blast_wave_SpellScript::HandleImprovedFlamestrike);
+                OnObjectAreaTargetSelect.Register(&spell_mage_blast_wave_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                AfterCast.Register(&spell_mage_blast_wave_SpellScript::HandleImprovedFlamestrike);
             }
 
             uint32 _targetCount = 0;
@@ -265,7 +265,7 @@ class spell_mage_blazing_speed : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_mage_blazing_speed_AuraScript::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+                OnEffectProc.Register(&spell_mage_blazing_speed_AuraScript::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
             }
         };
 
@@ -307,7 +307,7 @@ class spell_mage_blizzard : public SpellScriptLoader
 
            void Register() override
            {
-               OnEffectHitTarget.Register(this, &spell_mage_blizzard_SpellScript::AddChillEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+               OnEffectHitTarget.Register(&spell_mage_blizzard_SpellScript::AddChillEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
            }
        };
 
@@ -342,7 +342,7 @@ class spell_mage_cold_snap : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_mage_cold_snap_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHit.Register(&spell_mage_cold_snap_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -375,7 +375,7 @@ class spell_mage_cone_of_cold : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mage_cone_of_cold_SpellScript::HandleConeOfColdScript, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                OnEffectHitTarget.Register(&spell_mage_cone_of_cold_SpellScript::HandleConeOfColdScript, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
             }
         };
 
@@ -444,7 +444,7 @@ class spell_mage_conjure_refreshment : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mage_conjure_refreshment_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mage_conjure_refreshment_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -468,7 +468,7 @@ class spell_mage_dragon_breath : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_mage_dragon_breath::CheckProc);
+        DoCheckProc.Register(&spell_mage_dragon_breath::CheckProc);
     }
 };
 
@@ -519,8 +519,8 @@ class spell_mage_fire_frost_ward : public SpellScriptLoader
 
             void Register() override
             {
-                DoEffectCalcAmount.Register(this, &spell_mage_fire_frost_ward_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-                OnEffectAbsorb.Register(this, &spell_mage_fire_frost_ward_AuraScript::Absorb, EFFECT_0);
+                DoEffectCalcAmount.Register(&spell_mage_fire_frost_ward_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+                OnEffectAbsorb.Register(&spell_mage_fire_frost_ward_AuraScript::Absorb, EFFECT_0);
             }
         };
 
@@ -557,8 +557,8 @@ class spell_mage_focus_magic : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_mage_focus_magic_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_mage_focus_magic_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
+                DoCheckProc.Register(&spell_mage_focus_magic_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_mage_focus_magic_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
             }
 
             Unit* _procTarget = nullptr;
@@ -639,8 +639,8 @@ class spell_mage_frostbolt : public SpellScript
 
     void Register() override
     {
-        OnSpellStart.Register(this, &spell_mage_frostbolt::HandleEarlyFrost);
-        OnEffectHitTarget.Register(this, &spell_mage_frostbolt::RecalculateDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnSpellStart.Register(&spell_mage_frostbolt::HandleEarlyFrost);
+        OnEffectHitTarget.Register(&spell_mage_frostbolt::RecalculateDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 
 private:
@@ -675,8 +675,8 @@ class spell_mage_glyph_of_ice_block : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_mage_glyph_of_ice_block_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_mage_glyph_of_ice_block_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_mage_glyph_of_ice_block_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_mage_glyph_of_ice_block_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -704,7 +704,7 @@ class spell_mage_glyph_of_icy_veins : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_mage_glyph_of_icy_veins_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_mage_glyph_of_icy_veins_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -739,7 +739,7 @@ class spell_mage_glyph_of_polymorph : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_mage_glyph_of_polymorph_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_mage_glyph_of_polymorph_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -768,7 +768,7 @@ class spell_mage_living_bomb : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_mage_living_bomb::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_mage_living_bomb::AfterRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -801,9 +801,9 @@ class spell_mage_ice_barrier : public SpellScriptLoader
 
            void Register() override
            {
-                DoEffectCalcAmount.Register(this, &spell_mage_ice_barrier_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-                AfterEffectRemove.Register(this, &spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
-                AfterEffectRemove.Register(this, &spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
+                DoEffectCalcAmount.Register(&spell_mage_ice_barrier_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+                AfterEffectRemove.Register(&spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_mage_ice_barrier_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
            }
        };
 
@@ -860,8 +860,8 @@ class spell_mage_ignite : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_mage_ignite::CheckProc);
-        OnEffectProc.Register(this, &spell_mage_ignite::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_mage_ignite::CheckProc);
+        OnEffectProc.Register(&spell_mage_ignite::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 // 543 - Mage Ward
@@ -895,8 +895,8 @@ class spell_mage_mage_ward : public SpellScriptLoader
 
             void Register() override
            {
-                DoEffectCalcAmount.Register(this, &spell_mage_mage_ward_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-                AfterEffectAbsorb.Register(this, &spell_mage_mage_ward_AuraScript::HandleAbsorb, EFFECT_0);
+                DoEffectCalcAmount.Register(&spell_mage_mage_ward_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+                AfterEffectAbsorb.Register(&spell_mage_mage_ward_AuraScript::HandleAbsorb, EFFECT_0);
            }
        };
 
@@ -953,9 +953,9 @@ class spell_mage_mana_shield : public SpellScriptLoader
 
            void Register() override
            {
-                DoEffectCalcAmount.Register(this, &spell_mage_mana_shield_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MANA_SHIELD);
-                AfterEffectManaShield.Register(this, &spell_mage_mana_shield_AuraScript::HandleAbsorb, EFFECT_0);
-                AfterEffectRemove.Register(this, &spell_mage_mana_shield_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_MANA_SHIELD, AURA_EFFECT_HANDLE_REAL);
+                DoEffectCalcAmount.Register(&spell_mage_mana_shield_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MANA_SHIELD);
+                AfterEffectManaShield.Register(&spell_mage_mana_shield_AuraScript::HandleAbsorb, EFFECT_0);
+                AfterEffectRemove.Register(&spell_mage_mana_shield_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_MANA_SHIELD, AURA_EFFECT_HANDLE_REAL);
            }
        };
 
@@ -992,8 +992,8 @@ class spell_mage_master_of_elements : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_mage_master_of_elements::CheckProc);
-        OnEffectProc.Register(this, &spell_mage_master_of_elements::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_mage_master_of_elements::CheckProc);
+        OnEffectProc.Register(&spell_mage_master_of_elements::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1022,8 +1022,8 @@ class spell_mage_nether_vortex : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_mage_nether_vortex::DoCheck);
-        OnEffectProc.Register(this, &spell_mage_nether_vortex::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_mage_nether_vortex::DoCheck);
+        OnEffectProc.Register(&spell_mage_nether_vortex::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1056,8 +1056,8 @@ class spell_mage_permafrost : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_mage_permafrost::DoCheck);
-        OnEffectProc.Register(this, &spell_mage_permafrost::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_mage_permafrost::DoCheck);
+        OnEffectProc.Register(&spell_mage_permafrost::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1107,8 +1107,8 @@ class spell_mage_polymorph : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_mage_polymorph_AuraScript::DoCheck);
-                OnEffectProc.Register(this, &spell_mage_polymorph_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_MOD_CONFUSE);
+                DoCheckProc.Register(&spell_mage_polymorph_AuraScript::DoCheck);
+                OnEffectProc.Register(&spell_mage_polymorph_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_MOD_CONFUSE);
             }
 
         private:
@@ -1153,7 +1153,7 @@ class spell_mage_polymorph_cast_visual : public SpellScriptLoader
             void Register() override
             {
                 // add dummy effect spell handler to Polymorph visual
-                OnEffectHitTarget.Register(this, &spell_mage_polymorph_cast_visual_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mage_polymorph_cast_visual_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1198,7 +1198,7 @@ class spell_mage_replenish_mana : public SpellScriptLoader
 
            void Register() override
            {
-               AfterCast.Register(this, &spell_mage_replenish_mana_SpellScript::HandleImprovedManaGem);
+               AfterCast.Register(&spell_mage_replenish_mana_SpellScript::HandleImprovedManaGem);
            }
        };
 
@@ -1269,8 +1269,8 @@ class spell_mage_ring_of_frost : public SpellScriptLoader
 
             void Register() override
             {
-                 OnEffectPeriodic.Register(this, &spell_mage_ring_of_frost_AuraScript::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-                 OnEffectApply.Register(this, &spell_mage_ring_of_frost_AuraScript::Apply, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                 OnEffectPeriodic.Register(&spell_mage_ring_of_frost_AuraScript::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                 OnEffectApply.Register(&spell_mage_ring_of_frost_AuraScript::Apply, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
             }
         };
 
@@ -1307,7 +1307,7 @@ class spell_mage_ring_of_frost_freeze : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mage_ring_of_frost_freeze_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnObjectAreaTargetSelect.Register(&spell_mage_ring_of_frost_freeze_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
             }
         };
 
@@ -1332,7 +1332,7 @@ class spell_mage_ring_of_frost_freeze : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_mage_ring_of_frost_freeze_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_mage_ring_of_frost_freeze_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1377,8 +1377,8 @@ class spell_mage_time_warp : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mage_time_warp_SpellScript::RemoveInvalidTargets, EFFECT_ALL, TARGET_UNIT_CASTER_AREA_RAID);
-                AfterHit.Register(this, &spell_mage_time_warp_SpellScript::ApplyDebuff);
+                OnObjectAreaTargetSelect.Register(&spell_mage_time_warp_SpellScript::RemoveInvalidTargets, EFFECT_ALL, TARGET_UNIT_CASTER_AREA_RAID);
+                AfterHit.Register(&spell_mage_time_warp_SpellScript::ApplyDebuff);
             }
         };
 
@@ -1425,8 +1425,8 @@ class spell_mage_water_elemental_freeze : public SpellScriptLoader
 
            void Register() override
            {
-               OnObjectAreaTargetSelect.Register(this, &spell_mage_water_elemental_freeze_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-               AfterCast.Register(this, &spell_mage_water_elemental_freeze_SpellScript::HandleImprovedFreeze);
+               OnObjectAreaTargetSelect.Register(&spell_mage_water_elemental_freeze_SpellScript::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+               AfterCast.Register(&spell_mage_water_elemental_freeze_SpellScript::HandleImprovedFreeze);
            }
 
        private:
@@ -1469,9 +1469,9 @@ class spell_mage_arcane_missiles_trigger : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_mage_arcane_missiles_trigger::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-        AfterEffectApply.Register(this, &spell_mage_arcane_missiles_trigger::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_mage_arcane_missiles_trigger::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectProc.Register(&spell_mage_arcane_missiles_trigger::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        AfterEffectApply.Register(&spell_mage_arcane_missiles_trigger::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_mage_arcane_missiles_trigger::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1521,7 +1521,7 @@ class spell_mage_offensive_state_dnd : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_mage_offensive_state_dnd::CheckProc);
+        DoCheckProc.Register(&spell_mage_offensive_state_dnd::CheckProc);
     }
 };
 
@@ -1545,7 +1545,7 @@ public:
 
         void Register() override
         {
-            AfterEffectRemove.Register(this, &spell_mage_early_frost_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_mage_early_frost_AuraScript::AfterRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -1600,7 +1600,7 @@ class spell_mage_flame_orb: public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_mage_flame_orb_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_mage_flame_orb_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
 
         private:
@@ -1681,8 +1681,8 @@ class spell_mage_flame_orb_aoe_dummy: public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_mage_flame_orb_aoe_dummy_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-                OnEffectHitTarget.Register(this, &spell_mage_flame_orb_aoe_dummy_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnObjectAreaTargetSelect.Register(&spell_mage_flame_orb_aoe_dummy_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+                OnEffectHitTarget.Register(&spell_mage_flame_orb_aoe_dummy_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
 
         private:
@@ -1752,8 +1752,8 @@ class spell_mage_hot_streak : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_mage_hot_streak_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_mage_hot_streak_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_mage_hot_streak_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_mage_hot_streak_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1823,8 +1823,8 @@ class spell_mage_improved_hot_streak : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_mage_improved_hot_streak_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_mage_improved_hot_streak_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_mage_improved_hot_streak_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_mage_improved_hot_streak_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1867,7 +1867,7 @@ class spell_mage_mirror_image : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_mage_mirror_image::HandleDummyEffect, EFFECT_1, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_mage_mirror_image::HandleDummyEffect, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1881,7 +1881,7 @@ class spell_mage_mirror_image_AurasScript : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_mage_mirror_image_AurasScript::HandleEffectPeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic.Register(&spell_mage_mirror_image_AurasScript::HandleEffectPeriodic, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1915,7 +1915,7 @@ class spell_mage_initialize_images : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_mage_initialize_images::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_mage_initialize_images::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -1940,7 +1940,7 @@ class spell_mage_deep_freeze : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunch.Register(this, &spell_mage_deep_freeze::HandleDamage, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectLaunch.Register(&spell_mage_deep_freeze::HandleDamage, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -1954,7 +1954,7 @@ class spell_mage_fingers_of_frost_charges : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_mage_fingers_of_frost_charges::HandleProc, EFFECT_0, SPELL_AURA_ABILITY_IGNORE_AURASTATE);
+        OnEffectProc.Register(&spell_mage_fingers_of_frost_charges::HandleProc, EFFECT_0, SPELL_AURA_ABILITY_IGNORE_AURASTATE);
     }
 };
 
@@ -2016,9 +2016,9 @@ class spell_mage_pyromaniac : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcPeriodic.Register(this, &spell_mage_pyromaniac::CalcPeriodic, EFFECT_0, SPELL_AURA_DUMMY);
-        OnEffectProc.Register(this, &spell_mage_pyromaniac::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-        OnEffectPeriodic.Register(this, &spell_mage_pyromaniac::HandlePeriodic, EFFECT_0, SPELL_AURA_DUMMY);
+        DoEffectCalcPeriodic.Register(&spell_mage_pyromaniac::CalcPeriodic, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_mage_pyromaniac::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectPeriodic.Register(&spell_mage_pyromaniac::HandlePeriodic, EFFECT_0, SPELL_AURA_DUMMY);
     }
 private:
     GuidSet _dotTargetGuids;
@@ -2065,7 +2065,7 @@ class spell_mage_impact : public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_mage_impact::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        OnEffectProc.Register(&spell_mage_impact::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -2114,8 +2114,8 @@ class spell_mage_impact_triggered : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_mage_impact_triggered::RegisterFireDots, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
-        OnEffectHitTarget.Register(this, &spell_mage_impact_triggered::SpeadFireDots, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectLaunchTarget.Register(&spell_mage_impact_triggered::RegisterFireDots, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_mage_impact_triggered::SpeadFireDots, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 private:
     std::vector<Aura*> _fireDotEffects;
@@ -2171,7 +2171,7 @@ class spell_mage_combustion : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_mage_combustion::HandleDotEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_mage_combustion::HandleDotEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 
 private:
@@ -2210,8 +2210,8 @@ class spell_mage_frostfire_bolt : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_mage_frostfire_bolt::HandleGlyphSlow, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
-        OnEffectHitTarget.Register(this, &spell_mage_frostfire_bolt::HandleGlyphDot, EFFECT_2, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_mage_frostfire_bolt::HandleGlyphSlow, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_mage_frostfire_bolt::HandleGlyphDot, EFFECT_2, SPELL_EFFECT_APPLY_AURA);
     }
 };
 

@@ -138,8 +138,8 @@ class spell_hun_ancient_hysteria : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_hun_ancient_hysteria_SpellScript::RemoveInvalidTargets, EFFECT_ALL, TARGET_UNIT_CASTER_AREA_RAID);
-                AfterHit.Register(this, &spell_hun_ancient_hysteria_SpellScript::ApplyDebuff);
+                OnObjectAreaTargetSelect.Register(&spell_hun_ancient_hysteria_SpellScript::RemoveInvalidTargets, EFFECT_ALL, TARGET_UNIT_CASTER_AREA_RAID);
+                AfterHit.Register(&spell_hun_ancient_hysteria_SpellScript::ApplyDebuff);
             }
         };
 
@@ -177,7 +177,7 @@ class spell_hun_chimera_shot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hun_chimera_shot_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_hun_chimera_shot_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -243,8 +243,8 @@ class spell_hun_cobra_shot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectLaunch.Register(this, &spell_hun_cobra_shot_SpellScript::HandleLaunch, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
-                OnEffectHitTarget.Register(this, &spell_hun_cobra_shot_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectLaunch.Register(&spell_hun_cobra_shot_SpellScript::HandleLaunch, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_hun_cobra_shot_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -273,7 +273,7 @@ class spell_hun_disengage : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_hun_disengage_SpellScript::CheckCast);
+                OnCheckCast.Register(&spell_hun_disengage_SpellScript::CheckCast);
             }
         };
 
@@ -317,8 +317,8 @@ class spell_hun_fire : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_hun_fire_AuraScript::CheckProc);
-                DoEffectCalcSpellMod.Register(this, &spell_hun_fire_AuraScript::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_hun_fire_AuraScript::CheckProc);
+                DoEffectCalcSpellMod.Register(&spell_hun_fire_AuraScript::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -354,8 +354,8 @@ class spell_hun_improved_mend_pet : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_hun_improved_mend_pet_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_hun_improved_mend_pet_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_hun_improved_mend_pet_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_hun_improved_mend_pet_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -382,7 +382,7 @@ class spell_hun_invigoration : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_hun_invigoration::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_hun_invigoration::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -408,7 +408,7 @@ class spell_hun_last_stand_pet : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hun_last_stand_pet_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_hun_last_stand_pet_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -467,10 +467,10 @@ class spell_hun_lock_and_load : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_hun_lock_and_load_AuraScript::CheckProc);
+                DoCheckProc.Register(&spell_hun_lock_and_load_AuraScript::CheckProc);
 
-                OnEffectProc.Register(this, &spell_hun_lock_and_load_AuraScript::HandleProcs<PROC_FLAG_DONE_TRAP_ACTIVATION>, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
-                OnEffectProc.Register(this, &spell_hun_lock_and_load_AuraScript::HandleProcs<PROC_FLAG_DONE_PERIODIC>, EFFECT_1, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_hun_lock_and_load_AuraScript::HandleProcs<PROC_FLAG_DONE_TRAP_ACTIVATION>, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+                OnEffectProc.Register(&spell_hun_lock_and_load_AuraScript::HandleProcs<PROC_FLAG_DONE_PERIODIC>, EFFECT_1, SPELL_AURA_DUMMY);
             }
         };
 
@@ -516,8 +516,8 @@ class spell_hun_masters_call : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hun_masters_call_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnEffectHitTarget.Register(this, &spell_hun_masters_call_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_hun_masters_call_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_hun_masters_call_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -554,8 +554,8 @@ class spell_hun_misdirection : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_hun_misdirection_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                OnEffectProc.Register(this, &spell_hun_misdirection_AuraScript::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+                AfterEffectRemove.Register(&spell_hun_misdirection_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                OnEffectProc.Register(&spell_hun_misdirection_AuraScript::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
             }
         };
 
@@ -580,7 +580,7 @@ class spell_hun_misdirection_proc : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectRemove.Register(this, &spell_hun_misdirection_proc_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove.Register(&spell_hun_misdirection_proc_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -634,8 +634,8 @@ class spell_hun_pet_carrion_feeder : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHit.Register(this, &spell_hun_pet_carrion_feeder_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-                OnCheckCast.Register(this, &spell_hun_pet_carrion_feeder_SpellScript::CheckIfCorpseNear);
+                OnEffectHit.Register(&spell_hun_pet_carrion_feeder_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnCheckCast.Register(&spell_hun_pet_carrion_feeder_SpellScript::CheckIfCorpseNear);
             }
         };
 
@@ -678,7 +678,7 @@ class spell_hun_pet_heart_of_the_phoenix : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hun_pet_heart_of_the_phoenix_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+                OnEffectHitTarget.Register(&spell_hun_pet_heart_of_the_phoenix_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
             }
         };
 
@@ -721,8 +721,8 @@ class spell_hun_rapid_recuperation : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_hun_rapid_recuperation_AuraScript::HandleAbilityCast, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
-                OnEffectProc.Register(this, &spell_hun_rapid_recuperation_AuraScript::HandleFocusRegen, EFFECT_1, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_hun_rapid_recuperation_AuraScript::HandleAbilityCast, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+                OnEffectProc.Register(&spell_hun_rapid_recuperation_AuraScript::HandleFocusRegen, EFFECT_1, SPELL_AURA_DUMMY);
             }
         };
 
@@ -765,7 +765,7 @@ class spell_hun_readiness : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hun_readiness_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_hun_readiness_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -799,7 +799,7 @@ class spell_hun_ready_set_aim : public SpellScriptLoader
 
             void Register() override
             {
-                AfterEffectApply.Register(this, &spell_hun_ready_set_aim_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                AfterEffectApply.Register(&spell_hun_ready_set_aim_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
             }
         };
 
@@ -833,7 +833,7 @@ class spell_hun_scatter_shot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectHitTarget.Register(this, &spell_hun_scatter_shot_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                OnEffectHitTarget.Register(&spell_hun_scatter_shot_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -888,8 +888,8 @@ class spell_hun_sniper_training : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic.Register(this, &spell_hun_sniper_training_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-                OnEffectUpdatePeriodic.Register(this, &spell_hun_sniper_training_AuraScript::HandleUpdatePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectPeriodic.Register(&spell_hun_sniper_training_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+                OnEffectUpdatePeriodic.Register(&spell_hun_sniper_training_AuraScript::HandleUpdatePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
             }
         };
 
@@ -949,7 +949,7 @@ class spell_hun_steady_shot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectLaunch.Register(this, &spell_hun_steady_shot_SpellScript::HandleLaunch, EFFECT_0, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
+                OnEffectLaunch.Register(&spell_hun_steady_shot_SpellScript::HandleLaunch, EFFECT_0, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
             }
         };
 
@@ -996,7 +996,7 @@ class spell_hun_improved_steady_shot : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_hun_improved_steady_shot_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_hun_improved_steady_shot_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
 
         private:
@@ -1078,7 +1078,7 @@ class spell_hun_tame_beast : public SpellScriptLoader
 
             void Register() override
             {
-                OnCheckCast.Register(this, &spell_hun_tame_beast_SpellScript::CheckCast);
+                OnCheckCast.Register(&spell_hun_tame_beast_SpellScript::CheckCast);
             }
         };
 
@@ -1106,8 +1106,8 @@ class spell_hun_target_only_pet_and_owner : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectAreaTargetSelect.Register(this, &spell_hun_target_only_pet_and_owner_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_PARTY);
-                OnObjectAreaTargetSelect.Register(this, &spell_hun_target_only_pet_and_owner_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_CASTER_AREA_PARTY);
+                OnObjectAreaTargetSelect.Register(&spell_hun_target_only_pet_and_owner_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_PARTY);
+                OnObjectAreaTargetSelect.Register(&spell_hun_target_only_pet_and_owner_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_CASTER_AREA_PARTY);
             }
         };
 
@@ -1141,7 +1141,7 @@ class spell_hun_thrill_of_the_hunt : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectProc.Register(this, &spell_hun_thrill_of_the_hunt_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+                OnEffectProc.Register(&spell_hun_thrill_of_the_hunt_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1172,8 +1172,8 @@ class spell_hun_tnt : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_hun_tnt::CheckProc);
-        OnEffectProc.Register(this, &spell_hun_tnt::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_hun_tnt::CheckProc);
+        OnEffectProc.Register(&spell_hun_tnt::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1205,8 +1205,8 @@ class spell_hun_wild_quiver : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_hun_wild_quiver_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_hun_wild_quiver_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
+                DoCheckProc.Register(&spell_hun_wild_quiver_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_hun_wild_quiver_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
@@ -1239,7 +1239,7 @@ class spell_hun_serpent_sting : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_hun_serpent_sting::HandleImprovedSerpentSting, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectApply.Register(&spell_hun_serpent_sting::HandleImprovedSerpentSting, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
 
@@ -1296,8 +1296,8 @@ class spell_hun_piercing_shots : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_hun_piercing_shots_AuraScript::CheckProc);
-                OnEffectProc.Register(this, &spell_hun_piercing_shots_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+                DoCheckProc.Register(&spell_hun_piercing_shots_AuraScript::CheckProc);
+                OnEffectProc.Register(&spell_hun_piercing_shots_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
             }
         };
 
@@ -1327,7 +1327,7 @@ class spell_hun_master_marksman : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_hun_master_marksman_AuraScript::CheckProc);
+                DoCheckProc.Register(&spell_hun_master_marksman_AuraScript::CheckProc);
             }
         };
 
@@ -1357,7 +1357,7 @@ class spell_hun_bombardment : public SpellScriptLoader
 
             void Register() override
             {
-                DoCheckProc.Register(this, &spell_hun_bombardment_AuraScript::CheckProc);
+                DoCheckProc.Register(&spell_hun_bombardment_AuraScript::CheckProc);
             }
         };
 
@@ -1386,8 +1386,8 @@ class spell_hun_trap_launcher : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_hun_trap_launcher::AfterApply, EFFECT_0, SPELL_AURA_OVERRIDE_ACTIONBAR_SPELLS_TRIGGERED, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_hun_trap_launcher::AfterRemove, EFFECT_0, SPELL_AURA_OVERRIDE_ACTIONBAR_SPELLS_TRIGGERED, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_hun_trap_launcher::AfterApply, EFFECT_0, SPELL_AURA_OVERRIDE_ACTIONBAR_SPELLS_TRIGGERED, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_hun_trap_launcher::AfterRemove, EFFECT_0, SPELL_AURA_OVERRIDE_ACTIONBAR_SPELLS_TRIGGERED, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1421,8 +1421,8 @@ class spell_hun_glyph_of_kill_shot : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_hun_glyph_of_kill_shot::CheckProc);
-        OnEffectProc.Register(this, &spell_hun_glyph_of_kill_shot::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_hun_glyph_of_kill_shot::CheckProc);
+        OnEffectProc.Register(&spell_hun_glyph_of_kill_shot::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1448,7 +1448,7 @@ class spell_hun_camouflage : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_hun_camouflage::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_hun_camouflage::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1477,8 +1477,8 @@ class spell_hun_camouflage_duration : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_hun_camouflage_duration::AfterApply, EFFECT_0, SPELL_AURA_INTERFERE_TARGETTING, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_hun_camouflage_duration::AfterRemove, EFFECT_0, SPELL_AURA_INTERFERE_TARGETTING, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_hun_camouflage_duration::AfterApply, EFFECT_0, SPELL_AURA_INTERFERE_TARGETTING, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_hun_camouflage_duration::AfterRemove, EFFECT_0, SPELL_AURA_INTERFERE_TARGETTING, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1511,7 +1511,7 @@ class spell_hun_camouflage_triggered : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_hun_camouflage_triggered::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STEALTH, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_hun_camouflage_triggered::AfterRemove, EFFECT_0, SPELL_AURA_MOD_STEALTH, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1536,8 +1536,8 @@ class spell_hun_marked_for_death : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_hun_marked_for_death::CheckProc);
-        OnEffectProc.Register(this, &spell_hun_marked_for_death::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_hun_marked_for_death::CheckProc);
+        OnEffectProc.Register(&spell_hun_marked_for_death::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1585,8 +1585,8 @@ class spell_hun_focus_fire : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_hun_focus_fire::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_RANGED_HASTE);
-        AfterEffectApply.Register(this, &spell_hun_focus_fire::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        DoEffectCalcAmount.Register(&spell_hun_focus_fire::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_RANGED_HASTE);
+        AfterEffectApply.Register(&spell_hun_focus_fire::AfterApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
 
@@ -1618,8 +1618,8 @@ class spell_hun_frenzy_effect : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_hun_frenzy_effect::AfterApply, EFFECT_0, SPELL_AURA_MOD_MELEE_HASTE_3, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-        AfterEffectRemove.Register(this, &spell_hun_frenzy_effect::AfterRemove, EFFECT_0, SPELL_AURA_MOD_MELEE_HASTE_3, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_hun_frenzy_effect::AfterApply, EFFECT_0, SPELL_AURA_MOD_MELEE_HASTE_3, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectRemove.Register(&spell_hun_frenzy_effect::AfterRemove, EFFECT_0, SPELL_AURA_MOD_MELEE_HASTE_3, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1640,15 +1640,13 @@ class spell_hun_kill_command: public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_hun_kill_command::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_hun_kill_command::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
 // 82726 - Fervor
 class spell_hun_fervor : public SpellScript
 {
-    PrepareSpellScript(spell_hun_fervor);
-
     bool Load() override
     {
         return GetCaster()->IsPlayer();
@@ -1672,7 +1670,7 @@ class spell_hun_fervor : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_hun_fervor::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_ENERGIZE);
+        OnEffectHitTarget.Register(&spell_hun_fervor::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_ENERGIZE);
     }
 };
 
@@ -1685,8 +1683,6 @@ std::array<uint32, 2> const KillingStreakTriggerSpells =
 // -82748 - Killing Streak
 class spell_hun_killing_streak : public AuraScript
 {
-    PrepareAuraScript(spell_hun_killing_streak);
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo(
@@ -1716,7 +1712,7 @@ class spell_hun_killing_streak : public AuraScript
 
     void Register() override
     {
-        OnEffectProc += AuraEffectProcFn(spell_hun_killing_streak::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_hun_killing_streak::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 
 private:
@@ -1726,8 +1722,6 @@ private:
 // -82898 - Crouching Tiger, Hidden Chimera
 class spell_hun_crouching_tiger_hidden_chimera : public AuraScript
 {
-    PrepareAuraScript(spell_hun_crouching_tiger_hidden_chimera);
-
     bool Load() override
     {
         return GetCaster()->IsPlayer();
@@ -1767,9 +1761,9 @@ class spell_hun_crouching_tiger_hidden_chimera : public AuraScript
 
     void Register() override
     {
-        DoCheckProc += AuraCheckProcFn(spell_hun_crouching_tiger_hidden_chimera::CheckProc);
-        OnEffectProc += AuraEffectProcFn(spell_hun_crouching_tiger_hidden_chimera::HandleDisengageProc, EFFECT_0, SPELL_AURA_DUMMY);
-        OnEffectProc += AuraEffectProcFn(spell_hun_crouching_tiger_hidden_chimera::HandleDeterrenceProc, EFFECT_1, SPELL_AURA_DUMMY);
+        DoCheckProc.Register(&spell_hun_crouching_tiger_hidden_chimera::CheckProc);
+        OnEffectProc.Register(&spell_hun_crouching_tiger_hidden_chimera::HandleDisengageProc, EFFECT_0, SPELL_AURA_DUMMY);
+        OnEffectProc.Register(&spell_hun_crouching_tiger_hidden_chimera::HandleDeterrenceProc, EFFECT_1, SPELL_AURA_DUMMY);
     }
 };
 

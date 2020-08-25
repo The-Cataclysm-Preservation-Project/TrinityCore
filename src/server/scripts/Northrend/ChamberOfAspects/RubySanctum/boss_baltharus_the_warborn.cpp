@@ -348,7 +348,7 @@ class spell_baltharus_enervating_brand_trigger : public SpellScriptLoader
 
             void Register() override
             {
-                OnHit.Register(this, &spell_baltharus_enervating_brand_trigger_SpellScript::HandleSiphonedMight);
+                OnHit.Register(&spell_baltharus_enervating_brand_trigger_SpellScript::HandleSiphonedMight);
             }
         };
 

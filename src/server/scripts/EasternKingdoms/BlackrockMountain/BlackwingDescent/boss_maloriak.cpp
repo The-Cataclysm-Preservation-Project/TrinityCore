@@ -888,7 +888,7 @@ class spell_maloriak_throw_bottle : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_maloriak_throw_bottle::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectLaunchTarget.Register(&spell_maloriak_throw_bottle::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -935,7 +935,7 @@ class spell_maloriak_throw_bottle_triggered : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_maloriak_throw_bottle_triggered::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_maloriak_throw_bottle_triggered::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -954,7 +954,7 @@ class spell_maloriak_consuming_flames: public AuraScript
 
     void Register() override
     {
-        OnEffectProc.Register(this, &spell_maloriak_consuming_flames::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        OnEffectProc.Register(&spell_maloriak_consuming_flames::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
 
@@ -1003,8 +1003,8 @@ class spell_maloriak_flash_freeze_targeting : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_maloriak_flash_freeze_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_maloriak_flash_freeze_targeting::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_maloriak_flash_freeze_targeting::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_maloriak_flash_freeze_targeting::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1039,7 +1039,7 @@ class spell_maloriak_flash_freeze_dummy : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_maloriak_flash_freeze_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_maloriak_flash_freeze_dummy::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -1074,12 +1074,12 @@ class spell_maloriak_release_experiments : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_maloriak_release_experiments::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_maloriak_release_experiments::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_maloriak_release_experiments::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_maloriak_release_experiments::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
         if (m_scriptSpellId == SPELL_RELEASE_ALL_MINIONS)
         {
-            OnObjectAreaTargetSelect.Register(this, &spell_maloriak_release_experiments::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
-            OnEffectHitTarget.Register(this, &spell_maloriak_release_experiments::HandleDummyEffect, EFFECT_1, SPELL_EFFECT_DUMMY);
+            OnObjectAreaTargetSelect.Register(&spell_maloriak_release_experiments::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+            OnEffectHitTarget.Register(&spell_maloriak_release_experiments::HandleDummyEffect, EFFECT_1, SPELL_EFFECT_DUMMY);
         }
     }
 };
@@ -1112,8 +1112,8 @@ class spell_maloriak_magma_jets_script : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_maloriak_magma_jets_script::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_maloriak_magma_jets_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_maloriak_magma_jets_script::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_maloriak_magma_jets_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1142,7 +1142,7 @@ class spell_maloriak_magma_jets_periodic : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_maloriak_magma_jets_periodic::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_maloriak_magma_jets_periodic::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -1167,7 +1167,7 @@ class spell_maloriak_absolute_zero : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_maloriak_absolute_zero::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect.Register(&spell_maloriak_absolute_zero::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
 
@@ -1188,7 +1188,7 @@ class spell_maloriak_vile_swill: public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_maloriak_vile_swill::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_maloriak_vile_swill::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -1215,7 +1215,7 @@ class spell_maloriak_vile_swill_summon: public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_maloriak_vile_swill_summon::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_maloriak_vile_swill_summon::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1253,8 +1253,8 @@ class spell_maloriak_master_adventurer_award : public AuraScript
 
     void Register() override
     {
-        AfterEffectApply.Register(this, &spell_maloriak_master_adventurer_award::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        AfterEffectRemove.Register(this, &spell_maloriak_master_adventurer_award::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply.Register(&spell_maloriak_master_adventurer_award::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_maloriak_master_adventurer_award::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

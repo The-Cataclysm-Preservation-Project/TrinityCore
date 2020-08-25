@@ -254,8 +254,8 @@ class spell_altairus_call_the_wind : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_altairus_call_the_wind::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_altairus_call_the_wind::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_altairus_call_the_wind::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_altairus_call_the_wind::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -292,7 +292,7 @@ class spell_altairus_upwind_of_altairus : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_altairus_upwind_of_altairus::HandleUpwind, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_altairus_upwind_of_altairus::HandleUpwind, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -309,7 +309,7 @@ class spell_altairus_call_the_wind_channel : public SpellScript
 
     void Register() override
     {
-        OnObjectTargetSelect.Register(this, &spell_altairus_call_the_wind_channel::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+        OnObjectTargetSelect.Register(&spell_altairus_call_the_wind_channel::SetTarget, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
     }
 };
 
@@ -323,7 +323,7 @@ class spell_altairus_chilling_breath : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_altairus_chilling_breath::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_altairus_chilling_breath::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 class spell_altairus_safe_area : public AuraScript
@@ -352,7 +352,7 @@ class spell_altairus_safe_area : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_altairus_safe_area::HandleLightningBlast, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_altairus_safe_area::HandleLightningBlast, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 

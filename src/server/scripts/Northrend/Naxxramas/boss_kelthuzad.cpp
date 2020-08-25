@@ -903,8 +903,8 @@ public:
 
         void Register() override
         {
-            AfterEffectApply.Register(this, &spell_kelthuzad_chains_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_AOE_CHARM, AURA_EFFECT_HANDLE_REAL);
-            AfterEffectRemove.Register(this, &spell_kelthuzad_chains_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_AOE_CHARM, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectApply.Register(&spell_kelthuzad_chains_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_AOE_CHARM, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove.Register(&spell_kelthuzad_chains_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_AOE_CHARM, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
@@ -940,7 +940,7 @@ public:
 
         void Register() override
         {
-            OnEffectPeriodic.Register(this, &spell_kelthuzad_detonate_mana_AuraScript::HandleScript, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+            OnEffectPeriodic.Register(&spell_kelthuzad_detonate_mana_AuraScript::HandleScript, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
         }
     };
 

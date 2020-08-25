@@ -226,7 +226,7 @@ class spell_romogg_quake : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_romogg_quake::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_romogg_quake::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -239,7 +239,7 @@ class spell_romogg_chains_of_woe : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_romogg_chains_of_woe::SetDest, EFFECT_0, TARGET_DEST_CASTER_FRONT);
+        OnDestinationTargetSelect.Register(&spell_romogg_chains_of_woe::SetDest, EFFECT_0, TARGET_DEST_CASTER_FRONT);
     }
 };
 
@@ -253,7 +253,7 @@ class spell_romogg_chains_of_woe_teleport : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_romogg_chains_of_woe_teleport::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_romogg_chains_of_woe_teleport::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -276,7 +276,7 @@ class spell_romogg_chains_of_woe_teleport_dest : public SpellScript
 
     void Register() override
     {
-        OnDestinationTargetSelect.Register(this, &spell_romogg_chains_of_woe_teleport_dest::SetDest, EFFECT_0, TARGET_DEST_TARGET_RADIUS);
+        OnDestinationTargetSelect.Register(&spell_romogg_chains_of_woe_teleport_dest::SetDest, EFFECT_0, TARGET_DEST_TARGET_RADIUS);
     }
 };
 
@@ -289,7 +289,7 @@ class spell_romogg_chains_of_woe_root : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_romogg_chains_of_woe_root::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_romogg_chains_of_woe_root::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -304,7 +304,7 @@ class spell_romogg_call_for_help : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_romogg_call_for_help::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_romogg_call_for_help::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 

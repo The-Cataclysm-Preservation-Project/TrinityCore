@@ -1275,8 +1275,8 @@ class spell_omnotron_controller_recharge : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_omnotron_controller_recharge::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-        OnEffectHitTarget.Register(this, &spell_omnotron_controller_recharge::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnObjectAreaTargetSelect.Register(&spell_omnotron_controller_recharge::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_omnotron_controller_recharge::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1292,7 +1292,7 @@ class spell_omnotron_recharging : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_omnotron_recharging::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_omnotron_recharging::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1319,8 +1319,8 @@ class spell_omnotron_activated : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_omnotron_activated::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-        AfterEffectRemove.Register(this, &spell_omnotron_activated::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        OnEffectPeriodic.Register(&spell_omnotron_activated::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        AfterEffectRemove.Register(&spell_omnotron_activated::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1342,7 +1342,7 @@ class spell_omnotron_inactive : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_omnotron_inactive::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_omnotron_inactive::HandleScriptEffect, EFFECT_2, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1364,8 +1364,8 @@ class spell_omnotron_electrical_discharge_trigger : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_omnotron_electrical_discharge_trigger::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_omnotron_electrical_discharge_trigger::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_omnotron_electrical_discharge_trigger::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_omnotron_electrical_discharge_trigger::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1386,7 +1386,7 @@ class spell_omnotron_electrical_discharge : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_omnotron_electrical_discharge::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectHitTarget.Register(&spell_omnotron_electrical_discharge::HandleDamageBonus, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 private:
     uint8 _chainTargetCount;
@@ -1421,8 +1421,8 @@ class spell_omnotron_unstable_shield : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_omnotron_unstable_shield::CheckProc);
-        OnEffectProc.Register(this, &spell_omnotron_unstable_shield::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        DoCheckProc.Register(&spell_omnotron_unstable_shield::CheckProc);
+        OnEffectProc.Register(&spell_omnotron_unstable_shield::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -1447,8 +1447,8 @@ class spell_omnotron_aquiring_target : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_omnotron_aquiring_target::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
-        OnEffectHitTarget.Register(this, &spell_omnotron_aquiring_target::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectAreaTargetSelect.Register(&spell_omnotron_aquiring_target::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_omnotron_aquiring_target::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -1463,7 +1463,7 @@ class spell_omnotron_acquiring_target_periodic : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_omnotron_acquiring_target_periodic::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_omnotron_acquiring_target_periodic::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -1483,7 +1483,7 @@ class spell_omnotron_barrier : public AuraScript
 
     void Register() override
     {
-        AfterEffectRemove.Register(this, &spell_omnotron_barrier::HandleAbsorbRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_omnotron_barrier::HandleAbsorbRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1501,7 +1501,7 @@ class spell_omnotron_shadow_infusion : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_omnotron_shadow_infusion::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_omnotron_shadow_infusion::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1521,7 +1521,7 @@ class spell_omnotron_shadow_conductor : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(this, &spell_omnotron_shadow_conductor::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnEffectLaunchTarget.Register(&spell_omnotron_shadow_conductor::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
 
@@ -1557,7 +1557,7 @@ class spell_omnotron_overcharge : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(this, &spell_omnotron_overcharge::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_omnotron_overcharge::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -1576,7 +1576,7 @@ class spell_omnotron_overcharged_power_generator : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic.Register(this, &spell_omnotron_overcharged_power_generator::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic.Register(&spell_omnotron_overcharged_power_generator::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
@@ -1592,7 +1592,7 @@ class spell_omnotron_flamethrower : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(this, &spell_omnotron_flamethrower::FilterTargets, EFFECT_0, TARGET_UNIT_CONE_ENEMY_104);
+        OnObjectAreaTargetSelect.Register(&spell_omnotron_flamethrower::FilterTargets, EFFECT_0, TARGET_UNIT_CONE_ENEMY_104);
     }
 };
 

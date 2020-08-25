@@ -163,9 +163,9 @@ class spell_warl_pet_scaling_01 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_01::CalculateStaminaAmount, EFFECT_0, SPELL_AURA_MOD_MAX_HEALTH);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_01::CalculateAttackPowerAmount, EFFECT_1, SPELL_AURA_MOD_ATTACK_POWER);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_01::CalculateStaminaAmount, EFFECT_0, SPELL_AURA_MOD_MAX_HEALTH);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_01::CalculateAttackPowerAmount, EFFECT_1, SPELL_AURA_MOD_ATTACK_POWER);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
     }
 };
 
@@ -230,9 +230,9 @@ class spell_warl_pet_scaling_02 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_02::CalculateIntellectAmount, EFFECT_0, SPELL_AURA_MOD_INCREASE_ENERGY);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_02::CalculateArmorAmount, EFFECT_1, SPELL_AURA_MOD_RESISTANCE);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_02::CalculateFireResistanceAmount, EFFECT_2, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_02::CalculateIntellectAmount, EFFECT_0, SPELL_AURA_MOD_INCREASE_ENERGY);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_02::CalculateArmorAmount, EFFECT_1, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_02::CalculateFireResistanceAmount, EFFECT_2, SPELL_AURA_MOD_RESISTANCE);
     }
 };
 
@@ -251,7 +251,7 @@ class spell_warl_pet_scaling_03 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_03::CalculateResistanceAmount, EFFECT_ALL, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_03::CalculateResistanceAmount, EFFECT_ALL, SPELL_AURA_MOD_RESISTANCE);
     }
 };
 
@@ -284,8 +284,8 @@ class spell_warl_pet_scaling_04 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_04::CalculateResistanceAmount, EFFECT_0, SPELL_AURA_MOD_RESISTANCE);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_04::CalculatePowerRegen, EFFECT_1, SPELL_AURA_MOD_POWER_REGEN);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_04::CalculateResistanceAmount, EFFECT_0, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_04::CalculatePowerRegen, EFFECT_1, SPELL_AURA_MOD_POWER_REGEN);
     }
 };
 
@@ -338,9 +338,9 @@ class spell_warl_pet_scaling_05 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_05::CalculateMeleeHitChanceBonusAmount, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_05::CalculateSpellHitChanceBonusAmount, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_05::CalculateExpertiseBonusAmount, EFFECT_2, SPELL_AURA_MOD_EXPERTISE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_05::CalculateMeleeHitChanceBonusAmount, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_05::CalculateSpellHitChanceBonusAmount, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_05::CalculateExpertiseBonusAmount, EFFECT_2, SPELL_AURA_MOD_EXPERTISE);
     }
 };
 
@@ -365,8 +365,8 @@ class spell_warl_pet_scaling_06 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_06::CalculateMeleeHasteAmount, EFFECT_0, SPELL_AURA_MOD_CRIT_PCT);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_scaling_06::CalculateMeleeHasteAmount, EFFECT_1, SPELL_AURA_MELEE_SLOW);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_06::CalculateMeleeHasteAmount, EFFECT_0, SPELL_AURA_MOD_CRIT_PCT);
+        DoEffectCalcAmount.Register(&spell_warl_pet_scaling_06::CalculateMeleeHasteAmount, EFFECT_1, SPELL_AURA_MELEE_SLOW);
     }
 };
 
@@ -421,8 +421,8 @@ class spell_warl_pet_passive : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_passive::CalculateAmountCritSpell, EFFECT_0, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
-        DoEffectCalcAmount.Register(this, &spell_warl_pet_passive::CalculateAmountCritMelee, EFFECT_1, SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
+        DoEffectCalcAmount.Register(&spell_warl_pet_passive::CalculateAmountCritSpell, EFFECT_0, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_warl_pet_passive::CalculateAmountCritMelee, EFFECT_1, SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
     }
 };
 
@@ -474,8 +474,8 @@ public:
 
         void Register() override
         {
-            DoEffectCalcAmount.Register(this, &spell_sha_pet_scaling_04_AuraScript::CalculateAmountMeleeHit, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
-            DoEffectCalcAmount.Register(this, &spell_sha_pet_scaling_04_AuraScript::CalculateAmountSpellHit, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
+            DoEffectCalcAmount.Register(&spell_sha_pet_scaling_04_AuraScript::CalculateAmountMeleeHit, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
+            DoEffectCalcAmount.Register(&spell_sha_pet_scaling_04_AuraScript::CalculateAmountSpellHit, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
         }
     };
 
@@ -536,9 +536,9 @@ class spell_hun_pet_scaling_01 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_01::CalculateHealthAmount, EFFECT_0, SPELL_AURA_MOD_MAX_HEALTH);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_01::CalculateAttackPowerAmount, EFFECT_1, SPELL_AURA_MOD_ATTACK_POWER);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_01::CalculateHealthAmount, EFFECT_0, SPELL_AURA_MOD_MAX_HEALTH);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_01::CalculateAttackPowerAmount, EFFECT_1, SPELL_AURA_MOD_ATTACK_POWER);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
     }
 };
 
@@ -557,7 +557,7 @@ class spell_hun_pet_scaling_02 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_02::CalculateResistanceAmount, EFFECT_ALL, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_02::CalculateResistanceAmount, EFFECT_ALL, SPELL_AURA_MOD_RESISTANCE);
     }
 };
 
@@ -594,9 +594,9 @@ class spell_hun_pet_scaling_03 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_03::CalculateResistanceAmount, EFFECT_0, SPELL_AURA_MOD_RESISTANCE);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_03::CalculateResistanceAmount, EFFECT_1, SPELL_AURA_MOD_RESISTANCE);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_03::CalculateArmorAmount, EFFECT_2, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_03::CalculateResistanceAmount, EFFECT_0, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_03::CalculateResistanceAmount, EFFECT_1, SPELL_AURA_MOD_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_03::CalculateArmorAmount, EFFECT_2, SPELL_AURA_MOD_RESISTANCE);
     }
 };
 
@@ -649,9 +649,9 @@ class spell_hun_pet_scaling_04 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_04::CalculateMeleeHitChanceBonusAmount, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_04::CalculateSpellHitChanceBonusAmount, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_04::CalculateExpertiseBonusAmount, EFFECT_2, SPELL_AURA_MOD_EXPERTISE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_04::CalculateMeleeHitChanceBonusAmount, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_04::CalculateSpellHitChanceBonusAmount, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_04::CalculateExpertiseBonusAmount, EFFECT_2, SPELL_AURA_MOD_EXPERTISE);
     }
 };
 
@@ -676,8 +676,8 @@ class spell_hun_pet_scaling_05 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_05::CalculateMeleeHasteAmount, EFFECT_0, SPELL_AURA_MOD_CRIT_PCT);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_scaling_05::CalculateMeleeHasteAmount, EFFECT_1, SPELL_AURA_MELEE_SLOW);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_05::CalculateMeleeHasteAmount, EFFECT_0, SPELL_AURA_MOD_CRIT_PCT);
+        DoEffectCalcAmount.Register(&spell_hun_pet_scaling_05::CalculateMeleeHasteAmount, EFFECT_1, SPELL_AURA_MELEE_SLOW);
     }
 };
 
@@ -736,8 +736,8 @@ class spell_hun_pet_passive_crit : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_passive_crit::CalculateAmountCritSpell, EFFECT_1, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
-        DoEffectCalcAmount.Register(this, &spell_hun_pet_passive_crit::CalculateAmountCritMelee, EFFECT_0, SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
+        DoEffectCalcAmount.Register(&spell_hun_pet_passive_crit::CalculateAmountCritSpell, EFFECT_1, SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_hun_pet_passive_crit::CalculateAmountCritMelee, EFFECT_0, SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
     }
 };
 
@@ -769,7 +769,7 @@ class spell_dk_avoidance_passive : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_avoidance_passive::CalculateAvoidanceAmount, EFFECT_0, SPELL_AURA_MOD_CREATURE_AOE_DAMAGE_AVOIDANCE);
+        DoEffectCalcAmount.Register(&spell_dk_avoidance_passive::CalculateAvoidanceAmount, EFFECT_0, SPELL_AURA_MOD_CREATURE_AOE_DAMAGE_AVOIDANCE);
     }
 };
 
@@ -824,9 +824,9 @@ class spell_dk_pet_scaling_01 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_01::CalculateStaminaAmount, EFFECT_0, SPELL_AURA_MOD_STAT);
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_01::CalculateStrengthAmount, EFFECT_1, SPELL_AURA_MOD_STAT);
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_01::CalculateStaminaAmount, EFFECT_0, SPELL_AURA_MOD_STAT);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_01::CalculateStrengthAmount, EFFECT_1, SPELL_AURA_MOD_STAT);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
     }
 };
 
@@ -855,7 +855,7 @@ class spell_dk_pet_scaling_02 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_02::CalculateAmountMeleeHaste, EFFECT_1, SPELL_AURA_MELEE_SLOW);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_02::CalculateAmountMeleeHaste, EFFECT_1, SPELL_AURA_MELEE_SLOW);
     }
 };
 
@@ -902,8 +902,8 @@ class spell_dk_pet_scaling_03 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_03::CalculateAmountMeleeHit, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_03::CalculateAmountSpellHit, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_03::CalculateAmountMeleeHit, EFFECT_0, SPELL_AURA_MOD_HIT_CHANCE);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_03::CalculateAmountSpellHit, EFFECT_1, SPELL_AURA_MOD_SPELL_HIT_CHANCE);
     }
 };
 
@@ -936,8 +936,8 @@ class spell_dk_pet_scaling_05 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_05::CalculateAmountCritPct, EFFECT_0, SPELL_AURA_MOD_CRIT_PCT);
-        DoEffectCalcAmount.Register(this, &spell_dk_pet_scaling_05::CalculateAmountResistance, EFFECT_2, SPELL_AURA_MOD_TARGET_RESISTANCE);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_05::CalculateAmountCritPct, EFFECT_0, SPELL_AURA_MOD_CRIT_PCT);
+        DoEffectCalcAmount.Register(&spell_dk_pet_scaling_05::CalculateAmountResistance, EFFECT_2, SPELL_AURA_MOD_TARGET_RESISTANCE);
     }
 };
 
@@ -981,8 +981,8 @@ class spell_dk_rune_weapon_scaling_02 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_dk_rune_weapon_scaling_02::CalculateDamageDoneAmount, EFFECT_0, SPELL_AURA_MOD_DAMAGE_DONE);
-        DoEffectCalcAmount.Register(this, &spell_dk_rune_weapon_scaling_02::CalculateAmountMeleeHaste, EFFECT_1, SPELL_AURA_MELEE_SLOW);
+        DoEffectCalcAmount.Register(&spell_dk_rune_weapon_scaling_02::CalculateDamageDoneAmount, EFFECT_0, SPELL_AURA_MOD_DAMAGE_DONE);
+        DoEffectCalcAmount.Register(&spell_dk_rune_weapon_scaling_02::CalculateAmountMeleeHaste, EFFECT_1, SPELL_AURA_MELEE_SLOW);
     }
 };
 
@@ -1039,9 +1039,9 @@ class spell_mage_water_elemental_scaling_01 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_mage_water_elemental_scaling_01::CalculateHealthAmount, EFFECT_0, SPELL_AURA_MOD_MAX_HEALTH);
-        DoEffectCalcAmount.Register(this, &spell_mage_water_elemental_scaling_01::CalculateAttackPowerAmount, EFFECT_1, SPELL_AURA_MOD_ATTACK_POWER);
-        DoEffectCalcAmount.Register(this, &spell_mage_water_elemental_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
+        DoEffectCalcAmount.Register(&spell_mage_water_elemental_scaling_01::CalculateHealthAmount, EFFECT_0, SPELL_AURA_MOD_MAX_HEALTH);
+        DoEffectCalcAmount.Register(&spell_mage_water_elemental_scaling_01::CalculateAttackPowerAmount, EFFECT_1, SPELL_AURA_MOD_ATTACK_POWER);
+        DoEffectCalcAmount.Register(&spell_mage_water_elemental_scaling_01::CalculateDamageDoneAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_DONE);
     }
 };
 
@@ -1072,7 +1072,7 @@ class spell_mage_water_elemental_scaling_02 : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(this, &spell_mage_water_elemental_scaling_02::CalculateManaAmount, EFFECT_0, SPELL_AURA_MOD_INCREASE_ENERGY);
+        DoEffectCalcAmount.Register(&spell_mage_water_elemental_scaling_02::CalculateManaAmount, EFFECT_0, SPELL_AURA_MOD_INCREASE_ENERGY);
     }
 };
 
