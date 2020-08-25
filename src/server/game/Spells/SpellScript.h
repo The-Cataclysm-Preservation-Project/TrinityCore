@@ -864,10 +864,9 @@ class TC_GAME_API AuraScript : public _SpellScript
             OnEffectAbsorb(this), AfterEffectAbsorb(this),
             OnEffectManaShield(this), AfterEffectManaShield(this),
             OnEffectSplit(this),
-            DoPrepareProc(this),
-            DoCheckProc(this), OnProc(this),
-            DoCheckEffectProc(this), OnEffectProc(this),
-            AfterProc(this), AfterEffectProc(this)
+            DoCheckProc(this), DoCheckEffectProc(this),
+            DoPrepareProc(this), OnProc(this), AfterProc(this),
+            OnEffectProc(this), AfterEffectProc(this)
         {
         }
         bool _Validate(SpellInfo const* entry) override;
