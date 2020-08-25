@@ -37,7 +37,7 @@ enum DeathKnightSpells
 {
     SPELL_DK_ANTI_MAGIC_SHELL_TALENT            = 51052,
     SPELL_DK_BLOOD_BOIL_TRIGGERED               = 65658,
-    SPELL_DK_BLOOD_GORGED_HEAL                  = 50454,
+    SPELL_DK_BLOOD_BURST                        = 81280,
     SPELL_DK_BLOOD_PLAGUE                       = 55078,
     SPELL_DK_BLOOD_PRESENCE                     = 48263,
     SPELL_DK_BLOOD_PRESENCE_TRIGGERED           = 61261,
@@ -205,41 +205,29 @@ private:
     bool _executed;
 };
 
-
-// 50453 - Bloodworms Health Leech
+// 81277 - Blood Gorged
 class spell_dk_blood_gorged : public AuraScript
 {
-    bool Load() override
-    {
-        _procTarget = nullptr;
-        return true;
-    }
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        return ValidateSpellInfo({ SPELL_DK_BLOOD_GORGED_HEAL });
+        return ValidateSpellInfo({ SPELL_DK_BLOOD_BURST });
     }
 
-    bool CheckProc(ProcEventInfo& /*eventInfo*/)
+    void HandleBloodBurst(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
     {
-        _procTarget = GetTarget()->GetOwner();
-        return _procTarget != nullptr;
-    }
-
-    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-    {
-        int32 heal = int32(CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), 150));
-        GetTarget()->CastCustomSpell(SPELL_DK_BLOOD_GORGED_HEAL, SPELLVALUE_BASE_POINT0, heal, _procTarget, true, nullptr, aurEff);
+        if ((GetStackAmount() > 5 && roll_chance_i(34)) || GetStackAmount() == 10)
+        {
+            Unit* target = GetTarget();
+            // The tooltip states that it is 10% per stack but sniffs say 5% instead
+            int32 bp = CalculatePct(target->GetMaxHealth(), 5 * GetStackAmount());
+            target->CastCustomSpell(SPELL_DK_BLOOD_BURST, SPELLVALUE_BASE_POINT0, bp, target, true, nullptr, aurEff);
+        }
     }
 
     void Register() override
     {
-        DoCheckProc.Register(this, &spell_dk_blood_gorged::CheckProc);
-        OnEffectProc.Register(this, &spell_dk_blood_gorged::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+        AfterEffectApply.Register(this, &spell_dk_blood_gorged::HandleBloodBurst, EFFECT_0, SPELL_AURA_MOD_SCALE, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
     }
-
-private:
-    Unit * _procTarget;
 };
 
 // -48979 - Butchery
@@ -1689,49 +1677,49 @@ class spell_dk_killing_machine : public SpellScript
 
 void AddSC_deathknight_spell_scripts()
 {
-    RegisterAuraScript(spell_dk_anti_magic_shell);
-    RegisterAuraScript(spell_dk_anti_magic_zone);
-    RegisterAuraScript(spell_dk_army_of_the_dead);
+    RegisterSpellScript(spell_dk_anti_magic_shell);
+    RegisterSpellScript(spell_dk_anti_magic_zone);
+    RegisterSpellScript(spell_dk_army_of_the_dead);
     RegisterSpellScript(spell_dk_blood_boil);
-    RegisterAuraScript(spell_dk_blood_gorged);
-    RegisterAuraScript(spell_dk_blood_rites);
-    RegisterAuraScript(spell_dk_butchery);
-    RegisterAuraScript(spell_dk_crimson_scourge);
+    RegisterSpellScript(spell_dk_blood_gorged);
+    RegisterSpellScript(spell_dk_blood_rites);
+    RegisterSpellScript(spell_dk_butchery);
+    RegisterSpellScript(spell_dk_crimson_scourge);
     RegisterSpellScript(spell_dk_dark_transformation);
-    RegisterAuraScript(spell_dk_dark_transformation_aura);
-    RegisterAuraScript(spell_dk_death_and_decay);
+    RegisterSpellScript(spell_dk_dark_transformation_aura);
+    RegisterSpellScript(spell_dk_death_and_decay);
     RegisterSpellScript(spell_dk_death_coil);
     RegisterSpellScript(spell_dk_death_gate);
     RegisterSpellScript(spell_dk_death_grip);
     RegisterSpellScript(spell_dk_death_grip_initial);
     RegisterSpellScript(spell_dk_death_pact);
     RegisterSpellScript(spell_dk_death_strike);
-    RegisterAuraScript(spell_dk_death_strike_enabler);
-    RegisterAuraScript(spell_dk_deaths_advance);
-    RegisterAuraScript(spell_dk_deaths_advance_aura);
-    RegisterAuraScript(spell_dk_desecration);
-    RegisterAuraScript(spell_dk_disease);
-    RegisterAuraScript(spell_dk_ebon_plaguebringer);
+    RegisterSpellScript(spell_dk_death_strike_enabler);
+    RegisterSpellScript(spell_dk_deaths_advance);
+    RegisterSpellScript(spell_dk_deaths_advance_aura);
+    RegisterSpellScript(spell_dk_desecration);
+    RegisterSpellScript(spell_dk_disease);
+    RegisterSpellScript(spell_dk_ebon_plaguebringer);
     RegisterSpellScript(spell_dk_festering_strike);
     RegisterSpellScript(spell_dk_ghoul_explode);
     RegisterSpellScript(spell_dk_ghoul_taunt);
     RegisterSpellScript(spell_dk_howling_blast);
-    RegisterAuraScript(spell_dk_icebound_fortitude);
-    RegisterAuraScript(spell_dk_improved_presence);
+    RegisterSpellScript(spell_dk_icebound_fortitude);
+    RegisterSpellScript(spell_dk_improved_presence);
     RegisterSpellScript(spell_dk_killing_machine);
-    RegisterAuraScript(spell_dk_necrotic_strike);
+    RegisterSpellScript(spell_dk_necrotic_strike);
     RegisterSpellScript(spell_dk_pestilence);
-    RegisterAuraScript(spell_dk_presence);
+    RegisterSpellScript(spell_dk_presence);
     RegisterSpellScript(spell_dk_raise_dead);
-    RegisterAuraScript(spell_dk_reaping);
+    RegisterSpellScript(spell_dk_reaping);
     RegisterSpellScript(spell_dk_rune_tap_party);
-    RegisterAuraScript(spell_dk_runic_empowerment);
-    RegisterAuraScript(spell_dk_scent_of_blood);
-    RegisterAuraScript(spell_dk_shadow_infusion);
+    RegisterSpellScript(spell_dk_runic_empowerment);
+    RegisterSpellScript(spell_dk_scent_of_blood);
+    RegisterSpellScript(spell_dk_shadow_infusion);
     RegisterSpellScript(spell_dk_scourge_strike);
-    RegisterAuraScript(spell_dk_threat_of_thassarian);
-    RegisterAuraScript(spell_dk_unoly_blight);
-    RegisterAuraScript(spell_dk_unholy_command);
-    RegisterAuraScript(spell_dk_vampiric_blood);
-    RegisterAuraScript(spell_dk_will_of_the_necropolis);
+    RegisterSpellScript(spell_dk_threat_of_thassarian);
+    RegisterSpellScript(spell_dk_unoly_blight);
+    RegisterSpellScript(spell_dk_unholy_command);
+    RegisterSpellScript(spell_dk_vampiric_blood);
+    RegisterSpellScript(spell_dk_will_of_the_necropolis);
 }

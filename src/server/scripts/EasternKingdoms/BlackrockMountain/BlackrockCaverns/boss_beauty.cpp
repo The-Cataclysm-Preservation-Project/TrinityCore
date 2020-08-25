@@ -253,5 +253,5 @@ void AddSC_boss_beauty()
 {
     RegisterBlackrockCavernsCreatureAI(boss_beauty);
     RegisterBlackrockCavernsCreatureAI(npc_beauty_puppy);
-    RegisterAuraScript(spell_beauty_magma_spit);
+    RegisterSpellScript(spell_beauty_magma_spit);
 }

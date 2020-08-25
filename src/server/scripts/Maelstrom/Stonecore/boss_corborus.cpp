@@ -383,6 +383,8 @@ class npc_crystal_shard : public CreatureScript
 
             void UpdateAI(uint32 diff) override
             {
+                UpdateVictim();
+
                 _events.Update(diff);
 
                 while (uint32 eventId = _events.ExecuteEvent())
@@ -476,5 +478,5 @@ void AddSC_boss_corborus()
     new npc_rock_borer();
     new npc_crystal_shard();
     RegisterSpellScript(spell_corborus_crystal_barrage_targeting);
-    RegisterAuraScript(spell_corborus_crystal_barrage);
+    RegisterSpellScript(spell_corborus_crystal_barrage);
 }

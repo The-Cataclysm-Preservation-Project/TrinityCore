@@ -1786,9 +1786,6 @@ class spell_warl_burning_embers : public AuraScript
     {
         PreventDefaultAction();
         Unit* target = GetTarget();
-        if (target->IsCreature() && target->GetOwner())
-            target = GetTarget()->GetOwner();
-
         uint8 maxTicks = sSpellMgr->AssertSpellInfo(SPELL_WARLOCK_BURNING_EMBERS_DAMAGE)->GetMaxTicks();
         int32 damageBp = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount()) / maxTicks;
         float coefficient = GetSpellInfo()->GetRank() * 0.7f;
@@ -1926,13 +1923,13 @@ private:
 
 void AddSC_warlock_spell_scripts()
 {
-    RegisterAuraScript(spell_warl_aftermath);
+    RegisterSpellScript(spell_warl_aftermath);
     new spell_warl_bane_of_doom();
     new spell_warl_banish();
-    RegisterAuraScript(spell_warl_burning_embers);
+    RegisterSpellScript(spell_warl_burning_embers);
     RegisterSpellScript(spell_warl_chaos_bolt);
     RegisterSpellScript(spell_warl_conflagrate);
-    RegisterAuraScript(spell_warl_curse_of_weakness);
+    RegisterSpellScript(spell_warl_curse_of_weakness);
     new spell_warl_create_healthstone();
     new spell_warl_demonic_circle_summon();
     new spell_warl_demonic_circle_teleport();
@@ -1949,20 +1946,20 @@ void AddSC_warlock_spell_scripts()
     new spell_warl_haunt();
     new spell_warl_health_funnel();
     new spell_warl_healthstone_heal();
-    RegisterAuraScript(spell_warl_improved_soul_fire);
+    RegisterSpellScript(spell_warl_improved_soul_fire);
     RegisterSpellScript(spell_warl_incinerate);
-    RegisterAuraScript(spell_warl_jinx);
+    RegisterSpellScript(spell_warl_jinx);
     new spell_warl_life_tap();
     new spell_warl_nether_ward_overrride();
     new spell_warl_seduction();
-    RegisterAuraScript(spell_warl_seed_of_corruption);
+    RegisterSpellScript(spell_warl_seed_of_corruption);
     RegisterSpellScript(spell_warl_seed_of_corruption_aoe);
     new spell_warl_shadow_trance_proc();
-    RegisterAuraScript(spell_warl_shadow_ward);
-    RegisterAuraScript(spell_warl_soulburn);
-    RegisterAuraScript(spell_warl_soul_harvest);
-    RegisterAuraScript(spell_warl_soul_leech);
-    RegisterAuraScript(spell_warl_shadowburn);
+    RegisterSpellScript(spell_warl_shadow_ward);
+    RegisterSpellScript(spell_warl_soulburn);
+    RegisterSpellScript(spell_warl_soul_harvest);
+    RegisterSpellScript(spell_warl_soul_leech);
+    RegisterSpellScript(spell_warl_shadowburn);
     new spell_warl_soul_swap();
     new spell_warl_soul_swap_dot_marker();
     new spell_warl_soul_swap_exhale();

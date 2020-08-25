@@ -333,7 +333,10 @@ struct boss_maloriak : public BossAI
             case SPELL_RELEASE_ABERRATIONS:
                 me->MakeInterruptable(false);
                 if (reason == SPELL_FINISHED_SUCCESSFUL_CAST)
+                {
                     Talk(SAY_RELEASE_ABERRATIONS);
+                    ++_releasedAberrationsCount;
+                }
                 break;
             default:
                 break;
@@ -444,7 +447,6 @@ struct boss_maloriak : public BossAI
                         me->MakeInterruptable(true);
                         DoCastAOE(SPELL_RELEASE_ABERRATIONS);
                         events.Repeat(17s, 18s);
-                        _releasedAberrationsCount++;
                     }
                     break;
                 case EVENT_FACE_TO_CAULDRON:
@@ -1266,14 +1268,14 @@ void AddSC_boss_maloriak()
     RegisterBlackwingDescentCreatureAI(npc_maloriak_vile_swill);
     RegisterSpellScript(spell_maloriak_throw_bottle);
     RegisterSpellScript(spell_maloriak_throw_bottle_triggered);
-    RegisterAuraScript(spell_maloriak_consuming_flames);
+    RegisterSpellScript(spell_maloriak_consuming_flames);
     RegisterSpellScript(spell_maloriak_flash_freeze_targeting);
     RegisterSpellScript(spell_maloriak_flash_freeze_dummy);
     RegisterSpellScript(spell_maloriak_release_experiments);
     RegisterSpellScript(spell_maloriak_magma_jets_script);
-    RegisterAuraScript(spell_maloriak_magma_jets_periodic);
+    RegisterSpellScript(spell_maloriak_magma_jets_periodic);
     RegisterSpellScript(spell_maloriak_absolute_zero);
-    RegisterAuraScript(spell_maloriak_vile_swill);
-    RegisterAuraScript(spell_maloriak_vile_swill_summon);
-    RegisterAuraScript(spell_maloriak_master_adventurer_award);
+    RegisterSpellScript(spell_maloriak_vile_swill);
+    RegisterSpellScript(spell_maloriak_vile_swill_summon);
+    RegisterSpellScript(spell_maloriak_master_adventurer_award);
 }
