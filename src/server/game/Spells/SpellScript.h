@@ -132,31 +132,6 @@ class TC_GAME_API _SpellScript
                 return _handler(std::forward<Args>(args)...);
             }
 
-            /**
-             * Filtered variant of the spellscript hook object.
-             * This type is abstract and needs to be extended.
-             *
-             *   - Implementations MUST provide an implementation of
-             * 
-             *        bool Filter(SpellInfo const* spellInfo, Filters... args) { ... }
-             *
-             * @param Filters A template parameter pack describing types of the arguments of the Filter function.
-             */
-            template <typename... Filters>
-            struct TC_GAME_API Filtered : HookHandler<R, Args...>
-            {
-                template <typename... Extras>
-                using ChainFiltered = Filtered<Filters..., Extras...>;
-
-                template <typename T>
-                using HookType = typename HookHandler<R, Args...>::template HookType<T>;
-
-                template <typename Derived = _SpellScript>
-                Filtered(Derived* owner, HookType<Derived> hookFunction) : HookHandler<R, Args...>(owner, hookFunction)
-                {
-                }
-            };
-
         private:
             std::function<R(Args...)> _handler;
         };
@@ -166,14 +141,14 @@ class TC_GAME_API _SpellScript
          * This type can't be directly used because it doesn't expose a HookList typedef.
          */
         template <typename R, typename... Args>
-        struct TC_GAME_API EffectIndexHookHandler : HookHandler<R, Args...>::template Filtered<uint8>
+        struct TC_GAME_API EffectIndexHookHandler : HookHandler<R, Args...>
         {
             //> Type of the required function pointer.
             template <typename T>
             using HookType = typename HookHandler<R, Args...>::template HookType<T>;
 
             //> Base type shorthand.
-            using BaseHookHandler = typename HookHandler<R, Args...>::template Filtered<uint8>;
+            using BaseHookHandler = HookHandler<R, Args...>;
 
             template <typename Derived = _SpellScript>
             EffectIndexHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, std::function<bool(SpellEffectInfo const&)> effectInfoFilter)
@@ -211,7 +186,6 @@ class TC_GAME_API _SpellScript
                 return effectMask;
             }
 
-            //> Contractual implementation, see HookHandler::Filtered.
             bool Filter(SpellInfo const* spellInfo, SpellEffIndex effIndex)
             {
                 return GetAffectedEffectsMask(spellInfo) & (1 << effIndex);
