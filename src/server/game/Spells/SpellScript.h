@@ -512,7 +512,7 @@ class TC_GAME_API SpellScript : public _SpellScript
 
     public:
         SpellScript()
-            : _SpellScript(), m_spell(nullptr), m_hitPreventDefaultEffectMask(0), m_hitPreventEffectMask(0),
+            : _SpellScript(), m_spell(nullptr), m_hitPreventEffectMask(0), m_hitPreventDefaultEffectMask(0),
             OnSpellStart(this),
             BeforeCast(this),
             OnCast(this),
