@@ -9995,7 +9995,7 @@ bool Player::HasItemCount(uint32 item, uint32 count, bool inBankAlso) const
 
     if (inBankAlso)
     {
-        for (uint8 i = BANK_SLOT_ITEM_START; i < BANK_SLOT_ITEM_END; i++)
+        for (uint8 i = BANK_SLOT_ITEM_START; i < BANK_SLOT_BAG_END; i++)
         {
             Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i);
             if (pItem && pItem->GetEntry() == item && !pItem->IsInTrade())
@@ -12182,6 +12182,36 @@ void Player::DestroyItemCount(uint32 itemEntry, uint32 count, bool update, bool 
                             return;
                         }
                     }
+                }
+            }
+        }
+    }
+
+    // in bank bag list
+    for (uint8 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; i++)
+    {
+        if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
+            if (item->GetEntry() == itemEntry && !item->IsInTrade())
+            {
+                if (item->GetCount() + remcount <= count)
+                {
+                    if (!unequip_check || CanUnequipItem(INVENTORY_SLOT_BAG_0 << 8 | i, false) == EQUIP_ERR_OK)
+                    {
+                        remcount += item->GetCount();
+                        DestroyItem(INVENTORY_SLOT_BAG_0, i, update);
+                        if (remcount >= count)
+                            return;
+                    }
+                }
+                else
+                {
+                    ItemRemovedQuestCheck(item->GetEntry(), count - remcount);
+                    item->SetCount(item->GetCount() - count + remcount);
+                    if (IsInWorld() && update)
+                        item->SendUpdateToPlayer(this);
+                    item->SetState(ITEM_CHANGED, this);
+                    return;
                 }
             }
         }
@@ -26520,14 +26550,14 @@ void Player::SetEquipmentSet(EquipmentSetInfo::EquipmentSetData const& eqSet)
         }
     }
 
-    EquipmentSetInfo& eqSlot = _equipmentSets[eqSet.Guid];
+    uint64 setGuid = (eqSet.Guid != 0) ? eqSet.Guid : sObjectMgr->GenerateEquipmentSetGuid();
 
-    EquipmentSetUpdateState oldState = eqSlot.State;
+    EquipmentSetInfo& eqSlot = _equipmentSets[setGuid];
     eqSlot.Data = eqSet;
 
     if (eqSet.Guid == 0)
     {
-        eqSlot.Data.Guid = sObjectMgr->GenerateEquipmentSetGuid();
+        eqSlot.Data.Guid = setGuid;
 
         WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 4 + 1);
         data << uint32(eqSlot.Data.SetID);
@@ -26535,7 +26565,7 @@ void Player::SetEquipmentSet(EquipmentSetInfo::EquipmentSetData const& eqSet)
         SendDirectMessage(&data);
     }
 
-    eqSlot.State = (oldState == EQUIPMENT_SET_NEW ? EQUIPMENT_SET_NEW : EQUIPMENT_SET_CHANGED);
+    eqSlot.State = (eqSlot.State == EQUIPMENT_SET_NEW ? EQUIPMENT_SET_NEW : EQUIPMENT_SET_CHANGED);
 }
 
 void Player::_SaveEquipmentSets(CharacterDatabaseTransaction& trans)
