@@ -520,7 +520,7 @@ class TC_GAME_API SpellScript : public _SpellScript
             OnCheckCast(this),
             OnEffectLaunch(this), OnEffectLaunchTarget(this), OnEffectHit(this), OnEffectHitTarget(this), OnEffectSuccessfulDispel(this),
             BeforeHit(this), OnHit(this), AfterHit(this),
-            OnObjectAreaTargetSelect(this), OnDestinationTargetSelect(this), OnObjectTargetSelect(this)
+            OnObjectAreaTargetSelect(this), OnObjectTargetSelect(this), OnDestinationTargetSelect(this)
         {
         }
 
