@@ -83,8 +83,5 @@ bool WardenDriverCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) cons
         warden->Violation(GetID());
     }
 
-    for (HandlerType const& handler : _handlers)
-        handler(shared_from_this(), checkFailed);
-
     return checkFailed;
 }

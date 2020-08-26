@@ -38,13 +38,6 @@ struct WardenLuaCheck final : public WardenCheck, std::enable_shared_from_this<W
 
     std::string const& GetExpectedResult() const { return _expectedResult; }
 
-    using HandlerType = std::function<void(bool, std::string)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
-
     void SetExecutableString(std::string const& executableString) { _executableString = executableString; }
     void SetQueriedString(std::string const& queriedString) { _queriedString = queriedString; }
 
@@ -52,8 +45,6 @@ private:
     std::string _executableString;
     std::string _queriedString;
     std::string _expectedResult;
-
-    std::vector<HandlerType> _handlers;
 };
 
 #endif // WARDEN_LUA_CHECK_H_

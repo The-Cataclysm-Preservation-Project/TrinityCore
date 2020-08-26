@@ -40,21 +40,12 @@ struct WardenProcCheck final : public WardenCheck, std::enable_shared_from_this<
     uint32 GetAddress() const { return _address; }
     uint8 GetLength() const { return _length; }
 
-    using HandlerType = std::function<void(std::shared_ptr<const WardenProcCheck>, bool)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
-
 private:
     std::string _moduleName;
     std::string _functionName;
     std::vector<uint8> _expectedData;
     uint32 _address;
     uint8 _length;
-
-    std::vector<HandlerType> _handlers;
 };
 
 #endif // WARDEN_PROC_CHECK_H_

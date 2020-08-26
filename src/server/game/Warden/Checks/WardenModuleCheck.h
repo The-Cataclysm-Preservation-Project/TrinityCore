@@ -36,17 +36,8 @@ struct WardenModuleCheck final : public WardenCheck, std::enable_shared_from_thi
 
     std::string const& GetModuleName() const { return _moduleName;  }
 
-    using HandlerType = std::function<void(std::shared_ptr<const WardenModuleCheck>, bool)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
-
 private:
     std::string _moduleName;    //< Name of the module being looked for.
-
-    std::vector<HandlerType> _handlers;
 };
 
 #endif // WARDEN_MODULE_CHECK_H_

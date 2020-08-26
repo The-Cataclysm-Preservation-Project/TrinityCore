@@ -39,13 +39,6 @@ struct WardenMemoryCheck final : public WardenCheck, std::enable_shared_from_thi
     uint32 GetScanLength() const { return _length; }
     std::vector<uint8> const& GetExpectedData() const { return _result; }
 
-    using HandlerType = std::function<void(std::shared_ptr<const WardenMemoryCheck>, bool, std::vector<uint8>)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
-
     void SetModuleName(std::string const& moduleName);
     void SetScanAddress(uint64 address) { _address = address; }
     void SetScanLength(uint8 length) { _length = length; }
@@ -55,8 +48,6 @@ private:
     uint64 _address = 0;        //< Relative address of the scan.
     uint8 _length = 0;          //< Number of bytes to scan.
     std::vector<uint8> _result; //< The expected bytes.
-
-    std::vector<HandlerType> _handlers;
 };
 
 #endif // WARDENMEMORYCHECK_H_

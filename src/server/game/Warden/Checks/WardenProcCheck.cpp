@@ -97,8 +97,5 @@ bool WardenProcCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
         warden->Violation(GetID());
     }
 
-    for (auto&& handler : _handlers)
-        handler(shared_from_this(), checkFailed);
-
     return checkFailed;
 }

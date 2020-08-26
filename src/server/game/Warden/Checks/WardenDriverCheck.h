@@ -34,18 +34,9 @@ struct WardenDriverCheck final : public WardenCheck, std::enable_shared_from_thi
     bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
     bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
-    using HandlerType = std::function<void(std::shared_ptr<const WardenDriverCheck>, bool)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
-
 private:
     std::string _driverPath;
     std::vector<uint8> _expectedData;
-
-    std::vector<HandlerType> _handlers;
 };
 
 #endif // WARDEN_DRIVER_CHECK_H_

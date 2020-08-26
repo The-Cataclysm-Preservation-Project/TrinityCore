@@ -116,8 +116,5 @@ bool WardenLuaCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
         warden->Violation(GetID());
     }
 
-    for (auto&& handler : _handlers)
-        handler(checkFailed, clientString);
-
     return checkFailed;
 }

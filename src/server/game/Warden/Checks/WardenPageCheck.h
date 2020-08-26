@@ -38,19 +38,11 @@ struct WardenPageCheck final : public WardenCheck, std::enable_shared_from_this<
     uint32 GetAddress() const { return _address; }
     uint8 GetLength() const { return _length; }
 
-    using HandlerType = std::function<void(std::shared_ptr<const WardenPageCheck>, bool)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
 
 private:
     uint32 _address;
     uint8 _length;
     std::vector<uint8> _expectedData;
-
-    std::vector<HandlerType> _handlers;
 };
 
 #endif // WARDEN_PAGE_CHECK_H_

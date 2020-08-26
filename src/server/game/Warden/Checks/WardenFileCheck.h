@@ -41,18 +41,9 @@ struct WardenFileCheck final : public WardenCheck, std::enable_shared_from_this<
     std::array<uint8, SHA_DIGEST_LENGTH> const& GetExpectedResult() const { return _expectedResult; }
     std::string const& GetFileName() const { return _fileName; }
 
-    using HandlerType = std::function<void(std::shared_ptr<const WardenFileCheck>, bool)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
-
 private:
     std::string _fileName;
     std::array<uint8, SHA_DIGEST_LENGTH> _expectedResult;
-
-    std::vector<HandlerType> _handlers;
 };
 
 #endif // WARDEN_FILE_CHECK_H_
