@@ -288,7 +288,7 @@ void Warden::Violation(uint32 checkID)
 
 bool Warden::CanHandle(WardenCheck::Type checkType) const
 {
-    return _module->Checks[AsUnderlyingType(checkType)].has_value();
+    return !!_module->Checks[AsUnderlyingType(checkType)];
 }
 
 void WorldSession::HandleWardenDataOpcode(WorldPacket& recvData)
