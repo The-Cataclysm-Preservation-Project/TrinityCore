@@ -252,9 +252,11 @@ int main(int argc, char** argv)
         std::string const binary_path(argv[1]);
         std::string renamed_binary_path(binary_path);
 
-        wchar_t* commonAppData(nullptr);
 #ifdef _WIN32
+        wchar_t* commonAppData(nullptr);
         SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, &commonAppData);
+#else
+        const wchar_t* commonAppData(L".");
 #endif
 
         std::cout << "Creating patched binary..." << std::endl;
