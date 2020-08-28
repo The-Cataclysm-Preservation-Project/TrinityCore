@@ -962,6 +962,13 @@ bool Battlenet::Session::HandleRiskFingerprintModule(BitStream* dataStream, Serv
     Authentication::LogonResponse* logonResponse = new Authentication::LogonResponse();
     if (dataStream->Read<uint8>(8) == 1 && _accountInfo && _gameAccountInfo)
     {
+        uint32 sectionCount = dataStream->Read<uint32>(32);
+        for (uint32 i = 0; i < sectionCount; ++i)
+        {
+            std::string fourcc = dataStream->ReadFourCC();
+            uint32 value = dataStream->Read<uint32>(32);
+        }
+
         logonResponse->AccountId = _accountInfo->Id;
         logonResponse->GameAccountName = _gameAccountInfo->Name;
         logonResponse->GameAccountFlags = GAMEACCOUNT_FLAG_PROPASS;
@@ -1013,7 +1020,7 @@ bool Battlenet::Session::HandleResumeModule(BitStream* dataStream, ServerPacket*
     std::unique_ptr<uint8[]> sessionKey = K.AsByteArray(64);
 
     HmacSha256 clientPart(64, sessionKey.get());
-    clientPart.UpdateData(&ResumeClient, 1);
+    clientPartrm.UpdateData(&ResumeClient, 1);
     clientPart.UpdateData(clientChallenge.get(), 16);
     clientPart.UpdateData(serverChallenge.get(), 16);
     clientPart.Finalize();

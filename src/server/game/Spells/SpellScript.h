@@ -372,7 +372,7 @@ class TC_GAME_API _SpellScript
             using BaseHookHandler = EffectIndexHookHandler<R, Args...>;
 
             //> Type of the hook container list.
-            using HookList = _HookList<EffectNameHookHandler<R, Args...>, uint8, uint16>;
+            using HookList = _HookList<AuraNameHookHandler<R, Args...>, uint8, uint16>;
 
             template <typename Derived = _SpellScript>
             AuraNameHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, uint16 auraName)
