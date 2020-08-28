@@ -800,7 +800,24 @@ class TC_GAME_API AuraScript : public _SpellScript
             }
         };
 
-        using AuraEffectManaShieldHookHandler = AuraEffectAbsorbHookHandler;
+        struct TC_GAME_API AuraEffectManaShieldHookHandler : AuraNameHookHandler<void, AuraEffect*, DamageInfo&, uint32&>
+        {
+            //> Base type shorthand.
+            using BaseHookHandler = AuraNameHookHandler<void, AuraEffect*, DamageInfo&, uint32&>;
+
+            //> Type of the required function pointer.
+            template <typename T>
+            using HookType = typename BaseHookHandler::template HookType<T>;
+
+            //> Type of the hook container list.
+            using HookList = _HookList<AuraEffectManaShieldHookHandler, uint8>;
+
+            template <typename Derived = _SpellScript>
+            AuraEffectManaShieldHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex)
+                : BaseHookHandler(owner, hookFunction, effIndex, SPELL_AURA_MANA_SHIELD)
+            {
+            }
+        };
 
         struct TC_GAME_API AuraEffectSplitHookHandler : AuraNameHookHandler<void, AuraEffect*, DamageInfo&, uint32&>
         {
