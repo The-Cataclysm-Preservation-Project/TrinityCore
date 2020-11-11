@@ -262,7 +262,7 @@ enum SpellSchools
     MAX_SPELL_SCHOOL                    = 7
 };
 
-enum SpellSchoolMask
+enum SpellSchoolMask : uint8
 {
     SPELL_SCHOOL_MASK_NONE    = 0x00,                       // not exist
     SPELL_SCHOOL_MASK_NORMAL  = (1 << SPELL_SCHOOL_NORMAL), // PHYSICAL (Armor)

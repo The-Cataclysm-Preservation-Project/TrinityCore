@@ -62,6 +62,7 @@ TC_GAME_API extern DBCStorage <CinematicSequencesEntry>      sCinematicSequences
 TC_GAME_API extern DBCStorage <CreatureDisplayInfoEntry>     sCreatureDisplayInfoStore;
 TC_GAME_API extern DBCStorage <CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 TC_GAME_API extern DBCStorage <CreatureFamilyEntry>          sCreatureFamilyStore;
+TC_GAME_API extern DBCStorage <CreatureImmunitiesEntry>      sCreatureImmunitiesStore;
 TC_GAME_API extern DBCStorage <CreatureModelDataEntry>       sCreatureModelDataStore;
 TC_GAME_API extern DBCStorage <CreatureSpellDataEntry>       sCreatureSpellDataStore;
 TC_GAME_API extern DBCStorage <CreatureTypeEntry>            sCreatureTypeStore;

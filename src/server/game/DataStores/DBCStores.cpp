@@ -71,6 +71,7 @@ DBCStorage <CinematicSequencesEntry> sCinematicSequencesStore(CinematicSequences
 DBCStorage <CreatureDisplayInfoEntry> sCreatureDisplayInfoStore(CreatureDisplayInfofmt);
 DBCStorage <CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore(CreatureDisplayInfoExtrafmt);
 DBCStorage <CreatureFamilyEntry> sCreatureFamilyStore(CreatureFamilyfmt);
+DBCStorage <CreatureImmunitiesEntry> sCreatureImmunitiesStore(CreatureImmunitiesfmt);
 DBCStorage <CreatureModelDataEntry> sCreatureModelDataStore(CreatureModelDatafmt);
 DBCStorage <CreatureSpellDataEntry> sCreatureSpellDataStore(CreatureSpellDatafmt);
 DBCStorage <CreatureTypeEntry> sCreatureTypeStore(CreatureTypefmt);
@@ -517,10 +518,11 @@ void DBCManager::LoadStores(const std::string& dataPath, uint32 defaultLocale)
 
 #define LOAD_DBC_EXT(store, file, dbformat, dbpk) LoadDBC(availableDbcLocales, bad_dbc_files, store, dbcPath, file, defaultLocale, dbformat, dbpk)
 
-    LOAD_DBC_EXT(sAchievementStore,     "Achievement.dbc",     CustomAchievementfmt,      CustomAchievementIndex);//15595
-    LOAD_DBC_EXT(sSpellStore,           "Spell.dbc",           CustomSpellEntryfmt,       CustomSpellEntryIndex);//
-    LOAD_DBC_EXT(sSpellEffectStore,     "SpellEffect.dbc",     CustomSpellEffectEntryfmt, CustomSpellEffectEntryIndex);//15595
-    LOAD_DBC_EXT(sSpellDifficultyStore, "SpellDifficulty.dbc", CustomSpellDifficultyfmt,  CustomSpellDifficultyIndex);//15595
+    LOAD_DBC_EXT(sAchievementStore,         "Achievement.dbc",          CustomAchievementfmt,               CustomAchievementIndex);//15595
+    LOAD_DBC_EXT(sCreatureImmunitiesStore,  "CreatureImmunities.dbc",   CustomCreatureImmunitiesEntryfmt,   CustomCreatureImmunitiesEntryIndex);//15595
+    LOAD_DBC_EXT(sSpellStore,               "Spell.dbc",                CustomSpellEntryfmt,                CustomSpellEntryIndex);//
+    LOAD_DBC_EXT(sSpellEffectStore,         "SpellEffect.dbc",          CustomSpellEffectEntryfmt,          CustomSpellEffectEntryIndex);//15595
+    LOAD_DBC_EXT(sSpellDifficultyStore,     "SpellDifficulty.dbc",      CustomSpellDifficultyfmt,           CustomSpellDifficultyIndex);//15595
 
 #undef LOAD_DBC_EXT
 

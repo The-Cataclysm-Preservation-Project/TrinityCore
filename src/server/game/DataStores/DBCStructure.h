@@ -952,6 +952,20 @@ struct CreatureFamilyEntry
     // char*  IconFile                                      // 11
 };
 
+struct CreatureImmunitiesEntry
+{
+    uint32 ID;
+    uint32 School;
+    uint32 DispelType;
+    uint32 MechanicsAllowed;
+    uint32 Mechanic;
+    uint32 EffectsAllowed;
+    uint32 Effect[6];
+    uint32 StatesAllowed;
+    uint32 State[12];
+    uint32 Flags;
+};
+
 struct CreatureModelDataEntry
 {
     uint32 ID;                                              // 0
@@ -2015,7 +2029,7 @@ struct SpellEffectEntry
     uint32    EffectImplicitTargetB;                        // 23
     uint32    SpellID;                                      // 24
     uint32    EffectIndex;                                  // 25
-    //uint32  EffectAttributes                              // 26
+    uint32    EffectAttributes;                             // 26
 };
 
 // SpellAuraOptions.dbc

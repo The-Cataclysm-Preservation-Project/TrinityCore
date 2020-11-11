@@ -373,6 +373,7 @@ SpellEffectInfo::SpellEffectInfo(SpellEntry const* /*spellEntry*/, SpellInfo con
     ItemType = _effect ? _effect->EffectItemType : 0;
     TriggerSpell = _effect ? _effect->EffectTriggerSpell : 0;
     SpellClassMask = _effect ? _effect->EffectSpellClassMask : flag96(0);
+    Attributes = _effect ? _effect->EffectAttributes : 0;
     ImplicitTargetConditions = nullptr;
     ScalingMultiplier = scaling ? scaling->Coefficient[_effIndex] : 0.0f;
     DeltaScalingMultiplier = scaling ? scaling->Variance[_effIndex] : 0.0f;
@@ -3201,18 +3202,15 @@ bool SpellInfo::CanSpellProvideImmunityAgainstAura(SpellInfo const* auraSpellInf
     return false;
 }
 
-// based on client Spell_C::CancelsAuraEffect
-bool SpellInfo::SpellCancelsAuraEffect(SpellInfo const* auraSpellInfo, uint8 auraEffIndex) const
+// based on client Spell_C::CancelsAuraEffect (build 15595)
+bool SpellInfo::SpellCancelsAuraEffect(Unit* caster, SpellInfo const* auraSpellInfo, uint8 auraEffIndex) const
 {
-    if (!HasAttribute(SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY))
-        return false;
-
-    if (auraSpellInfo->HasAttribute(SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY))
+    if (!HasAttribute(SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY) || auraSpellInfo->HasAttribute(SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY))
         return false;
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (Effects[i].Effect != SPELL_EFFECT_APPLY_AURA && Effects[i].Effect != SPELL_EFFECT_APPLY_AURA_2)
+        if (Effects[i].Effect != SPELL_EFFECT_APPLY_AURA || (Effects[i].Attributes & 1) != 0)
             continue;
 
         uint32 const miscValue = static_cast<uint32>(Effects[i].MiscValue);
@@ -3233,11 +3231,20 @@ bool SpellInfo::SpellCancelsAuraEffect(SpellInfo const* auraSpellInfo, uint8 aur
                 break;
             case SPELL_AURA_MECHANIC_IMMUNITY:
                 if (miscValue != auraSpellInfo->Mechanic)
-                {
                     if (miscValue != auraSpellInfo->Effects[auraEffIndex].Mechanic)
                         continue;
-                }
                 break;
+            case SPELL_AURA_MECHANIC_IMMUNITY_MASK:
+            {
+                if (!caster)
+                    continue;
+
+                uint8 schoolMask = auraSpellInfo->GetSchoolMask();
+                uint8 effectMask = 1 << auraEffIndex;
+                if (!Creature::CheckCreatureImmunities(caster, auraSpellInfo, schoolMask, miscValue, effectMask, !auraSpellInfo->IsPositive()))
+                    continue;
+                break;
+            }
             default:
                 continue;
         }

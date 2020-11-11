@@ -47,6 +47,11 @@ char const CinematicCameraEntryfmt[] = "nsiffff";
 char const CinematicSequencesEntryfmt[] = "nxiiiiiiii";
 char const CreatureDisplayInfofmt[] = "nixifxxxxxxxxxxxx";
 char const CreatureDisplayInfoExtrafmt[] = "diixxxxxxxxxxxxxxxxxx";
+//
+char const CreatureImmunitiesfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiii";
+const std::string CustomCreatureImmunitiesEntryfmt = "pppppppppppppppppppppppppp";
+const std::string CustomCreatureImmunitiesEntryIndex = "ID";
+//
 char const CreatureModelDatafmt[] = "nisxfxxxxxxxxxxffxxxxxxxxxxxxxf";
 char const CreatureFamilyfmt[] = "nfifiiiiixsx";
 char const CreatureSpellDatafmt[] = "niiiixxxx";
@@ -146,8 +151,8 @@ const std::string CustomSpellDifficultyfmt = "ppppp";
 const std::string CustomSpellDifficultyIndex = "id";
 char const SpellDurationfmt[] = "niii";
 //                                             0         10        20    26
-char const SpellEffectEntryfmt[] =            "nifiiiffiiiiiifiifiiiiiiiix";
-const std::string CustomSpellEffectEntryfmt = "ppppppppppppppppppppppppppa";
+char const SpellEffectEntryfmt[] =            "nifiiiffiiiiiifiifiiiiiiiii";
+const std::string CustomSpellEffectEntryfmt = "pppppppppppppppppppppppppppa";
 const std::string CustomSpellEffectEntryIndex = "Id";
 //                                       0         10        20        30        40     47
 char const SpellEntryfmt[] =            "niiiiiiiiiiiiiiifiiiissxxiixxifiiiiiiixiiiiiiiii";

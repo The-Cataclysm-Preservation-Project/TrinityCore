@@ -127,6 +127,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool IsClassTrainerOf(Player const* player) const;
         bool CanCreatureAttack(Unit const* victim, bool force = true) const;
         void LoadTemplateImmunities();
+
+        static bool CheckCreatureImmunities(Unit* caster, SpellInfo const* spellInfo, uint8& schoolMask, uint32 immunitiesId, uint8& effectMask, bool isNegative);
+
         bool IsImmunedToSpell(SpellInfo const* spellInfo, Unit* caster, Optional<uint8> effectMask = nullptr) const override;
         bool IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, Unit* caster) const override;
         bool isElite() const;

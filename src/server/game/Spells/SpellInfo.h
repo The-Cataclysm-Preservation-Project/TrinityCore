@@ -259,6 +259,7 @@ public:
     uint32    ItemType;
     uint32    TriggerSpell;
     flag96    SpellClassMask;
+    uint32    Attributes;
     std::vector<Condition*>* ImplicitTargetConditions;
     // SpellScalingEntry
     float     ScalingMultiplier;
@@ -268,7 +269,7 @@ public:
     SpellEffectInfo() : _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0),
                         RealPointsPerLevel(0.f), BasePoints(0), PointsPerComboPoint(0), Amplitude(0.f), DamageMultiplier(0.f),
                         BonusMultiplier(0.f), MiscValue(0), MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(nullptr), MaxRadiusEntry(nullptr),
-                        ChainTarget(0), ItemType(0), TriggerSpell(0), ImplicitTargetConditions(nullptr), ScalingMultiplier(0.f), DeltaScalingMultiplier(0.f),
+                        ChainTarget(0), ItemType(0), TriggerSpell(0), Attributes(0), ImplicitTargetConditions(nullptr), ScalingMultiplier(0.f), DeltaScalingMultiplier(0.f),
                         ComboScalingMultiplier(0.f) { }
 
     SpellEffectInfo(SpellEntry const* spellEntry, SpellInfo const* spellInfo, uint8 effIndex, SpellEffectEntry const* effect);
@@ -589,7 +590,7 @@ class TC_GAME_API SpellInfo
         // spell immunities
         void ApplyAllSpellImmunitiesTo(Unit* target, uint8 effIndex, bool apply) const;
         bool CanSpellProvideImmunityAgainstAura(SpellInfo const* auraSpellInfo) const;
-        bool SpellCancelsAuraEffect(SpellInfo const* auraSpellInfo, uint8 auraEffIndex) const;
+        bool SpellCancelsAuraEffect(Unit* caster, SpellInfo const* auraSpellInfo, uint8 auraEffIndex) const;
 
         uint32 GetAllowedMechanicMask() const;
 

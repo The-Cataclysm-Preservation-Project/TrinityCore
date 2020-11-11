@@ -2165,6 +2165,103 @@ void Creature::LoadTemplateImmunities()
     }
 }
 
+// based on client function CGUnit_C::CheckCreatureImmunities (build 15595)
+/*static*/ bool Creature::CheckCreatureImmunities(Unit* target, SpellInfo const* spellInfo, uint8& schoolMask, uint32 immunitiesId, uint8& effectMask, bool isNegative)
+{
+    CreatureImmunitiesEntry const* immunityEntry = sCreatureImmunitiesStore.LookupEntry(immunitiesId);
+    if (!immunityEntry)
+        return false;
+
+    uint8 originalEffectMask = effectMask;
+    if (!isNegative || !(schoolMask & immunityEntry->School) || spellInfo->HasAttribute(SPELL_ATTR2_UNAFFECTED_BY_AURA_SCHOOL_IMMUNE))
+    {
+        // School immunity checks
+        schoolMask &= ~immunityEntry->School;
+        if (!schoolMask)
+        {
+            effectMask = 0;
+            return true;
+        }
+
+        uint32 dispelCategory = spellInfo->Dispel;
+        uint32 mechanic = spellInfo->Mechanic;
+
+        // Check for dispel immunity
+        if (((1 << dispelCategory) & immunityEntry->DispelType) != 0)
+        {
+            effectMask = 0;
+            return true;
+        }
+
+        // Check for global mechanic immunity
+        uint32 mechanicCheckMask = immunityEntry->Mechanic & ~immunityEntry->MechanicsAllowed;
+        if (((1 << mechanic) & mechanicCheckMask) != 0)
+        {
+            effectMask = 0;
+            return true;
+        }
+
+        // Effect specific checks
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            SpellEffectInfo const& effect = spellInfo->Effects[i];
+            if (!effect.IsEffect() || (effect.Attributes & 1) != 0)
+                continue;
+
+            if (effect.Mechanic && ((1 << effect.Mechanic) & mechanicCheckMask) != 0)
+            {
+                effectMask &= ~(i << i);
+                continue;
+            }
+
+            uint8 effectBucket = effect.Effect / 32;
+            if (effectBucket < 6)
+            {
+                uint32 effectImmunityMask = immunityEntry->Effect[effectBucket] & ~immunityEntry->EffectsAllowed;
+                if (((1 << effect.Effect % 32) & effectImmunityMask) != 0)
+                    effectMask &= ~ (1 << i);
+            }
+            else
+            {
+                switch (SpellEffects(effect.Effect))
+                {
+                    case SPELL_EFFECT_APPLY_AURA:
+                    case SPELL_EFFECT_PERSISTENT_AREA_AURA:
+                    case SPELL_EFFECT_APPLY_AREA_AURA_PARTY:
+                    case SPELL_EFFECT_APPLY_AREA_AURA_RAID:
+                    case SPELL_EFFECT_APPLY_AREA_AURA_PET:
+                    case SPELL_EFFECT_APPLY_AREA_AURA_FRIEND:
+                    case SPELL_EFFECT_APPLY_AREA_AURA_ENEMY:
+                    case SPELL_EFFECT_APPLY_AREA_AURA_OWNER:
+                    case SPELL_EFFECT_APPLY_AURA_2:
+                    {
+                        uint8 auraBucket = effect.ApplyAuraName / 32;
+                        if (auraBucket < 12)
+                        {
+                            uint32 auraImmunityMask = immunityEntry->StatesAllowed ? 0 : immunityEntry->State[auraBucket];
+                            if (((1 << effect.ApplyAuraName % 32) & auraImmunityMask) != 0)
+                                effectMask &= ~(1 << i);
+                        }
+                        break;
+                    }
+                    case SPELL_EFFECT_ENVIRONMENTAL_DAMAGE:
+                        if (!target->IsUnit() && !target->GetUInt32Value(UNIT_FIELD_PETNUMBER))
+                            effectMask &= ~(1 << i);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (!(spellInfo->HasAttribute(SPELL_ATTR4_UNK11 ) || effectMask == originalEffectMask))
+                return effectMask == 0;
+        }
+    }
+
+    effectMask = 0;
+    return true;
+}
+
 bool Creature::IsImmunedToSpell(SpellInfo const* spellInfo, Unit* caster, Optional<uint8> effectMask /*= nullptr*/) const
 {
     if (!spellInfo)
