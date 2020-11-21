@@ -1,2 +1,5 @@
-INSERT IGNORE INTO `creature_trainer` VALUES (35872, 44, (SELECT gossip_menu_id FROM creature_template WHERE entry  = 35872), 0);
-INSERT IGNORE INTO `creature_trainer` VALUES (44465, 135, (SELECT gossip_menu_id FROM creature_template WHERE entry  = 44465), 0);
+DELETE FROM `creature_trainer` WHERE creatureid = 35872;
+INSERT INTO `creature_trainer` VALUES (35872, 44, 10698, 0);
+
+DELETE FROM `creature_trainer` WHERE creatureid = 44465;
+INSERT INTO `creature_trainer` VALUES (44465, 135, 10698, 0);
