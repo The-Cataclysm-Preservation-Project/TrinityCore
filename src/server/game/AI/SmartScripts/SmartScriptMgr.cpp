@@ -70,7 +70,7 @@ void SmartWaypointMgr::LoadFromDB()
         float z = fields[4].GetFloat();
         float v = fields[5].GetFloat();
 
-        float o = 0; // orientation don't used here
+        float o = 0; // orientation not used here
 
         if (lastEntry != entry)
         {
