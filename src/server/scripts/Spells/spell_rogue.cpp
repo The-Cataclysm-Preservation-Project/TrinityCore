@@ -1437,22 +1437,23 @@ class spell_rog_bandits_guile : public AuraScript
         if (_procStrikes < neededProcs)
             return;
 
+        if (_procStrikes >= neededProcs * 3 && target->HasAura(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID()))
+            target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID());
+        else if (_procStrikes >= neededProcs * 2 && target->HasAura(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID()))
+            target->RemoveAurasDueToSpell(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID());
+
         // We are increasing our insight on the opponent
         if (_procStrikes >= neededProcs * 3)
         {
             spellId = SPELL_ROGUE_DEEP_INSIGHT;
             basepoints = 30;
+            _procStrikes = 0;
         }
         else if (_procStrikes >= neededProcs * 2)
         {
             spellId = SPELL_ROGUE_MODERATE_INSIGHT;
             basepoints = 20;
         }
-
-        if (_procStrikes >= neededProcs * 3 && target->HasAura(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID()))
-            target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID());
-        else if (_procStrikes >= neededProcs * 2 && target->HasAura(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID()))
-            target->RemoveAurasDueToSpell(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID());
 
         target->CastSpell(target, spellId);
         target->CastSpell(procTarget, SPELL_ROGUE_BANDITS_GUILE, CastSpellExtraArgs().AddSpellBP0(basepoints).AddSpellMod(SPELLVALUE_BASE_POINT1, basepoints));
