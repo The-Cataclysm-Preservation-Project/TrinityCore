@@ -3,4 +3,4 @@ UPDATE `trainer_spell` SET `SpellID` = 86528 WHERE `TrainerID` = 40 AND `SpellId
 UPDATE `trainer_spell` SET `SpellID` = 93321 WHERE `TrainerID` = 40 AND `SpellId` = 79682;
 
 -- Correct shaman spell trainer
-UPDATE `trainer_spell` SET `SpellID` = 87507 WHERE `TrainerID` = 124 AND `SpellId` = 86529;
+UPDATE `trainer_spell` SET `SpellID` = 86529 WHERE `TrainerID` = 124 AND `SpellId` = 87507;
