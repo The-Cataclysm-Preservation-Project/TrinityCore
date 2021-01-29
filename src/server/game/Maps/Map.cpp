@@ -28,6 +28,7 @@
 #include "GridStates.h"
 #include "Group.h"
 #include "InstanceScript.h"
+#include "InstancePackets.h"
 #include "Log.h"
 #include "MapInstanced.h"
 #include "MapManager.h"
@@ -3102,47 +3103,42 @@ bool Map::CheckRespawn(RespawnInfo* info)
         return false;
     }
 
-    uint32 poolId = info->spawnId ? sPoolMgr->IsPartOfAPool(info->type, info->spawnId) : 0;
     // Next, check if there's already an instance of this object that would block the respawn
-    // Only do this for unpooled spawns
-    if (!poolId)
+    bool alreadyExists = false;
+    switch (info->type)
     {
-        bool doDelete = false;
-        switch (info->type)
+        case SPAWN_TYPE_CREATURE:
         {
-            case SPAWN_TYPE_CREATURE:
-            {
-                // escort check for creatures only (if the world config boolean is set)
-                bool const isEscort = (sWorld->getBoolConfig(CONFIG_RESPAWN_DYNAMIC_ESCORTNPC) && data->spawnGroupData->flags & SPAWNGROUP_FLAG_ESCORTQUESTNPC);
+            // escort check for creatures only (if the world config boolean is set)
+            bool const isEscort = (sWorld->getBoolConfig(CONFIG_RESPAWN_DYNAMIC_ESCORTNPC) && data->spawnGroupData->flags & SPAWNGROUP_FLAG_ESCORTQUESTNPC);
 
-                auto range = _creatureBySpawnIdStore.equal_range(info->spawnId);
-                for (auto it = range.first; it != range.second; ++it)
-                {
-                    Creature* creature = it->second;
-                    if (!creature->IsAlive())
-                        continue;
-                    // escort NPCs are allowed to respawn as long as all other instances are already escorting
-                    if (isEscort && creature->IsEscorted())
-                        continue;
-                    doDelete = true;
-                    break;
-                }
+            auto range = _creatureBySpawnIdStore.equal_range(info->spawnId);
+            for (auto it = range.first; it != range.second; ++it)
+            {
+                Creature* creature = it->second;
+                if (!creature->IsAlive())
+                    continue;
+                // escort NPCs are allowed to respawn as long as all other instances are already escorting
+                if (isEscort && creature->IsEscorted())
+                    continue;
+                alreadyExists = true;
                 break;
             }
-            case SPAWN_TYPE_GAMEOBJECT:
-                // gameobject check is simpler - they cannot be dead or escorting
-                if (_gameObjectBySpawnIdStore.find(info->spawnId) != _gameObjectBySpawnIdStore.end())
-                    doDelete = true;
-                break;
-            default:
-                ASSERT(false, "Invalid spawn type %u with spawnId %u on map %u", uint32(info->type), info->spawnId, GetId());
-                return true;
+            break;
         }
-        if (doDelete)
-        {
-            info->respawnTime = 0;
-            return false;
-        }
+        case SPAWN_TYPE_GAMEOBJECT:
+            // gameobject check is simpler - they cannot be dead or escorting
+            if (_gameObjectBySpawnIdStore.find(info->spawnId) != _gameObjectBySpawnIdStore.end())
+                alreadyExists = true;
+            break;
+        default:
+            ASSERT(false, "Invalid spawn type %u with spawnId %u on map %u", uint32(info->type), info->spawnId, GetId());
+            return true;
+    }
+    if (alreadyExists)
+    {
+        info->respawnTime = 0;
+        return false;
     }
 
     // next, check linked respawn time
@@ -3160,27 +3156,14 @@ bool Map::CheckRespawn(RespawnInfo* info)
         info->respawnTime = respawnTime;
         return false;
     }
-
-    // now, check if we're part of a pool
-    if (poolId)
-    {
-        // ok, part of a pool - hand off to pool logic to handle this, we're just going to remove the respawn and call it a day
-        if (info->type == SPAWN_TYPE_GAMEOBJECT)
-            sPoolMgr->UpdatePool<GameObject>(poolId, info->spawnId);
-        else if (info->type == SPAWN_TYPE_CREATURE)
-            sPoolMgr->UpdatePool<Creature>(poolId, info->spawnId);
-        else
-            ASSERT(false, "Invalid spawn type %u (spawnid %u) on map %u", uint32(info->type), info->spawnId, GetId());
-        info->respawnTime = 0;
-        return false;
-    }
-
     // everything ok, let's spawn
     return true;
 }
 
 void Map::Respawn(RespawnInfo* info, CharacterDatabaseTransaction dbTrans)
 {
+    if (info->respawnTime <= GameTime::GetGameTime())
+        return;
     info->respawnTime = GameTime::GetGameTime();
     _respawnTimes.increase(info->handle);
     SaveRespawnInfoDB(*info, dbTrans);
@@ -3242,14 +3225,14 @@ bool Map::AddRespawnInfo(RespawnInfo const& info)
     return true;
 }
 
-static void PushRespawnInfoFrom(std::vector<RespawnInfo*>& data, RespawnInfoMap const& map)
+static void PushRespawnInfoFrom(std::vector<RespawnInfo const*>& data, RespawnInfoMap const& map)
 {
     data.reserve(data.size() + map.size());
     for (auto const& pair : map)
         data.push_back(pair.second);
 }
 
-void Map::GetRespawnInfo(std::vector<RespawnInfo*>& respawnData, SpawnObjectTypeMask types) const
+void Map::GetRespawnInfo(std::vector<RespawnInfo const*>& respawnData, SpawnObjectTypeMask types) const
 {
     if (types & SPAWN_TYPEMASK_CREATURE)
         PushRespawnInfoFrom(respawnData, _creatureRespawnTimesBySpawnId);
@@ -3342,22 +3325,39 @@ void Map::ProcessRespawns()
         RespawnInfo* next = _respawnTimes.top();
         if (now < next->respawnTime) // done for this tick
             break;
-        if (CheckRespawn(next)) // see if we're allowed to respawn
-        {
-            // ok, respawn
+
+        if (uint32 poolId = sPoolMgr->IsPartOfAPool(next->type, next->spawnId)) // is this part of a pool?
+        { // if yes, respawn will be handled by (external) pooling logic, just delete the respawn time
+            // step 1: remove entry from maps to avoid it being reachable by outside logic
             _respawnTimes.pop();
             GetRespawnMapForType(next->type).erase(next->spawnId);
+
+            // step 2: tell pooling logic to do its thing
+            sPoolMgr->UpdatePool(poolId, next->type, next->spawnId);
+
+            // step 3: get rid of the actual entry
+            delete next;
+        }
+        else if (CheckRespawn(next)) // see if we're allowed to respawn
+        { // ok, respawn
+            // step 1: remove entry from maps to avoid it being reachable by outside logic
+            _respawnTimes.pop();
+            GetRespawnMapForType(next->type).erase(next->spawnId);
+
+            // step 2: do the respawn, which involves external logic
             DoRespawn(next->type, next->spawnId, next->gridId);
+
+            // step 3: get rid of the actual entry
             delete next;
         }
-        else if (!next->respawnTime) // just remove respawn entry without rescheduling
-        {
+        else if (!next->respawnTime)
+        { // just remove this respawn entry without rescheduling
             _respawnTimes.pop();
             GetRespawnMapForType(next->type).erase(next->spawnId);
             delete next;
         }
-        else // value changed, update heap position
-        {
+        else
+        { // new respawn time, update heap position
             ASSERT(now < next->respawnTime); // infinite loop guard
             _respawnTimes.decrease(next->handle);
             SaveRespawnInfoDB(*next);
@@ -3475,7 +3475,7 @@ bool Map::SpawnGroupSpawn(uint32 groupId, bool ignoreRespawn, bool force, std::v
     for (SpawnData const* data : toSpawn)
     {
         // don't spawn if the current map difficulty is not used by the spawn
-        if (!(data->spawnMask & GetSpawnMode()))
+        if (!(data->spawnMask & (1 << GetSpawnMode())))
             continue;
 
         // don't spawn if the grid isn't loaded (will be handled in grid loader)
@@ -3966,12 +3966,12 @@ bool InstanceMap::AddPlayerToMap(Player* player)
                         // players also become permanently bound when they enter
                         if (groupBind->perm)
                         {
-                            WorldPacket data(SMSG_INSTANCE_LOCK_WARNING_QUERY, 10);
-                            data << uint32(60000);
-                            data << uint32(i_data ? i_data->GetCompletedEncounterMask() : 0);
-                            data << uint8(0);
-                            data << uint8(0); // events it throws:  1 : INSTANCE_LOCK_WARNING   0 : INSTANCE_LOCK_STOP / INSTANCE_LOCK_START
-                            player->SendDirectMessage(&data);
+                            WorldPackets::Instance::PendingRaidLock pendingRaidLock;
+                            pendingRaidLock.TimeUntilLock = 60000;
+                            pendingRaidLock.CompletedMask = i_data ? i_data->GetCompletedEncounterMask() : 0;
+                            pendingRaidLock.Extending = false;
+                            pendingRaidLock.WarningOnly = false; // events it throws:  1 : INSTANCE_LOCK_WARNING   0 : INSTANCE_LOCK_STOP / INSTANCE_LOCK_START
+                            player->SendDirectMessage(pendingRaidLock.Write());
                             player->SetPendingBind(mapSave->GetInstanceId(), 60000);
                         }
                     }
@@ -4163,9 +4163,9 @@ void InstanceMap::PermBindAllPlayers()
         else
         {
             player->BindToInstance(save, true);
-            WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
-            data << uint32(0);
-            player->SendDirectMessage(&data);
+            WorldPackets::Instance::InstanceSaveCreated data;
+            data.Gm = player->IsGameMaster();
+            player->SendDirectMessage(data.Write());
             player->GetSession()->SendCalendarRaidLockout(save, true);
 
             // if group leader is in instance, group also gets bound

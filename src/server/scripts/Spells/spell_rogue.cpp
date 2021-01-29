@@ -1419,6 +1419,9 @@ class spell_rog_bandits_guile : public AuraScript
         uint32 spellId = SPELL_ROGUE_SHALLOW_INSIGHT;
         int32 basepoints = 10;
 
+        // Todo: validate if the required number of successful procs itself changes or if the proc chance of lower ranks is taking care of it already.
+        uint8 const neededProcs = 4;
+
         // We are striking a new opponent, reset progress
         if (_recentTargetGUID != procTarget->GetGUID())
         {
@@ -1426,24 +1429,34 @@ class spell_rog_bandits_guile : public AuraScript
             target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID());
             target->RemoveAurasDueToSpell(SPELL_ROGUE_DEEP_INSIGHT, target->GetGUID());
             _recentTargetGUID = procTarget->GetGUID();
+            _procStrikes = 0;
         }
 
+        _procStrikes = std::min<uint8>(_procStrikes + 1, neededProcs * 3);
+
+        if (_procStrikes < neededProcs)
+            return;
+
         // We are increasing our insight on the opponent
-        if (target->HasAura(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID()))
+        if (_procStrikes >= neededProcs * 3)
         {
-            target->RemoveAurasDueToSpell(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID());
+            spellId = SPELL_ROGUE_DEEP_INSIGHT;
+            basepoints = 30;
+            _procStrikes = 0;
+        }
+        else if (_procStrikes >= neededProcs * 2)
+        {
             spellId = SPELL_ROGUE_MODERATE_INSIGHT;
             basepoints = 20;
         }
-        else if (target->HasAura(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID()))
-        {
-            target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID());
-            spellId = SPELL_ROGUE_DEEP_INSIGHT;
-            basepoints = 30;
-        }
 
-        target->CastSpell(target, spellId, true);
-        target->CastSpell(procTarget, SPELL_ROGUE_BANDITS_GUILE, CastSpellExtraArgs(true).AddSpellBP0(basepoints).AddSpellMod(SPELLVALUE_BASE_POINT1, basepoints));
+        if (spellId == SPELL_ROGUE_DEEP_INSIGHT && target->HasAura(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID()))
+            target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID());
+        else if (spellId == SPELL_ROGUE_MODERATE_INSIGHT && target->HasAura(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID()))
+            target->RemoveAurasDueToSpell(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID());
+
+        target->CastSpell(target, spellId);
+        target->CastSpell(procTarget, SPELL_ROGUE_BANDITS_GUILE, CastSpellExtraArgs().AddSpellBP0(basepoints).AddSpellMod(SPELLVALUE_BASE_POINT1, basepoints));
     }
 
     void Register() override
@@ -1453,6 +1466,7 @@ class spell_rog_bandits_guile : public AuraScript
     }
 private:
     ObjectGuid _recentTargetGUID;
+    uint8 _procStrikes = 0;
 };
 
 // 14181 - Relentless Strikes

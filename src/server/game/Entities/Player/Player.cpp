@@ -37,6 +37,7 @@
 #include "CharacterPackets.h"
 #include "Chat.h"
 #include "CinematicMgr.h"
+#include "CombatPackets.h"
 #include "CombatLogPackets.h"
 #include "Common.h"
 #include "ConditionMgr.h"
@@ -58,6 +59,7 @@
 #include "GuildMgr.h"
 #include "InstanceSaveMgr.h"
 #include "InstanceScript.h"
+#include "InstancePackets.h"
 #include "ItemPackets.h"
 #include "KillRewarder.h"
 #include "Language.h"
@@ -657,7 +659,7 @@ bool Player::StoreNewItemInBestSlots(uint32 titem_id, uint32 titem_amount)
         if (msg != EQUIP_ERR_OK)
             break;
 
-        EquipNewItem(eDest, titem_id, true, GenerateItemRandomPropertyId(titem_id));
+        EquipNewItem(eDest, titem_id, true);
         AutoUnequipOffhandIfNeed();
         --titem_amount;
     }
@@ -3734,7 +3736,7 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
                     do
                     {
                         Field* fields = resultItems->Fetch();
-                        uint32 mailId = fields[14].GetUInt32();
+                        uint32 mailId = fields[15].GetUInt32();
                         if (Item* mailItem = _LoadMailedItem(playerguid, nullptr, mailId, nullptr, fields))
                             itemsByMail[mailId].push_back(mailItem);
 
@@ -4133,12 +4135,9 @@ void Player::BuildPlayerRepop()
 
 void Player::ResurrectPlayer(float restore_percent, bool applySickness)
 {
-    WorldPacket data(SMSG_DEATH_RELEASE_LOC, 4*4);          // remove spirit healer position
-    data << uint32(-1);
-    data << float(0);
-    data << float(0);
-    data << float(0);
-    SendDirectMessage(&data);
+    WorldPackets::Misc::DeathReleaseLoc packet;
+    packet.MapID = -1;
+    SendDirectMessage(packet.Write());
 
     // speed change, land walk
 
@@ -4579,12 +4578,10 @@ void Player::RepopAtGraveyard()
         TeleportTo(ClosestGrave->Continent, ClosestGrave->Loc.X, ClosestGrave->Loc.Y, ClosestGrave->Loc.Z, orientation ? *orientation : GetOrientation());
         if (isDead())                                        // not send if alive, because it used in TeleportTo()
         {
-            WorldPacket data(SMSG_DEATH_RELEASE_LOC, 4 * 4);  // show spirit healer position on minimap
-            data << ClosestGrave->Continent;
-            data << ClosestGrave->Loc.X;
-            data << ClosestGrave->Loc.Y;
-            data << ClosestGrave->Loc.Z;
-            SendDirectMessage(&data);
+            WorldPackets::Misc::DeathReleaseLoc packet;
+            packet.MapID = ClosestGrave->Continent;
+            packet.Loc.Pos = { ClosestGrave->Loc.X, ClosestGrave->Loc.Y, ClosestGrave->Loc.Z };
+            SendDirectMessage(packet.Write());
         }
     }
     else if (GetPositionZ() < GetMap()->GetMinHeight(GetPhaseShift(), GetPositionX(), GetPositionY()))
@@ -5879,6 +5876,8 @@ ActionButton const* Player::GetActionButton(uint8 button)
 
 bool Player::UpdatePosition(float x, float y, float z, float orientation, bool teleport)
 {
+    uint32 oldWmoGroupId = GetWMOGroupId();
+
     if (!Unit::UpdatePosition(x, y, z, orientation, teleport))
         return false;
 
@@ -5897,9 +5896,16 @@ bool Player::UpdatePosition(float x, float y, float z, float orientation, bool t
         m_needsZoneUpdate = false;
     }
 
-    // group update
+    // Add group update flags
     if (GetGroup())
+    {
+        // Position has changed
         SetGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+
+        // Player is no longer on a WMO that belongs to the same area
+        if (oldWmoGroupId != GetWMOGroupId())
+            SetGroupUpdateFlag(GROUP_UPDATE_FLAG_WMO_GROUP_ID);
+    }
 
     CheckAreaExploreAndOutdoor();
 
@@ -6472,12 +6478,12 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
     // victim_rank [1..4]  HK: <dishonored rank>
     // victim_rank [5..19] HK: <alliance\horde rank>
     // victim_rank [0, 20+] HK: <>
-    WorldPacket data(SMSG_PVP_CREDIT, 4+8+4);
-    data << uint32(honor);
-    data << uint64(victim_guid);
-    data << uint32(victim_rank);
+    WorldPackets::Combat::PvPCredit data;
+    data.Honor = honor;
+    data.Target = victim_guid;
+    data.Rank = victim_rank;
 
-    SendDirectMessage(&data);
+    SendDirectMessage(data.Write());
 
     // add honor points
     ModifyCurrency(CURRENCY_TYPE_HONOR_POINTS, int32(honor));
@@ -8584,13 +8590,13 @@ void Player::SendNotifyCurrencyLootRemoved(uint8 lootSlot)
     SendDirectMessage(&data);
 }
 
-void Player::SendUpdateWorldState(uint32 Field, uint32 Value) const
+void Player::SendUpdateWorldState(uint32 variable, uint32 value, bool hidden /*= false*/) const
 {
-    WorldPacket data(SMSG_UPDATE_WORLD_STATE, 4+4+1);
-    data << Field;
-    data << Value;
-    data << uint8(0);
-    SendDirectMessage(&data);
+    WorldPackets::WorldState::UpdateWorldState worldstate;
+    worldstate.VariableID = variable;
+    worldstate.Value = value;
+    worldstate.Hidden = hidden;
+    SendDirectMessage(worldstate.Write());
 }
 
 void Player::SendInitWorldStates(uint32 zoneId, uint32 areaId)
@@ -9289,9 +9295,8 @@ uint32 Player::GetXPRestBonus(uint32 xp)
 
 void Player::SetBindPoint(ObjectGuid guid) const
 {
-    WorldPacket data(SMSG_BINDER_CONFIRM, 8);
-    data << uint64(guid);
-    SendDirectMessage(&data);
+    WorldPackets::Misc::BinderConfirm packet(guid);
+    SendDirectMessage(packet.Write());
 }
 
 void Player::SendTalentWipeConfirm(ObjectGuid guid) const
@@ -11365,7 +11370,7 @@ InventoryResult Player::CanRollForItemInLFG(ItemTemplate const* proto, WorldObje
 }
 
 // Return stored item (if stored to stack, it can diff. from pItem). And pItem ca be deleted in this case.
-Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 item, bool update, int32 randomPropertyId, GuidSet const& allowedLooters)
+Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 item, bool update, ItemRandomEnchantmentId const& randomPropertyId /*= {}*/, GuidSet const& allowedLooters)
 {
     uint32 count = 0;
     for (ItemPosCountVec::const_iterator itr = dest.begin(); itr != dest.end(); ++itr)
@@ -11377,8 +11382,7 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 item, bool update
         ItemAddedQuestCheck(item, count);
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_RECEIVE_EPIC_ITEM, item, count);
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item, count);
-        if (randomPropertyId)
-            pItem->SetItemRandomProperties(randomPropertyId);
+        pItem->SetItemRandomProperties(randomPropertyId);
         pItem = StoreItem(dest, pItem, update);
 
         if (allowedLooters.size() > 1 && pItem->GetTemplate()->GetMaxStackSize() == 1 && pItem->IsSoulBound())
@@ -11529,15 +11533,13 @@ Item* Player::_StoreItem(uint16 pos, Item* pItem, uint32 count, bool clone, bool
     }
 }
 
-Item* Player::EquipNewItem(uint16 pos, uint32 item, bool update, int32 randomPropertyId)
+Item* Player::EquipNewItem(uint16 pos, uint32 item, bool update)
 {
     if (Item* pItem = Item::CreateItem(item, 1, this))
     {
         ItemAddedQuestCheck(item, 1);
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_RECEIVE_EPIC_ITEM, item, 1);
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item, 1);
-        if (randomPropertyId)
-            pItem->SetItemRandomProperties(randomPropertyId);
         return EquipItem(pos, pItem, update);
     }
 
@@ -11747,28 +11749,8 @@ void Player::RemoveItem(uint8 bag, uint8 slot, bool update)
 
                 _ApplyItemMods(pItem, slot, false, update);
 
-                // remove item dependent auras and casts (only weapon and armor slots)
-                if (slot < EQUIPMENT_SLOT_END)
-                {
-                    // remove held enchantments, update expertise
-                    if (slot == EQUIPMENT_SLOT_MAINHAND)
-                    {
-                        if (pItem->GetItemSuffixFactor())
-                        {
-                            pItem->ClearEnchantment(PROP_ENCHANTMENT_SLOT_3);
-                            pItem->ClearEnchantment(PROP_ENCHANTMENT_SLOT_4);
-                        }
-                        else
-                        {
-                            pItem->ClearEnchantment(PROP_ENCHANTMENT_SLOT_0);
-                            pItem->ClearEnchantment(PROP_ENCHANTMENT_SLOT_1);
-                        }
-
-                        UpdateExpertise(BASE_ATTACK);
-                    }
-                    else if (slot == EQUIPMENT_SLOT_OFFHAND)
-                        UpdateExpertise(OFF_ATTACK);
-                }
+                if (slot == EQUIPMENT_SLOT_MAINHAND || slot == EQUIPMENT_SLOT_OFFHAND)
+                    UpdateExpertise(OFF_ATTACK);
             }
 
             m_items[slot] = nullptr;
@@ -17972,8 +17954,8 @@ void Player::_LoadInventory(PreparedQueryResult result, uint32 timeDiff)
             Field* fields = result->Fetch();
             if (Item* item = _LoadItem(trans, zoneId, timeDiff, fields))
             {
-                ObjectGuid::LowType bagGuid = fields[11].GetUInt32();
-                uint8  slot     = fields[12].GetUInt8();
+                ObjectGuid::LowType bagGuid = fields[12].GetUInt32();
+                uint8  slot     = fields[13].GetUInt8();
 
                 InventoryResult err = EQUIP_ERR_OK;
                 // Item is not in bag
@@ -18086,15 +18068,15 @@ void Player::_LoadVoidStorage(PreparedQueryResult result)
 
     do
     {
-        // SELECT itemid, itemEntry, slot, creatorGuid FROM character_void_storage WHERE playerGuid = ?
+        // SELECT itemid, itemEntry, slot,  creatorGuid FROM character_void_storage WHERE playerGuid = ?
         Field* fields = result->Fetch();
 
         uint64 itemId = fields[0].GetUInt64();
         uint32 itemEntry = fields[1].GetUInt32();
         uint8 slot = fields[2].GetUInt8();
         ObjectGuid creatorGuid(HighGuid::Player, fields[3].GetUInt32());
-        uint32 randomProperty = fields[4].GetUInt32();
-        uint32 suffixFactor = fields[5].GetUInt32();
+        ItemRandomEnchantmentId randomProperty(ItemRandomEnchantmentType(fields[4].GetUInt8()), fields[5].GetUInt32());
+        uint32 suffixFactor = fields[6].GetUInt32();
 
         if (!itemId)
         {
@@ -18129,8 +18111,8 @@ void Player::_LoadVoidStorage(PreparedQueryResult result)
 Item* Player::_LoadItem(CharacterDatabaseTransaction& trans, uint32 zoneId, uint32 timeDiff, Field* fields)
 {
     Item* item = nullptr;
-    ObjectGuid::LowType itemGuid  = fields[13].GetUInt32();
-    uint32 itemEntry = fields[14].GetUInt32();
+    ObjectGuid::LowType itemGuid  = fields[14].GetUInt32();
+    uint32 itemEntry = fields[15].GetUInt32();
     if (ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemEntry))
     {
         bool remove = false;
@@ -18256,8 +18238,8 @@ Item* Player::_LoadItem(CharacterDatabaseTransaction& trans, uint32 zoneId, uint
 // load mailed item which should receive current player
 Item* Player::_LoadMailedItem(ObjectGuid const& playerGuid, Player* player, uint32 mailId, Mail* mail, Field* fields)
 {
-    ObjectGuid::LowType itemGuid = fields[11].GetUInt32();
-    uint32 itemEntry = fields[12].GetUInt32();
+    ObjectGuid::LowType itemGuid = fields[12].GetUInt32();
+    uint32 itemEntry = fields[13].GetUInt32();
 
     ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemEntry);
     if (!proto)
@@ -18279,7 +18261,7 @@ Item* Player::_LoadMailedItem(ObjectGuid const& playerGuid, Player* player, uint
 
     Item* item = NewItemOrBag(proto);
 
-    ObjectGuid ownerGuid = fields[13].GetUInt32() ? ObjectGuid::Create<HighGuid::Player>(fields[13].GetUInt32()) : ObjectGuid::Empty;
+    ObjectGuid ownerGuid = fields[14].GetUInt32() ? ObjectGuid::Create<HighGuid::Player>(fields[14].GetUInt32()) : ObjectGuid::Empty;
     if (!item->LoadFromDB(itemGuid, ownerGuid, fields, itemEntry))
     {
         TC_LOG_ERROR("entities.player", "Player::_LoadMailedItems: Item (GUID: %u) in mail (%u) doesn't exist, deleted from mail.", itemGuid, mailId);
@@ -18349,7 +18331,7 @@ void Player::_LoadMail(PreparedQueryResult mailsResult, PreparedQueryResult mail
         do
         {
             Field* fields = mailItemsResult->Fetch();
-            uint32 mailId = fields[14].GetUInt32();
+            uint32 mailId = fields[15].GetUInt32();
             _LoadMailedItem(GetGUID(), this, mailId, mailById[mailId], fields);
         } while (mailItemsResult->NextRow());
     }
@@ -18918,6 +18900,20 @@ InstancePlayerBind* Player::GetBoundInstance(uint32 mapid, Difficulty difficulty
     return nullptr;
 }
 
+InstancePlayerBind const* Player::GetBoundInstance(uint32 mapid, Difficulty difficulty, bool withExpired) const
+{
+    // some instances only have one difficulty
+    MapDifficulty const* mapDiff = sDBCManager.GetDownscaledMapDifficultyData(mapid, difficulty);
+    if (!mapDiff)
+        return nullptr;
+
+    BoundInstancesMap::const_iterator itr = m_boundInstances[difficulty].find(mapid);
+    if (itr != m_boundInstances[difficulty].end())
+        if (itr->second.extendState || withExpired)
+            return &itr->second;
+    return nullptr;
+}
+
 InstanceSave* Player::GetInstanceSave(uint32 mapid, bool raid)
 {
     InstancePlayerBind* pBind = GetBoundInstance(mapid, GetDifficulty(raid));
@@ -19048,12 +19044,7 @@ void Player::SetPendingBind(uint32 instanceId, uint32 bindTimer)
 
 void Player::SendRaidInfo()
 {
-    uint32 counter = 0;
-
-    WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
-
-    size_t p_counter = data.wpos();
-    data << uint32(counter);                                // placeholder
+    WorldPackets::Instance::InstanceInfo instanceInfo;
 
     time_t now = GameTime::GetGameTime();
 
@@ -19065,30 +19056,38 @@ void Player::SendRaidInfo()
             if (bind.perm)
             {
                 InstanceSave* save = bind.save;
-                bool isHeroic = save->GetDifficulty() == RAID_DIFFICULTY_10MAN_HEROIC || save->GetDifficulty() == RAID_DIFFICULTY_25MAN_HEROIC;
-                uint32 completedEncounters = 0;
+
+                WorldPackets::Instance::InstanceLock lockInfos;
+
+                Difficulty difficulty = save->GetDifficulty();
+                lockInfos.Heroic = (difficulty == RAID_DIFFICULTY_10MAN_HEROIC || difficulty == RAID_DIFFICULTY_25MAN_HEROIC);
+
+                if (lockInfos.Heroic)
+                    lockInfos.Difficulty = difficulty == RAID_DIFFICULTY_10MAN_HEROIC ? RAID_DIFFICULTY_10MAN_NORMAL : RAID_DIFFICULTY_25MAN_NORMAL;
+                else
+                    lockInfos.Difficulty = difficulty;
+
+                lockInfos.InstanceID = save->GetInstanceId();
+                lockInfos.MapID = save->GetMapId();
+                if (bind.extendState != EXTEND_STATE_EXTENDED)
+                    lockInfos.TimeRemaining = save->GetResetTime() - now;
+                else
+                    lockInfos.TimeRemaining = sInstanceSaveMgr->GetSubsequentResetTime(save->GetMapId(), save->GetDifficulty(), save->GetResetTime()) - now;
+
+                lockInfos.CompletedMask = 0;
                 if (Map* map = sMapMgr->FindMap(save->GetMapId(), save->GetInstanceId()))
                     if (InstanceScript* instanceScript = ((InstanceMap*)map)->GetInstanceScript())
-                        completedEncounters = instanceScript->GetCompletedEncounterMask();
+                        lockInfos.CompletedMask = instanceScript->GetCompletedEncounterMask();
 
-                data << uint32(save->GetMapId());                          // map id
-                data << uint32(save->GetDifficulty());                     // difficulty
-                data << uint32(isHeroic);                   // heroic
-                data << uint64(save->GetInstanceId());                     // instance id
-                data << uint8(bind.extendState != EXTEND_STATE_EXPIRED);   // expired = 0
-                data << uint8(bind.extendState == EXTEND_STATE_EXTENDED);  // extended = 1
-                time_t nextReset = save->GetResetTime();
-                if (bind.extendState == EXTEND_STATE_EXTENDED)
-                    nextReset = sInstanceSaveMgr->GetSubsequentResetTime(save->GetMapId(), save->GetDifficulty(), save->GetResetTime());
-                data << uint32(nextReset - now);                           // reset time
-                data << uint32(completedEncounters);                       // completed encounters mask
-                ++counter;
+                lockInfos.Locked = bind.extendState != EXTEND_STATE_EXPIRED;
+                lockInfos.Extended = bind.extendState == EXTEND_STATE_EXTENDED;
+
+                instanceInfo.LockList.push_back(lockInfos);
             }
         }
     }
 
-    data.put<uint32>(p_counter, counter);
-    SendDirectMessage(&data);
+    SendDirectMessage(instanceInfo.Write());
 }
 
 /*
@@ -19111,10 +19110,10 @@ void Player::SendSavedInstances()
         }
     }
 
-    //Send opcode SMSG_UPDATE_INSTANCE_OWNERSHIP. true or false means, whether you have current raid/heroic instances
-    data.Initialize(SMSG_UPDATE_INSTANCE_OWNERSHIP, 4);
-    data << uint32(hasBeenSaved);
-    SendDirectMessage(&data);
+    // Send opcode SMSG_UPDATE_INSTANCE_OWNERSHIP. true or false means, whether you have current raid/heroic instances
+    WorldPackets::Instance::UpdateInstanceOwnership updateInstanceOwnership;
+    updateInstanceOwnership.IOwnInstance = hasBeenSaved;
+    SendDirectMessage(updateInstanceOwnership.Write());
 
     if (!hasBeenSaved)
         return;
@@ -19125,9 +19124,9 @@ void Player::SendSavedInstances()
         {
             if (itr->second.perm)
             {
-                data.Initialize(SMSG_UPDATE_LAST_INSTANCE, 4);
-                data << uint32(itr->second.save->GetMapId());
-                SendDirectMessage(&data);
+                WorldPackets::Instance::UpdateLastInstance packet;
+                packet.MapID = itr->second.save->GetMapId();
+                SendDirectMessage(packet.Write());
             }
         }
     }
@@ -20002,14 +20001,14 @@ void Player::_SaveVoidStorage(CharacterDatabaseTransaction& trans)
             stmt->setUInt32(2, _voidStorageItems[i]->ItemEntry);
             stmt->setUInt8(3, i);
             stmt->setUInt32(4, _voidStorageItems[i]->CreatorGuid.GetCounter());
-            stmt->setUInt32(5, _voidStorageItems[i]->ItemRandomPropertyId);
-            stmt->setUInt32(6, _voidStorageItems[i]->ItemSuffixFactor);
+            stmt->setUInt8(5, uint8(_voidStorageItems[i]->ItemRandomPropertyId.Type));
+            stmt->setUInt32(6, _voidStorageItems[i]->ItemRandomPropertyId.Id);
+            stmt->setUInt32(7, _voidStorageItems[i]->ItemSuffixFactor);
         }
 
         trans->Append(stmt);
     }
 }
-
 
 void Player::_SaveCUFProfiles(CharacterDatabaseTransaction& trans)
 {
@@ -22026,7 +22025,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint32 
 
     Item* it = bStore ?
         StoreNewItem(vDest, item, true, GenerateItemRandomPropertyId(item)) :
-        EquipNewItem(uiDest, item, true, GenerateItemRandomPropertyId(item));
+        EquipNewItem(uiDest, item, true);
     if (it)
     {
         uint32 new_count = pVendor->UpdateVendorItemCurrentCount(crItem, count);
@@ -22473,13 +22472,8 @@ void Player::UpdateHomebindTime(uint32 time)
     if (m_InstanceValid || IsGameMaster())
     {
         if (m_HomebindTimer)                                 // instance valid, but timer not reset
-        {
-            // hide reminder
-            WorldPacket data(SMSG_RAID_GROUP_ONLY, 4+4);
-            data << uint32(0);
-            data << uint32(0);
-            SendDirectMessage(&data);
-        }
+            SendRaidGroupOnlyMessage(RAID_GROUP_ERR_NONE, 0);
+
         // instance is valid, reset homebind timer
         m_HomebindTimer = 0;
     }
@@ -22498,10 +22492,7 @@ void Player::UpdateHomebindTime(uint32 time)
         // instance is invalid, start homebind timer
         m_HomebindTimer = 60000;
         // send message to player
-        WorldPacket data(SMSG_RAID_GROUP_ONLY, 4+4);
-        data << uint32(m_HomebindTimer);
-        data << uint32(1);
-        SendDirectMessage(&data);
+        SendRaidGroupOnlyMessage(RAID_GROUP_ERR_REQUIREMENTS_UNMATCH, m_HomebindTimer);
         TC_LOG_DEBUG("maps", "Player::UpdateHomebindTime: Player '%s' (%s) will be teleported to homebind in 60 seconds",
             GetName().c_str(), GetGUID().ToString().c_str());
     }
@@ -23387,7 +23378,13 @@ void Player::SendInitialPacketsBeforeAddToMap()
 
     /// SMSG_RESYNC_RUNES
     if (getClass() == CLASS_DEATH_KNIGHT)
-        ResyncRunes(0);
+    {
+        // Initialize rune cooldowns
+        ResyncRunes();
+
+        // Send already converted runes
+        SendConvertedRunes();
+    }
 
     // Spell modifiers
     SendSpellModifiers();
@@ -23512,11 +23509,11 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
 
 void Player::SendTransferAborted(uint32 mapid, TransferAbortReason reason, uint8 arg) const
 {
-    WorldPacket data(SMSG_TRANSFER_ABORTED, 4+2);
-    data << uint32(mapid);
-    data << uint8(reason); // transfer abort reason
-    data << uint8(arg);
-    SendDirectMessage(&data);
+    WorldPackets::Movement::TransferAborted packet;
+    packet.MapID = mapid;
+    packet.TransfertAbort = reason; // transfer abort reason
+    packet.Arg = arg;
+    SendDirectMessage(packet.Write());
 }
 
 void Player::SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint32 time, bool welcome) const
@@ -23534,17 +23531,17 @@ void Player::SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint3
     else
         type = RAID_INSTANCE_WARNING_MIN_SOON;
 
-    WorldPacket data(SMSG_RAID_INSTANCE_MESSAGE, 4+4+4+4);
-    data << uint32(type);
-    data << uint32(mapid);
-    data << uint32(difficulty);                             // difficulty
-    data << uint32(time);
-    if (type == RAID_INSTANCE_WELCOME)
-    {
-        data << uint8(0);                                   // is locked
-        data << uint8(0);                                   // is extended, ignored if prev field is 0
-    }
-    SendDirectMessage(&data);
+    WorldPackets::Instance::RaidInstanceMessage raidInstanceMessage;
+    raidInstanceMessage.Type = type;
+    raidInstanceMessage.MapID = mapid;
+    raidInstanceMessage.Difficulty = difficulty;
+    raidInstanceMessage.TimeLeft = time;
+    if (InstancePlayerBind const* bind = GetBoundInstance(mapid, difficulty))
+        raidInstanceMessage.Locked = bind->perm;
+    else
+        raidInstanceMessage.Locked = false;
+    raidInstanceMessage.Extended = false;
+    SendDirectMessage(raidInstanceMessage.Write());
 }
 
 void Player::ApplyEquipCooldown(Item* pItem)
@@ -25434,7 +25431,7 @@ void Player::RestoreBaseRune(uint8 index)
     }
 
     ConvertRune(index, GetBaseRune(index));
-    SetRuneConvertAura(index, NULL, SPELL_AURA_NONE, NULL);
+    SetRuneConvertAura(index, nullptr, SPELL_AURA_NONE, nullptr);
 }
 
 void Player::ConvertRune(uint8 index, RuneType newType)
@@ -25448,13 +25445,32 @@ void Player::ConvertRune(uint8 index, RuneType newType)
     SendDirectMessage(packet.Write());
 }
 
-void Player::ResyncRunes(uint8 count)
+void Player::ResyncRunes()
 {
-    WorldPackets::Spells::ResyncRunes packet(count);
-    for (uint32 i = 0; i < count; ++i)
-        packet.Runes.push_back({ uint8(GetCurrentRune(i)), uint8(255 - (GetRuneCooldown(i) * 51)) });
+    WorldPackets::Spells::ResyncRunes packet;
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
+    {
+        WorldPackets::Spells::ResyncRune resyncRune;
+        resyncRune.RuneType = GetCurrentRune(i);
+        resyncRune.Cooldown = uint8(GetRuneCooldown(i) * uint32(255) / uint32(RUNE_BASE_COOLDOWN));
+        packet.Runes.emplace_back(resyncRune);
+    }
 
     SendDirectMessage(packet.Write());
+}
+
+void Player::SendConvertedRunes()
+{
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
+    {
+        if (GetBaseRune(i) != GetCurrentRune(i))
+        {
+            WorldPackets::Spells::ConvertRune convertRune;
+            convertRune.Index = i;
+            convertRune.Rune = GetCurrentRune(i);
+            SendDirectMessage(convertRune.Write());
+        }
+    }
 }
 
 void Player::AddRunePower(uint8 mask)
@@ -28207,6 +28223,15 @@ void Player::SendSpellCategoryCooldowns() const
     }
 
     SendDirectMessage(cooldowns.Write());
+}
+
+void Player::SendRaidGroupOnlyMessage(RaidGroupReason reason, int32 delay) const
+{
+    WorldPackets::Instance::RaidGroupOnly raidGroupOnly;
+    raidGroupOnly.Delay = delay;
+    raidGroupOnly.Reason = reason;
+
+    SendDirectMessage(raidGroupOnly.Write());
 }
 
 void Player::SetRestFlag(RestFlag restFlag, uint32 triggerId /*= 0*/)

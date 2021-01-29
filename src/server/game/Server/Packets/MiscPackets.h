@@ -475,6 +475,39 @@ namespace WorldPackets
 
             std::vector<CUFProfile const*> CUFProfiles;
         };
+
+        class DeathReleaseLoc : public ServerPacket
+        {
+        public:
+            DeathReleaseLoc() : ServerPacket(SMSG_DEATH_RELEASE_LOC, 4 + (3 * 4)) { }
+
+            WorldPacket const* Write() override;
+
+            int32 MapID = 0;
+            TaggedPosition<Position::XYZ> Loc;
+        };
+
+        class BinderConfirm final : public ServerPacket
+        {
+        public:
+            BinderConfirm() : ServerPacket(SMSG_BINDER_CONFIRM, 8) { }
+            BinderConfirm(ObjectGuid unit) : ServerPacket(SMSG_BINDER_CONFIRM, 8), Unit(unit) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid Unit;
+        };
+
+        class RequestCemeteryListResponse final : public ServerPacket
+        {
+        public:
+            RequestCemeteryListResponse() : ServerPacket(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 1) { }
+
+            WorldPacket const* Write() override;
+
+            bool IsGossipTriggered = false;
+            std::vector<uint32> CemeteryID;
+        };
     }
 }
 
