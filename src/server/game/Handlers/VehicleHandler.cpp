@@ -16,6 +16,7 @@
  */
 
 #include "WorldSession.h"
+#include "CreatureAI.h"
 #include "Creature.h"
 #include "DBCStructure.h"
 #include "Log.h"
