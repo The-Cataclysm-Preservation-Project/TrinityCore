@@ -68,6 +68,9 @@ void SmartWaypointMgr::LoadFromDB()
         float x = fields[2].GetFloat();
         float y = fields[3].GetFloat();
         float z = fields[4].GetFloat();
+        float v = fields[5].GetFloat();
+
+        float o = 0; // orientation not used here
 
         if (lastEntry != entry)
         {
@@ -82,7 +85,7 @@ void SmartWaypointMgr::LoadFromDB()
 
         WaypointPath& path = _waypointStore[entry];
         path.Id = entry;
-        path.Nodes.emplace_back(id, x, y, z);
+        path.Nodes.emplace_back(id, x, y, z, o, v);
 
         lastEntry = entry;
         ++total;
