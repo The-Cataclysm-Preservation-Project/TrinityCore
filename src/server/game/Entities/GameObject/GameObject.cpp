@@ -113,7 +113,7 @@ WorldPacket GameObjectTemplate::BuildQueryData(LocaleConstant loc) const
 }
 
 GameObject::GameObject() : WorldObject(false), MapObject(),
-    m_model(nullptr), m_goValue(), m_AI(nullptr), m_respawnCompatibilityMode(false), _triggerJustAppeared(true)
+    m_model(nullptr), m_goValue(), m_AI(nullptr), m_respawnCompatibilityMode(false), _triggerJustAppeared(true), m_visibleByUnitOnly()
 {
     m_objectType |= TYPEMASK_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;

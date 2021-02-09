@@ -5538,6 +5538,55 @@ void Spell::EffectUnlockGuildVaultTab(SpellEffIndex effIndex)
         guild->HandleBuyBankTab(caster->GetSession(), m_spellInfo->Effects[effIndex].BasePoints - 1); // Bank tabs start at zero internally
 }
 
+void Spell::EffectSummonPersonalGameObject(SpellEffIndex effIndex)
+{
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
+        return;
+
+    uint32 goId = m_spellInfo->Effects[effIndex].MiscValue;
+    if (!goId)
+        return;
+
+    float x, y, z;
+    if (m_targets.HasDst())
+        destTarget->GetPosition(x, y, z);
+    else
+        m_caster->GetClosePoint(x, y, z, DEFAULT_WORLD_OBJECT_SIZE);
+
+    Map* map = m_caster->GetMap();
+    Position pos = Position(x, y, z, m_caster->GetOrientation());
+    QuaternionData rot = QuaternionData::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f);
+    GameObject* go = new GameObject();
+
+    if (!go->Create(map->GenerateLowGuid<HighGuid::GameObject>(), goId, map, pos, rot, 255, GO_STATE_READY))
+    {
+        TC_LOG_WARN("spells", "SpellEffect Failed to summon personal gameobject. SpellId %u, effect %u", m_spellInfo->Id, effIndex);
+        return;
+    }
+
+    PhasingHandler::InheritPhaseShift(go, m_caster);
+
+    int32 duration = m_spellInfo->CalcDuration(m_caster);
+
+    go->SetRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+    go->SetSpellId(m_spellInfo->Id);
+    go->SetVisibleByUnitOnly(m_caster->GetGUID());
+
+    ExecuteLogEffectSummonObject(effIndex, go);
+
+    map->AddToMap(go);
+
+    if (GameObject* linkedTrap = go->GetLinkedTrap())
+    {
+        PhasingHandler::InheritPhaseShift(linkedTrap, m_caster);
+
+        linkedTrap->SetRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
+        linkedTrap->SetSpellId(m_spellInfo->Id);
+
+        ExecuteLogEffectSummonObject(effIndex, linkedTrap);
+    }
+}
+
 void Spell::EffectResurrectWithAura(SpellEffIndex effIndex)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)

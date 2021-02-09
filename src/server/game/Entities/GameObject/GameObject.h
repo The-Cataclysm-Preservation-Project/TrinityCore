@@ -302,6 +302,10 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         void AIM_Destroy();
         bool AIM_Initialize();
 
+        void SetVisibleByUnitOnly(ObjectGuid unit) { m_visibleByUnitOnly = unit; }
+        bool IsVisibleByUnitOnly() const { return !m_visibleByUnitOnly.IsEmpty(); }
+        ObjectGuid GetVisibleByUnitOnly() const { return m_visibleByUnitOnly; }
+
         void SetSpawnId(uint32 spawnId) { m_spawnId = spawnId; }
 
     protected:
@@ -362,5 +366,6 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         GameObjectAI* m_AI;
         bool m_respawnCompatibilityMode;
         bool _triggerJustAppeared;
+        ObjectGuid m_visibleByUnitOnly;
 };
 #endif
