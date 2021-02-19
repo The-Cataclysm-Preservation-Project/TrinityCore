@@ -1236,178 +1236,168 @@ UPDATE `creature_template` SET `trainer_type` = 2 WHERE `entry` = 44975;
 -- update gossip_menu_option flags
 UPDATE `gossip_menu_option` SET `OptionType` = 5, `OptionNpcflag` = 16 WHERE `MenuId` = 10569 AND `OptionIndex` = 0;
 
-
 -- correct the profession trainers
 -- add trainer options for the conditional training options under "Tell me about Herbalism"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12188 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12188,11,388), -- herbalism
-	(47384,12188,11,388),
-	(47396,12188,11,388),
-	(47400,12188,11,388),
-	(47418,12188,11,388),
-	(47419,12188,11,388),
-	(47420,12188,11,388),
-	(47421,12188,11,388),
-	(47431,12188,11,388),
-	(48619,12188,11,388),
-	(50247,12188,11,388);
-	
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12188,11,388), -- herbalism
+(47384,12188,11,388),
+(47396,12188,11,388),
+(47400,12188,11,388),
+(47418,12188,11,388),
+(47419,12188,11,388),
+(47420,12188,11,388),
+(47421,12188,11,388),
+(47431,12188,11,388),
+(48619,12188,11,388),
+(50247,12188,11,388);
+
 -- add trainer options for the conditional training options under "Tell me about Mining"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12189 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12189,11,389), -- mining
-	(47384,12189,11,389),
-	(47396,12189,11,389),
-	(47400,12189,11,389),
-	(47418,12189,11,389),
-	(47419,12189,11,389),
-	(47420,12189,11,389),
-	(47421,12189,11,389),
-	(47431,12189,11,389),
-	(48619,12189,11,389),
-	(50247,12189,11,389);
-	
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12189,11,389), -- mining
+(47384,12189,11,389),
+(47396,12189,11,389),
+(47400,12189,11,389),
+(47418,12189,11,389),
+(47419,12189,11,389),
+(47420,12189,11,389),
+(47421,12189,11,389),
+(47431,12189,11,389),
+(48619,12189,11,389),
+(50247,12189,11,389);
+
 -- add trainer options for the conditional training options under "Tell me about Skinning"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12190 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12190,11,390), -- skinning
-	(47384,12190,11,390),
-	(47396,12190,11,390),
-	(47400,12190,11,390),
-	(47418,12190,11,390),
-	(47419,12190,11,390),
-	(47420,12190,11,390),
-	(47421,12190,11,390),
-	(47431,12190,11,390),
-	(48619,12190,11,390),
-	(50247,12190,11,390);
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12190,11,390), -- skinning
+(47384,12190,11,390),
+(47396,12190,11,390),
+(47400,12190,11,390),
+(47418,12190,11,390),
+(47419,12190,11,390),
+(47420,12190,11,390),
+(47421,12190,11,390),
+(47431,12190,11,390),
+(48619,12190,11,390),
+(50247,12190,11,390);
 
 -- add trainer options for the conditional training options under "Tell me about Alchemy"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12191 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12191,11,122), -- alchemy
-	(47384,12191,11,122),
-	(47396,12191,11,122),
-	(47400,12191,11,122),
-	(47418,12191,11,122),
-	(47419,12191,11,122),
-	(47420,12191,11,122),
-	(47421,12191,11,122),
-	(47431,12191,11,122),
-	(48619,12191,11,122),
-	(50247,12191,11,122);
-	
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12191,11,122), -- alchemy
+(47384,12191,11,122),
+(47396,12191,11,122),
+(47400,12191,11,122),
+(47418,12191,11,122),
+(47419,12191,11,122),
+(47420,12191,11,122),
+(47421,12191,11,122),
+(47431,12191,11,122),
+(48619,12191,11,122),
+(50247,12191,11,122);
+
 -- add trainer options for the conditional training options under "Tell me about Blacksmithing"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12192 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12192,11,80), -- blacksmithing
-	(47384,12192,11,80),
-	(47396,12192,11,80),
-	(47400,12192,11,80),
-	(47418,12192,11,80),
-	(47419,12192,11,80),
-	(47420,12192,11,80),
-	(47421,12192,11,80),
-	(47431,12192,11,80),
-	(48619,12192,11,80),
-	(50247,12192,11,80);
-	
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12192,11,80), -- blacksmithing
+(47384,12192,11,80),
+(47396,12192,11,80),
+(47400,12192,11,80),
+(47418,12192,11,80),
+(47419,12192,11,80),
+(47420,12192,11,80),
+(47421,12192,11,80),
+(47431,12192,11,80),
+(48619,12192,11,80),
+(50247,12192,11,80);
+
 -- add trainer options for the conditional training options under "Tell me about Enchanting"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12193 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12193,11,51), -- enchanting
-	(47384,12193,11,51),
-	(47396,12193,11,51),
-	(47400,12193,11,51),
-	(47418,12193,11,51),
-	(47419,12193,11,51),
-	(47420,12193,11,51),
-	(47421,12193,11,51),
-	(47431,12193,11,51),
-	(48619,12193,11,51),
-	(50247,12193,11,51);
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12193,11,51), -- enchanting
+(47384,12193,11,51),
+(47396,12193,11,51),
+(47400,12193,11,51),
+(47418,12193,11,51),
+(47419,12193,11,51),
+(47420,12193,11,51),
+(47421,12193,11,51),
+(47431,12193,11,51),
+(48619,12193,11,51),
+(50247,12193,11,51);
 
 -- add trainer options for the conditional training options under "Tell me about Engineering"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12195 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12195,11,102), -- engineering
-	(47384,12195,11,102),
-	(47396,12195,11,102),
-	(47400,12195,11,102),
-	(47418,12195,11,102),
-	(47419,12195,11,102),
-	(47420,12195,11,102),
-	(47421,12195,11,102),
-	(47431,12195,11,102),
-	(48619,12195,11,102),
-	(50247,12195,11,102);
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12195,11,102), -- engineering
+(47384,12195,11,102),
+(47396,12195,11,102),
+(47400,12195,11,102),
+(47418,12195,11,102),
+(47419,12195,11,102),
+(47420,12195,11,102),
+(47421,12195,11,102),
+(47431,12195,11,102),
+(48619,12195,11,102),
+(50247,12195,11,102);
 
 -- add trainer options for the conditional training options under "Tell me about Inscription"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12196 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12196,11,63), -- inscription
-	(47384,12196,11,63),
-	(47396,12196,11,63),
-	(47400,12196,11,63),
-	(47418,12196,11,63),
-	(47419,12196,11,63),
-	(47420,12196,11,63),
-	(47421,12196,11,63),
-	(47431,12196,11,63),
-	(48619,12196,11,63),
-	(50247,12196,11,63);
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12196,11,63), -- inscription
+(47384,12196,11,63),
+(47396,12196,11,63),
+(47400,12196,11,63),
+(47418,12196,11,63),
+(47419,12196,11,63),
+(47420,12196,11,63),
+(47421,12196,11,63),
+(47431,12196,11,63),
+(48619,12196,11,63),
+(50247,12196,11,63);
 
 -- add trainer options for the conditional training options under "Tell me about Jewelcrafting"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12197 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12197,11,48), -- jewelcrafting
-	(47384,12197,11,48),
-	(47396,12197,11,48),
-	(47400,12197,11,48),
-	(47418,12197,11,48),
-	(47419,12197,11,48),
-	(47420,12197,11,48),
-	(47421,12197,11,48),
-	(47431,12197,11,48),
-	(48619,12197,11,48),
-	(50247,12197,11,48);
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12197,11,48), -- jewelcrafting
+(47384,12197,11,48),
+(47396,12197,11,48),
+(47400,12197,11,48),
+(47418,12197,11,48),
+(47419,12197,11,48),
+(47420,12197,11,48),
+(47421,12197,11,48),
+(47431,12197,11,48),
+(48619,12197,11,48),
+(50247,12197,11,48);
 
 -- add trainer options for the conditional training options under "Tell me about Leatherworking"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12198 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12198,11,103), -- leatherworking
-	(47384,12198,11,103),
-	(47396,12198,11,103),
-	(47400,12198,11,103),
-	(47418,12198,11,103),
-	(47419,12198,11,103),
-	(47420,12198,11,103),
-	(47421,12198,11,103),
-	(47431,12198,11,103),
-	(48619,12198,11,103),
-	(50247,12198,11,103);
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12198,11,103), -- leatherworking
+(47384,12198,11,103),
+(47396,12198,11,103),
+(47400,12198,11,103),
+(47418,12198,11,103),
+(47419,12198,11,103),
+(47420,12198,11,103),
+(47421,12198,11,103),
+(47431,12198,11,103),
+(48619,12198,11,103),
+(50247,12198,11,103);
 
 -- add trainer options for the conditional training options under "Tell me about Tailoring"
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (45286,47384,47396,47400,47418,47419,47420,47421,47431,48619,50247) AND `MenuId` = 12199 AND `OptionIndex` = 11;
-INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`)
-VALUES (45286,12199,11,117), -- tailoring
-	(47384,12199,11,117),
-	(47396,12199,11,117),
-	(47400,12199,11,117),
-	(47418,12199,11,117),
-	(47419,12199,11,117),
-	(47420,12199,11,117),
-	(47421,12199,11,117),
-	(47431,12199,11,117),
-	(48619,12199,11,117),
-	(50247,12199,11,117);
-
--- correct a few innkeepers
-UPDATE `gossip_menu_option` SET `OptionType` = 8, `OptionNpcflag` = 65536 WHERE `MenuId` = 1297 AND `OptionIndex` = 1;
-UPDATE `gossip_menu_option` SET `OptionType` = 3, `OptionNpcflag` = 128 WHERE `MenuId` = 1297 AND `OptionIndex` = 2;
-UPDATE `gossip_menu_option` SET `OptionType` = 1, `OptionNpcflag` = 1 WHERE `MenuId` = 1293 AND `OptionIndex` = 0;
-UPDATE `gossip_menu_option` SET `OptionType` = 8, `OptionNpcflag` = 65536 WHERE `MenuId` = 1293 AND `OptionIndex` = 1;
-UPDATE `gossip_menu_option` SET `OptionType` = 3, `OptionNpcflag` = 128 WHERE `MenuId` = 1293 AND `OptionIndex` = 2;
-UPDATE `gossip_menu_option` SET `OptionIcon` = 0, `OptionText` = 'What can I do at an inn?', `OptionBroadcastTextId` = 4308 WHERE `MenuId` = 1294 AND `OptionIndex` = 2;
-UPDATE `gossip_menu_option` SET `OptionIcon` = 0, `OptionText` = 'What can I do at an inn?', `OptionBroadcastTextId` = 4308 WHERE `MenuId` = 7468 AND `OptionIndex` = 2;
+INSERT INTO `creature_trainer` (`CreatureId`, `MenuId`, `OptionIndex`, `TrainerId`) VALUES
+(45286,12199,11,117), -- tailoring
+(47384,12199,11,117),
+(47396,12199,11,117),
+(47400,12199,11,117),
+(47418,12199,11,117),
+(47419,12199,11,117),
+(47420,12199,11,117),
+(47421,12199,11,117),
+(47431,12199,11,117),
+(48619,12199,11,117),
+(50247,12199,11,117);
