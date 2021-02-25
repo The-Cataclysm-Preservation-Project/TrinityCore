@@ -258,7 +258,14 @@ bool FollowMovementGenerator::Update(Unit* owner, uint32 diff)
                 Movement::MoveSplineInit init (owner);
                 if (_faceTarget)
                     init.SetFacing(target);
-                init.MoveTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
+
+                float hoverHeight = owner->ToCreature()->GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+
+                if (hoverHeight >= 0.1f)
+                    init.MoveTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + hoverHeight);
+                else
+                    init.MoveTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
+
                 uint32 duration = std::max<uint32>(1, init.Launch());
 
                 if (!_faceTarget)
@@ -364,7 +371,14 @@ void FollowMovementGenerator::LaunchMovement(Unit* owner)
     }
 
     Movement::MoveSplineInit init(owner);
-    init.MoveTo(dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ());
+
+    float hoverHeight = owner->ToCreature()->GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+
+    if (hoverHeight >= 0.1f)
+        init.MoveTo(dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ() + hoverHeight);
+    else
+        init.MoveTo(dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ());
+
     init.SetVelocity(velocity);
 
     if (_faceTarget)
