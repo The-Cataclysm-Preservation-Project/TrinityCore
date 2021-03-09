@@ -30,6 +30,7 @@
 #include "SpellHistory.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "Unit.h"
 
 enum MageSpells
 {

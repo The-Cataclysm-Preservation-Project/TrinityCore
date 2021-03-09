@@ -32,6 +32,7 @@
 #include "SpellAuras.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "Unit.h"
 
 enum WarlockSpells
 {

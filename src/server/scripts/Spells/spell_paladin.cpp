@@ -30,6 +30,7 @@
 #include "SpellMgr.h"
 #include "Spell.h"
 #include "TemporarySummon.h"
+#include "Unit.h"
 
 enum PaladinSpells
 {
