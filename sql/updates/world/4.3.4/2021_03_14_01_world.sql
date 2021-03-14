@@ -4,9 +4,9 @@ UPDATE `creature` SET `spawntimesecs` = 90 WHERE `id` = 34287;
 UPDATE `creature_template` SET `AIName` = 'SmartAI' ,`flags_extra`=128 WHERE `entry`= 34287;
 DELETE FROM `smart_scripts` WHERE `entryorguid` IN (-304052,-304053,-304051);
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
-(-304052, 0, 0, 0, 1, 0, 100, 1, 1, 1, 10, 12, 11, 65072, 4, 0, 0, 0, 0, 10, 304050, 34285, 0, 0, 0, 0, 0, 'Trigger Bunny Cast Chains to Trapped Wolf'),
-(-304053, 0, 0, 0, 1, 0, 100, 1, 1, 1, 10, 12, 11, 65072, 4, 0, 0, 0, 0, 10, 304049, 34285, 0, 0, 0, 0, 0, 'Trigger Bunny Cast Chains to Trapped Wolf'),
-(-304051, 0, 0, 0, 1, 0, 100, 1, 1, 1, 10, 12, 11, 65072, 4, 0, 0, 0, 0, 10, 304048, 34285, 0, 0, 0, 0, 0, 'Trigger Bunny Cast Chains to Trapped Wolf');
+(-304052, 0, 0, 0, 1, 0, 100, 0, 1, 1, 10, 12, 11, 65072, 4, 0, 0, 0, 0, 10, 304050, 34285, 0, 0, 0, 0, 0, 'Trigger Bunny Cast Chains to Trapped Wolf'),
+(-304053, 0, 0, 0, 1, 0, 100, 0, 1, 1, 10, 12, 11, 65072, 4, 0, 0, 0, 0, 10, 304049, 34285, 0, 0, 0, 0, 0, 'Trigger Bunny Cast Chains to Trapped Wolf'),
+(-304051, 0, 0, 0, 1, 0, 100, 0, 1, 1, 10, 12, 11, 65072, 4, 0, 0, 0, 0, 10, 304048, 34285, 0, 0, 0, 0, 0, 'Trigger Bunny Cast Chains to Trapped Wolf');
 
 /*Wolf Chains (gObjects)*/
 UPDATE `gameobject_template` SET `AIName` = 'SmartGameObjectAI' WHERE `entry` IN (195001,195003,195004);
