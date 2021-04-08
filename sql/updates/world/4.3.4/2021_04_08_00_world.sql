@@ -1,13 +1,13 @@
 -- Alliance Trainers Gossip Corrections
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (37115, 37121, 42331, 42323, 42366, 43006, 43455);
 insert into `creature_trainer` values 
-('43455', '32', '11831', '0'),
-('43006', '44', '11810', '0'),
-('42331', '44', '11620', '0'),
-('37121', '44', '10878', '0'),
-('37115', '134', '10879', '0'),
-('42323', '127', '11617', '0'),
-('42366', '17', '11621', '0');
+('43455', '32', '11831', '0'), -- https://www.wowhead.com/npc=43455/saripal-smolderbrew Ironforge Warlock Trainer
+('43006', '44', '11810', '0'), -- https://www.wowhead.com/npc=43006/rhyanda Darnassus Mage Trainer
+('42331', '44', '11620', '0'), -- https://www.wowhead.com/npc=42331/bipsi-frostflinger New Tinkerton Mage Trainer
+('37121', '44', '10878', '0'), -- https://www.wowhead.com/npc=37121/teegli-merrowith Ironforge Mage Trainer
+('37115', '134', '10879', '0'), -- https://www.wowhead.com/npc=37115/teo-hammerstorm Ironforge Shaman Trainer
+('42323', '127', '11617', '0'), -- https://www.wowhead.com/npc=42323/doc-cogspin New Tinkerton Priest Trainer
+('42366', '17', '11621', '0'); -- https://www.wowhead.com/npc=42366/kelsey-steelspark New Tinkerton Rogue Trainer
 
 DELETE FROM `gossip_menu_option` WHERE  `MenuId` IN ( 11620, 10878, 10879, 11617, 11621, 11810, 11831);
 
@@ -37,15 +37,15 @@ Insert into `gossip_menu_option` values
 -- Horde Trainers Gossip Corrections
 DELETE FROM `creature_trainer` WHERE `CreatureId` IN (15279, 15284, 15280, 39214, 42618, 15285, 38244, 15513, 15283);
 insert into `creature_trainer` values 
-('15279', '44', '14136', '0'),
-('15284', '127', '14139', '0'),
-('15280', '168', '14137', '0'),
-('42618', '32', '11645', '0'),
-('15285', '17', '14140', '0'),
-('38244', '17', '10985', '0'),
-('39214', '15', '11185', '0'),
-('15513', '15', '14141', '0'),
-('15283', '32', '14138', '0');
+('15279', '44', '14136', '0'), -- https://www.wowhead.com/npc=15279/julia-sunstriker Sunstrider Isle Mage Trainer
+('15284', '127', '14139', '0'), -- https://www.wowhead.com/npc=15284/matron-arena Sunstrider Isle Priest Trainer
+('15280', '168', '14137', '0'), -- https://www.wowhead.com/npc=15280/jesthenis-sunstriker Sunstrider Isle Paladin Trainer
+('42618', '32', '11645', '0'), -- https://www.wowhead.com/npc=42618/voldreka Echo Islands Warlock Trainer
+('15285', '17', '14140', '0'), -- https://www.wowhead.com/npc=15285/pathstalker-kariel Sunstrider Isle Rogue Trainer
+('38244', '17', '10985', '0'), -- https://www.wowhead.com/npc=38244/legati Echo Isles Rogue Trainer
+('39214', '15', '11185', '0'), -- https://www.wowhead.com/npc=39214/karranisha Valley of Trials Hunter Trainer
+('15513', '15', '14141', '0'), -- https://www.wowhead.com/npc=15513/ranger-sallina Sunstrider Isle Hunter Trainer
+('15283', '32', '14138', '0'); -- https://www.wowhead.com/npc=15283/summoner-telilarien Sunstrider Isle Warlock Trainer
 
 DELETE FROM `gossip_menu_option` WHERE  `MenuId` IN (11185, 14136, 14139, 14137, 11645, 14140, 10985, 14141, 14138);
 
