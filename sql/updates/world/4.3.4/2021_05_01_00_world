@@ -1,0 +1,13 @@
+-- https://github.com/The-Cataclysm-Preservation-Project/TrinityCore/issues/236
+DELETE FROM `gossip_menu_option` WHERE `MenuId`=1291;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES 
+(1291, 0, 0, 'What can I do at an inn?', 4308, 1, 1, 15595),
+(1291, 1, 5, 'Make this inn your home.', 2822, 8, 65536, 15595),
+(1291, 2, 1, 'I want to browse your goods.', 3370, 3, 128, 15595),
+(1291, 3, 0, 'Trick or Treat!', 10693, 1, 1, 15595); -- add gossip of event Hallow's End
+
+-- add conditions of new gossip #4
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=1291 AND `SourceEntry`=3;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(15, 1291, 3, 0, 0, 12, 0, 12, 0, 0, 0, 0, 0, '', 'show gossip if event 12 is active'),
+(15, 1291, 3, 0, 0, 1, 0, 24755, 0, 0, 1, 0, 0, '', 'show gossip if not aura 24755');
