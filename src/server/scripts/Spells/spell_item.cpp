@@ -4940,6 +4940,61 @@ class spell_item_variable_pulse_lightning_capacitor : public AuraScript
     }
 };
 
+//item:64457 The Last Relic of Argus  spell:82674 Teleport With Error
+uint32 Teleport_With_Error_Area[3] = { 0, 1, 530 };
+Position const Teleport_With_Error_Pos[26] =
+{
+    {1282.402954f, -2569.072998f, 125.773705f},//map 0
+    {2944.320068f, -1388.800049f, 167.237000f},
+    {-1157.279053f, -2827.376953f, 53.100204f},
+    {-3961.529053f, -1361.406250f, 145.889191f},
+    {-6102.788086f, -3912.497803f, 324.678955f},
+    {-7008.016602f, -2636.012451f, 301.734894f},
+    {-6552.295410f, -3493.440674f, 346.607330f},
+    {-6596.803711f, -4662.762695f, 8.942942f},
+    {-10212.599609f, 283.842010f, 2.599370f},
+    {-13942.865234f, 18.312716f, 85.728546f},
+    {-14187.959961f, 701.505981f, 42.390049f},
+    {-7096.048828f, -1202.128784f,354.192566f},
+    {-11887.547852f, -2309.466309f, 173.327576f},
+    {-11928.691406f, -3563.387451f, 218.569733f},
+    {7768.569824f, -2429.679932f, 487.309998f},//map 1
+    {5975.012207f, -1441.295410, 444.294556},
+    {-612.756958f, -2281.749512f, 22.781569f},
+    {-1697.453857f, -4281.558594f, 27.867220f},
+    {-224.210052f, 2778.375977f, 4.405874f},
+    {-3858.258057f, 1094.396973f, 172.059601f},
+    {-6726.837402f, -4720.015625f, 14.319001f},
+    {-8087.000977f, -5072.268066f, 21.371321f},
+    {-7386.483887f, 1692.561890f, -92.694626f},
+    {-8070.390625f, 1599.441650f, 12.944332f},
+    {-7368.198242f, -705.160767f, -307.303589f},
+    {-147.238968f, 506.219818f, -28.548870f}, //map 530
+};
+
+class spell_Teleport_With_Error : public SpellScript
+{
+    void HandleCast()
+    {
+        if (Player* player = GetCaster()->ToPlayer())
+        {
+            uint32 rand = urand(0, 25);
+           
+            uint32 mapid = rand > 13 ? 1 : 0;
+            mapid = rand == 25 ? 530 : mapid;
+
+            Position go = Teleport_With_Error_Pos[rand];
+            
+            player->TeleportTo(mapid, go.GetPositionX(),go.GetPositionY(),go.GetPositionZ(), player->GetOrientation());
+        }
+    }
+
+    void Register() override
+    {
+        OnCast.Register(&spell_Teleport_With_Error::HandleCast);
+    }
+};
+
 void AddSC_item_spell_scripts()
 {
     // 23074 Arcanite Dragonling
@@ -5069,4 +5124,6 @@ void AddSC_item_spell_scripts()
     RegisterSpellScript(spell_item_tipping_of_the_scales);
     RegisterSpellScript(spell_item_blind_spot);
     RegisterSpellScript(spell_item_variable_pulse_lightning_capacitor);
+    
+    RegisterSpellScript(spell_Teleport_With_Error);//spell:82674 Teleport With Error
 }
