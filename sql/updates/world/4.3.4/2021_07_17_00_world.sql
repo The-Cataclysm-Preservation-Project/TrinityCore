@@ -1,4 +1,4 @@
---- 43495, Nunaha Grasshoof
+ -- 43495, Nunaha Grasshoof
 SET @ENTRY := 43495;
 INSERT INTO npc_vendor(entry, slot, item, maxcount, incrtime, ExtendedCost, type, PlayerConditionID, VerifiedBuild) VALUES
 (@ENTRY, 1, 7005, 0, 0, 0, 1, 0, 0),
@@ -19,7 +19,7 @@ INSERT INTO npc_vendor(entry, slot, item, maxcount, incrtime, ExtendedCost, type
 (@ENTRY, 16, 4342, 0, 0, 0, 1, 0, 0),
 (@ENTRY, 17, 10290, 0, 0, 0, 1, 0, 0);
 
---- 43550 - Inoho Stronghide
+ -- 43550 - Inoho Stronghide
 SET @ENTRY := 43550;
 INSERT INTO npc_vendor(entry, slot, item, maxcount, incrtime, ExtendedCost, type, PlayerConditionID, VerifiedBuild) VALUES
 (@ENTRY, 1, 7005, 0, 0, 0, 1, 0, 0),
@@ -40,7 +40,7 @@ INSERT INTO npc_vendor(entry, slot, item, maxcount, incrtime, ExtendedCost, type
 (@ENTRY, 16, 4342, 0, 0, 0, 1, 0, 0),
 (@ENTRY, 17, 10290, 0, 0, 0, 1, 0, 0);
 
---- 43551 - Nenduil Meadowshade
+ -- 43551 - Nenduil Meadowshade
 SET @ENTRY := 43551;
 INSERT INTO npc_vendor(entry, slot, item, maxcount, incrtime, ExtendedCost, type, PlayerConditionID, VerifiedBuild) VALUES
 (@ENTRY, 1, 58279, 0, 0, 0, 1, 0, 0),
