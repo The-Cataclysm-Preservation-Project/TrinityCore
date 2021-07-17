@@ -64,7 +64,7 @@ public:
         }
     }
 
-    void OnUpdateZone(Player* player, uint32 /*newZone*/, uint32 newArea)
+    void OnUpdateZone(Player* player, uint32 /*newZone*/, uint32 newArea) override
     {
         if (newArea == 233) // Ambermill
         {
