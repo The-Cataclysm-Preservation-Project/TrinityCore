@@ -68,7 +68,7 @@ public:
     {
         if (newArea == 233) // Ambermill
         {
-            if (!player->GetQuestStatus(27518) == QUEST_STATUS_COMPLETE)
+            if (player->GetQuestStatus(27518) != QUEST_STATUS_COMPLETE)
                 player->CastSpell(player, 85361, true);
 
             if (const Quest* Quest_Chapter_2 = sObjectMgr->GetQuestTemplate(27513))
