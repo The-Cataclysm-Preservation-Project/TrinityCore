@@ -205,8 +205,8 @@ class TC_GAME_API Aura
         bool CheckAreaTarget(Unit* target);
         bool CanStackWith(Aura const* existingAura) const;
 
-        bool IsProcOnCooldown(std::chrono::steady_clock::time_point now) const;
-        void AddProcCooldown(std::chrono::steady_clock::time_point cooldownEnd);
+        bool IsProcOnCooldown(std::chrono::steady_clock::time_point now, ObjectGuid procTarget = ObjectGuid::Empty) const;
+        void AddProcCooldown(std::chrono::steady_clock::time_point cooldownEnd, ObjectGuid procTarget = ObjectGuid::Empty);
         void ResetProcCooldown();
         bool IsUsingCharges() const { return m_isUsingCharges; }
         void SetUsingCharges(bool val) { m_isUsingCharges = val; }
@@ -283,6 +283,7 @@ class TC_GAME_API Aura
         ChargeDropEvent* m_dropEvent;
 
         std::chrono::steady_clock::time_point m_procCooldown;
+        std::unordered_map<ObjectGuid, std::chrono::steady_clock::time_point> m_targetProcCooldown;
 
     private:
         Unit::AuraApplicationList m_removedApplications;

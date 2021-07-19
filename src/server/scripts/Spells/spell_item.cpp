@@ -4872,7 +4872,7 @@ class spell_item_blind_spot : public SpellScript
         if (AuraEffect const* effect = target->GetAuraEffect(spellId, EFFECT_0, target->GetGUID()))
         {
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-            effect->GetBase()->AddProcCooldown(now + 30s);
+            effect->GetBase()->AddProcCooldown(now + 30s, GetHitUnit()->GetGUID());
         }
     }
 

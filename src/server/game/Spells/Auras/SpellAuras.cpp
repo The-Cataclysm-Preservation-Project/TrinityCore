@@ -1672,18 +1672,33 @@ bool Aura::CanStackWith(Aura const* existingAura) const
     return true;
 }
 
-bool Aura::IsProcOnCooldown(std::chrono::steady_clock::time_point now) const
+bool Aura::IsProcOnCooldown(std::chrono::steady_clock::time_point now, ObjectGuid procTarget) const
 {
+    if (GetSpellInfo()->HasAttribute(SPELL_ATTR10_PROC_COOLDOWN_PER_TARGET))
+    {
+        auto itr = m_targetProcCooldown.find(procTarget);
+        if (itr != m_targetProcCooldown.end())
+            return itr->second > now;
+
+        // Not found in the target map, should not proc.
+        return false;
+    }
+
     return m_procCooldown > now;
 }
 
-void Aura::AddProcCooldown(std::chrono::steady_clock::time_point cooldownEnd)
+void Aura::AddProcCooldown(std::chrono::steady_clock::time_point cooldownEnd, ObjectGuid procTarget)
 {
-    m_procCooldown = cooldownEnd;
+    if (GetSpellInfo()->HasAttribute(SPELL_ATTR10_PROC_COOLDOWN_PER_TARGET))
+        m_targetProcCooldown[procTarget] = cooldownEnd;
+    else
+        m_procCooldown = cooldownEnd;
 }
 
 void Aura::ResetProcCooldown()
 {
+    m_targetProcCooldown.clear();
+
     m_procCooldown = std::chrono::steady_clock::now();
 }
 
@@ -1704,7 +1719,7 @@ void Aura::PrepareProcToTrigger(AuraApplication* aurApp, ProcEventInfo& eventInf
     }
 
     // cooldowns should be added to the whole aura (see 51698 area aura)
-    AddProcCooldown(now + procEntry->Cooldown);
+    AddProcCooldown(now + procEntry->Cooldown, eventInfo.GetProcTarget() ? eventInfo.GetProcTarget()->GetGUID() : ObjectGuid::Empty);
 }
 
 uint8 Aura::GetProcEffectMask(AuraApplication* aurApp, ProcEventInfo& eventInfo, std::chrono::steady_clock::time_point now) const
@@ -1751,7 +1766,7 @@ uint8 Aura::GetProcEffectMask(AuraApplication* aurApp, ProcEventInfo& eventInfo,
     }
 
     // check proc cooldown
-    if (IsProcOnCooldown(now))
+    if (IsProcOnCooldown(now, eventInfo.GetProcTarget() ? eventInfo.GetProcTarget()->GetGUID() : ObjectGuid::Empty))
         return 0;
 
     // do checks against db data
