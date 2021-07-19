@@ -26,7 +26,7 @@
 #include "Cryptography/SHA1.h"
 
 #include "ByteBuffer.h"
-#include "OptionalFwd.h"
+#include "Optional.h"
 #include "WardenFwd.h"
 #include "WardenKey.h"
 #include "WardenCheck.h"

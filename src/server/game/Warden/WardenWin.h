@@ -20,7 +20,7 @@
 
 #include "Cryptography/ARC4.h"
 #include "Cryptography/BigNumber.h"
-#include "OptionalFwd.h"
+#include "Optional.h"
 
 #include "ByteBuffer.h"
 
