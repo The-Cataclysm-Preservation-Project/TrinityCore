@@ -24,12 +24,7 @@
 
 #include <boost/algorithm/hex.hpp>
 
-WardenProcCheck::WardenProcCheck() : WardenCheck(Type::Proc)
-{
-
-}
-
-bool WardenProcCheck::LoadFromDB(Field* fields)
+WardenProcCheck::WardenProcCheck(Field* fields) : WardenCheck(Type::Proc, fields)
 {
     _moduleName = ReadDatabaseField<DatabaseColumn::Data0>(fields);
     _functionName = ReadDatabaseField<DatabaseColumn::Data1>(fields);
@@ -38,8 +33,16 @@ bool WardenProcCheck::LoadFromDB(Field* fields)
 
     std::string expectedData = ReadDatabaseField<DatabaseColumn::Result>(fields);
     boost::algorithm::unhex(expectedData.begin(), expectedData.end(), std::back_inserter(_expectedData));
+}
 
-    return WardenCheck::LoadFromDB(fields);
+WardenProcCheck::WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 address, uint8 length, std::vector<uint8> const& expectedData) : WardenCheck(Type::Proc)
+{
+    _moduleName = moduleName;
+    _functionName = functionName;
+    _address = address;
+    _length = length;
+
+    _expectedData = expectedData;
 }
 
 bool WardenProcCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -81,21 +84,13 @@ bool WardenProcCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksR
     return true;
 }
 
-bool WardenProcCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenProcCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     uint8 scanResponseCode;
     packet >> scanResponseCode;
 
     bool checkFailed = scanResponseCode == 0xE9;
-    checkFailed = TransformCheckResult(checkFailed);
+    checkFailed = TransformResultCode(checkFailed);
 
-    if (checkFailed)
-    {
-        TC_LOG_DEBUG("warden", "(Check #%u) Failed procedure check for %s!%s+%u.", GetID(), GetModuleName().c_str(),
-            GetFunctionName().c_str(), GetAddress());
-
-        warden->Violation(GetID());
-    }
-
-    return checkFailed;
+    return HandleResponse(checkFailed);
 }

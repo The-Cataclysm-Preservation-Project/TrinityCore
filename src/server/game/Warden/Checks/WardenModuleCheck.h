@@ -26,13 +26,12 @@
 
 class Warden;
 
-struct WardenModuleCheck final : public WardenCheck, std::enable_shared_from_this<WardenModuleCheck>
+struct WardenModuleCheck final : public WardenCheck
 {
-    WardenModuleCheck();
+    WardenModuleCheck(Field* fields);
 
-    bool LoadFromDB(Field* fields) override;
     bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
     std::string const& GetModuleName() const { return _moduleName;  }
 

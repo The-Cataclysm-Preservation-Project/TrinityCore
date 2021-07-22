@@ -253,17 +253,16 @@ void Warden::ProcessIncoming(ByteBuffer& buffer)
     }
 }
 
-void Warden::Violation(uint32 checkID)
+void Warden::ProcessCheckResult(uint32 checkID, WardenCheckResult action)
 {
     uint32 accountId = GetSession()->GetAccountId();
     ObjectGuid characterGuid = ObjectGuid::Empty;
     if (Player* player = GetSession()->GetPlayer())
         characterGuid = player->GetGUID();
 
-    WardenActions action = sWardenMgr->GetCheckFailureAction(checkID);
     switch (action)
     {
-        case WardenActions::Ban:
+        case WardenCheckResult::FailedBan:
         {
             uint32 banDuration = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION);
             std::string accountName;
@@ -271,9 +270,11 @@ void Warden::Violation(uint32 checkID)
             sWorld->BanAccount(BAN_ACCOUNT, accountName, banDuration, "Anticheat Violation", "Warden");
             break;
         }
-        case WardenActions::Kick:
+        case WardenCheckResult::FailedKick:
             _session->KickPlayer();
             break;
+        case WardenCheckResult::Success:
+            return;
         default:
             break;
     }

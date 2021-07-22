@@ -28,20 +28,23 @@
 
 class Warden;
 
-struct WardenLuaCheck final : public WardenCheck, std::enable_shared_from_this<WardenLuaCheck>
+struct WardenLuaCheck : public WardenCheck
 {
-    WardenLuaCheck(Type scanType);
+    WardenLuaCheck(Type scanType, Field* fields);
 
-    bool LoadFromDB(Field* fields) override;
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
     std::string const& GetExpectedResult() const { return _expectedResult; }
 
     void SetExecutableString(std::string const& executableString) { _executableString = executableString; }
     void SetQueriedString(std::string const& queriedString) { _queriedString = queriedString; }
 
+protected:
+    virtual WardenCheckResult HandleExtendedResponse(bool checkFailed, std::string const& clientResponse) const;
+
 private:
+
     std::string _executableString;
     std::string _queriedString;
     std::string _expectedResult;

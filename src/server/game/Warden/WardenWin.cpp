@@ -69,19 +69,6 @@ void WardenWin::Init(WorldSession* session, BigNumber* k)
     _module = SelectModule();
 
     RequestModule();
-
-    // Immediately request allocation bases for complex scans
-    auto interopCheck = std::make_shared<WardenInteropCheck>();
-    interopCheck->RegisterResponseHandler(std::bind(&WardenWin::HandleInteropCheckResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    SubmitCheck(interopCheck);
-}
-
-void WardenWin::HandleInteropCheckResult(uint64 clientBase, uint64 moduleBase, uint64 handlerBase)
-{
-    _moduleInfo.emplace();
-    _moduleInfo->ClientBase = clientBase;
-    _moduleInfo->ModuleBase = moduleBase;
-    _moduleInfo->HandlerBase = handlerBase;
 }
 
 void WardenWin::InitializeModule()
@@ -228,7 +215,10 @@ void WardenWin::HandleCheatChecksResult(ByteBuffer& packet)
     }
 
     for (auto&& currentCheck : _sentChecks)
-        currentCheck->ProcessResponse(this, packet);
+    {
+        WardenCheckResult checkResult = currentCheck->ProcessResponse(this, packet);
+        ProcessCheckResult(currentCheck->GetID(), checkResult);
+    }
 
     // Set hold off timer, minimum timer should at least be 1 second
     uint32 holdOff = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_CHECK_HOLDOFF);

@@ -191,49 +191,51 @@ void WardenMgr::LoadWardenChecks()
         WardenCheck::Type checkType = static_cast<WardenCheck::Type>(fields[1].GetUInt8());
 
         std::shared_ptr<WardenCheck> wardenCheck;
-        switch (checkType)
+        try {
+            switch (checkType)
+            {
+                case WardenCheck::Type::Timing:
+                    wardenCheck = std::make_shared<WardenTimingCheck>(fields);
+                    break;
+                case WardenCheck::Type::PageCheckA:
+                case WardenCheck::Type::PageCheckB:
+                    wardenCheck = std::make_shared<WardenPageCheck>(checkType, fields);
+                    break;
+                case WardenCheck::Type::Driver:
+                    wardenCheck = std::make_shared<WardenDriverCheck>(fields);
+                    break;
+                case WardenCheck::Type::Memory:
+                    wardenCheck = std::make_shared<WardenMemoryCheck>(fields);
+                    break;
+                case WardenCheck::Type::Module:
+                    wardenCheck = std::make_shared<WardenModuleCheck>(fields);
+                    break;
+                case WardenCheck::Type::MPQ:
+                    wardenCheck = std::make_shared<WardenFileCheck>(fields);
+                    break;
+                case WardenCheck::Type::LuaString:
+                case WardenCheck::Type::LuaStringAdvanced:
+                    wardenCheck = std::make_shared<WardenLuaCheck>(checkType, fields);
+                    break;
+                case WardenCheck::Type::Proc:
+                    wardenCheck = std::make_shared<WardenProcCheck>(fields);
+                    break;
+                default:
+                    TC_LOG_ERROR("server.loading", "Unhandled check type (ID: %u), skipped.", id);
+                    break;
+            }
+        }
+        catch (std::exception const& ex)
         {
-            case WardenCheck::Type::Timing:
-                wardenCheck = std::make_shared<WardenTimingCheck>();
-                break;
-            case WardenCheck::Type::PageCheckA:
-            case WardenCheck::Type::PageCheckB:
-                wardenCheck = std::make_shared<WardenPageCheck>(checkType);
-                break;
-            case WardenCheck::Type::Driver:
-                wardenCheck = std::make_shared<WardenDriverCheck>();
-                break;
-            case WardenCheck::Type::Memory:
-                wardenCheck = std::make_shared<WardenMemoryCheck>();
-                break;
-            case WardenCheck::Type::Module:
-                wardenCheck = std::make_shared<WardenModuleCheck>();
-                break;
-            case WardenCheck::Type::MPQ:
-                wardenCheck = std::make_shared<WardenFileCheck>();
-                break;
-            case WardenCheck::Type::LuaString:
-            case WardenCheck::Type::LuaStringAdvanced:
-                wardenCheck = std::make_shared<WardenLuaCheck>(checkType);
-                break;
-            case WardenCheck::Type::Proc:
-                wardenCheck = std::make_shared<WardenProcCheck>();
-                break;
-            default:
-                TC_LOG_ERROR("server.loading", "Unhandled check type (ID: %u), skipped.", id);
-                break;
+            TC_LOG_ERROR("server.loading", ex.what());
         }
 
         if (!wardenCheck)
             continue;
 
-        if (!wardenCheck->LoadFromDB(fields))
-            continue;
-
         auto [itr, success] = _checkStore.emplace(wardenCheck->GetID(), wardenCheck);
         if (success)
             ++count;
-
     }
     while (result->NextRow());
 
@@ -269,9 +271,9 @@ void WardenMgr::LoadWardenOverrides()
         Field* fields = result->Fetch();
 
         uint16 checkId = fields[0].GetUInt16();
-        WardenActions action  = WardenActions(fields[1].GetUInt8());
+        WardenCheckResult action  = WardenCheckResult(fields[1].GetUInt8());
 
-        if (action > WardenActions::Log)
+        if (action > WardenCheckResult::FailedLog)
             TC_LOG_ERROR("server.loading", "Warden check override action out of range (ID: %u)", checkId);
         else
         {
@@ -290,11 +292,11 @@ void WardenMgr::LoadWardenOverrides()
     TC_LOG_INFO("server.loading", ">> Loaded %u warden action overrides in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
-WardenActions WardenMgr::GetCheckFailureAction(uint32 failedCheck) const
+WardenCheckResult WardenMgr::GetCheckFailureAction(uint32 failedCheck) const
 {
     auto itr = _actionOverrides.find(failedCheck);
     if (itr == _actionOverrides.end())
-        return WardenActions(sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_FAIL_ACTION));
+        return WardenCheckResult(sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_FAIL_ACTION));
 
     return itr->second;
 }

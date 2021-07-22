@@ -22,10 +22,18 @@
 #include "WorldSession.h"
 #include "EnumFlag.h"
 #include "Log.h"
+#include "WardenMgr.h"
+
+WardenCheck::WardenCheck(Type scanType, Field* fields) : _id(0), _scanType(scanType), _flags()
+{
+    _id = ReadDatabaseField<DatabaseColumn::ID>(fields);
+    _flags = static_cast<WardenCheckFlags>(ReadDatabaseField<DatabaseColumn::Flags>(fields));
+    _comment = ReadDatabaseField<DatabaseColumn::Comment>(fields);
+}
 
 WardenCheck::WardenCheck(Type scanType) : _id(0), _scanType(scanType), _flags()
 {
-
+    
 }
 
 bool WardenCheck::TrySelect(WorldSession* session, Warden* warden)
@@ -123,20 +131,19 @@ uint64 WardenCheck::ReadPackedValue(ByteBuffer& buffer) const
     return value;
 }
 
-bool WardenCheck::LoadFromDB(Field* fields)
-{
-    _id = ReadDatabaseField<DatabaseColumn::ID>(fields);
-    _flags = static_cast<WardenCheckFlags>(ReadDatabaseField<DatabaseColumn::Flags>(fields));
-    _comment = ReadDatabaseField<DatabaseColumn::Comment>(fields);
-
-    return true;
-}
-
-bool WardenCheck::TransformCheckResult(bool checkFailed) const
+bool WardenCheck::TransformResultCode(bool checkFailed) const
 {
     EnumFlag<WardenCheckFlags> checkFlags(_flags);
     if (checkFlags.HasFlag(WardenCheckFlags::Inverted))
         checkFailed = !checkFailed;
 
     return checkFailed;
+}
+
+WardenCheckResult WardenCheck::HandleResponse(bool checkFailed) const
+{
+    if (checkFailed)
+        return sWardenMgr->GetCheckFailureAction(GetID());
+
+    return WardenCheckResult::Success;
 }

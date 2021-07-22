@@ -39,6 +39,6 @@ struct WardenProcCheck;
 enum class WardenPlatform : uint8;
 enum WardenOpcodes : uint32;
 enum class WardenCheckFlags : uint32;
-enum class WardenActions : uint32;
+enum class WardenCheckResult : uint32;
 
 #endif // WARDEN_FWD_H_

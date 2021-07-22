@@ -26,23 +26,15 @@
 
 class Warden;
 
-struct WardenInteropCheck final : public WardenCheck, std::enable_shared_from_this<WardenInteropCheck>
+struct WardenInteropCheck : public WardenCheck
 {
     WardenInteropCheck();
 
-    bool LoadFromDB(Field* fields) override;
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
-    using HandlerType = std::function<void(uint64, uint64, uint64)>;
-
-    void RegisterResponseHandler(HandlerType&& handler)
-    {
-        _handlers.emplace_back(std::move(handler));
-    }
-
-private:
-    std::vector<HandlerType> _handlers;
+protected:
+    virtual WardenCheckResult HandleExtendedResponse(uint64 moduleBase, uint64 executableBase, uint64 interfaceBase) const;
 };
 
 #endif // WARDEN_INTEROP_CHECK_H_

@@ -17,20 +17,13 @@
 
 #include "WardenInteropCheck.h"
 #include "Errors.h"
-#include "Log.h"
 #include "Warden.h"
+#include "WardenDefines.h"
 #include "WardenCheatCheckRequest.h"
 
 WardenInteropCheck::WardenInteropCheck() : WardenCheck(Type::WardenInterop)
 {
 
-}
-
-bool WardenInteropCheck::LoadFromDB(Field* /* fields */)
-{
-    ASSERT(false, "Warden interop checks are not meant to be loaded from database.");
-
-    return false;
 }
 
 bool WardenInteropCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -42,14 +35,16 @@ bool WardenInteropCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChec
     return true;
 }
 
-bool WardenInteropCheck::ProcessResponse(Warden* /* warden */, ByteBuffer& packet) const
+WardenCheckResult WardenInteropCheck::ProcessResponse(Warden* /* warden */, ByteBuffer& packet) const
 {
-    uint64 clientBase = ReadPackedValue(packet);
+    uint64 executableBase = ReadPackedValue(packet);
     uint64 moduleBase = ReadPackedValue(packet);
-    uint64 moduleAddress = ReadPackedValue(packet);
+    uint64 interfaceBase = ReadPackedValue(packet);
 
-    for (auto&& handler : _handlers)
-        handler(clientBase, moduleBase, moduleAddress);
+    return HandleExtendedResponse(moduleBase, executableBase, interfaceBase);
+}
 
-    return true;
+WardenCheckResult WardenInteropCheck::HandleExtendedResponse(uint64 moduleBase, uint64 executableBase, uint64 interfaceBase) const
+{
+    return WardenCheckResult::Success;
 }

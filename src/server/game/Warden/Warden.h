@@ -79,7 +79,7 @@ class TC_GAME_API Warden
         std::shared_ptr<WardenModule> SelectModule() const;
 
         //< Called when a given check is failed.
-        void Violation(uint32 checkID);
+        void ProcessCheckResult(uint32 checkID, WardenCheckResult checkResult);
 
         //< Enqueues a check to be sent to the client.
         virtual void SubmitCheck(std::shared_ptr<WardenCheck> check) = 0;

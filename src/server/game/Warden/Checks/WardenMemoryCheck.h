@@ -26,13 +26,13 @@
 
 class Warden;
 
-struct WardenMemoryCheck final : public WardenCheck, std::enable_shared_from_this<WardenMemoryCheck>
+struct WardenMemoryCheck : public WardenCheck
 {
-    WardenMemoryCheck();
+    WardenMemoryCheck(Field* fields);
+    WardenMemoryCheck(std::string const& moduleName, uint64 offset, uint64 length);
 
-    bool LoadFromDB(Field* fields) override;
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
     std::string const& GetModuleName() const { return _moduleName; }
     uint64 GetScanOffset() const { return _address; }
@@ -43,11 +43,15 @@ struct WardenMemoryCheck final : public WardenCheck, std::enable_shared_from_thi
     void SetScanAddress(uint64 address) { _address = address; }
     void SetScanLength(uint8 length) { _length = length; }
 
+protected:
+    virtual WardenCheckResult HandleExtendedResponse(bool checkFailed, std::vector<uint8> const& clientResponse) const;
+
 private:
     std::string _moduleName;    //< Name of the module being scanned.
     uint64 _address = 0;        //< Relative address of the scan.
     uint8 _length = 0;          //< Number of bytes to scan.
     std::vector<uint8> _result; //< The expected bytes.
+
 };
 
 #endif // WARDENMEMORYCHECK_H_

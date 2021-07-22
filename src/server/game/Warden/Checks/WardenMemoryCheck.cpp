@@ -22,25 +22,27 @@
 
 #include <boost/algorithm/hex.hpp>
 
-WardenMemoryCheck::WardenMemoryCheck() : WardenCheck(Type::Memory)
-{
-
-}
-
-bool WardenMemoryCheck::LoadFromDB(Field* fields)
+WardenMemoryCheck::WardenMemoryCheck(Field* fields) : WardenCheck(Type::Memory, fields)
 {
     std::string result = ReadDatabaseField<DatabaseColumn::Result>(fields);
     boost::algorithm::unhex(result, std::back_inserter(_result));
 
     SetModuleName(ReadDatabaseField<DatabaseColumn::Data0>(fields));
-    SetScanAddress(ReadDatabaseField<DatabaseColumn::Address>(fields));
-    SetScanLength(ReadDatabaseField<DatabaseColumn::Length>(fields));
+    _address = ReadDatabaseField<DatabaseColumn::Address>(fields);
+    _length = ReadDatabaseField<DatabaseColumn::Length>(fields);
 
-    // Scan size must be equal to the result size
     if (_length != _result.size())
-        return false;
+    {
+        TC_LOG_DEBUG("sql.sql", "Warden memory check #%u has mismatched expected data size (%u) and size (%u).", _result.size(), _length);
+        _length = _result.size();
+    }
+}
 
-    return WardenCheck::LoadFromDB(fields);
+WardenMemoryCheck::WardenMemoryCheck(std::string const &moduleName, uint64 address, uint64 length) : WardenCheck(Type::Memory)
+{
+    SetModuleName(moduleName);
+    _address = address;
+    _length = length;
 }
 
 void WardenMemoryCheck::SetModuleName(std::string const& moduleName)
@@ -73,27 +75,26 @@ bool WardenMemoryCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatCheck
     return true;
 }
 
-bool WardenMemoryCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenMemoryCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     uint8 responseCode;
     packet >> responseCode;
 
     std::vector<uint8> clientResponse;
-    clientResponse.resize(_result.size());
-    packet.read(clientResponse.data(), _result.size());
+    clientResponse.resize(_length);
+    packet.read(clientResponse.data(), clientResponse.size());
 
     bool checkFailed = responseCode != 0;
     if (!checkFailed)
         checkFailed = memcmp(clientResponse.data(), _result.data(), _result.size()) != 0;
 
-    checkFailed = TransformCheckResult(checkFailed);
-    if (checkFailed)
-    {
-        TC_LOG_DEBUG("warden", "(Check #%u) Memory check failed.", GetID());
+    checkFailed = TransformResultCode(checkFailed);
 
-        warden->Violation(GetID());
-    }
+    return HandleExtendedResponse(checkFailed, clientResponse);
+}
 
-    return checkFailed;
+WardenCheckResult WardenMemoryCheck::HandleExtendedResponse(bool checkFailed, std::vector<uint8> const& clientResponse) const
+{
+    return WardenCheck::HandleResponse(checkFailed);
 }
 

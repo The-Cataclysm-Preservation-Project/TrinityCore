@@ -28,13 +28,12 @@
 
 class Warden;
 
-struct WardenFileCheck final : public WardenCheck, std::enable_shared_from_this<WardenFileCheck>
+struct WardenFileCheck final : public WardenCheck
 {
-    WardenFileCheck();
+    WardenFileCheck(Field* fields);
     
-    bool LoadFromDB(Field* fields) override;
     bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
     bool TrySelect(WorldSession* session, Warden* warden) override;
 

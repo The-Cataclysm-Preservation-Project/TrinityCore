@@ -21,9 +21,14 @@
 #include "WardenCheatCheckRequest.h"
 #include "GameTime.h"
 
-WardenTimingCheck::WardenTimingCheck() : WardenCheck(Type::Timing)
+WardenTimingCheck::WardenTimingCheck(Field* fields) : WardenCheck(Type::Timing, fields)
 {
 
+}
+
+WardenTimingCheck::WardenTimingCheck() : WardenCheck(Type::Timing)
+{
+    
 }
 
 bool WardenTimingCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -35,7 +40,7 @@ bool WardenTimingCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatCheck
     return true;
 }
 
-bool WardenTimingCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenTimingCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     uint8 scanResult;
     packet >> scanResult;
@@ -44,22 +49,13 @@ bool WardenTimingCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) cons
     packet >> newClientTicks;
 
     bool checkFailed = scanResult == 0x00;
-    checkFailed = TransformCheckResult(checkFailed);
+    checkFailed = TransformResultCode(checkFailed);
 
-    if (checkFailed)
-    {
-        warden->Violation(GetID());
+    return HandleExtendedResponse(checkFailed, newClientTicks);
+}
 
-        uint32 ticksNow = GameTime::GetGameTimeMS();
-        uint32 ourTicks = newClientTicks + (ticksNow - warden->GetCheatCheckRequestTime());
-
-        TC_LOG_DEBUG("warden", "(Check #%u) Failed timing check", GetID());
-        TC_LOG_DEBUG("warden", "ServerTicks %u", ticksNow);                            // Now
-        TC_LOG_DEBUG("warden", "RequestTicks %u", warden->GetCheatCheckRequestTime()); // At request
-        TC_LOG_DEBUG("warden", "Ticks %u", newClientTicks);                            // At response
-        TC_LOG_DEBUG("warden", "Ticks diff %u", ourTicks - newClientTicks);
-    }
-
-    return checkFailed;
+WardenCheckResult WardenTimingCheck::HandleExtendedResponse(bool checkFailed, uint32 clientTicks) const
+{
+    return WardenCheck::HandleResponse(checkFailed);
 }
 

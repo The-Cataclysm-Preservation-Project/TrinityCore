@@ -27,13 +27,13 @@
 
 class Warden;
 
-struct WardenProcCheck final : public WardenCheck, std::enable_shared_from_this<WardenProcCheck>
+struct WardenProcCheck : public WardenCheck
 {
-    WardenProcCheck();
+    WardenProcCheck(Field* fields);
+    WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 address, uint8 length, std::vector<uint8> const& expectedData);
 
-    bool LoadFromDB(Field* fields) override;
     bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
     std::string const& GetModuleName() const { return _moduleName; }
     std::string const& GetFunctionName() const { return _functionName; }

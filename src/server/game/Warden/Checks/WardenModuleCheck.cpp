@@ -22,16 +22,9 @@
 #include "Random.h"
 #include "HmacHash.h"
 
-WardenModuleCheck::WardenModuleCheck() : WardenCheck(Type::Module)
-{
-
-}
-
-bool WardenModuleCheck::LoadFromDB(Field* fields)
+WardenModuleCheck::WardenModuleCheck(Field* fields) : WardenCheck(Type::Module, fields)
 {
     _moduleName = ReadDatabaseField<DatabaseColumn::Data0>(fields);
-
-    return WardenCheck::LoadFromDB(fields);
 }
 
 bool WardenModuleCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -56,20 +49,13 @@ bool WardenModuleCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatCheck
 
 }
 
-bool WardenModuleCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenModuleCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     uint8 resultCode;
     packet >> resultCode;
 
     bool checkFailed = resultCode == 0xE9;
-    checkFailed = TransformCheckResult(checkFailed);
+    checkFailed = TransformResultCode(checkFailed);
 
-    if (checkFailed)
-    {
-        TC_LOG_DEBUG("warden", "(Check #%u) Module check failed.", GetID());
-
-        warden->Violation(GetID());
-    }
-
-    return checkFailed;
+    return HandleResponse(checkFailed);
 }

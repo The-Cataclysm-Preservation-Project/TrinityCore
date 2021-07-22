@@ -20,25 +20,19 @@
 #include "Random.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
+#include "WardenMgr.h"
 #include "WorldSession.h"
 
 #include "Cryptography/HmacHash.h"
 
 #include <boost/algorithm/hex.hpp>
 
-WardenDriverCheck::WardenDriverCheck() : WardenCheck(Type::Driver)
-{
-
-}
-
-bool WardenDriverCheck::LoadFromDB(Field* fields)
+WardenDriverCheck::WardenDriverCheck(Field* fields) : WardenCheck(Type::Driver, fields)
 {
     _driverPath = ReadDatabaseField<DatabaseColumn::Data0>(fields);
 
     std::string expectedData = ReadDatabaseField<DatabaseColumn::Result>(fields);
     boost::algorithm::unhex(expectedData.begin(), expectedData.end(), std::back_inserter(_expectedData));
-
-    return WardenCheck::LoadFromDB(fields);
 }
 
 bool WardenDriverCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -68,20 +62,13 @@ bool WardenDriverCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatCheck
     return true;
 }
 
-bool WardenDriverCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenDriverCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     uint8 scanResult;
     packet >> scanResult;
 
     bool checkFailed = scanResult == 0xE9;
-    checkFailed = TransformCheckResult(checkFailed);
+    checkFailed = TransformResultCode(checkFailed);
 
-    if (checkFailed)
-    {
-        TC_LOG_DEBUG("warden", "(Check #%u) Driver check failed.", GetID());
-
-        warden->Violation(GetID());
-    }
-
-    return checkFailed;
+    return HandleResponse(checkFailed);
 }

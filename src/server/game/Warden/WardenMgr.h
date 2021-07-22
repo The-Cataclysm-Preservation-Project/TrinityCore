@@ -56,14 +56,14 @@ class TC_GAME_API WardenMgr
         //< Returns all checks for the given platform and session.
         std::vector<std::shared_ptr<WardenCheck>> GetChecks(WorldSession* session, Warden* warden) const;
 
-        WardenActions GetCheckFailureAction(uint32 failedChecks) const;
+        WardenCheckResult GetCheckFailureAction(uint32 failedChecks) const;
 
     private:
         //< Stores all checks handled by all supported warden platforms.
         std::unordered_map<uint32, std::shared_ptr<WardenCheck>> _checkStore;
 
         //< Stores check-specific action overrides.
-        std::unordered_map<uint32, WardenActions> _actionOverrides;
+        std::unordered_map<uint32, WardenCheckResult> _actionOverrides;
 
         //< Stores all known modules.
         std::vector<std::shared_ptr<WardenModule>> _modules;

@@ -71,14 +71,20 @@ struct WardenCheck
     template <> struct DatabaseColumnType<DatabaseColumn::Comment>  { using type = std::string; };
 
 protected:
+    WardenCheck(Type scanType, Field* fields);
     WardenCheck(Type scanType);
+    virtual ~WardenCheck() { }
 
 public:
-
-    virtual bool LoadFromDB(Field* fields);
     virtual bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) = 0;
-    virtual bool ProcessResponse(Warden* warden, ByteBuffer& packet) const = 0;
+    virtual WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const = 0;
 
+    /// <summary>
+    /// Performs logic checks to validate that this check can be sent as a request to the client.
+    /// </summary>
+    /// <param name="session">The session to which we try to send this check.</param>
+    /// <param name="warden">The session's associated warden.</param>
+    /// <returns>true when able; false otherwise.</returns>
     virtual bool TrySelect(WorldSession* session, Warden* warden);
 
     uint32 GetID() const { return _id; }
@@ -90,7 +96,9 @@ protected:
     void WritePackedValue(ByteBuffer& buffer, uint64 value) const;
     uint64 ReadPackedValue(ByteBuffer& buffer) const;
 
-    bool TransformCheckResult(bool checkFailed) const;
+    bool TransformResultCode(bool checkFailed) const;
+
+    virtual WardenCheckResult HandleResponse(bool checkFailed) const;
 
 private:
     uint32 _id;

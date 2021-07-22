@@ -24,12 +24,16 @@
 
 class Warden;
 
-struct WardenTimingCheck final : public WardenCheck, std::enable_shared_from_this<WardenTimingCheck>
+struct WardenTimingCheck : public WardenCheck
 {
+    WardenTimingCheck(Field* fields);
     WardenTimingCheck();
 
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
+
+protected:
+    virtual WardenCheckResult HandleExtendedResponse(bool checkFailed, uint32 clientTicks) const;
 };
 
 

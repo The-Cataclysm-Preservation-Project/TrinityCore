@@ -25,36 +25,17 @@
 
 #include <boost/algorithm/hex.hpp>
 
-WardenFileCheck::WardenFileCheck() : WardenCheck(Type::MPQ)
+WardenFileCheck::WardenFileCheck(Field* fields) : WardenCheck(Type::MPQ, fields)
 {
     _expectedResult.fill(0);
-}
-
-bool WardenFileCheck::LoadFromDB(Field* fields)
-{
-    bool success = WardenCheck::LoadFromDB(fields);
-    if (!success)
-        return false;
 
     _fileName = ReadDatabaseField<DatabaseColumn::Data0>(fields);
 
     std::string expectedResult = ReadDatabaseField<DatabaseColumn::Result>(fields);
 
-    // Here's hoping this if is actually not necessary...
-    if (expectedResult.length() != 40)
-    {
-        TC_LOG_ERROR("server.loading", "Warden check %u has invalid result data (40 bytes expected)", GetID());
-        return false;
-    }
-
     auto itr = boost::algorithm::unhex(expectedResult.begin(), expectedResult.end(), _expectedResult.begin());
     if (itr != _expectedResult.end())
-    {
-        TC_LOG_ERROR("server.loading", "Warden check %u has invalid result data (40 bytes expected)", GetID());
-        return false;
-    }
-
-    return true;
+        throw std::invalid_argument(Trinity::StringFormat("Warden check %u has invalid result data (40 bytes expected)", GetID()));
 }
 
 bool WardenFileCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -68,7 +49,7 @@ bool WardenFileCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksR
     return true;
 }
 
-bool WardenFileCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenFileCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     uint8 scanCode;
 
@@ -83,15 +64,8 @@ bool WardenFileCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
         checkFailed = clientDigest != _expectedResult;
     }
     
-    checkFailed = TransformCheckResult(checkFailed);
-    if (checkFailed)
-    {
-        TC_LOG_DEBUG("warden", "(Check #%u) MPQ file check failed for '%s'.", GetID(), GetFileName().c_str());
-
-        warden->Violation(GetID());
-    }
-
-    return checkFailed;
+    checkFailed = TransformResultCode(checkFailed);
+    return HandleResponse(checkFailed);
 }
 
 bool WardenFileCheck::TrySelect(WorldSession* session, Warden* warden)

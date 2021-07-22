@@ -21,13 +21,10 @@
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
 
-WardenLuaCheck::WardenLuaCheck(Type scanType) : WardenCheck(scanType)
+WardenLuaCheck::WardenLuaCheck(Type scanType, Field* fields) : WardenCheck(scanType, fields)
 {
     ASSERT(scanType == Type::LuaString || scanType == Type::LuaStringAdvanced);
-}
 
-bool WardenLuaCheck::LoadFromDB(Field* fields)
-{
     switch (GetCheckType())
     {
         case Type::LuaString:
@@ -42,8 +39,6 @@ bool WardenLuaCheck::LoadFromDB(Field* fields)
     }
 
     _expectedResult = ReadDatabaseField<DatabaseColumn::Result>(fields);
-
-    return WardenCheck::LoadFromDB(fields);
 }
 
 bool WardenLuaCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -90,7 +85,7 @@ bool WardenLuaCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRe
     }
 }
 
-bool WardenLuaCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenLuaCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     // Same logic for both checks.
     uint8 scanError;
@@ -108,13 +103,11 @@ bool WardenLuaCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
         checkFailed = clientString != GetExpectedResult();
     }
 
-    checkFailed = TransformCheckResult(checkFailed);
-    if (checkFailed)
-    {
-        TC_LOG_DEBUG("warden", "(Check #%u) Lua check failed.", GetID());
+    checkFailed = TransformResultCode(checkFailed);
+    return HandleExtendedResponse(checkFailed, clientString);
+}
 
-        warden->Violation(GetID());
-    }
-
-    return checkFailed;
+WardenCheckResult WardenLuaCheck::HandleExtendedResponse(bool checkFailed, std::string const& /* clientResponse*/) const
+{
+    return WardenCheck::HandleResponse(checkFailed);
 }

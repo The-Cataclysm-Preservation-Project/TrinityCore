@@ -27,13 +27,12 @@
 class Warden;
 
 //< Handles PageCheckA and PageCheckB.
-struct WardenPageCheck final : public WardenCheck, std::enable_shared_from_this<WardenPageCheck>
+struct WardenPageCheck final : public WardenCheck
 {
-    WardenPageCheck(WardenCheck::Type checkType);
+    WardenPageCheck(Type checkType, Field* fields);
 
-    bool LoadFromDB(Field* fields) override;
     bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
     uint32 GetAddress() const { return _address; }
     uint8 GetLength() const { return _length; }

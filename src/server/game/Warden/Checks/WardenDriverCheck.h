@@ -26,13 +26,12 @@
 
 class Warden;
 
-struct WardenDriverCheck final : public WardenCheck, std::enable_shared_from_this<WardenDriverCheck>
+struct WardenDriverCheck final : public WardenCheck
 {
-    WardenDriverCheck();
+    WardenDriverCheck(Field* fields);
 
-    bool LoadFromDB(Field* fields) override;
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    bool ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
 private:
     std::string _driverPath;

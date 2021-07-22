@@ -25,13 +25,10 @@
 
 #include <boost/algorithm/hex.hpp>
 
-WardenPageCheck::WardenPageCheck(WardenCheck::Type checkType) : WardenCheck(checkType)
+WardenPageCheck::WardenPageCheck(Type checkType, Field* fields) : WardenCheck(checkType, fields)
 {
     ASSERT(checkType == Type::PageCheckA || checkType == Type::PageCheckB);
-}
 
-bool WardenPageCheck::LoadFromDB(Field* fields)
-{
     _address = ReadDatabaseField<DatabaseColumn::Address>(fields);
     _length = ReadDatabaseField<DatabaseColumn::Length>(fields);
 
@@ -39,9 +36,12 @@ bool WardenPageCheck::LoadFromDB(Field* fields)
     boost::algorithm::unhex(expectedData, std::back_inserter(_expectedData));
 
     if (_expectedData.size() != _length)
-        return false;
+    {
+        TC_LOG_DEBUG("sql.sql", "Warden driver check #%u has mismatched data length (%u) and length value (%u).",
+            GetID(), _expectedData.size(), _length);
 
-    return WardenCheck::LoadFromDB(fields);
+        _length = _expectedData.size();
+    }
 }
 
 bool WardenPageCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
@@ -67,20 +67,13 @@ bool WardenPageCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksR
     return true;
 }
 
-bool WardenPageCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenPageCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
 {
     uint8 resultCode;
     packet >> resultCode;
 
     bool checkFailed = resultCode == 0xE9;
-    checkFailed = TransformCheckResult(checkFailed);
+    checkFailed = TransformResultCode(checkFailed);
 
-    if (checkFailed)
-    {
-        TC_LOG_DEBUG("warden", "(Check #%u) Failed page check.", GetID());
-
-        warden->Violation(GetID());
-    }
-
-    return checkFailed;
+    return HandleResponse(checkFailed);
 }

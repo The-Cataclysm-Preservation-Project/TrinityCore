@@ -48,8 +48,6 @@ class TC_GAME_API WardenWin : public Warden
 
         void SubmitCheck(std::shared_ptr<WardenCheck> check) override;
 
-        void HandleInteropCheckResult(uint64 clientBase, uint64 moduleBase, uint64 handlerBase);
-
     protected:
         bool IsAwaitingReply() const override { return !_sentChecks.empty(); }
 
@@ -61,14 +59,6 @@ class TC_GAME_API WardenWin : public Warden
 
         //< Checks sent to the client, awaiting reply
         std::vector<std::shared_ptr<WardenCheck>> _sentChecks;
-
-        struct ClientModuleInfo
-        {
-            uint64 ClientBase; //< Base address of the game module
-            uint64 ModuleBase; //< Address of the memory block where the whole BLL2 file was loaded.
-            uint64 HandlerBase; //< Address of the module on the heap.
-        };
-        Optional<ClientModuleInfo> _moduleInfo;
 };
 
 #endif
