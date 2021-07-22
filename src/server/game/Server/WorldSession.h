@@ -33,6 +33,7 @@
 #include <unordered_map>
 #include <boost/circular_buffer.hpp>
 
+struct WardenCheck;
 class BigNumber;
 class Creature;
 class GameClient;
@@ -630,6 +631,8 @@ class TC_GAME_API WorldSession
         // Time Synchronisation
         void ResetTimeSync();
         void SendTimeSync();
+
+        bool EnqueueWardenCheck(std::shared_ptr<WardenCheck> wardenCheck) const;
 
     public:                                                 // opcodes handlers
 
@@ -1258,6 +1261,8 @@ class TC_GAME_API WorldSession
         };
 
         uint64 GetConnectToInstanceKey() const { return _instanceConnectKey.Raw; }
+
+        Warden* GetWarden() const { return _warden; }
 
     public:
         QueryCallbackProcessor& GetQueryProcessor() { return _queryProcessor; }

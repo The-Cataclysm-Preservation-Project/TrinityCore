@@ -1614,3 +1614,12 @@ bool WorldSession::IsRightUnitBeingMoved(ObjectGuid guid)
 
     return true;
 }
+
+bool WorldSession::EnqueueWardenCheck(std::shared_ptr<WardenCheck> wardenCheck) const
+{
+    if (!_warden)
+        return false;
+
+    _warden->SubmitCheck(wardenCheck);
+    return true;
+}
