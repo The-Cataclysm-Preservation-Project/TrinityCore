@@ -861,7 +861,7 @@ enum SpellRaiseForsaken83173
 };
 
 // Raise Forsaken - 83173
-class spell_silverpine_raise_forsaken_83173_spell : public SpellScript
+class spell_silverpine_raise_forsaken_83173 : public SpellScript
 {
     class IsNotInEntryList
     {
@@ -894,7 +894,7 @@ class spell_silverpine_raise_forsaken_83173_spell : public SpellScript
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(&spell_silverpine_raise_forsaken_83173_spell::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnObjectAreaTargetSelect.Register(&spell_silverpine_raise_forsaken_83173::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
 
@@ -2138,7 +2138,7 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_fallen_human);
 
     RegisterSpellScript(spell_silverpine_forsaken_trooper_masterscript);
-    RegisterSpellAndAuraScriptPair(spell_silverpine_raise_forsaken_83173_spell, spell_silverpine_raise_forsaken_83173_aura);
+    RegisterSpellAndAuraScriptPair(spell_silverpine_raise_forsaken_83173, spell_silverpine_raise_forsaken_83173_aura);
 
     RegisterCreatureAI(npc_silverpine_bat_handler_maggotbreath);
     RegisterCreatureAI(npc_silverpine_forsaken_bat);
