@@ -8,10 +8,10 @@ INSERT INTO `conditions` VALUES (13, 1, 83764, 0, 0, 31, 0, 3, 44884, 0, 0, 0, 0
  -- Dark Ranger
 SET @CGUID := 399000;
 INSERT INTO `creature` VALUES (@CGUID, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1360.47, 1063.27, 52.9999, 3.92421, 300, 0, 0, 1, 0, 2, 0, 0, 0, '', 0);
-INSERT INTO `creature` VALUES (@CGUID+1, 44632, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1428.24, 1032.64, 53.0474, 4.06429, 300, 0, 0, 1398, 0, 2, 0, 0, 0, NULL, 0);
+INSERT INTO `creature` VALUES (@CGUID+1, 44632, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1428.24, 1032.64, 53.0474, 4.06429, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 0);
 
-INSERT INTO `creature_addon` VALUES (@CGUID, 446320, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
-INSERT INTO `creature_addon` VALUES (@CGUID+1, 446321, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
+INSERT INTO `creature_addon` VALUES (@CGUID, 446320, 0, 0, 0, 2, 0, 0, 0, 0, 0, '');
+INSERT INTO `creature_addon` VALUES (@CGUID+1, 446321, 0, 0, 0, 2, 0, 0, 0, 0, 0, '');
 
  -- High Warlord Cromush
 INSERT INTO `creature` VALUES (@CGUID+2, 44640, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1357.21, 1046.36, 52.7554, 4.46892, 300, 0, 0, 387450, 0, 2, 0, 0, 0, 'npc_high_warlord_cromush_44640', 0);
@@ -20,48 +20,48 @@ INSERT INTO `creature_addon` VALUES (@CGUID+2, 446400, 0, 0, 0, 1, 0, 0, 0, 0, 3
 
  -- Worg
 SET @ENTRY := 1765;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Ferocious Grizzled Bear
 SET @ENTRY := 1778;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Giant Rabid Bear
 SET @ENTRY := 1797;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Rabid Dog
 SET @ENTRY := 1766;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Vile Fin Oracle
 SET @ENTRY := 1908;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Vile Fin Tidehunter
 SET @ENTRY := 1768;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Skitterweb Lurker
 SET @ENTRY := 1781;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Skitterweb Lurker
 SET @ENTRY := 1781;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Bloodfang Scavenger
 SET @ENTRY := 44547;
-UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry` = @ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry` = @ENTRY;
 
  -- Bat Handler Maggotbreath
 INSERT INTO `creature` VALUES (@CGUID+3, 44825, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
