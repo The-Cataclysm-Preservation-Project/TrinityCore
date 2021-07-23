@@ -7,16 +7,16 @@ INSERT INTO `conditions` VALUES (13, 1, 83764, 0, 0, 31, 0, 3, 44884, 0, 0, 0, 0
 
  -- Dark Ranger
 SET @CGUID := 399000;
-INSERT INTO `creature` VALUES (CGUID, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1360.47, 1063.27, 52.9999, 3.92421, 300, 0, 0, 1, 0, 2, 0, 0, 0, '', 0);
-INSERT INTO `creature` VALUES (CGUID+1, 44632, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1428.24, 1032.64, 53.0474, 4.06429, 300, 0, 0, 1398, 0, 2, 0, 0, 0, NULL, 0);
+INSERT INTO `creature` VALUES (@CGUID, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1360.47, 1063.27, 52.9999, 3.92421, 300, 0, 0, 1, 0, 2, 0, 0, 0, '', 0);
+INSERT INTO `creature` VALUES (@CGUID+1, 44632, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1428.24, 1032.64, 53.0474, 4.06429, 300, 0, 0, 1398, 0, 2, 0, 0, 0, NULL, 0);
 
-INSERT INTO `creature_addon` VALUES (CGUID, 446320, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
-INSERT INTO `creature_addon` VALUES (CGUID+1, 446321, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
+INSERT INTO `creature_addon` VALUES (@CGUID, 446320, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
+INSERT INTO `creature_addon` VALUES (@CGUID+1, 446321, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
 
  -- High Warlord Cromush
-INSERT INTO `creature` VALUES (CGUID+2, 44640, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1357.21, 1046.36, 52.7554, 4.46892, 300, 0, 0, 387450, 0, 2, 0, 0, 0, 'npc_high_warlord_cromush_44640', 0);
+INSERT INTO `creature` VALUES (@CGUID+2, 44640, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1357.21, 1046.36, 52.7554, 4.46892, 300, 0, 0, 387450, 0, 2, 0, 0, 0, 'npc_high_warlord_cromush_44640', 0);
 
-INSERT INTO `creature_addon` VALUES (CGUID+2, 446400, 0, 0, 0, 1, 0, 0, 0, 0, 3, '80697');
+INSERT INTO `creature_addon` VALUES (@CGUID+2, 446400, 0, 0, 0, 1, 0, 0, 0, 0, 3, '80697');
 
  -- Worg
 SET @ENTRY := 1765;
@@ -64,13 +64,13 @@ UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
 UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
 
  -- Bat Handler Maggotbreath
-INSERT INTO `creature` VALUES (CGUID+3, 44825, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
+INSERT INTO `creature` VALUES (@CGUID+3, 44825, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
 
  -- Deathstalker Commander Belmont
-INSERT INTO `creature` VALUES (CGUID+4, 44789, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1415.07, 1010.24, 52.7315, 2.09687, 300, 0, 0, 2085, 0, 0, 0, 0, 0, NULL, 0);
+INSERT INTO `creature` VALUES (@CGUID+4, 44789, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1415.07, 1010.24, 52.7315, 2.09687, 300, 0, 0, 2085, 0, 0, 0, 0, 0, NULL, 0);
 
 -- High Apothecary Shana T'veen
-INSERT INTO `creature` VALUES (CGUID+5, 44784, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1431.55, 1086.89, 60.4768, 3.81387, 300, 0, 0, 276, 590, 0, 0, 0, 0, NULL, 0);
+INSERT INTO `creature` VALUES (@CGUID+5, 44784, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1431.55, 1086.89, 60.4768, 3.81387, 300, 0, 0, 276, 590, 0, 0, 0, 0, NULL, 0);
 
 REPLACE INTO `creature_equip_template` VALUES (44365, 1, 2179, 0, 42775, 15595);
 REPLACE INTO `creature_equip_template` VALUES (44640, 1, 47031, 0, 0, 18019);
@@ -184,7 +184,6 @@ INSERT INTO `creature_text` VALUES (44884, 7, 0, 'Treacherous little pup!', 12, 
 INSERT INTO `creature_text` VALUES (44884, 8, 0, 'What say you now, spy?', 12, 0, 100, 0, 44970, '');
 INSERT INTO `creature_text` VALUES (44884, 9, 0, 'I was hoping you\'d say that...', 12, 0, 100, 0, 44972, '');
 INSERT INTO `creature_text` VALUES (44884, 10, 0, 'I will prepare the pack. It will take some time to gather them all, but we will join... for now.', 12, 0, 100, 1, 44973, '');
-
 
 REPLACE INTO `creature_sparring_template` VALUES (44793, 85);
 REPLACE INTO `creature_sparring_template` VALUES (44791, 85);

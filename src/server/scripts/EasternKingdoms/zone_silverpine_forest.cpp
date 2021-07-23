@@ -1121,20 +1121,20 @@ struct npc_bat_handler_maggotbreath_44825 : public ScriptedAI
     {
         switch (gossipListId)
         {
-        case ACTION_OPTION_ID:
-        {
-            if (player->GetQuestStatus(QUEST_ITERATING_UPON_SUCCESS) == QUEST_STATUS_INCOMPLETE)
+            case ACTION_OPTION_ID:
             {
-                player->CastSpell(player, SPELL_SUMMON_BAT);
+                if (player->GetQuestStatus(QUEST_ITERATING_UPON_SUCCESS) == QUEST_STATUS_INCOMPLETE)
+                {
+                    player->CastSpell(player, SPELL_SUMMON_BAT);
 
-                me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
+                    me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
 
-                me->AI()->Talk(0);
+                    me->AI()->Talk(0);
 
-                CloseGossipMenuFor(player);
-                break;
+                    CloseGossipMenuFor(player);
+                    break;
+                }
             }
-        }
         }
 
         return false;
@@ -1478,9 +1478,9 @@ struct npc_deathstalker_rane_yorick_44882 : public ScriptedAI
                 {
                     Position const YorickDeath = { 1295.52f, 1206.58f, 58.501f };
 
-                    me->GetMotionMaster()->MoveJump(YorickDeath, 5.0f, 5.0f);
+                    me->GetMotionMaster()->MoveJump(YorickDeath, 2.0f, 5.0f);
 
-                    _events.ScheduleEvent(EVENT_RANE_LAST_MOVE + 1, 2s);
+                    _events.ScheduleEvent(EVENT_RANE_LAST_MOVE + 1, 3s);
                     break;
                 }
 
@@ -1886,7 +1886,7 @@ struct npc_armoire_44893 : public VehicleAI
                         rane->GetAI()->DoAction(ACTION_RANE_JUMP_DEATH);
                     }
 
-                    m_events.ScheduleEvent(EVENT_ACTION + 21, 1s);
+                    m_events.ScheduleEvent(EVENT_ACTION + 21, 2s);
                     break;
                 }
 
@@ -1901,7 +1901,7 @@ struct npc_armoire_44893 : public VehicleAI
                         }
                     }
 
-                    m_events.ScheduleEvent(EVENT_ACTION + 22, 3s);
+                    m_events.ScheduleEvent(EVENT_ACTION + 22, 4s + 500ms);
                     break;
                 }
 
@@ -1925,7 +1925,7 @@ struct npc_armoire_44893 : public VehicleAI
                             ivar->GetAI()->DoAction(ACTION_MOVE_TO_RANA);
                     }
 
-                    m_events.ScheduleEvent(EVENT_ACTION + 24, 6s);
+                    m_events.ScheduleEvent(EVENT_ACTION + 24, 10s);
                     break;
                 }
 
@@ -1937,10 +1937,12 @@ struct npc_armoire_44893 : public VehicleAI
                             player->KilledMonsterCredit(KILLCREDIT_DEATHSTALKER_YORICK, ObjectGuid::Empty);
 
                         player->RemoveAura(SPELL_HIDE_IN_ARMOIRE);
+
                         player->GetMotionMaster()->Clear();
                     }
 
                     me->CastSpell(me, SPELL_DESPAWN_ALL);
+
                     me->DespawnOrUnsummon(10ms);
                     break;
                 }
