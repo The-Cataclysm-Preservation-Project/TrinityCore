@@ -149,10 +149,7 @@ class spell_silverpine_flurry_of_claws : public AuraScript
     {
         PreventDefaultAction();
 
-        if (Creature* forsakentrooper = GetTarget()->FindNearestCreature(NPC_FORSAKEN_TROOPER1, 5.f, true))
-            GetTarget()->CastSpell(forsakentrooper, GetSpellInfo()->Effects[EFFECT_0].TriggerSpell, true);
-        else if (Creature* forsakentrooper = GetTarget()->FindNearestCreature(NPC_FORSAKEN_TROOPER2, 5.f, true))
-            GetTarget()->CastSpell(forsakentrooper, GetSpellInfo()->Effects[EFFECT_0].TriggerSpell, true);
+        GetCaster()->CastSpell(GetTarget(), GetSpellInfo()->Effects[EFFECT_0].TriggerSpell, true);
     }
 
     void Register() override
@@ -272,8 +269,6 @@ enum QuestTheWarchiefCometh
     SPELL_AIR_REVENANT_ENTRANCE = 55761,
     SPELL_SIMPLE_TELEPORT = 12980,
 
-    ACTION_START_ANIM = 101,
-
     EVENT_START_ANIM,
     EVENT_AGATHA_RAISE_FORSAKEN = 201,
     EVENT_TALK_SEQUENCE = 301,
@@ -281,6 +276,7 @@ enum QuestTheWarchiefCometh
     EVENT_SUMMON_GARROSH,
 
     ACTION_START_WALKING = 0,
+    ACTION_START_ANIM = 101,
 
     PLAYER_GUID = 99999,
 
