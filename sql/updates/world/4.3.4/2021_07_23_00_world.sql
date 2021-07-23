@@ -86,7 +86,6 @@ UPDATE `creature` SET `MovementType`=1 WHERE `id` = 44547;
 UPDATE `creature` SET `spawndist`=10 WHERE `id` = 44547;
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID`=44365 AND `ID`=1;
-(44632, 1, 0, 0, 34263, 18019);
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
 (44365, 1, 2179, 0, 42775, 15595);
 
