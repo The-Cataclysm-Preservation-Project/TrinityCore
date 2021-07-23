@@ -16,7 +16,6 @@
  */
 
 #include "WardenInteropCheck.h"
-#include "Errors.h"
 #include "Warden.h"
 #include "WardenDefines.h"
 #include "WardenCheatCheckRequest.h"

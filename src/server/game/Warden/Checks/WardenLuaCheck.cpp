@@ -17,7 +17,6 @@
 
 #include "WardenLuaCheck.h"
 #include "Errors.h"
-#include "Log.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
 

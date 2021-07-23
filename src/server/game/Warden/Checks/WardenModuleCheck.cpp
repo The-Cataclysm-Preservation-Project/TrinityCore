@@ -16,7 +16,6 @@
  */
 
 #include "WardenModuleCheck.h"
-#include "Log.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
 #include "Random.h"
@@ -25,6 +24,11 @@
 WardenModuleCheck::WardenModuleCheck(Field* fields) : WardenCheck(Type::Module, fields)
 {
     _moduleName = ReadDatabaseField<DatabaseColumn::Data0>(fields);
+}
+
+WardenModuleCheck::WardenModuleCheck(std::string const& moduleName) : WardenCheck(Type::Module), _moduleName(moduleName)
+{
+    
 }
 
 bool WardenModuleCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)

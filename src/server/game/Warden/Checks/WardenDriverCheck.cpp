@@ -16,12 +16,9 @@
  */
 
 #include "WardenDriverCheck.h"
-#include "Log.h"
 #include "Random.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
-#include "WardenMgr.h"
-#include "WorldSession.h"
 
 #include "Cryptography/HmacHash.h"
 

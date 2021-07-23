@@ -93,8 +93,8 @@ public:
     Type GetCheckType() const { return _scanType; }
 
 protected:
-    void WritePackedValue(ByteBuffer& buffer, uint64 value) const;
-    uint64 ReadPackedValue(ByteBuffer& buffer) const;
+    static void WritePackedValue(ByteBuffer& buffer, uint64 value);
+    static uint64 ReadPackedValue(ByteBuffer& buffer);
 
     bool TransformResultCode(bool checkFailed) const;
 

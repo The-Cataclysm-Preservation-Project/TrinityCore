@@ -22,20 +22,17 @@
 #include "SHA1.h"
 
 #include <array>
-#include <functional>
-#include <memory>
-#include <vector>
 
 class Warden;
 
-struct WardenFileCheck final : public WardenCheck
+struct WardenFileCheck : public WardenCheck
 {
     WardenFileCheck(Field* fields);
     
-    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
-    bool TrySelect(WorldSession* session, Warden* warden) override;
+    bool TrySelect(WorldSession* session, Warden* warden) override final;
 
     std::array<uint8, SHA_DIGEST_LENGTH> const& GetExpectedResult() const { return _expectedResult; }
     std::string const& GetFileName() const { return _fileName; }

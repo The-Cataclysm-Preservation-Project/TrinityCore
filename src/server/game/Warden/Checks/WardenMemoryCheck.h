@@ -20,8 +20,6 @@
 
 #include "WardenCheck.h"
 
-#include <functional>
-#include <memory>
 #include <vector>
 
 class Warden;

@@ -21,7 +21,6 @@
 #include "WardenDefines.h"
 #include "WorldSession.h"
 #include "EnumFlag.h"
-#include "Log.h"
 #include "WardenMgr.h"
 
 WardenCheck::WardenCheck(Type scanType, Field* fields) : _id(0), _scanType(scanType), _flags()
@@ -68,7 +67,7 @@ bool WardenCheck::TrySelect(WorldSession* session, Warden* warden)
     return true;
 }
 
-void WardenCheck::WritePackedValue(ByteBuffer& buffer, uint64 value) const
+void WardenCheck::WritePackedValue(ByteBuffer& buffer, uint64 value)
 {
     uint8* bytes = reinterpret_cast<uint8(&)[8]>(value);
 
@@ -110,7 +109,7 @@ void WardenCheck::WritePackedValue(ByteBuffer& buffer, uint64 value) const
     buffer.put(maskPosition, currentMask);
 }
 
-uint64 WardenCheck::ReadPackedValue(ByteBuffer& buffer) const
+uint64 WardenCheck::ReadPackedValue(ByteBuffer& buffer)
 {
     uint8 bytesMask;
     buffer >> bytesMask;

@@ -20,8 +20,6 @@
 
 #include "WardenCheck.h"
 
-#include <memory>
-
 class Warden;
 
 struct WardenTimingCheck : public WardenCheck

@@ -21,8 +21,6 @@
 #include "WardenCheck.h"
 #include "SHA1.h"
 
-#include <array>
-#include <functional>
 #include <vector> 
 
 class Warden;
@@ -32,8 +30,8 @@ struct WardenProcCheck : public WardenCheck
     WardenProcCheck(Field* fields);
     WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 offset, uint8 length, std::vector<uint8> const& expectedData);
 
-    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
     std::string const& GetModuleName() const { return _moduleName; }
     std::string const& GetFunctionName() const { return _functionName; }

@@ -16,7 +16,6 @@
  */
 
 #include "WardenTimingCheck.h"
-#include "Log.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
 #include "GameTime.h"

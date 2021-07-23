@@ -20,18 +20,15 @@
 
 #include "WardenCheck.h"
 
-#include <functional>
-#include <memory>
-#include <vector>
-
 class Warden;
 
-struct WardenModuleCheck final : public WardenCheck
+struct WardenModuleCheck : public WardenCheck
 {
     WardenModuleCheck(Field* fields);
+    WardenModuleCheck(std::string const& moduleName);
 
-    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
     std::string const& GetModuleName() const { return _moduleName;  }
 

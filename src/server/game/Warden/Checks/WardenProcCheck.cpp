@@ -16,7 +16,6 @@
  */
 
 #include "WardenProcCheck.h"
-#include "Log.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
 #include "Random.h"

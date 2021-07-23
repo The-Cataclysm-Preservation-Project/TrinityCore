@@ -18,7 +18,6 @@
 #include "WardenFileCheck.h"
 #include "WardenDefines.h"
 #include "EnumFlag.h"
-#include "Log.h"
 #include "Warden.h"
 #include "WardenCheatCheckRequest.h"
 #include "WorldSession.h"
@@ -46,7 +45,7 @@ bool WardenFileCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& 
 
     if (!request.CanWrite(2 * sizeof(uint8)))
     {
-        request.UnregisterString(_fileName);
+        request.UnregisterString(stringIndex);
         return false;
     }
 

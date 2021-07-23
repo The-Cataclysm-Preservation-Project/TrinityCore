@@ -20,8 +20,6 @@
 
 #include "WardenCheck.h"
 
-#include <functional>
-#include <memory>
 #include <vector>
 
 class Warden;
@@ -36,7 +34,6 @@ struct WardenPageCheck final : public WardenCheck
 
     uint32 GetAddress() const { return _address; }
     uint8 GetLength() const { return _length; }
-
 
 private:
     uint32 _address;

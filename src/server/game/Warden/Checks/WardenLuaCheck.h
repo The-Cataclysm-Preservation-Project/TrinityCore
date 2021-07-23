@@ -19,12 +19,9 @@
 #define WARDEN_LUA_CHECK_H_
 
 #include "WardenCheck.h"
-#include "WardenCheatCheckRequest.h"
+#include "WardenFwd.h"
 
-#include <functional>
-#include <memory>
 #include <string>
-#include <vector>
 
 class Warden;
 
@@ -44,7 +41,6 @@ protected:
     virtual WardenCheckResult HandleExtendedResponse(bool checkFailed, std::string const& clientResponse) const;
 
 private:
-
     std::string _executableString;
     std::string _queriedString;
     std::string _expectedResult;
