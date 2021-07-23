@@ -27,7 +27,7 @@ WardenModuleCheck::WardenModuleCheck(Field* fields) : WardenCheck(Type::Module, 
     _moduleName = ReadDatabaseField<DatabaseColumn::Data0>(fields);
 }
 
-bool WardenModuleCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenModuleCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     uint32 seed = rand32();
 

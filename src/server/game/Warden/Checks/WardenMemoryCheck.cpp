@@ -53,7 +53,7 @@ void WardenMemoryCheck::SetModuleName(std::string const& moduleName)
         _moduleName = moduleName;
 }
 
-bool WardenMemoryCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenMemoryCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     auto [stringIndex, success] = request.RegisterString(_moduleName);
     if (!success)

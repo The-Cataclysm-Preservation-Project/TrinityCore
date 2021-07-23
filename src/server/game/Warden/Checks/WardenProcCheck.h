@@ -30,21 +30,21 @@ class Warden;
 struct WardenProcCheck : public WardenCheck
 {
     WardenProcCheck(Field* fields);
-    WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 address, uint8 length, std::vector<uint8> const& expectedData);
+    WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 offset, uint8 length, std::vector<uint8> const& expectedData);
 
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
     WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
     std::string const& GetModuleName() const { return _moduleName; }
     std::string const& GetFunctionName() const { return _functionName; }
-    uint32 GetAddress() const { return _address; }
+    uint32 GetOffset() const { return _offset; }
     uint8 GetLength() const { return _length; }
 
 private:
     std::string _moduleName;
     std::string _functionName;
     std::vector<uint8> _expectedData;
-    uint32 _address;
+    uint32 _offset;
     uint8 _length;
 };
 

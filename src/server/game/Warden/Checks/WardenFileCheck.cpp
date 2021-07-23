@@ -38,11 +38,17 @@ WardenFileCheck::WardenFileCheck(Field* fields) : WardenCheck(Type::MPQ, fields)
         throw std::invalid_argument(Trinity::StringFormat("Warden check %u has invalid result data (40 bytes expected)", GetID()));
 }
 
-bool WardenFileCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenFileCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     auto [stringIndex, success] = request.RegisterString(_fileName);
-    if (!success || !request.CanWrite(2 * sizeof(uint8)))
+    if (!success)
         return false;
+
+    if (!request.CanWrite(2 * sizeof(uint8)))
+    {
+        request.UnregisterString(_fileName);
+        return false;
+    }
 
     requestBuffer << uint8(warden->EncodeWardenCheck(GetCheckType()));
     requestBuffer << uint8(stringIndex);

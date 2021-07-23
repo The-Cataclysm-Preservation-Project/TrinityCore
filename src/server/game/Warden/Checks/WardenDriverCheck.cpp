@@ -35,7 +35,7 @@ WardenDriverCheck::WardenDriverCheck(Field* fields) : WardenCheck(Type::Driver, 
     boost::algorithm::unhex(expectedData.begin(), expectedData.end(), std::back_inserter(_expectedData));
 }
 
-bool WardenDriverCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenDriverCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     auto [stringIndex, success] = request.RegisterString(_driverPath);
     if (!success)

@@ -32,7 +32,7 @@ struct WardenLuaCheck : public WardenCheck
 {
     WardenLuaCheck(Type scanType, Field* fields);
 
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
     WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
     std::string const& GetExpectedResult() const { return _expectedResult; }

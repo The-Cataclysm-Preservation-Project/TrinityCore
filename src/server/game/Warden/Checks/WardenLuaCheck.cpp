@@ -41,15 +41,21 @@ WardenLuaCheck::WardenLuaCheck(Type scanType, Field* fields) : WardenCheck(scanT
     _expectedResult = ReadDatabaseField<DatabaseColumn::Result>(fields);
 }
 
-bool WardenLuaCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenLuaCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     switch (GetCheckType())
     {
         case Type::LuaString:
         {
             auto [stringIndex, success] = request.RegisterString(_queriedString);
-            if (!success || !request.CanWrite(2 * sizeof(uint8)))
+            if (!success)
                 return false;
+
+            if (!request.CanWrite(2 * sizeof(uint8)))
+            {
+                request.UnregisterString(stringIndex);
+                return false;
+            }
 
             requestBuffer << uint8(warden->EncodeWardenCheck(Type::LuaString));
             requestBuffer << uint8(stringIndex);

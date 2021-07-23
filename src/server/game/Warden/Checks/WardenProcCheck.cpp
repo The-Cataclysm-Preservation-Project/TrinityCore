@@ -28,24 +28,24 @@ WardenProcCheck::WardenProcCheck(Field* fields) : WardenCheck(Type::Proc, fields
 {
     _moduleName = ReadDatabaseField<DatabaseColumn::Data0>(fields);
     _functionName = ReadDatabaseField<DatabaseColumn::Data1>(fields);
-    _address = ReadDatabaseField<DatabaseColumn::Address>(fields);
+    _offset = ReadDatabaseField<DatabaseColumn::Address>(fields);
     _length = ReadDatabaseField<DatabaseColumn::Length>(fields);
 
     std::string expectedData = ReadDatabaseField<DatabaseColumn::Result>(fields);
     boost::algorithm::unhex(expectedData.begin(), expectedData.end(), std::back_inserter(_expectedData));
 }
 
-WardenProcCheck::WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 address, uint8 length, std::vector<uint8> const& expectedData) : WardenCheck(Type::Proc)
+WardenProcCheck::WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 offset, uint8 length, std::vector<uint8> const& expectedData) : WardenCheck(Type::Proc)
 {
     _moduleName = moduleName;
     _functionName = functionName;
-    _address = address;
+    _offset = offset;
     _length = length;
 
     _expectedData = expectedData;
 }
 
-bool WardenProcCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenProcCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     uint32 seed = rand32();
 
@@ -70,7 +70,7 @@ bool WardenProcCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksR
     dataBuffer.append(hmac.GetDigest());
     dataBuffer << uint8(moduleIndex);
     dataBuffer << uint8(functionIndex);
-    dataBuffer << uint32(_address);
+    dataBuffer << uint32(_offset);
     dataBuffer << uint8(_length);
 
     if (!request.CanWrite(dataBuffer.wpos()))

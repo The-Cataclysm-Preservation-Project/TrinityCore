@@ -30,7 +30,7 @@ struct WardenInteropCheck : public WardenCheck
 {
     WardenInteropCheck();
 
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
     WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
 protected:

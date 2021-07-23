@@ -26,7 +26,7 @@ WardenInteropCheck::WardenInteropCheck() : WardenCheck(Type::WardenInterop)
 
 }
 
-bool WardenInteropCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenInteropCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     if (!request.CanWrite(sizeof(uint8)))
         return false;

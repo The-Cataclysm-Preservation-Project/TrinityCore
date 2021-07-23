@@ -31,7 +31,7 @@ WardenTimingCheck::WardenTimingCheck() : WardenCheck(Type::Timing)
     
 }
 
-bool WardenTimingCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenTimingCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     if (!request.CanWrite(sizeof(uint8)))
         return false;

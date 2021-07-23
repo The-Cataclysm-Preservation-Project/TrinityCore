@@ -44,7 +44,7 @@ WardenPageCheck::WardenPageCheck(Type checkType, Field* fields) : WardenCheck(ch
     }
 }
 
-bool WardenPageCheck::WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
+bool WardenPageCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer)
 {
     uint32 seed = rand32();
 

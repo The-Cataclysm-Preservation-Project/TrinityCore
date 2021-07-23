@@ -31,7 +31,7 @@ struct WardenMemoryCheck : public WardenCheck
     WardenMemoryCheck(Field* fields);
     WardenMemoryCheck(std::string const& moduleName, uint64 offset, uint64 length);
 
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
     WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
 
     std::string const& GetModuleName() const { return _moduleName; }

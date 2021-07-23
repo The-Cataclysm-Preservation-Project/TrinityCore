@@ -166,7 +166,7 @@ void WardenWin::RequestData()
         auto itr = Trinity::Containers::SelectRandomContainerIterator(_pendingChecks);
         auto currentCheck = *itr;
 
-        if (currentCheck->WriteWardenCheckRequest(this, request, dataBuffer))
+        if (currentCheck->TryWriteRequest(this, request, dataBuffer))
         {
             _pendingChecks.erase(itr);
             _sentChecks.emplace_back(currentCheck);

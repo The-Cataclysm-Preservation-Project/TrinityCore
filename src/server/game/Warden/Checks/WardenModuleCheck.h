@@ -30,7 +30,7 @@ struct WardenModuleCheck final : public WardenCheck
 {
     WardenModuleCheck(Field* fields);
 
-    bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
+    bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
     WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
 
     std::string const& GetModuleName() const { return _moduleName;  }

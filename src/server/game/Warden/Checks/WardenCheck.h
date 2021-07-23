@@ -76,7 +76,7 @@ protected:
     virtual ~WardenCheck() { }
 
 public:
-    virtual bool WriteWardenCheckRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) = 0;
+    virtual bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) = 0;
     virtual WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const = 0;
 
     /// <summary>
