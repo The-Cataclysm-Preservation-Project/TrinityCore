@@ -20,48 +20,48 @@ INSERT INTO `creature_addon` VALUES (@CGUID+2, 446400, 0, 0, 0, 1, 0, 0, 0, 0, 3
 
  -- Worg
 SET @ENTRY := 1765;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Ferocious Grizzled Bear
 SET @ENTRY := 1778;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Giant Rabid Bear
 SET @ENTRY := 1797;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Rabid Dog
 SET @ENTRY := 1766;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Vile Fin Oracle
 SET @ENTRY := 1908;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Vile Fin Tidehunter
 SET @ENTRY := 1768;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Skitterweb Lurker
 SET @ENTRY := 1781;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Skitterweb Lurker
 SET @ENTRY := 1781;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Bloodfang Scavenger
 SET @ENTRY := 44547;
-UPDATE `creature` SET `MovementType`=1 WHERE entry=@ENTRY;
-UPDATE `creature` SET `spawndist`=10 WHERE entry=@ENTRY;
+UPDATE `creature` SET `MovementType`=1 WHERE `entry`=@ENTRY;
+UPDATE `creature` SET `spawndist`=10 WHERE `entry`=@ENTRY;
 
  -- Bat Handler Maggotbreath
 INSERT INTO `creature` VALUES (@CGUID+3, 44825, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
