@@ -1176,7 +1176,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
         }
     }
 
-    void PassengerBoarded(Unit* passenger, int8 seatId, bool apply) override
+    void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
     {
         if (apply)
         {
