@@ -1304,10 +1304,8 @@ enum QuestWaitingToExsanguinate
     NPC_ARMOIRE_SUMMONED = 44893,
     NPC_LORD_DARIUS_CROWLEY = 44883,
     NPC_PACKLEADER_IVAR_BLOODFANG = 44884,
-    NPC_ARMOIRE = 44893,
     NPC_KILLCREDIT_DEATHSTALKER_YORICK = 44882,
 
-    SPELL_PERMANENT_FEIGN_DEATH = 29266,
     SPELL_SUMMON_HIDING_SPOT = 83756,
     SPELL_HIDE_IN_ARMOIRE = 83788,
     SPELL_STEALTH = 34189,
@@ -1504,7 +1502,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                     if (!_armoireGUID)
                     {
-                        if (Creature* armoire = me->FindNearestCreature(NPC_ARMOIRE, 30.0f))
+                        if (Creature* armoire = me->FindNearestCreature(NPC_ARMOIRE_SUMMONED, 30.0f))
                         {
                             _armoireGUID = armoire->GetGUID();
 
@@ -2053,7 +2051,7 @@ struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
 
         if (!_armoireGUID)
         {
-            if (Creature* armoire = me->FindNearestCreature(NPC_ARMOIRE, 30.0f))
+            if (Creature* armoire = me->FindNearestCreature(NPC_ARMOIRE_SUMMONED, 30.0f))
             {
                 _armoireGUID = armoire->GetGUID();
 
@@ -2093,7 +2091,7 @@ struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
         if (Player* player = who->ToPlayer())
             _playerGUID = player->GetGUID();
 
-        if (Creature* armoire = me->FindNearestCreature(NPC_ARMOIRE, 30.0f))
+        if (Creature* armoire = me->FindNearestCreature(NPC_ARMOIRE_SUMMONED, 30.0f))
         {
             _armoireGUID = armoire->GetGUID();
 
