@@ -1000,7 +1000,7 @@ enum FallenHumanActions
 
     EVENT_MOVE = 0,
     EVENT_TRANSFORM = 1,
-    EVENT_FACE = 4,
+    EVENT_FACING = 4,
     EVENT_EMOTE = 5,
 };
 
@@ -1073,13 +1073,13 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
                     me->CastSpell(me, SPELL_FORSAKEN_TROOPER_MASTERSCRIPT, true);
 
-                    _events.ScheduleEvent(EVENT_FACE, 1s + 500ms);
+                    _events.ScheduleEvent(EVENT_FACING, 1s + 500ms);
 
                     _done1 = true;
                     break;
                 }
 
-                case EVENT_FACE:
+                case EVENT_FACING:
                 {
                     me->SetFacingTo(0.706837f);
 
@@ -1943,7 +1943,7 @@ struct npc_silverpine_armoire : public VehicleAI
 
                     me->CastSpell(me, SPELL_DESPAWN_ALL);
 
-                    me->DespawnOrUnsummon(10ms);
+                    me->DespawnOrUnsummon();
                     break;
                 }
 
