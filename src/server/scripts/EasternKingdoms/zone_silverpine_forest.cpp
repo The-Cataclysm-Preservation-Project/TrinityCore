@@ -129,6 +129,9 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
                     _events.ScheduleEvent(EVENT_SPELL_QUEUE, 16s, 18s);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
 
@@ -236,6 +239,9 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
                     _events.ScheduleEvent(EVENT_SPELL_DAMAGE, 5s);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
 
@@ -269,7 +275,7 @@ enum QuestTheWarchiefCometh
     SPELL_AIR_REVENANT_ENTRANCE = 55761,
     SPELL_SIMPLE_TELEPORT = 12980,
 
-    EVENT_START_ANIM,
+    EVENT_START_ANIM_1,
     EVENT_AGATHA_RAISE_FORSAKEN = 201,
     EVENT_TALK_SEQUENCE = 301,
     EVENT_SUMMON_PORTAL = 401,
@@ -282,7 +288,9 @@ enum QuestTheWarchiefCometh
 
     MOVE_CROMUSH_TO_SYLVANAS = 5405701,
     MOVE_CROMUSH_TO_HOME = 5405702,
-    MOVE_GARROSH_TO_HOME = 5405703
+    MOVE_GARROSH_TO_HOME = 5405703,
+
+    WAYPOINT_CROMUSH = 446402
 };
 
 Position const ElitePos[16] =
@@ -335,13 +343,9 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
     void Reset() override
     {
         _events.Reset();
-
         _playerGUID = ObjectGuid::Empty;
-
         _animPhase = 0;
-
         _spawnedList.clear();
-
         _portalList.clear();
     }
 
@@ -408,7 +412,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             _mortuusGUID = me->GetGUID();
                             _agathaGUID = agatha->GetGUID();
 
-                            _events.ScheduleEvent(EVENT_START_ANIM, 500ms);
+                            _events.ScheduleEvent(EVENT_START_ANIM_1, 500ms);
                         }
                     }
                 }
@@ -428,7 +432,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_START_ANIM:
+                case EVENT_START_ANIM_1:
                 {
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE, 1s);
                     _events.ScheduleEvent(EVENT_SUMMON_PORTAL, 4s);
@@ -768,6 +772,9 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     for (std::list<Creature*>::const_iterator itr = femaleforsaken.begin(); itr != femaleforsaken.end(); ++itr)
                         (*itr)->AI()->DoAction(ACTION_START_WALKING);
                 }
+
+                default:
+                    break;
             }
         }
 
@@ -816,7 +823,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
         {
             _cromushGUID = cromush->GetGUID();
 
-            cromush->GetMotionMaster()->MovePath(446402, false);
+            cromush->GetMotionMaster()->MovePath(WAYPOINT_CROMUSH, false);
         }
     }
 
@@ -947,7 +954,16 @@ enum SpellForsakenTrooperMasterScript
     SPELL_FORSAKEN_TROOPER_FEMALE_01 = 83152,
     SPELL_FORSAKEN_TROOPER_FEMALE_02 = 83166,
     SPELL_FORSAKEN_TROOPER_FEMALE_03 = 83167,
-    SPELL_FORSAKEN_TROOPER_FEMALE_04 = 83168
+    SPELL_FORSAKEN_TROOPER_FEMALE_04 = 83168,
+
+    DISPLAY_MALE_01 = 33978,
+    DISPLAY_MALE_02 = 33980,
+    DISPLAY_MALE_03 = 33979,
+    DISPLAY_MALE_04 = 33981,
+    DISPLAY_FEMALE_01 = 33982,
+    DISPLAY_FEMALE_02= 33983,
+    DISPLAY_FEMALE_03 = 33984,
+    DISPLAY_FEMALE_04 = 33985,
 };
 
 // Forsaken Trooper Summon - 83149
@@ -959,28 +975,28 @@ class spell_silverpine_forsaken_trooper_masterscript : public SpellScript
         {
             if (Creature* fallenHuman = unit->ToCreature())
             {
-                if (fallenHuman->GetDisplayId() == 33978)
+                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_01)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_01, true);
 
-                if (fallenHuman->GetDisplayId() == 33980)
+                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_02)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_02, true);
 
-                if (fallenHuman->GetDisplayId() == 33979)
+                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_03)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_03, true);
 
-                if (fallenHuman->GetDisplayId() == 33981)
+                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_04)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_04, true);
 
-                if (fallenHuman->GetDisplayId() == 33982)
+                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_01)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_01, true);
 
-                if (fallenHuman->GetDisplayId() == 33983)
+                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_02)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_02, true);
 
-                if (fallenHuman->GetDisplayId() == 33984)
+                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_03)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_03, true);
 
-                if (fallenHuman->GetDisplayId() == 33985)
+                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_04)
                     fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_04, true);
             }
         }
@@ -1002,6 +1018,9 @@ enum FallenHumanActions
     EVENT_TRANSFORM = 1,
     EVENT_FACING = 4,
     EVENT_EMOTE = 5,
+
+    WAYPOINT_OPTION1 = 445920,
+    WAYPOINT_OPTION2 = 445921,
 };
 
 // Fallen Human - 44592, 44593
@@ -1035,15 +1054,18 @@ struct npc_silverpine_fallen_human : public ScriptedAI
                     return;
 
                 if (urand(0, 1) == 0)
-                    me->GetMotionMaster()->MovePath(4459200, false);
+                    me->GetMotionMaster()->MovePath(WAYPOINT_OPTION1, false);
                 else
-                    me->GetMotionMaster()->MovePath(4459201, false);
+                    me->GetMotionMaster()->MovePath(WAYPOINT_OPTION2, false);
 
                 me->DespawnOrUnsummon(35s);
 
                 _done2 = true;
                 break;
             }
+
+            default:
+                break;
         }
     }
 
@@ -1092,6 +1114,9 @@ struct npc_silverpine_fallen_human : public ScriptedAI
                     me->HandleEmoteCommand(66);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
 
@@ -1153,6 +1178,9 @@ struct npc_silverpine_bat_handler_maggotbreath : public ScriptedAI
                     break;
                 }
             }
+
+            default:
+                break;
         }
 
         return false;
@@ -1219,6 +1247,9 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                             Talk(0, player);
                         break;
                     }
+
+                    default:
+                        break;
                 }
 
             break;
@@ -1235,10 +1266,16 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                         me->DespawnOrUnsummon();
                         break;
                     }
+
+                    default:
+                        break;
                 }
 
             break;
             }
+
+            default:
+                break;
         }
     }
 
@@ -1281,6 +1318,9 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
 
                     break;
                 }
+
+                default:
+                    break;
             }
         }
 
@@ -1412,6 +1452,9 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                     _events.ScheduleEvent(EVENT_WAIT_ON_PLAYER, 1s);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
 
@@ -1424,6 +1467,9 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                     me->SetFacingTo(4.8f);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
     }
@@ -1437,6 +1483,9 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                 _events.ScheduleEvent(EVENT_RANE_LAST_MOVE, 10ms);
                 break;
             }
+
+            default:
+                break;
         }
     }
 
@@ -1536,6 +1585,9 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                     me->DespawnOrUnsummon(60s);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
     }
@@ -1637,6 +1689,9 @@ struct npc_silverpine_armoire : public VehicleAI
                 _bloodfangGUID = guid;
                 break;
             }
+
+            default:
+                break;
         }
     }
 
@@ -1957,6 +2012,9 @@ struct npc_silverpine_armoire : public VehicleAI
                         player->CastSpell(player, SPELL_ARMOIRE_CAMERA_B, true);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
     }
@@ -2038,6 +2096,9 @@ struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
                 me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, 0, 1.0f);
                 break;
             }
+
+            default:
+                break;
         }
     }
 
@@ -2114,6 +2175,9 @@ struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
                 me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, false, 1.0f);
                 break;
             }
+
+            default:
+                break;
         }
     }
 

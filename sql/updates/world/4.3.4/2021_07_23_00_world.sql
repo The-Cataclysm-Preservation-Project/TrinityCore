@@ -470,3 +470,30 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (446321, 14, 1442.34, 1055.47, 60.1114, 0, 0, 0, 1, 0, 0, 100, 0),
 (446321, 15, 1442.73, 1063.33, 60.4767, 0, 0, 0, 1, 0, 0, 100, 0);
 
+DELETE FROM `waypoint_data` WHERE `id`=445920 AND `point` BETWEEN 0 AND 5;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(445920, 0, 1379.38, 1026.29, 52.7724, 0, 0, 0, 1, 0, 0, 100, 0);
+(445920, 1, 1378.12, 1008.51, 52.6451, 0, 0, 0, 1, 0, 0, 100, 0);
+(445920, 2, 1365.61, 1012.32, 52.2462, 0, 0, 0, 1, 0, 0, 100, 0);
+(445920, 3, 1351.37, 1019.94, 52.5687, 0, 0, 0, 1, 0, 0, 100, 0);
+(445920, 4, 1344.32, 1013.14, 54.2249, 0, 0, 0, 1, 0, 0, 100, 0);
+(445920, 5, 1335.48, 1010.45, 54.5999, 0, 0, 0, 1, 0, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id`=445921 AND `point` BETWEEN 0 AND 4;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(445921, 0, 1346.33, 1050.31, 52.0797, 0, 0, 0, 1, 0, 0, 100, 0);
+(445921, 1, 1346.14, 1032.64, 52.3299, 0, 0, 0, 1, 0, 0, 100, 0);
+(445921, 2, 1348.5, 1022.23, 52.8049, 0, 0, 0, 1, 0, 0, 100, 0);
+(445921, 3, 1343.69, 1018.34, 54.0274, 0, 0, 0, 1, 0, 0, 100, 0);
+(445921, 4, 1334.64, 1014.69, 54.5999, 0, 0, 0, 1, 0, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id`=446402 AND `point` BETWEEN 0 AND 6;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(446402, 0, 1412.05, 1089.42, 60.4771, 0, 0, 0, 1, 1, 0, 100, 0);
+(446402, 1, 1405.38, 1095.16, 60.4774, 0, 0, 0, 1, 1, 0, 100, 0);
+(446402, 2, 1392.62, 1093.5, 56.4067, 0, 0, 0, 1, 1, 0, 100, 0);
+(446402, 3, 1380.65, 1083.27, 52.6221, 0, 0, 0, 1, 1, 0, 100, 0);
+(446402, 4, 1372.86, 1062, 53.0398, 0, 0, 0, 1, 1, 0, 100, 0);
+(446402, 5, 1376.69, 1048.61, 53.3362, 0, 0, 0, 1, 1, 0, 100, 0);
+(446402, 6, 1375.32, 1046.38, 53.2336, 0, 0, 0, 1, 1, 0, 100, 0);
+
