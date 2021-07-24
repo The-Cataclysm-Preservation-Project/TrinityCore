@@ -1,19 +1,19 @@
 /*
-* This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU General Public License as published by the
-* Free Software Foundation; either version 2 of the License, or (at your
-* option) any later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "CombatAI.h"
 #include "GameObject.h"
@@ -134,8 +134,8 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
 
         if (!UpdateVictim())
             return;
-        else
-            DoMeleeAttackIfReady();
+
+        DoMeleeAttackIfReady();
     }
 
 private:
@@ -161,7 +161,7 @@ class spell_silverpine_flurry_of_claws : public AuraScript
 // Forsaken Trooper - 44791, 44792
 struct npc_silverpine_forsaken_trooper : public ScriptedAI
 {
-    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature) { }
+    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature), _randomSpellIndex(0) { }
 
     void Reset() override
     {
@@ -241,8 +241,8 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 
         if (!UpdateVictim())
             return;
-        else
-            DoMeleeAttackIfReady();
+
+        DoMeleeAttackIfReady();
     }
 
 private:
@@ -326,9 +326,9 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
     {
         if (quest->GetQuestId() == QUEST_THE_WARCHIEF_COMETH)
         {
-            me->GetAI()->SetGUID(player->GetGUID(), PLAYER_GUID);
+            _playerGUID = player->GetGUID();
 
-            me->GetAI()->DoAction(ACTION_START_ANIM);
+            DoAction(ACTION_START_ANIM);
         }
     }
 
@@ -340,9 +340,9 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
         _animPhase = 0;
 
-        spawnedList.clear();
+        _spawnedList.clear();
 
-        portalList.clear();
+        _portalList.clear();
     }
 
     void SetGUID(ObjectGuid const& guid, int32 id) override
@@ -354,12 +354,15 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 _playerGUID = guid;
                 break;
             }
+
+            default:
+                break;
         }
     }
 
     void JustSummoned(Creature* summon) override
     {
-        spawnedList.push_back(summon->GetGUID());
+        _spawnedList.push_back(summon->GetGUID());
 
         switch (summon->GetEntry())
         {
@@ -379,9 +382,12 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
             case NPC_PORTAL_FROM_ORGRIMMAR:
             {
-                portalList.push_back(summon->GetGUID());
+                _portalList.push_back(summon->GetGUID());
                 break;
             }
+
+            default:
+                break;
         }
     }
 
@@ -398,11 +404,8 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         if (Creature* agatha = me->FindNearestCreature(NPC_AGATHA_44608, 100.0f))
                         {
                             _animPhase = 1;
-
                             _sylvanasGUID = sylvanas->GetGUID();
-
                             _mortuusGUID = me->GetGUID();
-
                             _agathaGUID = agatha->GetGUID();
 
                             _events.ScheduleEvent(EVENT_START_ANIM, 500ms);
@@ -411,6 +414,9 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 }
                 break;
             }
+
+            default:
+                break;
         }
     }
 
@@ -767,8 +773,8 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
         if (!UpdateVictim())
             return;
-        else
-            DoMeleeAttackIfReady();
+
+        DoMeleeAttackIfReady();
     }
 
     void SummonPortalsFromOrgrimmar()
@@ -816,7 +822,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
     void RemoveAllSpawnedCreatures()
     {
-        for (std::list<ObjectGuid>::const_iterator itr = spawnedList.begin(); itr != spawnedList.end(); itr++)
+        for (std::list<ObjectGuid>::const_iterator itr = _spawnedList.begin(); itr != _spawnedList.end(); itr++)
         {
             if (Creature* npc = ObjectAccessor::GetCreature(*me, (*itr)))
             {
@@ -841,8 +847,8 @@ private:
     ObjectGuid _mortuusGUID;
     ObjectGuid _SpawnedGUID;
     ObjectGuid _PortalGUID;
-    std::list<ObjectGuid>spawnedList;
-    std::list<ObjectGuid>portalList;
+    std::list<ObjectGuid> _spawnedList;
+    std::list<ObjectGuid> _portalList;
     uint8 _animPhase;
 };
 
@@ -851,7 +857,6 @@ enum SpellRaiseForsaken83173
     NPC_FALLEN_HUMAN_44592 = 44592,
     NPC_FALLEN_HUMAN_44593 = 44593,
 
-    SPELL_FEIGNED = 80636,
     SPELL_FLOATING = 87259,
     SPELL_ALLIANCE_SPY = 78351 // It was on the sniffs
 };
@@ -1002,16 +1007,12 @@ enum FallenHumanActions
 // Fallen Human - 44592, 44593
 struct npc_silverpine_fallen_human : public ScriptedAI
 {
-    npc_silverpine_fallen_human(Creature* creature) : ScriptedAI(creature)
-    {
-        Done1 = false;
-        Done2 = false;
-    }
+    npc_silverpine_fallen_human(Creature* creature) : ScriptedAI(creature), _done1(false), _done2(false) {}
 
     void Reset() override
     {
-        Done1 = false;
-        Done2 = false;
+        _done1 = false;
+        _done2 = false;
 
         _events.Reset();
 
@@ -1030,7 +1031,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
         {
             case EVENT_MOVE:
             {
-                if (Done2)
+                if (_done2)
                     return;
 
                 if (urand(0, 1) == 0)
@@ -1040,7 +1041,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
                 me->DespawnOrUnsummon(35s);
 
-                Done2 = true;
+                _done2 = true;
                 break;
             }
         }
@@ -1059,7 +1060,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
             {
                 case EVENT_TRANSFORM:
                 {
-                    if (Done1)
+                    if (_done1)
                         return;
 
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_STAND_STATE_DEAD);
@@ -1074,7 +1075,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
                     _events.ScheduleEvent(EVENT_FACE, 1s + 500ms);
 
-                    Done1 = true;
+                    _done1 = true;
                     break;
                 }
 
@@ -1096,14 +1097,14 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
         if (!UpdateVictim())
             return;
-        else
-            DoMeleeAttackIfReady();
+
+        DoMeleeAttackIfReady();
     }
 
 private:
     EventMap _events;
-    bool Done1;
-    bool Done2;
+    bool _done1;
+    bool _done2;
 };
 
 enum QuestIteratingUponSuccess
@@ -1231,7 +1232,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                     {
                         me->GetVehicleKit()->RemoveAllPassengers();
 
-                        me->DespawnOrUnsummon(100ms);
+                        me->DespawnOrUnsummon();
                         break;
                     }
                 }
@@ -1285,8 +1286,8 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
 
         if (!UpdateVictim())
             return;
-        else
-            DoMeleeAttackIfReady();
+
+        DoMeleeAttackIfReady();
     }
 
 private:
@@ -1346,6 +1347,7 @@ enum QuestWaitingToExsanguinate
 
     DATA_WAYPOINT_UP = 4488201,
     MOVEPOINT_HIDDEN_PLACE = 1234,
+    MOVEPOINT_RANA = 1230,
 
     ACTION_RANE_JUMP_DEATH = 2,
     ACTION_MOVE_TO_RANA = 500,
@@ -1355,6 +1357,7 @@ enum QuestWaitingToExsanguinate
     MOVEPATH_DARIUS = 448830,
     MOVEPATH_IVAR = 448840,
     MOVEPOINT_HIDDEN_PLACE = 1234,
+    MOVEPOINT_ARMOIRE = 15
 };
 
 // Abandoned Outhouse - 205143
@@ -1379,7 +1382,7 @@ struct go_silverpine_abandoned_outhouse : public GameObjectAI
 // Deathstalker Rane Yorick - 44882
 struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 {
-    npc_silverpine_deathstalker_rane_yorick(Creature* creature) : ScriptedAI(creature)
+    npc_silverpine_deathstalker_rane_yorick(Creature* creature) : ScriptedAI(creature), _playerArrived(false)
     {
         Initialize();
     }
@@ -1389,7 +1392,6 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
         _playerGUID = ObjectGuid::Empty;
         _armoireGUID = ObjectGuid::Empty;
         _bloodfangGUID = ObjectGuid::Empty;
-        _playerArrived = false;
         _events.Reset();
     }
 
@@ -1408,7 +1410,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
         {
             switch (id)
             {
-                case 15:
+                case MOVEPOINT_ARMOIRE:
                 {
                     _events.ScheduleEvent(EVENT_WAIT_ON_PLAYER, 1s);
                     break;
@@ -1550,9 +1552,9 @@ private:
 };
 
 // Armoire - 44893
-struct npc_silverpine_armoire_click : public VehicleAI
+struct npc_silverpine_armoire : public VehicleAI
 {
-    npc_silverpine_armoire_click(Creature* creature) : VehicleAI(creature)
+    npc_silverpine_armoire(Creature* creature) : VehicleAI(creature)
     {
         Initialize();
     }
@@ -1782,7 +1784,7 @@ struct npc_silverpine_armoire_click : public VehicleAI
                     break;
                 }
 
-                case EVENT_ACTION + 11: // Sniff
+                case EVENT_ACTION + 11:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->AI()->Talk(5);
@@ -1971,9 +1973,9 @@ private:
 };
 
 // Armoire - 44894
-struct npc_silverpine_armoire : public ScriptedAI
+struct npc_silverpine_armoire_click : public ScriptedAI
 {
-    npc_silverpine_armoire(Creature* creature) : ScriptedAI(creature) {}
+    npc_silverpine_armoire_click(Creature* creature) : ScriptedAI(creature) {}
 
     void OnSpellClick(Unit* clicker, bool& result) override
     {
@@ -2026,7 +2028,7 @@ struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
     {
         FindAllGuid();
 
-        if (type == POINT_MOTION_TYPE && id == 1230)
+        if (type == POINT_MOTION_TYPE && id == MOVEPOINT_RANA)
             me->DespawnOrUnsummon(1s);
     }
 
@@ -2036,7 +2038,7 @@ struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
         {
             case ACTION_MOVE_TO_RANA:
             {
-                me->GetMotionMaster()->MovePoint(1230, 1299.025f, 1206.724f, 59.64236f, 0, 1.0f);
+                me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, 0, 1.0f);
                 break;
             }
         }
@@ -2102,7 +2104,7 @@ struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
 
     void MovementInform(uint32 type, uint32 id) override
     {
-        if (type == POINT_MOTION_TYPE && id == 1230)
+        if (type == POINT_MOTION_TYPE && id == MOVEPOINT_RANA)
             me->DespawnOrUnsummon(1s);
     }
 
@@ -2112,7 +2114,7 @@ struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
         {
             case ACTION_MOVE_TO_RANA:
             {
-                me->GetMotionMaster()->MovePoint(1230, 1299.025f, 1206.724f, 59.64236f, false, 1.0f);
+                me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, false, 1.0f);
                 break;
             }
         }
