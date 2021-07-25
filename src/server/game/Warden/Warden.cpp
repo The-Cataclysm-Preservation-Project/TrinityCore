@@ -78,10 +78,9 @@ std::shared_ptr<WardenModule> Warden::SelectModule() const
 
 void Warden::HandleModuleMissing()
 {
-    TC_LOG_DEBUG("warden", "Send module to client");
+    TC_LOG_DEBUG("warden", "[S->C] WARDEN_SMSG_MODULE_CACHE");
 
     // Create packet structure
-
     int32 sizeLeft = _module->Module.Data.size();
     uint32 pos = 0;
 
@@ -106,7 +105,7 @@ void Warden::RequestModule()
     // Ask Maiev to use the module identified by the provided ID and Key.
     // Maiev can reply WARDEN_CMSG_MODULE_OK if the module is found in WowCache.WDB
     // Otherwise, Maiev replies WARDEN_CMSG_MODULE_MISSING.
-    TC_LOG_DEBUG("warden", "Sending WARDEN_SMSG_MODULE_USE");
+    TC_LOG_DEBUG("warden", "[S->C] WARDEN_SMSG_MODULE_USE");
 
     ByteBuffer buffer;
     buffer << uint8(WARDEN_SMSG_MODULE_USE);
@@ -181,7 +180,7 @@ void Warden::EncryptData(uint8* buffer, uint32 length)
 
 void Warden::HandleModuleOK()
 {
-    TC_LOG_INFO("warden", "Hash request issued to %s with keychain %u", _session->GetPlayerInfo().c_str(), _wardenKey.ID);
+    TC_LOG_INFO("warden", "[S->C] WARDEN_SMSG_HASH_REQUEST (%s, K: %u)", _session->GetPlayerInfo().c_str(), _wardenKey.ID);
 
     // Select a proper key
     _wardenKey = _module->SelectRandomKey();
@@ -224,31 +223,31 @@ void Warden::ProcessIncoming(ByteBuffer& buffer)
     switch (opcode)
     {
         case WARDEN_CMSG_MODULE_MISSING:
-            TC_LOG_DEBUG("warden", "Received WARDEN_CMSG_MODULE_MISSING");
+            TC_LOG_DEBUG("warden", "[C->S] WARDEN_CMSG_MODULE_MISSING");
             HandleModuleMissing();
             break;
         case WARDEN_CMSG_MODULE_OK:
-            TC_LOG_DEBUG("warden", "Received WARDEN_CMSG_MODULE_OK");
+            TC_LOG_DEBUG("warden", "[C->S] WARDEN_CMSG_MODULE_OK");
             HandleModuleOK();
             break;
         case WARDEN_CMSG_CHEAT_CHECKS_RESULT:
-            TC_LOG_DEBUG("warden", "Received WARDEN_CMSG_CHEAT_CHECKS_RESULT");
+            TC_LOG_DEBUG("warden", "[C->S] WARDEN_CMSG_CHEAT_CHECKS_RESULT");
             HandleCheatChecksResult(buffer);
             break;
         case WARDEN_CMSG_MEM_CHECKS_RESULT:
-            TC_LOG_DEBUG("warden", "Received WARDEN_CMSG_MEM_CHECKS_RESULT");
+            TC_LOG_DEBUG("warden", "[C->S] WARDEN_CMSG_MEM_CHECKS_RESULT");
             break;
         case WARDEN_CMSG_HASH_RESULT:
-            TC_LOG_DEBUG("warden", "Received WARDEN_CMSG_HASH_RESULT");
+            TC_LOG_DEBUG("warden", "[C->S] WARDEN_CMSG_HASH_RESULT");
             if (HandleHashResult(buffer))
                 InitializeModule();
             break;
         case WARDEN_CMSG_MODULE_FAILED:
-            TC_LOG_DEBUG("warden", "Received WARDEN_CMSG_MODULE_FAILED");
+            TC_LOG_DEBUG("warden", "[C->S] WARDEN_CMSG_MODULE_FAILED");
             HandleModuleFailed();
             break;
         default:
-            TC_LOG_DEBUG("warden", "Received unknown warden opcode 0x%02X of size %u.", opcode, uint32(buffer.size() - 1));
+            TC_LOG_DEBUG("warden", "[C->S] Unknown warden opcode 0x%02X of size %u.", opcode, uint32(buffer.size() - 1));
             break;
     }
 }

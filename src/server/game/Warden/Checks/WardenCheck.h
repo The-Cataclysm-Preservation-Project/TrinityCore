@@ -76,7 +76,21 @@ protected:
     virtual ~WardenCheck() { }
 
 public:
+    /// <summary>
+    /// Tries to append this check into a request to be sent to the client.
+    /// </summary>
+    /// <param name="warden">The session's associated warden.</param>
+    /// <param name="request">An object tracking the state of the request being built.</param>
+    /// <param name="requestBuffer">The request to be sent to the session.</param>
+    /// <returns>true when able; false otherwise.</returns>
     virtual bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) = 0;
+
+    /// <summary>
+    /// Processes a response from a session's warden.
+    /// </summary>
+    /// <param name="warden">The session's associated warden.</param>
+    /// <param name="packet">The packet sent by the warden.</param>
+    /// <returns>An action indicating how to handle the result of the check.</returns>
     virtual WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const = 0;
 
     /// <summary>
@@ -96,8 +110,19 @@ protected:
     static void WritePackedValue(ByteBuffer& buffer, uint64 value);
     static uint64 ReadPackedValue(ByteBuffer& buffer);
 
+    /// <summary>
+    /// Transforms a result code as received from the client, according to the rules associated with WardenCheckFlags.
+    /// </summary>
+    /// <param name="checkFailed"></param>
+    /// <returns></returns>
     bool TransformResultCode(bool checkFailed) const;
 
+    /// <summary>
+    /// Transforms a result code as received from the client and corrected with TransformResultCode into an
+    /// action for the server to execute on the account.
+    /// </summary>
+    /// <param name="checkFailed">Wether or not the check failed.</param>
+    /// <returns>The action to undertake, if any.</returns>
     virtual WardenCheckResult HandleResponse(bool checkFailed) const;
 
 private:

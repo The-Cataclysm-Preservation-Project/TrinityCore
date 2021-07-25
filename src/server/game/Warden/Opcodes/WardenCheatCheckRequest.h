@@ -30,11 +30,30 @@ struct WardenCheatChecksRequest
     constexpr const static uint32 MaximumSize = 512;
     using PoolType = std::unordered_set<std::string>;
 
+    /// <summary>
+    /// Attempts to register a string in the packet's data pool.
+    /// </summary>
+    /// <param name="string">The string to register</param>
+    /// <returns>A pair consisting of the index of the string in the pool, and a boolean indicating wether the operation was a success.</returns>
     std::pair<uint32, bool> RegisterString(std::string const& string);
+
+    /// <summary>
+    /// Unregisters a previously registered string via its index in the pool.
+    /// </summary>
+    /// <param name="stringIndex"></param>
     void UnregisterString(uint32 stringIndex);
 
+    /// <summary>
+    /// Returns the projected size of the packet.
+    /// </summary>
+    /// <returns></returns>
     uint32 GetSize() const { return _projectedSize; }
 
+    /// <summary>
+    /// Determines wether a given amount of data can be written to the packet.
+    /// </summary>
+    /// <param name="size"></param>
+    /// <returns></returns>
     bool CanWrite(uint32 size);
 
     PoolType::const_iterator begin() const { return _stringPool.begin(); }

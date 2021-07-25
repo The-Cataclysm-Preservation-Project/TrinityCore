@@ -27,6 +27,8 @@
 template <size_t N>
 struct WardenModuleInitializeRequest
 {
+    virtual ~WardenModuleInitializeRequest() { }
+
     std::string Module;
     std::array<uint32, N> Functions;
 
