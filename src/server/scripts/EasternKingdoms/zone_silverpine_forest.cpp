@@ -45,7 +45,6 @@ enum QuestTheGilneasLiberationFront
     SPELL_FLURRY_OF_CLAWS_CHANNEL = 80365,
     SPELL_FLURRY_OF_CLAWS = 80367,
 
-    EVENT_CHECK_SHOWFIGHT = 101,
     EVENT_SPELL_QUEUE = 102,
     EVENT_SPELL_DAMAGE = 103,
 
@@ -64,8 +63,6 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
         _events.Reset();
 
         me->RemoveAura(SPELL_DARKENED);
-
-        _events.ScheduleEvent(EVENT_CHECK_SHOWFIGHT, 1s);
     }
 
     void SpellHit(Unit* caster, SpellInfo const* spell) override
@@ -75,12 +72,6 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
 
         if (spell->Id == SPELL_HEARTSTRIKE)
             me->AddAura(SPELL_DARKENED, me);
-    }
-
-    void MovementInform(uint32 type, uint32 pointId) override
-    {
-        if (type == POINT_MOTION_TYPE && pointId == MOVE_TO_HOMEPOSITION)
-            _events.ScheduleEvent(EVENT_CHECK_SHOWFIGHT, 25ms);
     }
 
     void JustEngagedWith(Unit* /*who*/) override
@@ -96,32 +87,6 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_CHECK_SHOWFIGHT:
-                {
-                    if (me->IsInCombat() || me->isDead())
-                        return;
-
-                    if (me->GetDistance2d(me->GetHomePosition().GetPositionX(), me->GetHomePosition().GetPositionY()) > 10.0f)
-                    {
-                        me->GetMotionMaster()->MovePoint(MOVE_TO_HOMEPOSITION, me->GetHomePosition());
-                        return;
-                    }
-
-                    if (Creature* forsaken = me->FindNearestCreature(NPC_FORSAKEN_TROOPER1, 5.0f))
-                    {
-                        me->Attack(forsaken, true);
-                        return;
-                    }
-                    else if (Creature* forsaken = me->FindNearestCreature(NPC_FORSAKEN_TROOPER2, 5.0f))
-                    {
-                        me->Attack(forsaken, true);
-                        return;
-                    }
-                    else
-                        _events.ScheduleEvent(EVENT_CHECK_SHOWFIGHT, 2s + 500ms);
-                    break;
-                }
-
                 case EVENT_SPELL_QUEUE:
                 {
                     DoCastVictim(SPELL_FLURRY_OF_CLAWS_CHANNEL);
@@ -164,7 +129,7 @@ class spell_silverpine_flurry_of_claws : public AuraScript
 // Forsaken Trooper - 44791, 44792
 struct npc_silverpine_forsaken_trooper : public ScriptedAI
 {
-    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature), _randomSpellIndex(0) { }
+    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature), _randomSpellIndex(0), _spellId(0) { }
 
     void Reset() override
     {
@@ -172,14 +137,6 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 
         if (urand(0, 1) == 0)
             Talk(TALK_WORGEN_DEFEATED);
-
-        _events.ScheduleEvent(EVENT_CHECK_SHOWFIGHT, 1s);
-    }
-
-    void MovementInform(uint32 type, uint32 pointId) override
-    {
-        if (type == POINT_MOTION_TYPE && pointId == MOVE_TO_HOMEPOSITION)
-            _events.ScheduleEvent(EVENT_CHECK_SHOWFIGHT, 25ms);
     }
 
     void JustEngagedWith(Unit* /*who*/) override
@@ -195,46 +152,24 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_CHECK_SHOWFIGHT:
-                {
-                    if (me->IsInCombat() || me->isDead())
-                        return;
-
-                    if (me->GetDistance2d(me->GetHomePosition().GetPositionX(), me->GetHomePosition().GetPositionY()) > 10.0f)
-                    {
-                        me->GetMotionMaster()->MovePoint(MOVE_TO_HOMEPOSITION, me->GetHomePosition());
-                        return;
-                    }
-
-                    if (Creature* worgen = me->FindNearestCreature(NPC_WORGEN_RENEGATE, 5.0f))
-                    {
-                        me->Attack(worgen, true);
-                        _events.ScheduleEvent(EVENT_CHECK_SHOWFIGHT, 2s + 500ms);
-                        return;
-                    }
-
-                    _events.ScheduleEvent(EVENT_CHECK_SHOWFIGHT, 2s + 500ms);
-                    break;
-                }
-
                 case EVENT_SPELL_DAMAGE:
                 {
-                    uint32 spellId = me->GetCreatureTemplate()->spells[_randomSpellIndex];
+                    _spellId = me->GetCreatureTemplate()->spells[_randomSpellIndex];
 
-                    if (!spellId)
+                    if (!_spellId)
                     {
                         _randomSpellIndex = 0;
 
-                        spellId = me->GetCreatureTemplate()->spells[_randomSpellIndex];
+                        _spellId = me->GetCreatureTemplate()->spells[_randomSpellIndex];
                     }
 
-                    if (!spellId)
+                    if (!_spellId)
                         break;
 
                     if (++_randomSpellIndex > 8)
                         _randomSpellIndex = 0;
 
-                    DoCastVictim(spellId);
+                    DoCastVictim(_spellId);
 
                     _events.ScheduleEvent(EVENT_SPELL_DAMAGE, 5s);
                     break;
@@ -253,6 +188,7 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 
 private:
     EventMap _events;
+    uint32 _spellId;
     uint8 _randomSpellIndex;
 };
 
