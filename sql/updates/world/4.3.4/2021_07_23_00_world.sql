@@ -361,6 +361,10 @@ DELETE FROM `vehicle_template_accessory` WHERE `entry`=45282;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
 (45282, 45374, 0, 0, 'Forsaken Catapult', 6, 30000);
 
+DELETE FROM `vehicle_seat_addon` WHERE `SeatEntry`=8420;
+INSERT INTO `vehicle_seat_addon` (`SeatEntry`, `SeatOffsetX`, `SeatOffsetY`, `SeatOffsetZ`, `SeatOffsetO`, `ExitParamX`, `ExitParamY`, `ExitParamZ`, `ExitParamO`, `ExitParamValue`) VALUES 
+(8420, 0, 0, 0, 1, 0, 0, 0, 0, 0);
+
 DELETE FROM `waypoint_data` WHERE `id`=448820 AND `point` BETWEEN 1 AND 16;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (448820, 1, 1299.87, 1189.73, 52.1171, 2.45043, 3, 0, 1, 0, 0, 0, 0),
@@ -380,18 +384,16 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448820, 15, 1311.44, 1206.49, 58.5103, 6.2596, 3, 0, 1, 0, 0, 0, 0),
 (448820, 16, 1312.64, 1208.44, 58.5121, 1.01707, 3, 0, 1, 0, 0, 0, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=448830 AND `point` BETWEEN 0 AND 5;
+DELETE FROM `waypoint_data` WHERE `id`=448830 AND `point` BETWEEN 0 AND 4;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
-(448830, 5, 1313.48, 1206.09, 58.5119, 0, 3, 0, 1, 0, 0, 0, 0),
 (448830, 4, 1313.48, 1206.09, 58.5119, 0, 3, 0, 1, 0, 0, 0, 0),
 (448830, 3, 1305.32, 1206.43, 58.5126, 0, 3, 0, 1, 0, 0, 0, 0),
 (448830, 2, 1302.33, 1206.44, 58.499, 0, 3, 0, 1, 0, 0, 0, 0),
 (448830, 1, 1300.36, 1206.64, 58.5706, 0, 3, 0, 1, 0, 0, 0, 0),
 (448830, 0, 1299.36, 1206.64, 58.5706, 0, 3, 0, 1, 0, 0, 0, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=448840 AND `point` BETWEEN 0 AND 4;
+DELETE FROM `waypoint_data` WHERE `id`=448840 AND `point` BETWEEN 0 AND 3;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
-(448840, 4, 1308.4, 1206.28, 58.5109, 0, 3, 0, 1, 0, 0, 0, 0),
 (448840, 3, 1308.4, 1206.28, 58.5109, 0, 3, 0, 1, 0, 0, 0, 0),
 (448840, 2, 1302.31, 1206.61, 58.4984, 0, 3, 0, 1, 0, 0, 0, 0),
 (448840, 1, 1297.2, 1210.54, 58.5533, 0, 3, 0, 1, 0, 0, 0, 0),
@@ -470,7 +472,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (446321, 14, 1442.34, 1055.47, 60.1114, 0, 0, 0, 1, 0, 0, 100, 0),
 (446321, 15, 1442.73, 1063.33, 60.4767, 0, 0, 0, 1, 0, 0, 100, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=445920 AND `point` BETWEEN 0 AND 5;
+DELETE FROM `waypoint_data` WHERE `id`=445920;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (445920, 0, 1379.38, 1026.29, 52.7724, 0, 0, 0, 1, 0, 0, 100, 0),
 (445920, 1, 1378.12, 1008.51, 52.6451, 0, 0, 0, 1, 0, 0, 100, 0),
@@ -479,7 +481,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (445920, 4, 1344.32, 1013.14, 54.2249, 0, 0, 0, 1, 0, 0, 100, 0),
 (445920, 5, 1335.48, 1010.45, 54.5999, 0, 0, 0, 1, 0, 0, 100, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=445921 AND `point` BETWEEN 0 AND 4;
+DELETE FROM `waypoint_data` WHERE `id`=445921;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (445921, 0, 1346.33, 1050.31, 52.0797, 0, 0, 0, 1, 0, 0, 100, 0),
 (445921, 1, 1346.14, 1032.64, 52.3299, 0, 0, 0, 1, 0, 0, 100, 0),
@@ -487,7 +489,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (445921, 3, 1343.69, 1018.34, 54.0274, 0, 0, 0, 1, 0, 0, 100, 0),
 (445921, 4, 1334.64, 1014.69, 54.5999, 0, 0, 0, 1, 0, 0, 100, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=446402 AND `point` BETWEEN 0 AND 6;
+DELETE FROM `waypoint_data` WHERE `id`=446402;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (446402, 0, 1412.05, 1089.42, 60.4771, 0, 0, 0, 1, 1, 0, 100, 0),
 (446402, 1, 1405.38, 1095.16, 60.4774, 0, 0, 0, 1, 1, 0, 100, 0),

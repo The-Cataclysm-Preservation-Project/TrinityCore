@@ -771,6 +771,8 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
                     for (std::list<Creature*>::const_iterator itr = femaleforsaken.begin(); itr != femaleforsaken.end(); ++itr)
                         (*itr)->AI()->DoAction(ACTION_START_WALKING);
+
+                    break;
                 }
 
                 default:
@@ -799,23 +801,8 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
     void SummonGarroshAndHisEliteGuards()
     {
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[0], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[1], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[2], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[3], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[4], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[5], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[6], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[7], TEMPSUMMON_TIMED_DESPAWN, 300s);
-
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[8], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[9], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[10], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[11], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[12], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[13], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[14], TEMPSUMMON_TIMED_DESPAWN, 300s);
-        me->SummonCreature(NPC_HELLSCREEMS_ELITE, ElitePos[15], TEMPSUMMON_TIMED_DESPAWN, 300s);
+        for (auto pos : ElitePos)
+            me->SummonCreature(NPC_HELLSCREEMS_ELITE, pos, TEMPSUMMON_TIMED_DESPAWN, 300s);
 
         me->SummonCreature(NPC_GARROSH_HELLSCREAM, GarroshPos, TEMPSUMMON_TIMED_DESPAWN, 300s);
 
@@ -852,8 +839,6 @@ private:
     ObjectGuid _sylvanasGUID;
     ObjectGuid _agathaGUID;
     ObjectGuid _mortuusGUID;
-    ObjectGuid _SpawnedGUID;
-    ObjectGuid _PortalGUID;
     std::list<ObjectGuid> _spawnedList;
     std::list<ObjectGuid> _portalList;
     uint8 _animPhase;
@@ -1086,9 +1071,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
                         return;
 
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_STAND_STATE_DEAD);
-
                     me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
-
                     me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
 
                     me->RemoveAura(SPELL_FEIGNED);
@@ -1148,6 +1131,9 @@ enum QuestIteratingUponSuccess
     EVENT_GO_HOME,
 
     ACTION_OPTION_ID = 1,
+
+    DATA_POINT_FINISHED = 5,
+    DATA_POINT_START_QUEST = 6,
 
     DATA_WAYPOINT_BAT_ARRIVE = 448210,
     DATA_WAYPOINT_BAT_CIRCLE = 448211,
@@ -1236,7 +1222,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
             {
                 switch (waypointId)
                 {
-                    case 6:
+                    case DATA_POINT_START_QUEST:
                     {
                         me->SetSpeed(MOVE_FLIGHT, 5.0f);
 
@@ -1259,7 +1245,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
             {
                 switch (waypointId)
                 {
-                    case 5:
+                    case DATA_POINT_FINISHED:
                     {
                         me->GetVehicleKit()->RemoveAllPassengers();
 
@@ -1382,18 +1368,15 @@ enum QuestWaitingToExsanguinate
     EVENT_CAMERA_A = 400,
     EVENT_CAMERA_B = 401,
 
-    DATA_WAYPOINT_UP = 4488201,
+    DATA_WAYPOINT_UP = 448820,
     MOVEPOINT_HIDDEN_PLACE = 1234,
     MOVEPOINT_RANA = 1230,
 
     ACTION_RANE_JUMP_DEATH = 2,
     ACTION_MOVE_TO_RANA = 500,
 
-    PLAYER_GUID = 99999,
-
     MOVEPATH_DARIUS = 448830,
     MOVEPATH_IVAR = 448840,
-    MOVEPOINT_HIDDEN_PLACE = 1234,
     MOVEPOINT_ARMOIRE = 15
 };
 
@@ -1415,6 +1398,8 @@ struct go_silverpine_abandoned_outhouse : public GameObjectAI
             player->CastSpell(player, SPELL_SUMMON_DEATHSTALKER_YORICK, true);
     }
 };
+
+Position const YorickDeath = { 1295.52f, 1206.58f, 58.501f };
 
 // Deathstalker Rane Yorick - 44882
 struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
@@ -1438,7 +1423,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
             _playerGUID = player->GetGUID();
 
         _events.ScheduleEvent(EVENT_START_ANIM, 1s);
-        _events.ScheduleEvent(EVENT_START_ANIM + 1, 1s + 500ms);
+        _events.ScheduleEvent(EVENT_START_ANIM + 1, 2s + 500ms);
     }
 
     void MovementInform(uint32 type, uint32 id) override
@@ -1480,6 +1465,9 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
         {
             case ACTION_RANE_JUMP_DEATH:
             {
+                me->SetDisableGravity(true);
+
+                _events.CancelEvent(EVENT_SET_FACE_TO_BLOODFANG);
                 _events.ScheduleEvent(EVENT_RANE_LAST_MOVE, 10ms);
                 break;
             }
@@ -1568,11 +1556,9 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                 case EVENT_RANE_LAST_MOVE:
                 {
-                    Position const YorickDeath = { 1295.52f, 1206.58f, 58.501f };
+                    me->GetMotionMaster()->MoveJump(YorickDeath, 10.0f, 10.0f);
 
-                    me->GetMotionMaster()->MoveJump(YorickDeath, 2.0f, 5.0f);
-
-                    _events.ScheduleEvent(EVENT_RANE_LAST_MOVE + 1, 3s);
+                    _events.ScheduleEvent(EVENT_RANE_LAST_MOVE + 1,2s);
                     break;
                 }
 
@@ -1648,15 +1634,15 @@ struct npc_silverpine_armoire : public VehicleAI
         else
         {
             if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                darius->DespawnOrUnsummon(1s);
+                darius->DespawnOrUnsummon();
 
             if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                ivar->DespawnOrUnsummon(1s);
+                ivar->DespawnOrUnsummon();
 
             if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
-                rane->DespawnOrUnsummon(1s);
+                rane->DespawnOrUnsummon();
 
-            me->DespawnOrUnsummon(1s);
+            me->DespawnOrUnsummon();
         }
 
         _playerGUID = ObjectGuid::Empty;
@@ -1722,7 +1708,7 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->GetMotionMaster()->MovePath(MOVEPATH_IVAR, false);
 
-                    _events.ScheduleEvent(EVENT_ACTION, 6s + 500ms);
+                    _events.ScheduleEvent(EVENT_ACTION, 5s + 500ms);
                     break;
                 }
 
@@ -1737,7 +1723,7 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 1, 7s + 250ms);
+                    _events.ScheduleEvent(EVENT_ACTION + 1, 5s + 250ms);
                     break;
                 }
 
@@ -1841,7 +1827,7 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->AI()->Talk(5);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 12, 4s + 800ms);
+                    _events.ScheduleEvent(EVENT_ACTION + 12, 5s);
                     break;
                 }
 
@@ -1857,9 +1843,9 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_ACTION + 13:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->GetMotionMaster()->MovePoint(2, 1313.477f, 1209.611f, 58.510f, false, 1.5f);
+                        ivar->GetMotionMaster()->MovePoint(2, 1313.477f, 1209.611f, 58.510f, false, 2.0f);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 14, 4s);
+                    _events.ScheduleEvent(EVENT_ACTION + 14, 3s);
                     break;
                 }
 
@@ -1873,7 +1859,7 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->SetFacingToObject(rane);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 15, 5s);
+                    _events.ScheduleEvent(EVENT_ACTION + 15, 4s);
                     break;
                 }
 
@@ -1884,7 +1870,6 @@ struct npc_silverpine_armoire : public VehicleAI
                         if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
                         {
                             rane->RemoveAura(SPELL_STEALTH);
-                            rane->SetDisableGravity(true);
                             ivar->CastSpell(rane, SPELL_REVERSE_RIDE_VEHICLE, true);
                             rane->EnterVehicle(ivar, 0);
                         }
@@ -1908,7 +1893,7 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->SetFacingTo(3.111f);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 18, 1s);
+                    _events.ScheduleEvent(EVENT_ACTION + 18, 500ms);
                     break;
                 }
 
@@ -1917,7 +1902,7 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->AI()->Talk(8);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 19, 2s);
+                    _events.ScheduleEvent(EVENT_ACTION + 19, 3s);
                     break;
                 }
 
@@ -1938,7 +1923,7 @@ struct npc_silverpine_armoire : public VehicleAI
                         rane->GetAI()->DoAction(ACTION_RANE_JUMP_DEATH);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 21, 2s);
+                    _events.ScheduleEvent(EVENT_ACTION + 21, 1s);
                     break;
                 }
 
@@ -1953,7 +1938,7 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 22, 4s + 500ms);
+                    _events.ScheduleEvent(EVENT_ACTION + 22, 5s + 500ms);
                     break;
                 }
 
@@ -2084,7 +2069,7 @@ struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
         FindAllGuid();
 
         if (type == POINT_MOTION_TYPE && id == MOVEPOINT_RANA)
-            me->DespawnOrUnsummon(1s);
+            me->DespawnOrUnsummon(8s);
     }
 
     void DoAction(int32 param) override
@@ -2093,7 +2078,7 @@ struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
         {
             case ACTION_MOVE_TO_RANA:
             {
-                me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, 0, 1.0f);
+                me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, 0, 1.5f);
                 break;
             }
 
@@ -2163,7 +2148,7 @@ struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
     void MovementInform(uint32 type, uint32 id) override
     {
         if (type == POINT_MOTION_TYPE && id == MOVEPOINT_RANA)
-            me->DespawnOrUnsummon(1s);
+            me->DespawnOrUnsummon(8s);
     }
 
     void DoAction(int32 param) override
@@ -2172,7 +2157,7 @@ struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
         {
             case ACTION_MOVE_TO_RANA:
             {
-                me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, false, 1.0f);
+                me->GetMotionMaster()->MovePoint(MOVEPOINT_RANA, 1299.025f, 1206.724f, 59.64236f, false, 1.5f);
                 break;
             }
 
@@ -2195,7 +2180,6 @@ void AddSC_silverpine_forest()
 
     RegisterCreatureAI(npc_silverpine_grand_executor_mortuus);
     RegisterCreatureAI(npc_silverpine_fallen_human);
-
     RegisterSpellScript(spell_silverpine_forsaken_trooper_masterscript);
     RegisterSpellAndAuraScriptPair(spell_silverpine_raise_forsaken_83173, spell_silverpine_raise_forsaken_83173_aura);
 
