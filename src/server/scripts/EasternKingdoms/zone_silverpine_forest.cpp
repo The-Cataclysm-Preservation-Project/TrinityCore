@@ -328,7 +328,7 @@ Position const CromushPos = { 1404.71f, 1063.73f, 60.5617f, 2.827433f };
 // Grand Executor Mortuus - 44615
 struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 {
-    npc_silverpine_grand_executor_mortuus(Creature* creature) : ScriptedAI(creature) { }
+    npc_silverpine_grand_executor_mortuus(Creature* creature) : ScriptedAI(creature), _animPhase(0) { }
 
     void QuestAccept(Player* player, const Quest* quest) override
     {
@@ -1160,9 +1160,9 @@ struct npc_silverpine_bat_handler_maggotbreath : public ScriptedAI
                     me->AI()->Talk(0);
 
                     CloseGossipMenuFor(player);
-
-                    break;
                 }
+
+                break;
             }
 
             default:
