@@ -141,12 +141,12 @@ void Warden::Update()
 
         if (IsAwaitingReply())
         {
-            uint32 maxClientResponseDelay = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_RESPONSE_DELAY);
+            uint32 maxClientResponseDelay = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_RESPONSE_DELAY); // ms
 
             if (maxClientResponseDelay > 0)
             {
                 // Kick player if client response delays more than set in config
-                if (_clientResponseTimer > maxClientResponseDelay * IN_MILLISECONDS)
+                if (_clientResponseTimer > maxClientResponseDelay)
                 {
                     TC_LOG_WARN("warden", "%s (latency: %u, IP: %s) exceeded Warden module response delay for more than %s - disconnecting client",
                         _session->GetPlayerInfo().c_str(), _session->GetLatency(), _session->GetRemoteAddress().c_str(), secsToTimeString(maxClientResponseDelay, true).c_str());
@@ -252,7 +252,7 @@ void Warden::ProcessIncoming(ByteBuffer& buffer)
     }
 }
 
-void Warden::ProcessCheckResult(uint32 checkID, WardenCheckResult action)
+void Warden::ProcessCheckResult(uint32 checkID, WardenCheckResult action) const
 {
     uint32 accountId = GetSession()->GetAccountId();
     ObjectGuid characterGuid = ObjectGuid::Empty;
