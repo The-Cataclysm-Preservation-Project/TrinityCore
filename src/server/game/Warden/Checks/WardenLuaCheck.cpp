@@ -90,7 +90,7 @@ bool WardenLuaCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& r
     }
 }
 
-WardenCheckResult WardenLuaCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenLuaCheck::ProcessResponse(ByteBuffer& packet) const
 {
     // Same logic for both checks.
     uint8 scanError;

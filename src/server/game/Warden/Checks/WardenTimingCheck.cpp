@@ -39,7 +39,7 @@ bool WardenTimingCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest
     return true;
 }
 
-WardenCheckResult WardenTimingCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenTimingCheck::ProcessResponse(ByteBuffer& packet) const
 {
     uint8 scanResult;
     packet >> scanResult;

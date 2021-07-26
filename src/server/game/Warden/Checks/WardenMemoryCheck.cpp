@@ -75,7 +75,7 @@ bool WardenMemoryCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest
     return true;
 }
 
-WardenCheckResult WardenMemoryCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenMemoryCheck::ProcessResponse(ByteBuffer& packet) const
 {
     uint8 responseCode;
     packet >> responseCode;

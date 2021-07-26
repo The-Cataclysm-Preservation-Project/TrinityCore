@@ -30,7 +30,7 @@ struct WardenPageCheck final : public WardenCheck
     WardenPageCheck(Type checkType, Field* fields);
 
     bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override;
+    WardenCheckResult ProcessResponse(ByteBuffer& packet) const override;
 
     uint32 GetAddress() const { return _address; }
     uint8 GetLength() const { return _length; }

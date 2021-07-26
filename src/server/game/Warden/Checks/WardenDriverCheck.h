@@ -31,7 +31,7 @@ struct WardenDriverCheck final : public WardenCheck
     WardenDriverCheck(Field* fields);
 
     bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
+    WardenCheckResult ProcessResponse(ByteBuffer& packet) const override final;
 
 private:
     std::string _driverPath;

@@ -25,7 +25,6 @@
 #include "GameTime.h"
 #include "Log.h"
 #include "Opcodes.h"
-#include "Player.h"
 #include "Util.h"
 #include "WardenModule.h"
 #include "World.h"
@@ -252,28 +251,45 @@ void Warden::ProcessIncoming(ByteBuffer& buffer)
     }
 }
 
-void Warden::ProcessCheckResult(uint32 checkID, WardenCheckResult action) const
+void Warden::ProcessCheckResult(std::shared_ptr<WardenCheck> check, WardenCheckResult action) const
 {
+    if (action == WardenCheckResult::Success)
+        return;
+
     uint32 accountId = GetSession()->GetAccountId();
-    ObjectGuid characterGuid = ObjectGuid::Empty;
-    if (Player* player = GetSession()->GetPlayer())
-        characterGuid = player->GetGUID();
+
+    std::string actionMessage = Trinity::StringFormat("Anticheat detection: %s", check->GetComment());
 
     switch (action)
     {
-        case WardenCheckResult::FailedBan:
+        case WardenCheckResult::FailedBanIP:
         {
             uint32 banDuration = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION);
+
+            std::string characterName = GetSession()->GetPlayerName();
+            sWorld->BanAccount(BAN_IP, GetSession()->GetRemoteAddress(), banDuration, actionMessage, "Warden");
+            break;
+        }
+        case WardenCheckResult::FailedBanCharacter:
+        {
+            uint32 banDuration = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION);
+
+            std::string characterName = GetSession()->GetPlayerName();
+            sWorld->BanAccount(BAN_CHARACTER, characterName, banDuration, actionMessage, "Warden");
+            break;
+        }
+        case WardenCheckResult::FailedBanAccount:
+        {
+            uint32 banDuration = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION);
+
             std::string accountName;
-            AccountMgr::GetName(accountId, accountName);
-            sWorld->BanAccount(BAN_ACCOUNT, accountName, banDuration, "Anticheat Violation", "Warden");
+            if (AccountMgr::GetName(accountId, accountName))
+                sWorld->BanAccount(BAN_ACCOUNT, accountName, banDuration, actionMessage, "Warden");
             break;
         }
         case WardenCheckResult::FailedKick:
             _session->KickPlayer();
             break;
-        case WardenCheckResult::Success:
-            return;
         default:
             break;
     }
@@ -282,7 +298,7 @@ void Warden::ProcessCheckResult(uint32 checkID, WardenCheckResult action) const
     LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_WARDEN_FLAG);
     stmt->setUInt32(0, accountId);
     stmt->setUInt32(1, GameTime::GetGameTime());
-    stmt->setUInt32(2, checkID);
+    stmt->setUInt32(2, check->GetID());
     LoginDatabase.Execute(stmt);
 }
 

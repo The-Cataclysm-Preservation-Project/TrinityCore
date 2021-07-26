@@ -83,7 +83,7 @@ bool WardenProcCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& 
     return true;
 }
 
-WardenCheckResult WardenProcCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenProcCheck::ProcessResponse(ByteBuffer& packet) const
 {
     uint8 scanResponseCode;
     packet >> scanResponseCode;

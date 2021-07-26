@@ -19,18 +19,14 @@
 #include "Cryptography/WardenKeyGeneration.h"
 #include "Common.h"
 #include "Containers.h"
-#include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Log.h"
-#include "Opcodes.h"
 #include "ByteBuffer.h"
 #include "Database/DatabaseEnv.h"
 #include "GameTime.h"
 #include "Optional.h"
 #include "World.h"
-#include "Player.h"
 #include "Util.h"
-#include "WardenInteropCheck.h"
 #include "WardenWin.h"
 #include "WardenModule.h"
 #include "WardenMgr.h"
@@ -38,7 +34,6 @@
 #include "WardenCheatCheckRequest.h"
 #include "WardenModuleInitializeRequest.h"
 #include "WardenDefines.h"
-#include "Random.h"
 #include <openssl/md5.h>
 
 WardenWin::WardenWin(WardenPlatform platform) : Warden(platform), _serverTicks(0)
@@ -216,8 +211,8 @@ void WardenWin::HandleCheatChecksResult(ByteBuffer& packet)
 
     for (auto&& currentCheck : _sentChecks)
     {
-        WardenCheckResult checkResult = currentCheck->ProcessResponse(this, packet);
-        ProcessCheckResult(currentCheck->GetID(), checkResult);
+        WardenCheckResult checkResult = currentCheck->ProcessResponse(packet);
+        ProcessCheckResult(currentCheck, checkResult);
     }
 
     // Set hold off timer, minimum timer should at least be 1 second

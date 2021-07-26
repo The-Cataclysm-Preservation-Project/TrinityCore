@@ -27,7 +27,7 @@ struct WardenInteropCheck : public WardenCheck
     WardenInteropCheck();
 
     bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
+    WardenCheckResult ProcessResponse(ByteBuffer& packet) const override final;
 
 protected:
     virtual WardenCheckResult HandleExtendedResponse(uint64 moduleBase, uint64 executableBase, uint64 interfaceBase) const;

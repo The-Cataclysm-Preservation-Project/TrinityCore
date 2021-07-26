@@ -34,7 +34,7 @@ bool WardenInteropCheck::TryWriteRequest(Warden* warden, WardenCheatChecksReques
     return true;
 }
 
-WardenCheckResult WardenInteropCheck::ProcessResponse(Warden* /* warden */, ByteBuffer& packet) const
+WardenCheckResult WardenInteropCheck::ProcessResponse(ByteBuffer& packet) const
 {
     uint64 executableBase = ReadPackedValue(packet);
     uint64 moduleBase = ReadPackedValue(packet);

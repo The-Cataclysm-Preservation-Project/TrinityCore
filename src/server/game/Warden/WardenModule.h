@@ -9,7 +9,6 @@
 #include "WardenKey.h"
 
 #include <array>
-#include <unordered_map>
 #include <vector>
 
 struct WardenModule

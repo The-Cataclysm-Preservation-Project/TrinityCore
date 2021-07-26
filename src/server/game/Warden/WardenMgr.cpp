@@ -17,7 +17,6 @@
 
 #include "Common.h"
 #include "Containers.h"
-#include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Log.h"
 #include "Util.h"

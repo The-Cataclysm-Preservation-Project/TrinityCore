@@ -18,7 +18,6 @@
 #ifndef _WardenMgr_H
 #define _WardenMgr_H
 
-#include <array>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -26,7 +25,6 @@
 #include <shared_mutex>
 
 #include "Cryptography/SHA1.h"
-#include "Cryptography/BigNumber.h"
 
 #include "WardenFwd.h"
 #include "WardenCheck.h"

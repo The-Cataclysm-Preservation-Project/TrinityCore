@@ -53,7 +53,7 @@ bool WardenModuleCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest
 
 }
 
-WardenCheckResult WardenModuleCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenModuleCheck::ProcessResponse(ByteBuffer& packet) const
 {
     uint8 resultCode;
     packet >> resultCode;

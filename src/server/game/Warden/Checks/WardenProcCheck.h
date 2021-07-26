@@ -31,7 +31,7 @@ struct WardenProcCheck : public WardenCheck
     WardenProcCheck(std::string const& moduleName, std::string const& functionName, uint32 offset, uint8 length, std::vector<uint8> const& expectedData);
 
     bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
+    WardenCheckResult ProcessResponse(ByteBuffer& packet) const override final;
 
     std::string const& GetModuleName() const { return _moduleName; }
     std::string const& GetFunctionName() const { return _functionName; }

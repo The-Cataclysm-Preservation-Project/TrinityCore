@@ -18,15 +18,10 @@
 #ifndef _WARDEN_BASE_H
 #define _WARDEN_BASE_H
 
-#include <array>
-#include <map>
-
 #include "Cryptography/ARC4.h"
 #include "Cryptography/BigNumber.h"
-#include "Cryptography/SHA1.h"
 
 #include "ByteBuffer.h"
-#include "Optional.h"
 #include "WardenFwd.h"
 #include "WardenKey.h"
 #include "WardenCheck.h"
@@ -79,7 +74,7 @@ class TC_GAME_API Warden
         std::shared_ptr<WardenModule> SelectModule() const;
 
         //< Called when a given check is failed.
-        void ProcessCheckResult(uint32 checkID, WardenCheckResult checkResult) const;
+        void ProcessCheckResult(std::shared_ptr<WardenCheck> check, WardenCheckResult checkResult) const;
 
         //< Enqueues a check to be sent to the client.
         virtual void SubmitCheck(std::shared_ptr<WardenCheck> check) = 0;

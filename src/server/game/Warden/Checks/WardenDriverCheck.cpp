@@ -59,7 +59,7 @@ bool WardenDriverCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest
     return true;
 }
 
-WardenCheckResult WardenDriverCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenDriverCheck::ProcessResponse(ByteBuffer& packet) const
 {
     uint8 scanResult;
     packet >> scanResult;

@@ -18,7 +18,6 @@
 #ifndef WARDEN_MODULE_INITIALIZE_REQUEST_H_
 #define WARDEN_MODULE_INITIALIZE_REQUEST_H_
 
-#include "Common.h"
 #include "ByteBuffer.h"
 #include "Warden.h"
 

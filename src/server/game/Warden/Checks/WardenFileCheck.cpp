@@ -54,7 +54,7 @@ bool WardenFileCheck::TryWriteRequest(Warden* warden, WardenCheatChecksRequest& 
     return true;
 }
 
-WardenCheckResult WardenFileCheck::ProcessResponse(Warden* warden, ByteBuffer& packet) const
+WardenCheckResult WardenFileCheck::ProcessResponse(ByteBuffer& packet) const
 {
     uint8 scanCode;
 

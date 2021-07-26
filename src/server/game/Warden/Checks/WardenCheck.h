@@ -91,7 +91,7 @@ public:
     /// <param name="warden">The session's associated warden.</param>
     /// <param name="packet">The packet sent by the warden.</param>
     /// <returns>An action indicating how to handle the result of the check.</returns>
-    virtual WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const = 0;
+    virtual WardenCheckResult ProcessResponse(ByteBuffer& packet) const = 0;
 
     /// <summary>
     /// Performs logic checks to validate that this check can be sent as a request to the client.

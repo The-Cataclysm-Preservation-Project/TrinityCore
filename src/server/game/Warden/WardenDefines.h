@@ -45,7 +45,9 @@ enum class WardenCheckResult : uint32
     Success,
     FailedLog,
     FailedKick,
-    FailedBan
+    FailedBanAccount,
+    FailedBanCharacter,
+    FailedBanIP,
 };
 
 enum class WardenPlatform : uint8

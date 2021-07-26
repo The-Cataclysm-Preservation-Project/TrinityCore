@@ -30,7 +30,7 @@ struct WardenFileCheck : public WardenCheck
     WardenFileCheck(Field* fields);
     
     bool TryWriteRequest(Warden* warden, WardenCheatChecksRequest& request, ByteBuffer& requestBuffer) override final;
-    WardenCheckResult ProcessResponse(Warden* warden, ByteBuffer& packet) const override final;
+    WardenCheckResult ProcessResponse(ByteBuffer& packet) const override final;
 
     bool TrySelect(WorldSession* session, Warden* warden) override final;
 
