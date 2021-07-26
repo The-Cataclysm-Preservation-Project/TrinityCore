@@ -129,7 +129,7 @@ class spell_silverpine_flurry_of_claws : public AuraScript
 // Forsaken Trooper - 44791, 44792
 struct npc_silverpine_forsaken_trooper : public ScriptedAI
 {
-    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature), _randomSpellIndex(0), _spellId(0) { }
+    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature), _spellId(0), _randomSpellIndex(0) { }
 
     void Reset() override
     {
