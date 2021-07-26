@@ -64,7 +64,7 @@ WardenCheckResult WardenDriverCheck::ProcessResponse(ByteBuffer& packet) const
     uint8 scanResult;
     packet >> scanResult;
 
-    bool checkFailed = scanResult == 0xE9;
+    bool checkFailed = !(scanResult == 0x4A);
     checkFailed = TransformResultCode(checkFailed);
 
     return HandleResponse(checkFailed);

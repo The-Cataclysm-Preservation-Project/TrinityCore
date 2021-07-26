@@ -43,7 +43,7 @@ WardenCheckResult WardenInteropCheck::ProcessResponse(ByteBuffer& packet) const
     return HandleExtendedResponse(moduleBase, executableBase, interfaceBase);
 }
 
-WardenCheckResult WardenInteropCheck::HandleExtendedResponse(uint64 moduleBase, uint64 executableBase, uint64 interfaceBase) const
+WardenCheckResult WardenInteropCheck::HandleExtendedResponse(uint64 /* moduleBase */, uint64 /* executableBase */, uint64 /* interfaceBase */) const
 {
     return WardenCheckResult::Success;
 }

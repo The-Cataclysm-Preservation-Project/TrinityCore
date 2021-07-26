@@ -37,7 +37,7 @@ WardenPageCheck::WardenPageCheck(Type checkType, Field* fields) : WardenCheck(ch
 
     if (_expectedData.size() != _length)
     {
-        TC_LOG_DEBUG("sql.sql", "Warden driver check #%u has mismatched data length (%u) and length value (%u).",
+        TC_LOG_DEBUG("sql.sql", "Warden driver check #%lu has mismatched data length (%u) and length value (%u).",
             GetID(), _expectedData.size(), _length);
 
         _length = _expectedData.size();
@@ -72,7 +72,7 @@ WardenCheckResult WardenPageCheck::ProcessResponse(ByteBuffer& packet) const
     uint8 resultCode;
     packet >> resultCode;
 
-    bool checkFailed = resultCode == 0xE9;
+    bool checkFailed = !(resultCode == 0x4A);
     checkFailed = TransformResultCode(checkFailed);
 
     return HandleResponse(checkFailed);

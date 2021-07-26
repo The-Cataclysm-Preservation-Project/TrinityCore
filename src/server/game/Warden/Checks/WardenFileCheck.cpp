@@ -15,6 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "StringFormat.h"
 #include "WardenFileCheck.h"
 #include "WardenDefines.h"
 #include "EnumFlag.h"

@@ -58,7 +58,7 @@ WardenCheckResult WardenModuleCheck::ProcessResponse(ByteBuffer& packet) const
     uint8 resultCode;
     packet >> resultCode;
 
-    bool checkFailed = resultCode == 0xE9;
+    bool checkFailed = !(resultCode == 0x4A);
     checkFailed = TransformResultCode(checkFailed);
 
     return HandleResponse(checkFailed);
