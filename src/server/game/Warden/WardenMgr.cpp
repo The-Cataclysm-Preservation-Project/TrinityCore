@@ -226,7 +226,7 @@ void WardenMgr::LoadWardenChecks()
         }
         catch (std::exception const& ex)
         {
-            TC_LOG_ERROR("server.loading", ex.what());
+            TC_LOG_ERROR("server.loading", "%s", ex.what());
         }
 
         if (!wardenCheck)
