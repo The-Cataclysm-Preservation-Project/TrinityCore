@@ -22,6 +22,14 @@ DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
 (13, 1, 83764, 0, 0, 31, 0, 3, 44884, 0, 0, 0, 0, '', 'Armoire Camera - Target Ivar');
 
+DELETE FROM `conditions` WHERE `SourceEntry`= 83838 AND `SourceTypeOrReferenceId`= 13;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
+(13, 1, 83838, 0, 0, 31, 0, 3, 44914, 0, 0, 0, '', 'Pick Up Orc Crate - Target Orc Sea Pup');
+
+DELETE FROM `conditions` WHERE `SourceEntry`= 83902 AND `SourceTypeOrReferenceId`= 13;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
+(13, 1, 83902, 0, 0, 31, 0, 3, 44367, 0, 0, 0, '', 'Release Diseased Mutant Bush Chicken - Target Forest Ettin');
+
  -- Dark Ranger
 SET @CGUID := 399000;
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID AND @CGUID+1;
@@ -52,6 +60,10 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 DELETE FROM `creature` WHERE `guid`=@CGUID+5;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
 (@CGUID+5, 44784, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1431.55, 1086.89, 60.4768, 3.81387, 300, 0, 0, 276, 590, 0, 0, 0, 0, NULL, 0);
+
+ -- Worgen Renegade
+UPDATE `creature` SET `MovementType`=1 WHERE `id` = 44793;
+UPDATE `creature` SET `spawndist`=5 WHERE `id` = 44793;
 
  -- Worg
 UPDATE `creature` SET `MovementType`=1 WHERE `id` = 1765;
@@ -119,14 +131,23 @@ UPDATE creature_template SET `ScriptName` = 'npc_silverpine_deathstalker_rane_yo
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_bat_handler_maggotbreath'  WHERE `entry` = 44825;
 UPDATE creature_template SET `spell1` = 83573, `VehicleId` = 1051, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_worgen_renegade'  WHERE `entry` = 44793;
-UPDATE creature_template SET `spell1` = 19983, `spell2` = 11977, `spell3` = 8078, `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44792;
-UPDATE creature_template SET `spell1` = 19983, `spell2` = 11977, `spell3` = 8078, `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44791;
+UPDATE creature_template SET `spell1` = 19983, `spell2` = 8078, `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44792;
+UPDATE creature_template SET `spell1` = 19983, `spell2` = 8078, `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44791;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_coffin_hauler'  WHERE `entry` = 44764;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_hauler'  WHERE `entry` = 44731;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_grand_executor_mortuus'  WHERE `entry` = 44615;
 UPDATE creature_template SET `unit_flags2` = 2107392, `VehicleId` = 1109  WHERE `entry` = 44610;
 UPDATE creature_template SET `unit_flags2` = 2099200, `HoverHeight` = 2.8  WHERE `entry` = 44609;
 UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44593;
+UPDATE creature_template SET `npcflag`=16777216 WHERE `entry` = 44915;
+UPDATE creature_template SET `unit_flags`=33288 WHERE `entry` = 44914;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_mutant_bush_chicken'  WHERE `entry` = 44935;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_forest_ettin'  WHERE `entry` = 44367;
+
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_admiral_hatchet' WHERE `entry` = 44916;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_dog' WHERE `entry` = 44942;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_webbed_victim_skitterweb' WHERE `entry` = 44941;
 
 DELETE FROM `creature_template_addon` WHERE `entry` IN (44608, 44609, 44610, 44615, 44592, 44593, 44825, 44821, 44882, 44893, 44894, 44884, 44883, 44632, 44764, 44731);
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
@@ -248,6 +269,10 @@ DELETE FROM `npc_spellclick_spells` WHERE `npc_entry`=44894 AND `spell_id`=83756
 INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
 (44894, 83756, 1, 0);
 
+DELETE FROM `npc_spellclick_spells` WHERE `npc_entry`=44915 AND `spell_id`=83838;
+INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
+(44915, 83838, 1, 0);
+
 DELETE FROM `creature_questender` WHERE `id`=44615 AND `quest` IN (26964, 26965, 26989);
 INSERT INTO `creature_questender` (`id`, `quest`) VALUES
 (44615, 26964),
@@ -301,25 +326,53 @@ DELETE FROM `creature_queststarter` WHERE `id`=44365 AND `quest`=27065;
 INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 (44365, 27065);
 
+ -- Detect: Quest Invis Zone 3
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=26964 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES
 (83989, 5369, 26964, 27097, 0, 0, 2, 3, 74, 11);
 
+ -- Detect: Quest Invis Zone 1
 DELETE FROM `spell_area` WHERE `spell`=83232 AND `area`=5369 AND `quest_start`=26964 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES
 (83232, 5369, 26964, 27098, 0, 0, 2, 3, 66, 1);
 
-DELETE FROM `spell_script_names` WHERE `spell_id`=83173 AND `ScriptName`='spell_silverpine_raise_forsaken_83173_spell';
+ -- Detect: Quest Invis Zone 5
+DELETE FROM `spell_area` WHERE `spell`=84241 AND `area`=5386 AND `quest_start`=27065 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(84241, 5386, 27065, 27098, 0, 0, 2, 3, 74, 1);
+
+ -- REMOVE
+DELETE FROM `spell_area` WHERE `spell`=83839 AND `area`=928 AND `quest_start`=27069 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83839, 928, 27069, 0, 0, 0, 2, 3, 74, 0);
+
+DELETE FROM `spell_area` WHERE `spell`=83839 AND `area`=130 AND `quest_start`=27069 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83839, 130, 27069, 0, 0, 0, 2, 3, 74, 0);
+
+DELETE FROM `spell_area` WHERE `spell`=83839 AND `area`=226 AND `quest_start`=27069 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83839, 226, 27069, 0, 0, 0, 2, 3, 74, 0);
+
+DELETE FROM `spell_script_names` WHERE `spell_id`=83173 AND `ScriptName`='spell_silverpine_raise_forsaken_83173';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83173, 'spell_silverpine_raise_forsaken_83173');
 
-DELETE FROM `spell_script_names` WHERE `spell_id`=83149 AND `ScriptName`='spell_silverpine_forsaken_trooper_master_script_83149';
+DELETE FROM `spell_script_names` WHERE `spell_id`=83149 AND `ScriptName`='spell_silverpine_forsaken_trooper_masterscript';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83149, 'spell_silverpine_forsaken_trooper_masterscript');
 
 DELETE FROM `spell_script_names` WHERE `spell_id`=80365 AND `ScriptName`='spell_silverpine_flurry_of_claws';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (80365, 'spell_silverpine_flurry_of_claws');
+
+DELETE FROM `spell_script_names` WHERE `spell_id`=83865 AND `ScriptName`='spell_silverpine_sea_pup_trigger';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(83865, 'spell_silverpine_sea_pup_trigger');
+
+DELETE FROM `spell_script_names` WHERE `spell_id`=83838 AND `ScriptName`='spell_silverpine_pick_up_orc_crate';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(83838, 'spell_silverpine_pick_up_orc_crate');
 
 DELETE FROM `vehicle_template_accessory` WHERE `entry`=44764 AND `seat_id` BETWEEN 0 AND 5;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
@@ -454,7 +507,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (446320, 11, 1383.98, 1085.92, 53.1041, 0, 0, 0, 1, 0, 0, 100, 0),
 (446320, 12, 1370.33, 1072.82, 53.2393, 0, 0, 0, 1, 0, 0, 100, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=448840 AND `point` BETWEEN 1 AND 15;
+DELETE FROM `waypoint_data` WHERE `id`=446321 AND `point` BETWEEN 1 AND 15;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (446321, 1, 1433.18, 1070.35, 60.4769, 0, 0, 8000, 1, 0, 0, 100, 0),
 (446321, 2, 1441.05, 1065.37, 60.4769, 0, 0, 0, 1, 0, 0, 100, 0),
