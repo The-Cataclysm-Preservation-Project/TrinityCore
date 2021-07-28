@@ -2229,6 +2229,17 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
             if (Creature* pup = me->FindNearestCreature(NPC_ORC_SEA_PUP, 25.0f))
                 pup->GetAI()->DoAction(ACTION_DELIVER_CRATES);
         }
+
+        if (quest->GetQuestId() == QUEST_LOST_IN_THE_DARKNESS)
+        {
+            me->GetCreatureListWithEntryInGrid(_seaDogList, NPC_ORC_SEA_DOG, 25.0f);
+
+            for (Creature* seadog : _seaDogList)
+            {
+                if (seadog->GetOwner()->ToPlayer()->IsQuestRewarded(QUEST_LOST_IN_THE_DARKNESS))
+                    seadog->DespawnOrUnsummon();
+            }
+        }
     }
 
     void Reset() override
@@ -2329,6 +2340,7 @@ private:
     ObjectGuid _playerGUID;
     ObjectGuid _torokGUID;
     std::list<Player*> _playerList;
+    std::vector<Creature*> _seaDogList;
     bool _playerNear;
 };
 
@@ -2785,6 +2797,8 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
     void Reset() override
     {
         _events.Reset();
+
+        me->SetReactState(REACT_DEFENSIVE);
     }
 
     void IsSummonedBy(Unit* who) override
