@@ -1440,7 +1440,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
-                        if (abs(player->GetPositionZ() - me->GetPositionZ()) < 0.1f && player->GetDistance2d(me) < 5.0f && !_playerArrived)
+                        if (player->GetDistance2d(me) < 5.0f && !_playerArrived)
                         {
                             _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 1s);
                             _playerArrived = true;
