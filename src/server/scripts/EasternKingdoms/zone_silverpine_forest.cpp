@@ -35,6 +35,26 @@
 #include "Unit.h"
 #include "Vehicle.h"
 
+enum TalksFromCreatures
+{
+    TALK_0 = 0,
+    TALK_1,
+    TALK_2,
+    TALK_3,
+    TALK_4,
+    TALK_5,
+    TALK_6,
+    TALK_7,
+    TALK_8,
+    TALK_9,
+    TALK_10,
+    TALK_11,
+    TALK_12,
+    TALK_13,
+    TALK_14,
+    TALK_15,
+};
+
 enum QuestTheGilneasLiberationFront
 {
     NPC_FORSAKEN_TROOPER1 = 44791,
@@ -50,8 +70,6 @@ enum QuestTheGilneasLiberationFront
     EVENT_SPELL_DAMAGE = 103,
 
     MOVE_TO_HOMEPOSITION,
-
-    TALK_WORGEN_DEFEATED = 0
 };
 
 // Worgen Renegade - 44793
@@ -139,7 +157,7 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
         _events.Reset();
 
         if (urand(0, 1) == 0)
-            Talk(TALK_WORGEN_DEFEATED);
+            Talk(TALK_0);
     }
 
     void JustEngagedWith(Unit* /*who*/) override
@@ -394,7 +412,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(0);
+                        sylvanas->AI()->Talk(TALK_0);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 1, 8s);
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 25, 4s + 500ms);
@@ -422,7 +440,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         sylvanas->SetFacingTo(3.924652f);
 
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(0);
+                        garrosh->AI()->Talk(TALK_0);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 3, 12s);
                     break;
@@ -433,7 +451,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
                         garrosh->SetFacingTo(3.9670f);
-                        garrosh->AI()->Talk(1);
+                        garrosh->AI()->Talk(TALK_1);
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 4, 7s);
@@ -445,7 +463,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
                         sylvanas->SetFacingTo(2.426115f);
-                        sylvanas->AI()->Talk(2);
+                        sylvanas->AI()->Talk(TALK_2);
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 5, 5s);
@@ -457,7 +475,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
                         sylvanas->SetFacingTo(3.924652f);
-                        sylvanas->AI()->Talk(3);
+                        sylvanas->AI()->Talk(TALK_3);
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 6, 15s);
@@ -467,7 +485,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 6:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(4);
+                        sylvanas->AI()->Talk(TALK_4);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 7, 4s);
                     break;
@@ -476,7 +494,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 7:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(2);
+                        garrosh->AI()->Talk(TALK_2);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 8, 3s);
                     break;
@@ -485,7 +503,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 8:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(5);
+                        sylvanas->AI()->Talk(TALK_5);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 9, 6s);
                     break;
@@ -494,7 +512,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 9:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(6);
+                        sylvanas->AI()->Talk(TALK_6);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 10, 6s);
                     break;
@@ -503,7 +521,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 10:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(7);
+                        sylvanas->AI()->Talk(TALK_7);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 11, 9s);
                     break;
@@ -512,7 +530,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 11:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(8);
+                        sylvanas->AI()->Talk(TALK_8);
 
                     _events.ScheduleEvent(EVENT_AGATHA_RAISE_FORSAKEN, 3s);
                     break;
@@ -539,7 +557,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 12:
                 {
                     if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
-                        cromush->AI()->Talk(0);
+                        cromush->AI()->Talk(TALK_0);
 
                     if (Creature* agatha = ObjectAccessor::GetCreature(*me, _agathaGUID))
                         agatha->GetMotionMaster()->MovePoint(1235, 1364.02f, 1028.54f, 57.8534f, false, 1.0f);
@@ -553,7 +571,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 13:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(3);
+                        garrosh->AI()->Talk(TALK_3);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 14, 13s);
                     break;
@@ -565,7 +583,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         agatha->SetFacingTo(0.855211f);
 
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(9);
+                        sylvanas->AI()->Talk(TALK_9);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 15, 10s);
                     break;
@@ -574,7 +592,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 15:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(4);
+                        garrosh->AI()->Talk(TALK_4);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 16, 6s);
                     break;
@@ -583,7 +601,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 16:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(5);
+                        garrosh->AI()->Talk(TALK_5);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 17, 6s);
                     break;
@@ -592,7 +610,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 17:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(10);
+                        sylvanas->AI()->Talk(TALK_10);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 18, 5s);
                     break;
@@ -603,7 +621,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
                         garrosh->SetFacingTo(5.251188f);
-                        garrosh->AI()->Talk(6);
+                        garrosh->AI()->Talk(TALK_6);
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 19, 5s);
@@ -615,7 +633,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
                         garrosh->SetFacingTo(2.426115f);
-                        garrosh->AI()->Talk(7);
+                        garrosh->AI()->Talk(TALK_7);
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 20, 14s);
@@ -625,7 +643,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 20:
                 {
                     if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
-                        cromush->AI()->Talk(1);
+                        cromush->AI()->Talk(TALK_1);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 21, 2s + 500ms);
                     break;
@@ -636,7 +654,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
                         garrosh->SetFacingTo(5.251188f);
-                        garrosh->AI()->Talk(8);
+                        garrosh->AI()->Talk(TALK_8);
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 22, 7s);
@@ -684,7 +702,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 25:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(1);
+                        sylvanas->AI()->Talk(TALK_1);
 
                     break;
                 }
@@ -692,7 +710,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 26:
                 {
                     if (Creature* mortuus = ObjectAccessor::GetCreature(*me, _mortuusGUID))
-                        mortuus->AI()->Talk(0);
+                        mortuus->AI()->Talk(TALK_0);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 27, 3s);
                     break;
@@ -1096,7 +1114,7 @@ struct npc_silverpine_bat_handler_maggotbreath : public ScriptedAI
 
                     me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
 
-                    me->AI()->Talk(0);
+                    me->AI()->Talk(TALK_0);
 
                     CloseGossipMenuFor(player);
                 }
@@ -1169,7 +1187,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                         me->GetMotionMaster()->MovePath(DATA_WAYPOINT_BAT_CIRCLE, true);
 
                         if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                            Talk(0, player);
+                            Talk(TALK_0, player);
                         break;
                     }
 
@@ -1226,7 +1244,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                     {
                         if (player->GetReqKillOrCastCurrentCount(QUEST_ITERATING_UPON_SUCCESS, NPC_VILE_FIN_ORACLE) == 50)
                         {
-                            Talk(1, player);
+                            Talk(TALK_1, player);
 
                             me->CastSpell(me, SPELL_GO_HOME, true);
 
@@ -1298,7 +1316,6 @@ enum QuestWaitingToExsanguinate
 
     EVENT_START_ANIM = 100,
     EVENT_WAIT_ON_PLAYER = 102,
-    EVENT_TALK_TO_PLAYER,
     EVENT_HIDE,
     EVENT_SET_FACE_TO_BLOODFANG,
     EVENT_RANE_LAST_MOVE,
@@ -1306,6 +1323,8 @@ enum QuestWaitingToExsanguinate
     EVENT_ACTION = 300,
     EVENT_CAMERA_A = 400,
     EVENT_CAMERA_B = 401,
+    EVENT_TALK_TO_PLAYER = 700,
+    EVENT_FINISH = 800,
 
     DATA_WAYPOINT_UP = 448820,
     MOVEPOINT_HIDDEN_PLACE = 1234,
@@ -1426,7 +1445,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
             {
                 case EVENT_START_ANIM:
                 {
-                    Talk(0);
+                    Talk(TALK_0);
                     break;
                 }
 
@@ -1453,7 +1472,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                 case EVENT_TALK_TO_PLAYER:
                 {
-                    Talk(1);
+                    Talk(TALK_1);
 
                     _events.ScheduleEvent(EVENT_HIDE, 3s);
                     _events.ScheduleEvent(EVENT_SET_FACE_TO_BLOODFANG, 10s);
@@ -1660,147 +1679,147 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 1, 4s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 4s);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER:
+                {
+                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
+                        darius->AI()->Talk(TALK_0);
+
+                    _events.ScheduleEvent(EVENT_CAMERA_B, 6s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 1, 6s + 700ms);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 1:
+                {
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->AI()->Talk(TALK_0);
+
+                    _events.ScheduleEvent(EVENT_CAMERA_A, 6s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 2, 6s + 700ms);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 2:
+                {
+                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
+                        darius->AI()->Talk(TALK_1);
+
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 3, 12s);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 3:
+                {
+                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
+                        darius->AI()->Talk(TALK_2);
+
+                    _events.ScheduleEvent(EVENT_CAMERA_B, 7s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 4, 7s + 700ms);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 4:
+                {
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->AI()->Talk(TALK_1);
+
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 5, 7s + 300ms);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 5:
+                {
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->AI()->Talk(TALK_2);
+
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 6, 3s);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 6:
+                {
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->AI()->Talk(TALK_3);
+
+                    _events.ScheduleEvent(EVENT_CAMERA_A, 9s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 7, 9s + 800ms);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 7:
+                {
+                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
+                        darius->AI()->Talk(TALK_3);
+
+                    _events.ScheduleEvent(EVENT_CAMERA_B, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 8, 3s + 700ms);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 8:
+                {
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->AI()->Talk(TALK_4);
+
+                    _events.ScheduleEvent(EVENT_ACTION + 1, 2s + 500ms);
                     break;
                 }
 
                 case EVENT_ACTION + 1:
                 {
-                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(0);
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->GetMotionMaster()->MovePoint(1, 1310.711f, 1208.238f, 58.512f, false, 1.2f);
 
-                    _events.ScheduleEvent(EVENT_CAMERA_B, 6s);
-                    _events.ScheduleEvent(EVENT_ACTION + 2, 6s + 700ms);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 9, 2s + 800ms);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 9:
+                {
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->AI()->Talk(TALK_5);
+
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 10, 5s);
+                    break;
+                }
+
+                case EVENT_TALK_TO_PLAYER + 10:
+                {
+                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                        ivar->AI()->Talk(TALK_6);
+
+                    _events.ScheduleEvent(EVENT_ACTION + 2, 6s);
                     break;
                 }
 
                 case EVENT_ACTION + 2:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(0);
-
-                    _events.ScheduleEvent(EVENT_CAMERA_A, 6s);
-                    _events.ScheduleEvent(EVENT_ACTION + 3, 6s + 700ms);
-                    break;
-                }
-
-                case EVENT_ACTION + 3:
-                {
-                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(1);
-
-                    _events.ScheduleEvent(EVENT_ACTION + 4, 12s);
-                    break;
-                }
-
-                case EVENT_ACTION + 4:
-                {
-                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(2);
-
-                    _events.ScheduleEvent(EVENT_CAMERA_B, 7s);
-                    _events.ScheduleEvent(EVENT_ACTION + 5, 7s + 700ms);
-                    break;
-                }
-
-                case EVENT_ACTION + 5:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(1);
-
-                    _events.ScheduleEvent(EVENT_ACTION + 6, 7s + 300ms);
-                    break;
-                }
-
-                case EVENT_ACTION + 6:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(2);
-
-                    _events.ScheduleEvent(EVENT_ACTION + 7, 3s);
-                    break;
-                }
-
-                case EVENT_ACTION + 7:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(3);
-
-                    _events.ScheduleEvent(EVENT_CAMERA_A, 9s);
-                    _events.ScheduleEvent(EVENT_ACTION + 8, 9s + 800ms);
-                    break;
-                }
-
-                case EVENT_ACTION + 8:
-                {
-                    if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(3);
-
-                    _events.ScheduleEvent(EVENT_CAMERA_B, 3s);
-                    _events.ScheduleEvent(EVENT_ACTION + 9, 3s + 700ms);
-                    break;
-                }
-
-                case EVENT_ACTION + 9:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(4);
-
-                    _events.ScheduleEvent(EVENT_ACTION + 10, 2s + 500ms);
-                    break;
-                }
-
-                case EVENT_ACTION + 10:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->GetMotionMaster()->MovePoint(1, 1310.711f, 1208.238f, 58.512f, false, 1.2f);
-
-                    _events.ScheduleEvent(EVENT_ACTION + 11, 2s + 800ms);
-                    break;
-                }
-
-                case EVENT_ACTION + 11:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(5);
-
-                    _events.ScheduleEvent(EVENT_ACTION + 12, 5s);
-                    break;
-                }
-
-                case EVENT_ACTION + 12:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(6);
-
-                    _events.ScheduleEvent(EVENT_ACTION + 13, 6s);
-                    break;
-                }
-
-                case EVENT_ACTION + 13:
-                {
-                    if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->GetMotionMaster()->MovePoint(2, 1313.477f, 1209.611f, 58.510f, false, 2.0f);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 14, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 11, 3s);
                     break;
                 }
 
-                case EVENT_ACTION + 14:
+                case EVENT_TALK_TO_PLAYER + 11:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
-                        ivar->AI()->Talk(7);
+                        ivar->AI()->Talk(TALK_7);
 
                         if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
                             ivar->SetFacingToObject(rane);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 15, 4s);
+                    _events.ScheduleEvent(EVENT_ACTION + 3, 4s);
                     break;
                 }
 
-                case EVENT_ACTION + 15:
+                case EVENT_ACTION + 3:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -1812,47 +1831,47 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 16, 1s);
+                    _events.ScheduleEvent(EVENT_ACTION + 4, 1s);
                     break;
                 }
 
-                case EVENT_ACTION + 16:
+                case EVENT_ACTION + 4:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->GetMotionMaster()->MovePoint(3, 1309.06f, 1205.974f, 58.510f, false, 2.0f);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 17, 3s);
+                    _events.ScheduleEvent(EVENT_ACTION + 5, 3s);
                     break;
                 }
 
-                case EVENT_ACTION + 17:
+                case EVENT_ACTION + 5:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->SetFacingTo(3.111f);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 18, 500ms);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 12, 500ms);
                     break;
                 }
 
-                case EVENT_ACTION + 18:
+                case EVENT_TALK_TO_PLAYER + 12:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(8);
+                        ivar->AI()->Talk(TALK_8);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 19, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 13, 3s);
                     break;
                 }
 
-                case EVENT_ACTION + 19:
+                case EVENT_TALK_TO_PLAYER + 13:
                 {
                     if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
-                        rane->AI()->Talk(2);
+                        rane->AI()->Talk(TALK_2);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 20, 3s);
+                    _events.ScheduleEvent(EVENT_ACTION + 6, 3s);
                     break;
                 }
 
-                case EVENT_ACTION + 20:
+                case EVENT_ACTION + 6:
                 {
                     if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
                     {
@@ -1860,35 +1879,35 @@ struct npc_silverpine_armoire : public VehicleAI
                         rane->GetAI()->DoAction(ACTION_RANE_JUMP_DEATH);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 21, 1s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 14, 1s);
                     break;
                 }
 
-                case EVENT_ACTION + 21:
+                case EVENT_TALK_TO_PLAYER + 14:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
                         if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         {
                             ivar->SetFacingToObject(darius);
-                            ivar->AI()->Talk(9);
+                            ivar->AI()->Talk(TALK_9);
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 22, 5s + 500ms);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 15, 5s + 500ms);
                     break;
                 }
 
-                case EVENT_ACTION + 22:
+                case EVENT_TALK_TO_PLAYER + 15:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(10);
+                        ivar->AI()->Talk(TALK_10);
 
-                    _events.ScheduleEvent(EVENT_ACTION + 23, 6s);
+                    _events.ScheduleEvent(EVENT_ACTION + 7, 6s);
                     break;
                 }
 
-                case EVENT_ACTION + 23:
+                case EVENT_ACTION + 7:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -1899,11 +1918,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->GetAI()->DoAction(ACTION_MOVE_TO_RANA);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 24, 9s);
+                    _events.ScheduleEvent(EVENT_FINISH, 9s);
                     break;
                 }
 
-                case EVENT_ACTION + 24:
+                case EVENT_FINISH:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -1917,11 +1936,11 @@ struct npc_silverpine_armoire : public VehicleAI
                         player->ExitVehicle(0);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 25, 1s);
+                    _events.ScheduleEvent(EVENT_FINISH + 1, 1s);
                     break;
                 }
 
-                case EVENT_ACTION + 25:
+                case EVENT_FINISH + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         me->DespawnOrUnsummon();
@@ -2129,6 +2148,9 @@ enum ForsakenRearGuardQuests
     NPC_FOREST_ETTIN = 44367,
     NPC_WEBBED_VICTIM = 44941,
     NPC_ORC_SEA_DOG = 44942,
+    NPC_BLOODFANG_SCAVENGER = 44547,
+    NPC_RABID_DOG = 1766,
+    NPC_GIANT_RABBID_BEAR = 1797,
 
     SPELL_RIDE_VEHICLE_HARDCODED = 46598,
     SPELL_SUMMON_SEA_PUP = 83839,
@@ -2249,7 +2271,7 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
 
                 case EVENT_TALK + 1:
                 {
-                    Talk(0);
+                    Talk(TALK_0);
                     _events.ScheduleEvent(EVENT_TALK + 2, 8s);
                     break;
                 }
@@ -2257,7 +2279,7 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
                 case EVENT_TALK + 2:
                 {
                     if (Creature* torok = ObjectAccessor::GetCreature(*me, _torokGUID))
-                        torok->AI()->Talk(0);
+                        torok->AI()->Talk(TALK_0);
 
                     _events.ScheduleEvent(EVENT_TALK + 3, 6s);
                     break;
@@ -2265,7 +2287,7 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
 
                 case EVENT_TALK + 3:
                 {
-                    Talk(1);
+                    Talk(TALK_1);
                     _events.ScheduleEvent(EVENT_TALK + 4, 6s);
                     break;
                 }
@@ -2273,7 +2295,7 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
                 case EVENT_TALK + 4:
                 {
                     if (Creature* torok = ObjectAccessor::GetCreature(*me, _torokGUID))
-                        torok->AI()->Talk(1);
+                        torok->AI()->Talk(TALK_1);
                     break;
                 }
 
@@ -2365,7 +2387,7 @@ struct npc_silverpine_orc_sea_pup : public ScriptedAI
         {
             _events.CancelEvent(EVENT_TALK_TO_PLAYER);
 
-            Talk(6);
+            Talk(TALK_6);
 
             me->GetVehicleKit()->RemoveAllPassengers();
 
@@ -2383,14 +2405,14 @@ struct npc_silverpine_orc_sea_pup : public ScriptedAI
             {
                 case EVENT_JUST_SUMMONED:
                 {
-                    Talk(0);
+                    Talk(TALK_0);
                     break;
                 }
 
                 case EVENT_TALK_TO_PLAYER:
                 {
                     if (me->GetVehicleKit()->IsVehicleInUse())
-                        Talk(7);
+                        Talk(TALK_7);
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 45s, 65s);
                     break;
@@ -2644,7 +2666,7 @@ struct npc_silverpine_forest_ettin : public ScriptedAI
                     {
                         chicken->CastSpell(me, SPELL_BUSH_EXPLOSION, true);
 
-                        me->Attack(chicken->GetOwner(), true);
+                        AttackStart(chicken->GetOwner());
                     }
 
                     break;
@@ -2666,6 +2688,72 @@ private:
     ObjectGuid _chickenGUID;
 };
 
+// Webbed Victim - 44941
+struct npc_silverpine_webbed_victim_skitterweb : public ScriptedAI
+{
+    npc_silverpine_webbed_victim_skitterweb(Creature* creature) : ScriptedAI(creature)
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        _playerGUID = ObjectGuid::Empty;
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        if (Player* player = killer->ToPlayer())
+        {
+            if (player->GetQuestStatus(QUEST_LOST_IN_THE_DARKNESS) == QUEST_STATUS_INCOMPLETE)
+            {
+                _playerGUID = player->GetGUID();
+
+                if (roll_chance_i(50))
+                {
+                    if (roll_chance_i(50))
+                    {
+                        if (roll_chance_i(50))
+                        {
+                            player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM1, true);
+
+                            if (Creature* worgen = me->SummonCreature(NPC_BLOODFANG_SCAVENGER, me->GetPosition()))
+                                worgen->Attack(player, true);
+                        }
+                        else
+                            player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM1, true);
+                    }
+                    else
+                    {
+                        if (roll_chance_i(50))
+                        {
+                            player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM2, true);
+
+                            if (Creature* bear = me->SummonCreature(NPC_GIANT_RABBID_BEAR, me->GetPosition()))
+                                bear->Attack(player, true);
+                        }
+                        else
+                        {
+                            player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM2, true);
+
+                            if (Creature* wolf = me->SummonCreature(NPC_RABID_DOG, me->GetPosition()))
+                                wolf->Attack(player, true);
+                        }
+                    }
+                }
+                else
+                {
+                    player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM3, true);
+                    player->KilledMonsterCredit(NPC_ORC_SEA_DOG, _playerGUID);
+                }
+            }
+        }
+    }
+
+private:
+    ObjectGuid _playerGUID;
+};
+
 // Orc Sea Dog - 44942
 struct npc_silverpine_orc_sea_dog : public ScriptedAI
 {
@@ -2682,8 +2770,6 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
     void Reset() override
     {
         _events.Reset();
-
-        me->SetReactState(REACT_PASSIVE);
     }
 
     void IsSummonedBy(Unit* who) override
@@ -2692,9 +2778,10 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
         {
             _playerGUID = player->GetGUID();
 
-            me->GetMotionMaster()->MoveFollow(player, 4.0f, frand(1.57f, 4.71f));
+            me->GetMotionMaster()->MoveFollow(player, 4.0f, frand(1.57f, 4.71f), true, true, false);
 
             _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
+            _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 1s + 500ms);
         }
     }
 
@@ -2711,15 +2798,21 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (player->IsAlive() && player->IsInWorld() && !player->IsQuestRewarded(QUEST_LOST_IN_THE_DARKNESS))
-                        {
                             _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
-                            break;
-                        }
                     }
 
                     me->DespawnOrUnsummon();
                     break;
                 }
+
+                case EVENT_TALK_TO_PLAYER:
+                {
+                    Talk(TALK_0);
+                    break;
+                }
+
+                default:
+                    break;
             }
         }
 
@@ -2731,42 +2824,6 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
 
 private:
     EventMap _events;
-    ObjectGuid _playerGUID;
-};
-
-// Webbed Victim - 44941
-struct npc_silverpine_webbed_victim_skitterweb : public ScriptedAI
-{
-    npc_silverpine_webbed_victim_skitterweb(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
-
-    void Reset() override
-    {
-        Initialize();
-    }
-
-    void JustDied(Unit* killer) override
-    {
-        if (Player* player = killer->ToPlayer())
-        {
-            if (player->GetQuestStatus(QUEST_LOST_IN_THE_DARKNESS) == QUEST_STATUS_INCOMPLETE)
-            {
-                _playerGUID = player->GetGUID();
-
-                player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM3, true);
-                player->KilledMonsterCredit(NPC_ORC_SEA_DOG, _playerGUID);
-            }
-        }
-    }
-
-private:
     ObjectGuid _playerGUID;
 };
 
@@ -2798,6 +2855,6 @@ void AddSC_silverpine_forest()
     RegisterSpellScript(spell_silverpine_sea_pup_trigger);
     RegisterCreatureAI(npc_silverpine_mutant_bush_chicken);
     RegisterCreatureAI(npc_silverpine_forest_ettin);
-    RegisterCreatureAI(npc_silverpine_orc_sea_dog);
     RegisterCreatureAI(npc_silverpine_webbed_victim_skitterweb);
+    RegisterCreatureAI(npc_silverpine_orc_sea_dog);
 }

@@ -253,6 +253,13 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44884, 9, 0, 'I was hoping you\'d say that...', 12, 0, 100, 0, 0, 0, 0, 44972, 0, ''),
 (44884, 10, 0, 'I will prepare the pack. It will take some time to gather them all, but we will join... for now.', 12, 0, 100, 1, 0, 0, 0, 44973, 0, '');
 
+DELETE FROM `creature_text` WHERE `CreatureID`=44942;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(44942, 0, 0, 'We gotta find the matriarch of this operation and end her!', 12, 1, 100, 5, 0, 0, 0, 45079, 0, 'Orc Sea Dog to Player'),
+(44942, 0, 1, 'Thank you, friend. Let\'s kill us some overgrown... spiders. Sounded better in my head.', 12, 1, 100, 5, 0, 0, 0, 45078, 0, 'Orc Sea Dog to Player'),
+(44942, 0, 2, 'I need a drink!', 12, 1, 100, 5, 0, 0, 0, 45080, 0, 'Orc Sea Dog to Player'),
+(44942, 0, 3, 'Welcome to the party, $g pal:lady;!', 12, 1, 100, 5, 0, 0, 0, 45077, 0, 'Orc Sea Dog to Player');
+
 DELETE FROM `creature_sparring_template` WHERE `CreatureID` IN (44793, 44791, 44792);
 INSERT INTO `creature_sparring_template` (`CreatureID`, `HealthLimitPct`) VALUES
 (44793, 85),
@@ -341,7 +348,7 @@ DELETE FROM `spell_area` WHERE `spell`=84241 AND `area`=5386 AND `quest_start`=2
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (84241, 5386, 27065, 27098, 0, 0, 2, 3, 74, 1);
 
- -- REMOVE
+ -- Sea Orc Pup
 DELETE FROM `spell_area` WHERE `spell`=83839 AND `area`=928 AND `quest_start`=27069 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (83839, 928, 27069, 0, 0, 0, 2, 3, 74, 0);
