@@ -2171,7 +2171,7 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
         _torokGUID = ObjectGuid::Empty;
     }
 
-    bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
+    bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/) override
     {
         if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
         {
