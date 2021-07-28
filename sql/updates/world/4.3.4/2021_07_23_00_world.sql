@@ -342,8 +342,8 @@ DELETE FROM `creature_queststarter` WHERE `id`=44365 AND `quest`=27065;
 INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 (44365, 27065);
 
-UPDATE quest_template_addon SET `PrevQuestID` = '27098', `NextQuestID` = '27232' WHERE `entry` = 27231;
-UPDATE quest_template_addon SET `PrevQuestID` = '27098' WHERE `entry` = 27226;
+UPDATE quest_template_addon SET `PrevQuestID` = '27098', `NextQuestID` = '27232' WHERE `ID` = 27231;
+UPDATE quest_template_addon SET `PrevQuestID` = '27098' WHERE `ID` = 27226;
 
  -- Detect: Quest Invis Zone 3
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=26964 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
