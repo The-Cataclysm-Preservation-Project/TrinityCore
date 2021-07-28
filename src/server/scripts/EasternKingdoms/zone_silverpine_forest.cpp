@@ -174,7 +174,7 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 
                     DoCastVictim(_spellId);
 
-                    _events.ScheduleEvent(EVENT_SPELL_DAMAGE, 5s);
+                    _events.ScheduleEvent(EVENT_SPELL_DAMAGE, 5s, 8s);
                     break;
                 }
 
@@ -1557,7 +1557,7 @@ struct npc_silverpine_armoire : public VehicleAI
         }
     }
 
-    void PassengerBoarded(Unit* passenger, int8 seatId, bool apply) override
+    void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
     {
         if (apply)
         {
@@ -2604,7 +2604,7 @@ struct npc_silverpine_forest_ettin : public ScriptedAI
         _events.Reset();
     }
 
-    void PassengerBoarded(Unit* passenger, int8 seatId, bool apply) override
+    void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
     {
         if (passenger->GetEntry() == NPC_MUTANT_BUSH_CHICKEN)
         {
