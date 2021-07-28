@@ -30,6 +30,10 @@ DELETE FROM `conditions` WHERE `SourceEntry`= 83902 AND `SourceTypeOrReferenceId
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
 (13, 1, 83902, 0, 0, 31, 0, 3, 44367, 0, 0, 0, '', 'Release Diseased Mutant Bush Chicken - Target Forest Ettin');
 
+DELETE FROM `conditions` WHERE `SourceEntry`= 83827 AND `SourceTypeOrReferenceId`= 13;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
+(13, 1, 83827, 0, 0, 31, 0, 3, 44908, 0, 0, 0, '', 'Skitterweb Web - Target Skitterweb Stalker');
+
  -- Dark Ranger
 SET @CGUID := 399000;
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID AND @CGUID+1;
@@ -139,8 +143,8 @@ UPDATE creature_template SET `ScriptName` = 'npc_silverpine_grand_executor_mortu
 UPDATE creature_template SET `unit_flags2` = 2107392, `VehicleId` = 1109  WHERE `entry` = 44610;
 UPDATE creature_template SET `unit_flags2` = 2099200, `HoverHeight` = 2.8  WHERE `entry` = 44609;
 UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44593;
-UPDATE creature_template SET `npcflag`=16777216 WHERE `entry` = 44915;
-UPDATE creature_template SET `unit_flags`=33288 WHERE `entry` = 44914;
+UPDATE creature_template SET `npcflag`= 16777216 WHERE `entry` = 44915;
+UPDATE creature_template SET `unit_flags`= 33288 WHERE `entry` = 44914;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_mutant_bush_chicken'  WHERE `entry` = 44935;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_forest_ettin'  WHERE `entry` = 44367;
 
@@ -148,6 +152,7 @@ UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_admiral_hatchet' WHERE `entry` = 44916;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_dog' WHERE `entry` = 44942;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_webbed_victim_skitterweb' WHERE `entry` = 44941;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_skitterweb_matriarch', `AIName` = '', `flags_extra` = 512 WHERE `entry` = 44906;
 
 DELETE FROM `creature_template_addon` WHERE `entry` IN (44608, 44609, 44610, 44615, 44592, 44593, 44825, 44821, 44882, 44893, 44894, 44884, 44883, 44632, 44764, 44731);
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
@@ -173,6 +178,10 @@ INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Fligh
 (44610, 1, 0, 1, 0, 0, NULL),
 (44608, 1, 0, 1, 0, 0, NULL),
 (44609, 1, 0, 1, 0, 0, NULL);
+
+DELETE FROM `creature_template_movement` WHERE `CreatureId`= 44908;
+INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
+(44908, 1, 0, 1, 0, 0, NULL);
 
 DELETE FROM `creature_text` WHERE `CreatureID`=44365 AND `ID`=0 AND `GroupID` BETWEEN 0 AND 10;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES

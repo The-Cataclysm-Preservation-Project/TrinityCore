@@ -2151,6 +2151,7 @@ enum ForsakenRearGuardQuests
     NPC_BLOODFANG_SCAVENGER = 44547,
     NPC_RABID_DOG = 1766,
     NPC_GIANT_RABBID_BEAR = 1797,
+    NPC_SKITTERWEB_STALKER = 44908,
 
     SPELL_RIDE_VEHICLE_HARDCODED = 46598,
     SPELL_SUMMON_SEA_PUP = 83839,
@@ -2164,6 +2165,9 @@ enum ForsakenRearGuardQuests
     SPELL_FREE_WEBBED_VICTIM3 = 83927,
     SPELL_SEA_PUP_TRIGGER = 83865,
     SPELL_DESPAWN_ALL_SUMMONS = 83935,
+    SPELL_SKITTERWEB = 83827,
+    SPELL_SUMMNON_SPIDERLINGS = 87084,
+    SPELL_VENOM_SPLASH = 79607,
 
     ACTION_DELIVER_CRATES = 2,
     ACTION_EXPLODE = 3,
@@ -2178,6 +2182,12 @@ enum ForsakenRearGuardQuests
     EVENT_CHECK_TALK = 400,
     EVENT_EXPLODE = 500,
     EVENT_CHECK_ETTIN = 501,
+    EVENT_AGGRO_SPIDER = 800,
+    EVENT_SUMMON_SPIDERLINGS = 900,
+    EVENT_VENOM_SPLASH = 901,
+
+    DATA_SPIDER_ANIMKIT1 = 865,
+    DATA_SPIDER_ANIMKIT2 = 866
 };
 
 // Admiral Hatchet - 44916
@@ -2701,6 +2711,11 @@ struct npc_silverpine_webbed_victim_skitterweb : public ScriptedAI
         _playerGUID = ObjectGuid::Empty;
     }
 
+    void Reset() override
+    {
+        me->SetReactState(REACT_PASSIVE);
+    }
+
     void JustDied(Unit* killer) override
     {
         if (Player* player = killer->ToPlayer())
@@ -2800,8 +2815,9 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
                         if (player->IsAlive() && player->IsInWorld() && !player->IsQuestRewarded(QUEST_LOST_IN_THE_DARKNESS))
                             _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
                     }
+                    else
+                        me->DespawnOrUnsummon();
 
-                    me->DespawnOrUnsummon();
                     break;
                 }
 
@@ -2825,6 +2841,124 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
+};
+
+// Skitterweb Matriarch - 44906
+struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
+{
+    npc_silverpine_skitterweb_matriarch(Creature* creature) : ScriptedAI(creature), _alreadyPulled(false) { }
+
+    void JustAppeared() override
+    {
+        _alreadyPulled = false;
+
+        me->SetDisableGravity(true);
+        me->SetHover(true);
+
+        me->SetAIAnimKitId(DATA_SPIDER_ANIMKIT1);
+
+        me->SetReactState(REACT_PASSIVE);
+
+        me->GetCreatureListWithEntryInGrid(_stalkerList, NPC_SKITTERWEB_STALKER, 8.0f);
+        for (Creature* stalker : _stalkerList)
+            me->CastSpell(stalker, SPELL_SKITTERWEB, true);
+    }
+
+    void Reset() override
+    {
+        _events.Reset();
+    }
+
+    void JustEngagedWith(Unit* who) override
+    {
+        if (!_alreadyPulled)
+        {
+            _alreadyPulled = true;
+
+            me->SetAIAnimKitId(0);
+            me->PlayOneShotAnimKitId(DATA_SPIDER_ANIMKIT2);
+
+            _events.ScheduleEvent(EVENT_AGGRO_SPIDER, 2s + 500ms);
+        }
+        else
+        {
+            _events.ScheduleEvent(EVENT_SUMMON_SPIDERLINGS, 2s);
+            _events.ScheduleEvent(EVENT_VENOM_SPLASH, 4s, 7s);
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_AGGRO_SPIDER:
+                {
+                    me->SetDisableGravity(false);
+                    me->SetHover(false);
+
+                    me->GetMotionMaster()->MoveFall();
+
+                    _events.ScheduleEvent(EVENT_AGGRO_SPIDER + 1, 1s);
+                    break;
+                }
+
+                case EVENT_AGGRO_SPIDER + 1:
+                {
+                    for (Creature* stalker : _stalkerList)
+                        stalker->RemoveAura(SPELL_SKITTERWEB);
+
+                    me->SetAIAnimKitId(1);
+
+                    me->UpdateMovementFlags();
+
+                    me->SetHomePosition(me->GetPosition());
+
+                    _events.ScheduleEvent(EVENT_AGGRO_SPIDER + 2, 1s);
+                    break;
+                }
+
+                case EVENT_AGGRO_SPIDER + 2:
+                {
+                    me->SetReactState(REACT_AGGRESSIVE);
+
+                    _events.ScheduleEvent(EVENT_SUMMON_SPIDERLINGS, 2s);
+                    _events.ScheduleEvent(EVENT_VENOM_SPLASH, 4s, 7s);
+                    break;
+                }
+
+                case EVENT_SUMMON_SPIDERLINGS:
+                {
+                    me->CastSpell(me, SPELL_SUMMNON_SPIDERLINGS, false);
+                    break;
+                }
+
+                case EVENT_VENOM_SPLASH:
+                {
+                    DoCastVictim(SPELL_VENOM_SPLASH);
+
+                    _events.ScheduleEvent(EVENT_VENOM_SPLASH, 15s, 18s);
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+
+        if (!UpdateVictim())
+            return;
+
+        DoMeleeAttackIfReady();
+    }
+
+private:
+    EventMap _events;
+    bool _alreadyPulled;
+    std::vector<Creature*> _stalkerList;
 };
 
 void AddSC_silverpine_forest()
@@ -2857,4 +2991,5 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_forest_ettin);
     RegisterCreatureAI(npc_silverpine_webbed_victim_skitterweb);
     RegisterCreatureAI(npc_silverpine_orc_sea_dog);
+    RegisterCreatureAI(npc_silverpine_skitterweb_matriarch);
 }
