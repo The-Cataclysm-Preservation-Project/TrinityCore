@@ -2812,7 +2812,7 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
-                        if (player->IsAlive() && player->IsInWorld() && !player->IsQuestRewarded(QUEST_LOST_IN_THE_DARKNESS))
+                        if (player->IsAlive() && player->IsInWorld() && player->hasQuest(QUEST_LOST_IN_THE_DARKNESS) && !player->IsQuestRewarded(QUEST_LOST_IN_THE_DARKNESS))
                             _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
                     }
                     else
@@ -2869,7 +2869,7 @@ struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
         _events.Reset();
     }
 
-    void JustEngagedWith(Unit* who) override
+    void JustEngagedWith(Unit* /*who*/) override
     {
         if (!_alreadyPulled)
         {
