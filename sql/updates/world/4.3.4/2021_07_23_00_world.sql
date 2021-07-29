@@ -50,6 +50,33 @@ DELETE FROM `creature_addon` WHERE `guid` = @CGUID+2;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
 (@CGUID+2, 446400, 0, 0, 0, 1, 0, 0, 0, 0, 3, '80697');
 
+ -- Orc Sea Dog
+DELETE FROM `creature` WHERE `guid`= 321872;
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
+(321872, 44913, 0, 130, 5386, 1, 0, 1, 169, 0, -1, 0, 0, 1045.19, 1567.43, 28.1601, 1.40073, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 0);
+
+DELETE FROM `creature_addon` WHERE `guid` IN (321875, 321874, 321872, 321869, 321925, 321930, 321930, 321927, 321933, 321911, 321871, 321915);
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(321875, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321874, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321872, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321869, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321925, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321930, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321927, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321933, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321911, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
+(321871, 449132, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83832'),
+(321915, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186');
+
+DELETE FROM `creature_addon` WHERE `guid` IN (321878, 321870, 321934, 321924, 321916);
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(321878, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
+(321870, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829 42871'),
+(321934, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
+(321924, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
+(321916, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829');
+
  -- Bat Handler Maggotbreath
 DELETE FROM `creature` WHERE `guid`=@CGUID+3;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -147,6 +174,7 @@ UPDATE creature_template SET `npcflag`= 16777216 WHERE `entry` = 44915;
 UPDATE creature_template SET `unit_flags`= 33288 WHERE `entry` = 44914;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_mutant_bush_chicken'  WHERE `entry` = 44935;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_forest_ettin'  WHERE `entry` = 44367;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_salty_rocka'  WHERE `entry` = 45498;
 
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_admiral_hatchet' WHERE `entry` = 44916;
@@ -269,6 +297,27 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44942, 0, 2, 'I need a drink!', 12, 1, 100, 5, 0, 0, 0, 45080, 0, 'Orc Sea Dog to Player'),
 (44942, 0, 3, 'Welcome to the party, $g pal:lady;!', 12, 1, 100, 5, 0, 0, 0, 45077, 0, 'Orc Sea Dog to Player');
 
+DELETE FROM `creature_text` WHERE `CreatureID`=45498;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(45498, 0, 0, 'Hey over there! Hey! Hey! Over there! How\'sh everything going Gororgararar?', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 00'),
+(45498, 1, 0, 'HA! Shows how much you know. I left the critter back on the third ship!', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 01'),
+(45498, 2, 0, 'Yoo hoo! "Shmaltzy!" Hey, why come your shupplies... Whe... Oh... Um... You got lots of boxes to keep track of...', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 10'),
+(45498, 3, 0, 'I didn\'t like that pet anyways. Beshides... people stop by all the time and give me their pets. If I lost one, it doesn\'t matter. I\'ve got dozens more to lose!', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 11'),
+(45498, 4, 0, 'Hey over there! Hey! Hey! Over there! How\'sh everything going Gororgararar?', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 20'),
+(45498, 5, 0, 'My pet! Oh no! Uh... I am shure that pet is around here somewhere...', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 21'),
+(45498, 6, 0, 'Hey "Salty" when are you going to get a new name? Thish town ain\'t big \'nough for two of ussh...', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 30'),
+(45498, 7, 0, 'Wait... whee is my pet? It\'s gone! No need to panic... Just need a quick drink and I can figure out where he went to.', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 31'),
+(45498, 8, 0, '"Malty!" Hey, "Malty!" I thought you were going to get us shome more booze! What\'sh the hold up?', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 40'),
+(45498, 9, 0, 'I didn\'t like that pet anyways. Beshides... people stop by all the time and give me their pets. If I lost one, it doesn\'t matter. I\'ve got dozens more to lose!', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Rocka 41');
+
+DELETE FROM `creature_text` WHERE `CreatureID`=45497;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(45497, 0, 0, 'Hey, shtop bothering me. You\'re a dishgrace to us all. You can\'t even hold onto your own petsh!', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Gorgar 00'),
+(45497, 1, 0, 'Maybe you should worry about your pet and not me! I\'m taking care of my bishinesh jusht fine!', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Gorgar 10'),
+(45497, 2, 0, 'Hey, shtop bothering me. You\'re a dishgrace to us all. You can\'t even hold onto your own petsh!', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Gorgar 20'), 
+(45497, 3, 0, 'It\'s "Salty!" I got here firsht! I got off the boat and onto land firsht! I called the name "Salty." Hey... Where\'s your pet at?', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Gorgar 30'),
+(45497, 4, 0, '"Shalty." That\'s my name! Your name should be "I can\'t hold onto petsh." I can\'t believe anyone would trusht you with a beasht.', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Gorgar 40');
+
 DELETE FROM `creature_sparring_template` WHERE `CreatureID` IN (44793, 44791, 44792);
 INSERT INTO `creature_sparring_template` (`CreatureID`, `HealthLimitPct`) VALUES
 (44793, 85),
@@ -344,6 +393,7 @@ INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 
 UPDATE quest_template_addon SET `PrevQuestID` = '27098', `NextQuestID` = '27232' WHERE `ID` = 27231;
 UPDATE quest_template_addon SET `PrevQuestID` = '27098' WHERE `ID` = 27226;
+UPDATE quest_template_addon SET `PrevQuestID` = '27094' WHERE `ID` = 27096;
 
  -- Detect: Quest Invis Zone 3
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=26964 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
@@ -571,3 +621,9 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (446402, 5, 1376.69, 1048.61, 53.3362, 0, 0, 0, 1, 1, 0, 100, 0),
 (446402, 6, 1375.32, 1046.38, 53.2336, 0, 0, 0, 1, 1, 0, 100, 0);
 
+DELETE FROM `waypoint_data` WHERE `id`=449132;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(449132, 1, 1042.53, 1576.98, 27.8422, 0, 1.5, 0, 1, 0, 0, 100, 0),
+(449132, 2, 1039.96, 1575.8, 27.8389, 0, 1.5, 0, 1, 0, 0, 100, 0),
+(449132, 3, 1041.15, 1573.23, 27.8719, 0, 1.5, 0, 1, 0, 0, 100, 0),
+(449132, 4, 1043.72, 1574.41, 27.8719, 0, 1.5, 0, 1, 0, 0, 100, 0);

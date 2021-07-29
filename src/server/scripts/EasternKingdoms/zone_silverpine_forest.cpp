@@ -2141,6 +2141,8 @@ enum ForsakenRearGuardQuests
     QUEST_LOST_IN_THE_DARKNESS = 27093,
     QUEST_ITS_ONLY_POISONOUS_IF_YOU_INGEST_IT = 27088,
 
+    NPC_SALTY_ROCKA = 45498,
+    NPC_SALTY_GORGAR = 45497,
     NPC_WARLORD_TOROK = 44917,
     NPC_ORC_SEA_PUP = 44914,
     NPC_ORC_CRATE = 44915,
@@ -2185,9 +2187,233 @@ enum ForsakenRearGuardQuests
     EVENT_AGGRO_SPIDER = 800,
     EVENT_SUMMON_SPIDERLINGS = 900,
     EVENT_VENOM_SPLASH = 901,
+    EVENT_TALK_CHOOSE = 1000,
 
     DATA_SPIDER_ANIMKIT1 = 865,
-    DATA_SPIDER_ANIMKIT2 = 866
+    DATA_SPIDER_ANIMKIT2 = 866,
+
+    AREA_FORSAKEN_REAR_GUARD = 5386
+};
+
+// "Salty" Rocka - 45498
+struct npc_silverpine_salty_rocka : public ScriptedAI
+{
+    npc_silverpine_salty_rocka(Creature* creature) : ScriptedAI(creature), _playerNear(false)
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        _playerGUID = ObjectGuid::Empty;
+        _gorgarGUID = ObjectGuid::Empty;
+    }
+
+    void Reset() override
+    {
+        _events.Reset();
+        _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
+    }
+
+
+    void MoveInLineOfSight(Unit* who) override
+    {
+        if (who->GetTypeId() == TYPEID_PLAYER)
+            _playerGUID = who->GetGUID();
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_CHECK_TALK:
+                {
+                    CheckForGorgor();
+
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        if (player->GetDistance2d(me) < 20.0f && !_playerNear)
+                        {
+                            _events.ScheduleEvent(EVENT_TALK_CHOOSE, 1s);
+                            _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 120s);
+
+                            _playerNear = true;
+                        }
+                        else
+                        {
+                            _playerNear = false;
+                            _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
+                        }
+                    }
+
+                    break;
+                }
+
+                case EVENT_TALK_CHOOSE:
+                {
+                    if (roll_chance_i(50))
+                    {
+                        if (roll_chance_i(50))
+                        {
+                            if (roll_chance_i(50))
+                                _events.ScheduleEvent(EVENT_TALK, 1s);
+                            else
+                                _events.ScheduleEvent(EVENT_TALK + 10, 1s);
+                        }
+                        else
+                        {
+                            if (roll_chance_i(50))
+                                _events.ScheduleEvent(EVENT_TALK + 20, 1s);
+                            else
+                                _events.ScheduleEvent(EVENT_TALK + 30, 1s);
+                        }
+                    }
+                    else
+                        _events.ScheduleEvent(EVENT_TALK + 40, 1s);
+
+                    break;
+                }
+
+                case EVENT_TALK:
+                {
+                    Talk(TALK_0);
+                    _events.ScheduleEvent(EVENT_TALK + 1, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 1:
+                {
+                    if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
+                        gorgar->AI()->Talk(TALK_0);
+
+                    _events.ScheduleEvent(EVENT_TALK + 2, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 2:
+                {
+                    Talk(TALK_1);
+                    break;
+                }
+
+                case EVENT_TALK + 10:
+                {
+                    Talk(TALK_2);
+                    _events.ScheduleEvent(EVENT_TALK + 11, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 11:
+                {
+                    if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
+                        gorgar->AI()->Talk(TALK_1);
+
+                    _events.ScheduleEvent(EVENT_TALK + 12, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 12:
+                {
+                    Talk(TALK_3);
+                    break;
+                }
+
+                case EVENT_TALK + 20:
+                {
+                    Talk(TALK_4);
+                    _events.ScheduleEvent(EVENT_TALK + 21, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 21:
+                {
+                    if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
+                        gorgar->AI()->Talk(TALK_2);
+
+                    _events.ScheduleEvent(EVENT_TALK + 22, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 22:
+                {
+                    Talk(TALK_5);
+                    break;
+                }
+
+                case EVENT_TALK + 30:
+                {
+                    Talk(TALK_6);
+                    _events.ScheduleEvent(EVENT_TALK + 31, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 31:
+                {
+                    if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
+                        gorgar->AI()->Talk(TALK_3);
+
+                    _events.ScheduleEvent(EVENT_TALK + 32, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 32:
+                {
+                    Talk(TALK_7);
+                    break;
+                }
+
+                case EVENT_TALK + 40:
+                {
+                    Talk(TALK_8);
+                    _events.ScheduleEvent(EVENT_TALK + 1, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 41:
+                {
+                    if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
+                        gorgar->AI()->Talk(TALK_4);
+
+                    _events.ScheduleEvent(EVENT_TALK + 2, 10s);
+                    break;
+                }
+
+                case EVENT_TALK + 42:
+                {
+                    Talk(TALK_9);
+                    break;
+                }
+
+                case EVENT_TALK_COOLDOWN:
+                {
+                    Reset();
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    void CheckForGorgor()
+    {
+        if (!_gorgarGUID)
+        {
+            if (Creature* gorgar = me->FindNearestCreature(NPC_SALTY_GORGAR, 50.0f))
+                _gorgarGUID = gorgar->GetGUID();
+        }
+    }
+
+private:
+    EventMap _events;
+    ObjectGuid _playerGUID;
+    ObjectGuid _gorgarGUID;
+    bool _playerNear;
 };
 
 // Admiral Hatchet - 44916
@@ -2200,6 +2426,7 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
 
     void Initialize()
     {
+        _playerGUID = ObjectGuid::Empty;
         _torokGUID = ObjectGuid::Empty;
     }
 
@@ -2246,14 +2473,15 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
     {
         _events.Reset();
         _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
+
+        me->SetPowerType(Powers::POWER_ENERGY);
+        me->SetMaxPower(Powers::POWER_ENERGY, 100);
     }
 
     void MoveInLineOfSight(Unit* who) override
     {
         if (who->GetTypeId() == TYPEID_PLAYER)
-        {
             _playerGUID = who->GetGUID();
-        }
     }
 
     void UpdateAI(uint32 diff) override
@@ -2266,19 +2494,25 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
             {
                 case EVENT_CHECK_TALK:
                 {
-                    CheckForTorok();
-
-                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    if (me->GetAreaId() == AREA_FORSAKEN_REAR_GUARD)
                     {
-                        if (player->GetDistance2d(me) < 20.0f && !_playerNear)
-                        {
-                            _events.ScheduleEvent(EVENT_TALK + 1, 1s);
-                            _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 90s);
+                        CheckForTorok();
 
-                            _playerNear = true;
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        {
+                            if (player->GetDistance2d(me) < 20.0f && !_playerNear)
+                            {
+                                _events.ScheduleEvent(EVENT_TALK + 1, 1s);
+                                _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 90s);
+
+                                _playerNear = true;
+                            }
+                            else
+                            {
+                                _playerNear = false;
+                                _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
+                            }
                         }
-                        else
-                            _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
                     }
 
                     break;
@@ -2996,6 +3230,7 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_lord_darius_crowley_exhanguinate);
     RegisterCreatureAI(npc_silverpine_packleader_ivar_bloodfang_exhanguinate);
 
+    RegisterCreatureAI(npc_silverpine_salty_rocka);
     RegisterCreatureAI(npc_silverpine_admiral_hatchet);
     RegisterCreatureAI(npc_silverpine_orc_sea_pup);
     RegisterCreatureAI(npc_silverpine_orc_crate);
