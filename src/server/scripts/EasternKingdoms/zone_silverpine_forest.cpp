@@ -2143,6 +2143,7 @@ enum ForsakenRearGuardQuests
 
     NPC_SALTY_ROCKA = 45498,
     NPC_SALTY_GORGAR = 45497,
+    NPC_DRUNKEN_ORC_SEA_DOG = 44913,
     NPC_WARLORD_TOROK = 44917,
     NPC_ORC_SEA_PUP = 44914,
     NPC_ORC_CRATE = 44915,
@@ -2239,7 +2240,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                         if (player->GetDistance2d(me) < 20.0f && !_playerNear)
                         {
                             _events.ScheduleEvent(EVENT_TALK_CHOOSE, 1s);
-                            _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 120s);
+                            _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 180s);
 
                             _playerNear = true;
                         }
@@ -2281,7 +2282,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK:
                 {
                     Talk(TALK_0);
-                    _events.ScheduleEvent(EVENT_TALK + 1, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 1, 20s);
                     break;
                 }
 
@@ -2290,7 +2291,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                         gorgar->AI()->Talk(TALK_0);
 
-                    _events.ScheduleEvent(EVENT_TALK + 2, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 2, 20s);
                     break;
                 }
 
@@ -2303,7 +2304,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 10:
                 {
                     Talk(TALK_2);
-                    _events.ScheduleEvent(EVENT_TALK + 11, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 11, 20s);
                     break;
                 }
 
@@ -2312,7 +2313,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                         gorgar->AI()->Talk(TALK_1);
 
-                    _events.ScheduleEvent(EVENT_TALK + 12, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 12, 20s);
                     break;
                 }
 
@@ -2325,7 +2326,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 20:
                 {
                     Talk(TALK_4);
-                    _events.ScheduleEvent(EVENT_TALK + 21, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 21, 20s);
                     break;
                 }
 
@@ -2334,7 +2335,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                         gorgar->AI()->Talk(TALK_2);
 
-                    _events.ScheduleEvent(EVENT_TALK + 22, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 22, 20s);
                     break;
                 }
 
@@ -2347,7 +2348,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 30:
                 {
                     Talk(TALK_6);
-                    _events.ScheduleEvent(EVENT_TALK + 31, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 31, 20s);
                     break;
                 }
 
@@ -2356,7 +2357,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                         gorgar->AI()->Talk(TALK_3);
 
-                    _events.ScheduleEvent(EVENT_TALK + 32, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 32, 20s);
                     break;
                 }
 
@@ -2369,7 +2370,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 40:
                 {
                     Talk(TALK_8);
-                    _events.ScheduleEvent(EVENT_TALK + 1, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 1, 20s);
                     break;
                 }
 
@@ -2378,7 +2379,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                         gorgar->AI()->Talk(TALK_4);
 
-                    _events.ScheduleEvent(EVENT_TALK + 2, 10s);
+                    _events.ScheduleEvent(EVENT_TALK + 2, 20s);
                     break;
                 }
 
@@ -2414,6 +2415,130 @@ private:
     ObjectGuid _playerGUID;
     ObjectGuid _gorgarGUID;
     bool _playerNear;
+};
+
+// Apothecary Wormcrud - 44912
+struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
+{
+    npc_silverpine_apothecary_wormcrud(Creature* creature) : ScriptedAI(creature), _drunkenOrcSeaDog(), _orcSeaDogList(), _playerNear(false), _done(false)
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        _playerGUID = ObjectGuid::Empty;
+    }
+
+    void Reset() override
+    {
+        _events.Reset();
+        _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
+    }
+
+
+    void MoveInLineOfSight(Unit* who) override
+    {
+        if (who->GetTypeId() == TYPEID_PLAYER)
+            _playerGUID = who->GetGUID();
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_CHECK_TALK:
+                {
+                    if (!_done)
+                        CheckForSeaOrcs();
+
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        if (player->GetDistance2d(me) < 20.0f && !_playerNear)
+                        {
+                            _events.ScheduleEvent(EVENT_TALK, 5s);
+                            _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 150s);
+
+                            _playerNear = true;
+                        }
+                        else
+                        {
+                            _playerNear = false;
+                            _events.ScheduleEvent(EVENT_CHECK_TALK, 5s);
+                        }
+                    }
+
+                    break;
+                }
+
+                case EVENT_TALK:
+                {
+                    if (Creature* orcsea1 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[0]))
+                        orcsea1->AI()->Talk(TALK_0);
+
+                    _events.ScheduleEvent(EVENT_TALK + 1, 12s);
+                    break;
+                }
+
+                case EVENT_TALK + 1:
+                {
+                    if (Creature* orcsea2 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[1]))
+                        orcsea2->AI()->Talk(TALK_1);
+
+                    _events.ScheduleEvent(EVENT_TALK + 2, 12s);
+                    break;
+                }
+
+                case EVENT_TALK + 2:
+                {
+                    if (Creature* orcsea3 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[2]))
+                        orcsea3->AI()->Talk(TALK_2);
+
+                    _events.ScheduleEvent(EVENT_TALK + 3, 12s);
+                    break;
+                }
+
+                case EVENT_TALK + 3:
+                {
+                    Talk(TALK_0);
+                    break;
+                }
+
+                case EVENT_TALK_COOLDOWN:
+                {
+                    Reset();
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    void CheckForSeaOrcs()
+    {
+        me->GetCreatureListWithEntryInGrid(_orcSeaDogList, NPC_DRUNKEN_ORC_SEA_DOG, 5.0f);
+
+        uint8 i = 0;
+
+        for (auto seaorc : _orcSeaDogList)
+            _drunkenOrcSeaDog[i++] = seaorc->GetGUID();
+
+        _done = true;
+    }
+
+private:
+    EventMap _events;
+    ObjectGuid _playerGUID;
+    std::array<ObjectGuid, 3> _drunkenOrcSeaDog;
+    std::vector<Creature*> _orcSeaDogList;
+    bool _playerNear;
+    bool _done;
 };
 
 // Admiral Hatchet - 44916
@@ -2503,7 +2628,7 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
                             if (player->GetDistance2d(me) < 20.0f && !_playerNear)
                             {
                                 _events.ScheduleEvent(EVENT_TALK + 1, 1s);
-                                _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 90s);
+                                _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 230s);
 
                                 _playerNear = true;
                             }
@@ -3231,6 +3356,7 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_packleader_ivar_bloodfang_exhanguinate);
 
     RegisterCreatureAI(npc_silverpine_salty_rocka);
+    RegisterCreatureAI(npc_silverpine_apothecary_wormcrud);
     RegisterCreatureAI(npc_silverpine_admiral_hatchet);
     RegisterCreatureAI(npc_silverpine_orc_sea_pup);
     RegisterCreatureAI(npc_silverpine_orc_crate);

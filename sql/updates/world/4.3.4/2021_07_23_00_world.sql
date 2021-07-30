@@ -55,6 +55,10 @@ DELETE FROM `creature` WHERE `guid`= 321872;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
 (321872, 44913, 0, 130, 5386, 1, 0, 1, 169, 0, -1, 0, 0, 1045.19, 1567.43, 28.1601, 1.40073, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 0);
 
+ -- Forest Ettin
+DELETE FROM `creature` WHERE `guid`= @CGUID+6;
+INSERT INTO `creature` VALUES (@CGUID+6, 44367, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1189.52, 1573.09, 28.3514, 1.55021, 300, 0, 0, 819, 0, 2, 16777216, 0, 0, NULL, 0);
+
 DELETE FROM `creature_addon` WHERE `guid` IN (321875, 321874, 321872, 321869, 321925, 321930, 321930, 321927, 321933, 321911, 321871, 321915);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321875, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
@@ -69,13 +73,15 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (321871, 449132, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83832'),
 (321915, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186');
 
-DELETE FROM `creature_addon` WHERE `guid` IN (321878, 321870, 321934, 321924, 321916);
+DELETE FROM `creature_addon` WHERE `guid` IN (321878, 321870, 321934, 321924, 321916, 321474, @CGUID+6);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321878, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
 (321870, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829 42871'),
 (321934, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
 (321924, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
-(321916, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829');
+(321916, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
+(321474, 443670, 0, 0, 0, 1, 0, 0, 0, 0, 0, ''),
+(@CGUID+6, 443671, 0, 0, 0, 1, 0, 0, 0, 0, 0, '');
 
  -- Bat Handler Maggotbreath
 DELETE FROM `creature` WHERE `guid`=@CGUID+3;
@@ -128,6 +134,12 @@ UPDATE `creature` SET `spawndist`=10 WHERE `id` = 1781;
 UPDATE `creature` SET `MovementType`=1 WHERE `id` = 44547;
 UPDATE `creature` SET `spawndist`=10 WHERE `id` = 44547;
 
+DELETE FROM `creature_formations` WHERE `MemberGUID`=322043;
+DELETE FROM `creature_formations` WHERE `MemberGUID`=322042;
+INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`, `FollowAngle`, `GroupAI`, `InversionPoint1`, `InversionPoint2`) VALUES
+(322043, 322043, 0, 0, 515, -1, -1),
+(322043, 322042, 5, 270, 515, -1, -1);
+
 DELETE FROM `creature_equip_template` WHERE `CreatureID`=44365 AND `ID`=1;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
 (44365, 1, 2179, 0, 42775, 15595);
@@ -175,6 +187,7 @@ UPDATE creature_template SET `unit_flags`= 33288 WHERE `entry` = 44914;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_mutant_bush_chicken'  WHERE `entry` = 44935;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_forest_ettin'  WHERE `entry` = 44367;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_salty_rocka'  WHERE `entry` = 45498;
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_apothecary_wormcrud'  WHERE `entry` = 44912;
 
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_admiral_hatchet' WHERE `entry` = 44916;
@@ -318,6 +331,16 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (45497, 3, 0, 'It\'s "Salty!" I got here firsht! I got off the boat and onto land firsht! I called the name "Salty." Hey... Where\'s your pet at?', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Gorgar 30'),
 (45497, 4, 0, '"Shalty." That\'s my name! Your name should be "I can\'t hold onto petsh." I can\'t believe anyone would trusht you with a beasht.', 14, 1, 100, 5, 0, 0, 0, 0, 0, 'Gorgar 40');
 
+DELETE FROM `creature_text` WHERE `CreatureID`=44913;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(44913, 0, 0, 'What\'sh wit the huuuuge bush chick-a-doodle?', 12, 1, 100, 1, 0, 0, 0, 0, 0, ''),
+(44913, 1, 0, 'It\'sh makin\' me hungry... why\'s it shooo big? You shome kind of idiot or shomething? Makin\' a chicken so big... Who doesh that?', 12, 1, 100, 1, 0, 0, 0, 0, 0, ''),
+(44913, 2, 0, 'Forshaken do... that\'sh who... It\'sh sho big... Look at it\'sh big stupid neck. I jusht want to choke it to death!', 12, 1, 100, 1, 0, 0, 0, 0, 0, '');
+
+DELETE FROM `creature_text` WHERE `CreatureID`=44912;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(44912, 0, 0, 'Touch my chicken and I will kill you in your sleep. Am I understood?', 12, 1, 100, 1, 0, 0, 0, 0, 0, NULL);
+
 DELETE FROM `creature_sparring_template` WHERE `CreatureID` IN (44793, 44791, 44792);
 INSERT INTO `creature_sparring_template` (`CreatureID`, `HealthLimitPct`) VALUES
 (44793, 85),
@@ -390,6 +413,54 @@ INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 DELETE FROM `creature_queststarter` WHERE `id`=44365 AND `quest`=27065;
 INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 (44365, 27065);
+
+UPDATE gossip_menu_option SET `OptionNpcflag` = '65536', `OptionType` = '8' WHERE `MenuId` = 12025 AND `OptionIndex` = 0;
+UPDATE gossip_menu_option SET `OptionNpcflag` = '128', `OptionType` = '3' WHERE `MenuId` = 12025 AND `OptionIndex` = 1;
+
+DELETE FROM `npc_vendor` WHERE `entry`=45496;
+INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `type`, `PlayerConditionID`, `VerifiedBuild`) VALUES 
+(45496, 1, 159, 0, 0, 0, 1, 0, 0),
+(45496, 2, 1179, 0, 0, 0, 1, 0, 0),
+(45496, 3, 4540, 0, 0, 0, 1, 0, 0),
+(45496, 4, 4541, 0, 0, 0, 1, 0, 0),
+(45496, 5, 4496, 0, 0, 0, 1, 0, 0),
+(45496, 6, 4498, 0, 0, 0, 1, 0, 0),
+(45496, 7, 4470, 0, 0, 0, 1, 0, 0),
+(45496, 8, 5042, 0, 0, 0, 1, 0, 0),
+(45496, 9, 1205, 0, 0, 0, 1, 0, 0), 
+(45496, 10, 4542, 0, 0, 0, 1, 0, 0),
+(45496, 11, 5048, 0, 0, 0, 1, 0, 0);
+
+DELETE FROM `npc_vendor` WHERE `entry`=45497;
+INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `type`, `PlayerConditionID`, `VerifiedBuild`) VALUES 
+(45497, 1, 159, 0, 0, 0, 1, 0, 0),
+(45497, 2, 1179, 0, 0, 0, 1, 0, 0),
+(45497, 3, 4540, 0, 0, 0, 1, 0, 0),
+(45497, 4, 4541, 0, 0, 0, 1, 0, 0),
+(45497, 5, 4496, 0, 0, 0, 1, 0, 0),
+(45497, 6, 4498, 0, 0, 0, 1, 0, 0),
+(45497, 7, 4470, 0, 0, 0, 1, 0, 0),
+(45497, 8, 5042, 0, 0, 0, 1, 0, 0),
+(45497, 9, 7005, 0, 0, 0, 1, 0, 0), 
+(45497, 10, 2901, 0, 0, 0, 1, 0, 0),
+(45497, 11, 5956, 0, 0, 0, 1, 0, 0),
+(45497, 12, 39505, 0, 0, 0, 1, 0, 0),
+(45497, 13, 6256, 0, 0, 0, 1, 0, 0),
+(45497, 14, 6217, 0, 0, 0, 1, 0, 0),
+(45497, 15, 3371, 0, 0, 0, 1, 0, 0),
+(45497, 16, 2320, 0, 0, 0, 1, 0, 0),
+(45497, 17, 2321, 0, 0, 0, 1, 0, 0),
+(45497, 18, 2678, 0, 0, 0, 1, 0, 0),
+(45497, 19, 2880, 0, 0, 0, 1, 0, 0),
+(45497, 20, 4289, 0, 0, 0, 1, 0, 0),
+(45497, 21, 6529, 0, 0, 0, 1, 0, 0),
+(45497, 22, 6530, 0, 0, 0, 1, 0, 0),
+(45497, 23, 2605, 0, 0, 0, 1, 0, 0),
+(45497, 24, 6260, 0, 0, 0, 1, 0, 0),
+(45497, 25, 2604, 0, 0, 0, 1, 0, 0),
+(45497, 26, 2324, 0, 0, 0, 1, 0, 0),
+(45497, 27, 39354, 0, 0, 0, 1, 0, 0),
+(45497, 28, 20815, 0, 0, 0, 1, 0, 0);
 
 UPDATE quest_template_addon SET `PrevQuestID` = '27098', `NextQuestID` = '27232' WHERE `ID` = 27231;
 UPDATE quest_template_addon SET `PrevQuestID` = '27098' WHERE `ID` = 27226;
@@ -627,3 +698,85 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (449132, 2, 1039.96, 1575.8, 27.8389, 0, 1.5, 0, 1, 0, 0, 100, 0),
 (449132, 3, 1041.15, 1573.23, 27.8719, 0, 1.5, 0, 1, 0, 0, 100, 0),
 (449132, 4, 1043.72, 1574.41, 27.8719, 0, 1.5, 0, 1, 0, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id`=443670;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(443670, 1, 825.89, 1718.34, 22.2519, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 2, 818.119, 1748.72, 20.3455, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 3, 799.656, 1783.5, 15.0734, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 4, 782.212, 1800.32, 10.3869, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 5, 799.656, 1783.5, 15.0734, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 6, 818.119, 1748.72, 20.3455, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 7, 825.89, 1718.34, 22.2519, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 8, 820.537, 1699.94, 25.5024, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 9, 814.499, 1671.15, 25.0936, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 10, 790.365, 1643.21, 28.6474, 0, 0, 0, 1, 0, 0, 100, 0),
+(443670, 11, 814.499, 1671.15, 25.0936, 0, 0, 0, 1, 0, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id`=443671;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(443671, 1, 1175.62, 1646.04, 24.1475, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 2, 1181.72, 1685.52, 18.2732, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 3, 1168.04, 1727.76, 14.6648, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 4, 1177.37, 1775.86, 15.7438, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 5, 1215.09, 1809.68, 14.6487, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 6, 1225.77, 1870.26, 11.1122, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 7, 1200.27, 1929.76, 9.33947, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 8, 1156.34, 1950.75, 10.7929, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 9, 1109.37, 1923.76, 16.3755, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 10, 1073.83, 1906.91, 11.4691, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 11, 1020.82, 1883.71, 7.93567, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 12, 918.272, 1891.01, 2.30209, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 13, 879.323, 1870.27, 3.01408, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 14, 909.113, 1806.19, 9.54606, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 15, 877.328, 1797.94, 10.5616, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 16, 861.72, 1769.17, 12.5129, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 17, 849.565, 1737.1, 15.6483, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 18, 834.012, 1690.72, 23.1909, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 19, 844.08, 1647.87, 24.3174, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 20, 859.078, 1610.91, 30.0227, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 21, 860.066, 1559.86, 32.5314, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 22, 860.204, 1513.52, 37.2294, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 23, 882.742, 1501.47, 36.9006, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 24, 921.172, 1492.41, 37.668, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 25, 948.871, 1478.94, 41.0227, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 26, 947.87, 1450.26, 43.9835, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 27, 943.933, 1403.02, 43.3574, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 28, 944.467, 1372.42, 45.3726, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 29, 974.8, 1382.46, 46.4532, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 30, 1004.57, 1395, 44.3585, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 31, 1039.49, 1392.53, 40.9365, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 32, 1075.56, 1400.47, 38.4846, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 33, 1101.22, 1430.84, 37.6798, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 34, 1131.34, 1452.96, 36.3552, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 35, 1168.08, 1487.45, 35.1006, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 36, 1185.62, 1547.62, 31.6081, 0, 0, 0, 1, 0, 0, 100, 0),
+(443671, 37, 1189.52, 1573.09, 28.3514, 0, 0, 0, 1, 0, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id`=449117;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(449117, 1, 1003.85, 1525.62, 33.6755, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 2, 1010.8, 1524.84, 33.7151, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 3, 1022.07, 1524.02, 33.1232, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 4, 1038.73, 1522.56, 32.2662, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 5, 1047.17, 1512.18, 32.6264, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 6, 1058.32, 1507.93, 32.1418, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 7, 1075.05, 1512.04, 29.5329, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 8, 1089.86, 1512.07, 29.4874, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 9, 1115.21, 1510.73, 34.1252, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 10, 1124.52, 1514.68, 35.3186, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 11, 1125.05, 1526.36, 32.6298, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 12, 1125.4, 1561.43, 30.5572, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 13, 1125.59, 1602.19, 29.4256, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 14, 1122.79, 1612.25, 29.205, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 15, 1119.13, 1615.9, 28.7379, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 16, 1097.08, 1617.75, 27.3545, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 17, 1060.91, 1618.93, 27.954, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 18, 1035.23, 1619.32, 25.12, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 19, 1011.71, 1619.25, 23.9885, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 20, 1009.35, 1604.06, 24.8816, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 21, 1007.62, 1587.91, 27.0853, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 22, 999.101, 1564.94, 28.7607, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 23, 1003.75, 1546.04, 29.0175, 0, 0, 0, 1, 0, 0, 100, 0),
+(449117, 24, 1004.17, 1535.15, 32.0005, 0, 0, 0, 1, 0, 0, 100, 0);
+
