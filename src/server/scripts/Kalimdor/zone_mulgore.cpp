@@ -96,7 +96,7 @@ struct npc_mulgore_captured_brave : public ScriptedAI
         _events.ScheduleEvent(EVENT_TALK_FREED, 3s + 600ms);
     }
 
-    void UpdateAI(uint32 diff)
+    void UpdateAI(uint32 diff) override
     {
         _events.Update(diff);
 
