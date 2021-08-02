@@ -287,7 +287,7 @@ Position const CromushPos = { 1404.71f, 1063.73f, 60.5617f, 2.827433f };
 // Grand Executor Mortuus - 44615
 struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 {
-    npc_silverpine_grand_executor_mortuus(Creature* creature) : ScriptedAI(creature), _animPhase(0) { }
+    npc_silverpine_grand_executor_mortuus(Creature* creature) : ScriptedAI(creature), _animPhase(0), _summons(me) { }
 
     void QuestAccept(Player* player, const Quest* quest) override
     {
@@ -304,8 +304,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
         _events.Reset();
         _playerGUID = ObjectGuid::Empty;
         _animPhase = 0;
-        _spawnedList.clear();
-        _portalList.clear();
+        _summons.clear();
     }
 
     void SetGUID(ObjectGuid const& guid, int32 id) override
@@ -325,7 +324,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
     void JustSummoned(Creature* summon) override
     {
-        _spawnedList.push_back(summon->GetGUID());
+        _summons.Summon(summon);
 
         switch (summon->GetEntry())
         {
@@ -340,12 +339,6 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
             case NPC_HELLSCREEMS_ELITE:
             {
                 summon->CastSpell(summon, SPELL_SIMPLE_TELEPORT);
-                break;
-            }
-
-            case NPC_PORTAL_FROM_ORGRIMMAR:
-            {
-                _portalList.push_back(summon->GetGUID());
                 break;
             }
 
@@ -775,7 +768,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
     void RemoveAllSpawnedCreatures()
     {
-        for (std::list<ObjectGuid>::const_iterator itr = _spawnedList.begin(); itr != _spawnedList.end(); itr++)
+        for (std::list<ObjectGuid>::const_iterator itr = _summons.begin(); itr != _summons.end(); itr++)
         {
             if (Creature* npc = ObjectAccessor::GetCreature(*me, (*itr)))
             {
@@ -798,8 +791,7 @@ private:
     ObjectGuid _sylvanasGUID;
     ObjectGuid _agathaGUID;
     ObjectGuid _mortuusGUID;
-    std::list<ObjectGuid> _spawnedList;
-    std::list<ObjectGuid> _portalList;
+    SummonList _summons;
     uint8 _animPhase;
 };
 
@@ -3568,8 +3560,8 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                         }
 
                         _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
-                        break;
                     }
+                    break;
                 }
 
                 case EVENT_CAST_AGGRO:
