@@ -16,6 +16,7 @@
  */
 
 #include "CombatAI.h"
+#include "CreatureAIImpl.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "GridNotifiers.h"
@@ -27,9 +28,10 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
-#include "ScriptedCreature.h"
 #include "SharedDefines.h"
 #include "SpellAuras.h"
+#include "SpellAuraEffects.h"
+#include "SpellInfo.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include "Unit.h"
@@ -2166,6 +2168,7 @@ enum ForsakenRearGuardQuests
     SPELL_FREE_WEBBED_VICTIM1 = 83919,
     SPELL_FREE_WEBBED_VICTIM2 = 83921,
     SPELL_FREE_WEBBED_VICTIM3 = 83927,
+    SPELL_SICK = 83885,
     SPELL_SEA_PUP_TRIGGER = 83865,
     SPELL_DESPAWN_ALL_SUMMONS = 83935,
     SPELL_SKITTERWEB = 83827,
@@ -2559,16 +2562,13 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
     {
         if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
         {
-            if (me->FindNearestCreature(NPC_ORC_SEA_PUP, 10.0f) == 0)
-            {
-                if (player->HasAura(SPELL_SEA_PUP_TRIGGER))
-                    player->RemoveAura(SPELL_SEA_PUP_TRIGGER);
+            if (player->HasAura(SPELL_SEA_PUP_TRIGGER))
+                player->RemoveAura(SPELL_SEA_PUP_TRIGGER);
 
-                player->CastSpell(player, SPELL_SEA_PUP_TRIGGER);
+            player->CastSpell(player, SPELL_SEA_PUP_TRIGGER);
 
-                CloseGossipMenuFor(player);
-                return true;
-            }
+            CloseGossipMenuFor(player);
+            return true;
         }
 
         return false;
@@ -2727,12 +2727,14 @@ struct npc_silverpine_orc_sea_pup : public ScriptedAI
     {
         if (Player* player = summoner->ToPlayer())
         {
+            _playerGUID = player->GetGUID();
+
+            me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+
+            me->GetMotionMaster()->MoveFollow(player, 3.0f, (float)M_PI / 2, true, true, false);
+
             if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
             {
-                _playerGUID = player->GetGUID();
-
-                me->GetMotionMaster()->MoveFollow(player, 3.0f, (float)M_PI/2, true, true, false);
-
                 _events.ScheduleEvent(EVENT_JUST_SUMMONED, 1s);
                 _events.ScheduleEvent(EVENT_REMOVE_PROTECTION, 1s + 500ms);
                 _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 5s);
@@ -2771,6 +2773,8 @@ struct npc_silverpine_orc_sea_pup : public ScriptedAI
             Talk(TALK_6);
 
             me->GetVehicleKit()->RemoveAllPassengers();
+
+            me->HandleEmoteCommand(427);
 
             me->DespawnOrUnsummon(6s);
         }
@@ -2836,12 +2840,10 @@ struct npc_silverpine_orc_crate : public ScriptedAI
         {
             _orcGUID = who->GetGUID();
 
-            if (Creature* orc = ObjectAccessor::GetCreature(*me, _orcGUID))
-            {
-                me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
+            if (Creature* orc = ObjectAccessor::GetCreature(*me, _orcGUID))
                 me->CastSpell(orc, SPELL_RIDE_VEHICLE_HARDCODED, true);
-            }
         }
     }
 
@@ -3334,6 +3336,416 @@ private:
     std::vector<Creature*> _stalkerList;
 };
 
+enum FenrisIsleQuests
+{
+    QUEST_RISE_FORSAKEN = 27097,
+    QUEST_NO_ESCAPE = 27099,
+    QUEST_LORDAERON = 27098,
+
+    NPC_AGATHA_FENRIS = 44951,
+    NPC_HILLSBRAD_REFUGEE1 = 44954,
+    NPC_HILLSBRAD_REFUGEE2 = 44966,
+    NPC_FORSAKEN = 44959,
+    NPC_FENRIS_KEEP_STALKER = 45032,
+
+    SPELL_SUMMON_AGATHA = 83982,
+    SPELL_DEATH_WALK = 85451,
+    SPELL_AGATHA_BROADCAST = 83978,
+    SPELL_RIDE_VEHICLE = 84109,
+    SPELL_DETECT_INV_ZONE_4 = 84184,
+    SPELL_DOOMHOWL = 84012,
+    SPELL_UNHOLY_DARKNESS = 84013,
+    SPELL_UNHOLY_SMITE = 84014,
+    SPELL_BROADCAST = 83978,
+    SPELL_NOTIFY_AGATHA = 83990,
+    SPELL_RISE_FORSAKEN = 83993,
+    SPELL_KILL_CREDIT_RISE = 83996,
+    SPELL_GENERAL_TRIGGER_84107 = 84107,
+    SPELL_GENERAL_TRIGGER_84114 = 84114,
+    SPELL_SUMMON_SYLVANAS_HORSE = 84128,
+
+    EVENT_CHAT_TO_PLAYER = 300,
+    EVENT_CAST_AGGRO,
+    EVENT_HEAL_COOLDOWN,
+    EVENT_RUN,
+};
+
+// Lady Sylvanas Windrunner - 44365
+struct npc_silverpine_sylvanas_fhc : public ScriptedAI
+{
+    npc_silverpine_sylvanas_fhc(Creature* creature) : ScriptedAI(creature) { }
+
+    void QuestAccept(Player* player, const Quest* quest) override
+    {
+        if (quest->GetQuestId() == QUEST_RISE_FORSAKEN)
+            player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
+        else if (quest->GetQuestId() == QUEST_LORDAERON)
+        {
+            me->AddAura(SPELL_DETECT_INV_ZONE_4, player);
+            player->CastSpell(player, SPELL_SUMMON_SYLVANAS_HORSE, true);
+        }
+    }
+
+    void QuestReward(Player* player, Quest const* quest, uint32 /*opt*/) override
+    {
+        if (quest->GetQuestId() == QUEST_NO_ESCAPE)
+            player->RemoveAura(SPELL_DEATH_WALK);
+    }
+
+    void Reset() override
+    {
+        _events.Reset();
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        if (!UpdateVictim())
+            return;
+
+        DoMeleeAttackIfReady();
+    }
+
+private:
+    EventMap _events;
+};
+
+// Agatha - 44951
+struct npc_silverpine_agatha_fenris : public ScriptedAI
+{
+    npc_silverpine_agatha_fenris(Creature* creature) : ScriptedAI(creature), _doomHoulDone(false), _healCD(false) { }
+
+    void JustAppeared() override
+    {
+        me->GetMotionMaster()->Clear();
+    }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        _playerGUID = summoner->GetGUID();
+
+        me->GetMotionMaster()->MoveFollow(summoner, 4.0f, (float)M_PI / 2, false, true, false);
+
+        me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+
+        _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER, 60s);
+        _events.ScheduleEvent(EVENT_CHECK_PLAYER, 2s);
+
+        me->SetReactState(REACT_DEFENSIVE);
+    }
+
+    void Reset() override
+    {
+        _events.Reset();
+
+        me->GetMotionMaster()->Clear();
+        me->GetMotionMaster()->MoveFollow(me->GetOwner(), 4.0f, (float)M_PI / 2, false, true, false);
+
+        _targetGUID = ObjectGuid::Empty;
+
+        if (Creature* stalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 25.0f))
+            SetForQuest27099();
+    }
+
+    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    {
+        switch (spell->Id)
+        {
+            case SPELL_NOTIFY_AGATHA:
+            {
+                me->CastSpell(caster, SPELL_RISE_FORSAKEN, true);
+                Talk(TALK_1);
+                break;
+            }
+
+            case SPELL_GENERAL_TRIGGER_84114:
+            {
+                SetForQuest27099();
+                break;
+            }
+
+            case SPELL_GENERAL_TRIGGER_84107:
+            {
+                _events.ScheduleEvent(EVENT_RUN, 1s);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    void MovementInform(uint32 type, uint32 id) override
+    {
+        if (type == POINT_MOTION_TYPE && id == 1231)
+            _events.ScheduleEvent(EVENT_RUN + 1, 100ms);
+
+        if (type == WAYPOINT_MOTION_TYPE && id == 42)
+            _events.ScheduleEvent(EVENT_RUN + 4, 100ms);
+    }
+
+    void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
+    {
+        if (apply && passenger->ToPlayer())
+            _events.ScheduleEvent(EVENT_RUN + 3, 100ms);
+    }
+
+    void DamageTaken(Unit* attacker, uint32& /*damage*/) override
+    {
+        if (attacker->GetGUID() != _targetGUID)
+        {
+            if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+            {
+                if (Unit* unit = player->GetVictim())
+                {
+                    if (unit->GetGUID() != _targetGUID)
+                        JustEnteredCombat(unit);
+                }
+            }
+        }
+    }
+
+    void JustEngagedWith(Unit* who) override
+    {
+        _doomHoulDone = false;
+
+        _targetGUID = who->GetGUID();
+
+        me->CastSpell(who, SPELL_UNHOLY_SMITE);
+
+        _events.RescheduleEvent(EVENT_CAST_AGGRO, 2s);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_CHAT_TO_PLAYER:
+                {
+                    me->CastSpell(me, SPELL_AGATHA_BROADCAST, true);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER, 60s);
+                    break;
+                }
+
+                case EVENT_CHECK_PLAYER:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        if (player->IsAlive() || player->IsInWorld())
+                        {
+                            if (CheckQuestStatus(player))
+                            {
+                                if (!_healCD && player->GetHealthPct() < 90.0f)
+                                {
+                                    me->CastSpell(player, SPELL_UNHOLY_DARKNESS);
+
+                                    _healCD = true;
+
+                                    _events.ScheduleEvent(EVENT_HEAL_COOLDOWN, 2s);
+                                }
+
+                                if (Unit* unit = player->GetVictim())
+                                {
+                                    if (unit->GetGUID() != _targetGUID)
+                                        JustEnteredCombat(unit);
+                                }
+
+                                else if (player->IsInCombat())
+                                {
+                                    if (Unit* unit = player->GetSelectedUnit())
+                                    {
+                                        if (unit->GetGUID() != _targetGUID)
+                                            JustEnteredCombat(unit);
+                                    }
+                                }
+                            }
+                        }
+
+                        _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
+                        break;
+                    }
+                }
+
+                case EVENT_CAST_AGGRO:
+                {
+                    if (Creature* target = ObjectAccessor::GetCreature(*me, _targetGUID))
+                    {
+                        if (target->IsAlive())
+                        {
+                            if (target->GetEntry() == NPC_HILLSBRAD_REFUGEE1 || target->GetEntry() == NPC_HILLSBRAD_REFUGEE2)
+                            {
+                                if (!_doomHoulDone)
+                                {
+                                    me->CastSpell(me, SPELL_DOOMHOWL);
+
+                                    _doomHoulDone = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    _events.ScheduleEvent(EVENT_CAST_AGGRO, 3s);
+                    break;
+                }
+
+                case EVENT_HEAL_COOLDOWN:
+                {
+                    _healCD = false;
+                    break;
+                }
+
+                case EVENT_RUN:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        Position pos = player->GetPosition();
+
+                        me->GetMotionMaster()->MovePoint(1231, pos);
+                    }
+                    break;
+                }
+
+                case EVENT_RUN + 1:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        player->ExitVehicle();
+
+                        me->CastSpell(player, 84112, true); // Camera spell
+
+                        Talk(3);
+                    }
+
+                    _events.ScheduleEvent(EVENT_RUN + 2, 1s + 500ms);
+                    break;
+                }
+
+                case EVENT_RUN + 2:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        me->CastSpell(player, SPELL_RIDE_VEHICLE);
+
+                        Talk(TALK_4);
+                    }
+
+                    _events.ScheduleEvent(EVENT_RUN + 3, 1s);
+                    break;
+                }
+
+                case EVENT_RUN + 3:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        player->KilledMonsterCredit(NPC_AGATHA_FENRIS);
+
+                    me->GetMotionMaster()->MovePath(4495101, false);
+                    break;
+                }
+
+                case EVENT_RUN + 4:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        player->ExitVehicle();
+
+                    break;
+                }
+            }
+        }
+
+        if (!UpdateVictim())
+            return;
+
+        DoMeleeAttackIfReady();
+    }
+
+    bool CheckQuestStatus(Player* player)
+    {
+        if (player->GetQuestStatus(QUEST_RISE_FORSAKEN) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_RISE_FORSAKEN) == QUEST_STATUS_COMPLETE)
+            return true;
+        else if (player->GetQuestStatus(QUEST_NO_ESCAPE) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_NO_ESCAPE) == QUEST_STATUS_COMPLETE)
+            return true;
+
+        return false;
+    }
+
+    void SetForQuest27099()
+    {
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
+        me->GetMotionMaster()->MovePoint(1234, 982.57f, 671.04f, 77.298f);
+        _events.CancelEvent(EVENT_CHAT_TO_PLAYER);
+        me->AI()->Talk(2);
+    }
+
+private:
+    EventMap _events;
+    ObjectGuid _playerGUID;
+    ObjectGuid _targetGUID;
+    bool _doomHoulDone;
+    bool _healCD;
+};
+
+// Agatha Broadcast - 83978
+class spell_silverpine_agatha_broadcast : public SpellScript
+{
+    void HandleDummyEffect(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+
+        if (caster)
+        {
+            if (Creature* agatha = caster->FindNearestCreature(NPC_AGATHA_FENRIS, 50.0f))
+            {
+                if (agatha->IsAIEnabled && agatha->GetOwner() == caster)
+                    agatha->AI()->Talk(TALK_0);
+            }
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_silverpine_agatha_broadcast::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+// Hillsbrad Refugee - 44954, 44966
+struct npc_silverpine_hillsbrad_refugee : public ScriptedAI
+{
+    npc_silverpine_hillsbrad_refugee(Creature* creature) : ScriptedAI(creature) { }
+
+    void JustSummoned(Creature* summon) override
+    {
+        if (roll_chance_i(50))
+            summon->AI()->Talk(TALK_0);
+
+        summon->DespawnOrUnsummon(10s);
+    }
+
+    void JustDied(Unit* killer) override
+    {
+        if (Creature* agatha = me->FindNearestCreature(NPC_AGATHA_FENRIS, 50.0f))
+        {
+            me->CastSpell(agatha, SPELL_NOTIFY_AGATHA, true);
+
+            uint32 m_forsakenSpell;
+
+            if (me->getGender() == GENDER_MALE)
+                m_forsakenSpell = RAND(83998, 83999, 84000, 84001);
+            else
+                m_forsakenSpell = RAND(84002, 84003, 84004, 84005);
+
+            me->CastSpell(me, m_forsakenSpell);
+        }
+    }
+};
+
 void AddSC_silverpine_forest()
 {
     RegisterCreatureAI(npc_silverpine_worgen_renegade);
@@ -3344,7 +3756,6 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_fallen_human);
     RegisterSpellScript(spell_silverpine_forsaken_trooper_masterscript);
     RegisterSpellAndAuraScriptPair(spell_silverpine_raise_forsaken_83173, spell_silverpine_raise_forsaken_83173_aura);
-
     RegisterCreatureAI(npc_silverpine_bat_handler_maggotbreath);
     RegisterCreatureAI(npc_silverpine_forsaken_bat);
 
@@ -3367,4 +3778,9 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_webbed_victim_skitterweb);
     RegisterCreatureAI(npc_silverpine_orc_sea_dog);
     RegisterCreatureAI(npc_silverpine_skitterweb_matriarch);
+
+    RegisterCreatureAI(npc_silverpine_sylvanas_fhc);
+    RegisterCreatureAI(npc_silverpine_agatha_fenris);
+    RegisterSpellScript(spell_silverpine_agatha_broadcast);
+    RegisterCreatureAI(npc_silverpine_hillsbrad_refugee);
 }

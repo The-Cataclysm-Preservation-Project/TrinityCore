@@ -34,6 +34,10 @@ DELETE FROM `conditions` WHERE `SourceEntry`= 83827 AND `SourceTypeOrReferenceId
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
 (13, 1, 83827, 0, 0, 31, 0, 3, 44908, 0, 0, 0, '', 'Skitterweb Web - Target Skitterweb Stalker');
 
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=11901 ;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(15, 11901, 0, 0, 1, 9, 0, 27069, 0, 0, 0, 0, 0, '', 'Admiral Hatchet - Show gossip option if player has quest 27069');
+
  -- Dark Ranger
 SET @CGUID := 399000;
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID AND @CGUID+1;
@@ -57,8 +61,47 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 
  -- Forest Ettin
 DELETE FROM `creature` WHERE `guid`= @CGUID+6;
-INSERT INTO `creature` VALUES (@CGUID+6, 44367, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1189.52, 1573.09, 28.3514, 1.55021, 300, 0, 0, 819, 0, 2, 16777216, 0, 0, NULL, 0);
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
+(@CGUID+6, 44367, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1189.52, 1573.09, 28.3514, 1.55021, 300, 0, 0, 819, 0, 2, 16777216, 0, 0, NULL, 0);
 
+ -- Lady Sylvanas Windrunner
+DELETE FROM `creature` WHERE `guid`= @CGUID+7;
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
+(@CGUID+7, 44365, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 0);
+
+DELETE FROM `creature_addon` WHERE `guid`= @CGUID+7;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(@CGUID+7, 0, 0, 29257, 0, 2, 0, 0, 0, 0, 3, '83231');
+
+ -- Agatha
+DELETE FROM `creature_template_addon` WHERE `entry`=44951;
+INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(44951, 0, 0, 0, 50331648, 1, 0, 0, 0, 0, 3, '85451');
+
+UPDATE `creature_template` SET `unit_class`= 2, `VehicleId`= 1109, `HoverHeight`= 2.4, `ScriptName`= 'npc_silverpine_agatha_fenris' WHERE `entry` = 44951;
+
+DELETE FROM `creature_text` WHERE `CreatureID`=44951;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
+(44951, 0, 0, 'Death is only the beginning.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 1, 'Different master, same insatiable thirst for power.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 2, 'Do you feel it, $n? The darkness surrounds us.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 3, 'I long for the frozen wastes of Northrend.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 4, 'I sense doom in your future, $n.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 5, 'Life is meaningless. It is in the afterlife that we are truly tested.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 6, 'The warmth of this place sickens me.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 7, 'Through me the Banshee Queen sees all...', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 8, 'Waste no time, $n. We mustn\'t keep the Banshee Queen waiting.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 1, 0, 'Bow before your new master!', 14, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 1, 1, 'Rise and destroy our enemies!', 14, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 1, 2, 'Rise! Become Forsaken!', 14, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 2, 0, 'This way, $n. We will take them by surprise.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 3, 0, 'Run...', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 4, 0, 'RUN!', 12, 0, 100, 0, 0, 0, 0, 0, 0, '');
+
+ -- Hillsbrad Refugee
+ UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` = 44954;
+ UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` = 44966;
+  
 DELETE FROM `creature_addon` WHERE `guid` IN (321875, 321874, 321872, 321869, 321925, 321930, 321930, 321927, 321933, 321911, 321871, 321915);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321875, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
@@ -82,6 +125,10 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (321916, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '83829'),
 (321474, 443670, 0, 0, 0, 1, 0, 0, 0, 0, 0, ''),
 (@CGUID+6, 443671, 0, 0, 0, 1, 0, 0, 0, 0, 0, '');
+
+DELETE FROM `creature_addon` WHERE `guid`= 322043;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(322043, 449117, 0, 0, 0, 257, 0, 0, 0, 0, 3, '18950');
 
  -- Bat Handler Maggotbreath
 DELETE FROM `creature` WHERE `guid`=@CGUID+3;
@@ -134,11 +181,26 @@ UPDATE `creature` SET `spawndist`=10 WHERE `id` = 1781;
 UPDATE `creature` SET `MovementType`=1 WHERE `id` = 44547;
 UPDATE `creature` SET `spawndist`=10 WHERE `id` = 44547;
 
+UPDATE `creature` SET `spawndist`= 0 WHERE `guid` = 321893;
+DELETE FROM `creature_addon` WHERE `guid`= 321893;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(321893, 445470, 0, 0, 0, 1, 0, 0, 0, 0, 0, '');
+
+UPDATE `creature` SET `spawndist`= 0 WHERE `guid` = 321729;
+DELETE FROM `creature_addon` WHERE `guid`= 321729;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
+(321729, 445471, 0, 0, 0, 1, 0, 0, 0, 0, 0, '');
+
+UPDATE `creature` SET `spawndist`= 0 WHERE `guid` = 321895;
+DELETE FROM `creature_addon` WHERE `guid`= 321895;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
+(321895, 445472, 0, 0, 0, 1, 0, 0, 0, 0, 0, '');
+
 DELETE FROM `creature_formations` WHERE `MemberGUID`=322043;
 DELETE FROM `creature_formations` WHERE `MemberGUID`=322042;
 INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`, `FollowAngle`, `GroupAI`, `InversionPoint1`, `InversionPoint2`) VALUES
 (322043, 322043, 0, 0, 515, -1, -1),
-(322043, 322042, 5, 270, 515, -1, -1);
+(322043, 322042, 3.5, 270, 515, -1, -1);
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID`=44365 AND `ID`=1;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
@@ -182,6 +244,7 @@ UPDATE creature_template SET `ScriptName` = 'npc_silverpine_grand_executor_mortu
 UPDATE creature_template SET `unit_flags2` = 2107392, `VehicleId` = 1109  WHERE `entry` = 44610;
 UPDATE creature_template SET `unit_flags2` = 2099200, `HoverHeight` = 2.8  WHERE `entry` = 44609;
 UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44593;
+UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44592;
 UPDATE creature_template SET `npcflag`= 16777216 WHERE `entry` = 44915;
 UPDATE creature_template SET `unit_flags`= 33288 WHERE `entry` = 44914;
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_mutant_bush_chicken'  WHERE `entry` = 44935;
@@ -341,25 +404,34 @@ DELETE FROM `creature_text` WHERE `CreatureID`=44912;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
 (44912, 0, 0, 'Touch my chicken and I will kill you in your sleep. Am I understood?', 12, 1, 100, 1, 0, 0, 0, 0, 0, NULL);
 
+DELETE FROM `creature_text` WHERE `CreatureID`=44914;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(44914, 0, 0, 'Where to going, captain?', 12, 1, 100, 66, 0, 0, 0, 44990, 0, 'Orc Sea Pup to Orc Crate'),
+(44914, 1, 0, 'OOF! Maybe trow little softer, captain?', 12, 1, 100, 0, 0, 0, 0, 44992, 0, 'Orc Sea Pup to Orc Crate'),
+(44914, 2, 0, 'Heavy... no can see notin.', 12, 1, 100, 0, 0, 0, 0, 44993, 0, 'Orc Sea Pup to Orc Crate'),
+(44914, 3, 0, 'Captain, pup need help!', 12, 1, 100, 0, 0, 0, 0, 44996, 0, 'Orc Sea Pup to Orc Crate'),
+(44914, 4, 0, 'Please, captain, I can put box down?', 12, 1, 100, 0, 0, 0, 0, 44999, 0, 'Orc Sea Pup to Orc Crate'),
+(44914, 5, 0, 'NO MORE! DIS IS MAXI... MAXIMO... ME... DIS TOO MUCH!', 12, 1, 100, 0, 0, 0, 0, 45003, 0, 'Orc Sea Pup to Orc Crate'),
+(44914, 6, 0, 'Where to put? Dey falling! HELP!', 12, 1, 100, 0, 0, 0, 0, 45025, 0, 'Orc Sea Pup to Orc Crate'),
+(44914, 7, 0, 'OOF!', 12, 1, 100, 0, 0, 0, 0, 0, 0, 'Orc Sea Pup to Orc Crate');
+
 DELETE FROM `creature_sparring_template` WHERE `CreatureID` IN (44793, 44791, 44792);
 INSERT INTO `creature_sparring_template` (`CreatureID`, `HealthLimitPct`) VALUES
 (44793, 85),
 (44791, 85),
 (44792, 85);
 
-UPDATE `gameobject_template` SET `ScriptName`='go_abandoned_outhouse_205143' WHERE `entry`=205143;
+UPDATE `gameobject_template` SET `ScriptName`='go_silverpine_abandoned_outhouse' WHERE `entry`=205143;
 
 DELETE FROM `gossip_menu_option` WHERE `MenuId`=6944 AND `OptionIndex`=1;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES
 (6944, 1, 2, 'I need to take a bat to the Dawning Isles.', 0, 1, 1, 15595);
 
+UPDATE `gossip_menu_option` SET `OptionNpcflag`= 2 WHERE `MenuId` = 11901;
+
 DELETE FROM `npc_spellclick_spells` WHERE `npc_entry`=44894 AND `spell_id`=83756;
 INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
 (44894, 83756, 1, 0);
-
-DELETE FROM `npc_spellclick_spells` WHERE `npc_entry`=44915 AND `spell_id`=83838;
-INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
-(44915, 83838, 1, 0);
 
 DELETE FROM `creature_questender` WHERE `id`=44615 AND `quest` IN (26964, 26965, 26989);
 INSERT INTO `creature_questender` (`id`, `quest`) VALUES
@@ -465,6 +537,25 @@ INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `Exte
 UPDATE quest_template_addon SET `PrevQuestID` = '27098', `NextQuestID` = '27232' WHERE `ID` = 27231;
 UPDATE quest_template_addon SET `PrevQuestID` = '27098' WHERE `ID` = 27226;
 UPDATE quest_template_addon SET `PrevQuestID` = '27094' WHERE `ID` = 27096;
+UPDATE quest_template_addon SET `PrevQuestID` = '27195' WHERE `ID` = 27290;
+
+ -- Bloodfang Scavenger
+SET @ENTRY := 44547;
+DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
+UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(@ENTRY, 0, 0, 0, 0, 0, 100, 0, 4000, 6000, 25000, 30000, 11, 84308, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 25 - 30 seconds (4 - 6s initially) - Self: Cast spell Furious Howl (84308) on Self"),
+(@ENTRY, 0, 1, 0, 9, 0, 100, 0, 0, 30, 14000, 15000, 11, 78509, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, "When victim in range 0 - 30 yards (check every 14000 - 15000 ms) - Self: Cast spell Torch Toss (78509) on Victim"),
+(@ENTRY, 0, 2, 0, 1, 0, 100, 0, 4000, 25000, 40000, 70000, 5, 15, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 40 - 70 seconds (4 - 25s initially) - Self: Play emote ONESHOT_ROAR(DNR) (15)"),
+(@ENTRY, 0, 3, 0, 1, 0, 50, 0, 4000, 14000, 25000, 55000, 11, 83860, 0, 0, 1, 0, 0, 11, 44920, 20, 0, 0, 0, 0, 0, "Every 25 - 55 seconds (4 - 14s initially) - Self: Cast spell Toss Torch (83860) on random 1 Creature North Tide's Invisible Stalker (44920) in 20 yd"),
+(@ENTRY, 0, 4, 2, 0, 0, 100, 0, 3, 0, 0, 0, 4, 9036, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "On action[3] - Self: Play direct sound WolfHowl (9036) to every player in visibility range of Self");
+
+ -- North Tide's Invisible Stalker
+SET @ENTRY := 44920;
+DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
+UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(@ENTRY, 0, 0, 0, 8, 0, 100, 0, 83860, 0, 0, 0, 11, 83859, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "On spell Toss Torch (83860) hit - Self: Cast spell North Tide's Fire (83859) on random 1 Self");
 
  -- Detect: Quest Invis Zone 3
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=26964 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
@@ -514,6 +605,10 @@ DELETE FROM `spell_script_names` WHERE `spell_id`=83838 AND `ScriptName`='spell_
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83838, 'spell_silverpine_pick_up_orc_crate');
 
+DELETE FROM `spell_script_names` WHERE `spell_id`=83978 AND `ScriptName`='spell_silverpine_agatha_broadcast';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(83978, 'spell_silverpine_agatha_broadcast');
+
 DELETE FROM `vehicle_template_accessory` WHERE `entry`=44764 AND `seat_id` BETWEEN 0 AND 5;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
 (44764, 44734, 0, 1, 'Sitting on top - Horde Engineer', 8, 30000),
@@ -533,14 +628,6 @@ INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`,
 (44731, 44733, 5, 1, 'Sitting on floor (bottom right) - Female Trooper', 8, 30000),
 (44731, 44733, 6, 1, 'Sitting on shelf (bottom left) - Female trooper', 8, 30000),
 (44731, 44732, 7, 1, 'Sitting on shelf (bottom right) - Male trooper', 8, 30000);
-
-DELETE FROM `vehicle_template_accessory` WHERE `entry`=44914 AND `seat_id` BETWEEN 0 AND 4;
-INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
-(44914, 44915, 0, 0, 'Orc Sea Pup - Orc Crate', 6, 30000),
-(44914, 44915, 1, 0, 'Orc Sea Pup - Orc Crate', 6, 30000),
-(44914, 44915, 2, 0, 'Orc Sea Pup - Orc Crate', 6, 30000),
-(44914, 44915, 3, 0, 'Orc Sea Pup - Orc Crate', 6, 30000),
-(44914, 44915, 4, 0, 'Orc Sea Pup - Orc Crate', 6, 30000);
 
 DELETE FROM `vehicle_template_accessory` WHERE `entry`=45120;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
