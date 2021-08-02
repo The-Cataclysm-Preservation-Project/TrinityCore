@@ -99,9 +99,12 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44951, 4, 0, 'RUN!', 12, 0, 100, 0, 0, 0, 0, 0, 0, '');
 
  -- Hillsbrad Refugee
- UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` = 44954;
- UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` = 44966;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` = 44954;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` = 44966;
   
+ -- Innkeepers
+UPDATE `creature_template` SET `ScriptName`= 'npc_innkeeper' WHERE `subname` = 'Innkeeper';
+ 
 DELETE FROM `creature_addon` WHERE `guid` IN (321875, 321874, 321872, 321869, 321925, 321930, 321930, 321927, 321933, 321911, 321871, 321915);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321875, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),

@@ -3720,7 +3720,7 @@ struct npc_silverpine_hillsbrad_refugee : public ScriptedAI
         summon->DespawnOrUnsummon(10s);
     }
 
-    void JustDied(Unit* killer) override
+    void JustDied(Unit* /*killer*/) override
     {
         if (Creature* agatha = me->FindNearestCreature(NPC_AGATHA_FENRIS, 50.0f))
         {
