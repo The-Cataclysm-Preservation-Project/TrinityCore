@@ -303,8 +303,8 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
     {
         _events.Reset();
         _playerGUID = ObjectGuid::Empty;
-        _animPhase = 0;
         _summons.clear();
+        _animPhase = 0;
     }
 
     void SetGUID(ObjectGuid const& guid, int32 id) override
