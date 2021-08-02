@@ -63,6 +63,14 @@ DELETE FROM `phase_area` WHERE `AreaId`=172 AND `PhaseId`=170;
 INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
 (172, 170, 'Silverpine Forest - Fenris Isle - No Escape quest');
 
+DELETE FROM `phase_area` WHERE `AreaId`=235 AND `PhaseId`=169;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(235, 169, 'Silverpine Forest - Fenris Keep (Base)');
+
+DELETE FROM `phase_area` WHERE `AreaId`=235 AND `PhaseId`=170;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(235, 170, 'Silverpine Forest - Fenris Keep - No Escape quest');
+
  -- Dark Ranger
 SET @CGUID := 399000;
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID AND @CGUID+1;
