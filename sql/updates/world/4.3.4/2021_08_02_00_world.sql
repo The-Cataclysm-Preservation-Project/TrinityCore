@@ -34,9 +34,34 @@ DELETE FROM `conditions` WHERE `SourceEntry`= 83827 AND `SourceTypeOrReferenceId
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
 (13, 1, 83827, 0, 0, 31, 0, 3, 44908, 0, 0, 0, '', 'Skitterweb Web - Target Skitterweb Stalker');
 
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=11901 ;
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=11901;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (15, 11901, 0, 0, 1, 9, 0, 27069, 0, 0, 0, 0, 0, '', 'Admiral Hatchet - Show gossip option if player has quest 27069');
+
+ -- Fenris Isle phases
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=170 AND `SourceEntry`=235 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 170, 235, 0, 0, 47, 0, 27099, 8, 0, 0, 0, 0, '', 'Fenris Keep - Add phase 170 - 27099 taken');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=170 AND `SourceEntry`=172 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 170, 172, 0, 0, 47, 0, 27099, 8, 0, 0, 0, 0, '', 'Fenris Isle - Add phase 170 - 27099 taken');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=172 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 169, 172, 0, 0, 47, 0, 27099, 8, 0, 1, 0, 0, '', 'Fenris Isle - Remove phase 169 - 27099 taken');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=235 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 169, 235, 0, 0, 47, 0, 27099, 8, 0, 1, 0, 0, '', 'Fenris Keep - Remove phase 169 - 27099 taken');
+
+DELETE FROM `phase_area` WHERE `AreaId`=172 AND `PhaseId`=169;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(172, 169, 'Silverpine Forest - Fenris Isle (Base)');
+
+DELETE FROM `phase_area` WHERE `AreaId`=172 AND `PhaseId`=170;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(172, 170, 'Silverpine Forest - Fenris Isle - No Escape quest');
 
  -- Dark Ranger
 SET @CGUID := 399000;
@@ -104,7 +129,18 @@ UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' 
   
  -- Innkeepers
 UPDATE `creature_template` SET `ScriptName`= 'npc_innkeeper' WHERE `subname` = 'Innkeeper';
- 
+
+ -- Fenris Keep stuff
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_fenris_stalker' WHERE `entry` = 45032;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_fenris_camera' WHERE `entry` = 45003;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_crowley_fenris' WHERE `entry` = 44989;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_odelic_fenris' WHERE `entry` = 44993;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_bartolo_fenris' WHERE `entry` = 44994;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_loremaster_fenris' WHERE `entry` = 44995;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_henry_fenris' WHERE `entry` = 44996;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_caretaker_fenris' WHERE `entry` = 44997;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_sophia_fenris' WHERE `entry` = 45002;
+
 DELETE FROM `creature_addon` WHERE `guid` IN (321875, 321874, 321872, 321869, 321925, 321930, 321930, 321927, 321933, 321911, 321871, 321915);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321875, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),
@@ -574,19 +610,6 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spe
 DELETE FROM `spell_area` WHERE `spell`=84241 AND `area`=5386 AND `quest_start`=27065 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (84241, 5386, 27065, 27098, 0, 0, 2, 3, 74, 1);
-
- -- Sea Orc Pup
-DELETE FROM `spell_area` WHERE `spell`=83839 AND `area`=928 AND `quest_start`=27069 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83839, 928, 27069, 0, 0, 0, 2, 3, 74, 0);
-
-DELETE FROM `spell_area` WHERE `spell`=83839 AND `area`=130 AND `quest_start`=27069 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83839, 130, 27069, 0, 0, 0, 2, 3, 74, 0);
-
-DELETE FROM `spell_area` WHERE `spell`=83839 AND `area`=226 AND `quest_start`=27069 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83839, 226, 27069, 0, 0, 0, 2, 3, 74, 0);
 
 DELETE FROM `spell_script_names` WHERE `spell_id`=83173 AND `ScriptName`='spell_silverpine_raise_forsaken_83173';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
