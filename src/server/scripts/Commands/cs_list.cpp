@@ -616,7 +616,7 @@ public:
                                         uint32 item_entry       = fields3[0].GetUInt32();
                                         uint32 item_count       = fields3[1].GetUInt32();
                                         QueryResult result4;
-                                        result4 = WorldDatabase.PQuery("SELECT name, quality FROM item_template WHERE entry = '%u'", item_entry);
+                                        result4 = HotfixDatabase.PQuery("SELECT `Display`, `quality` FROM `item_sparse` WHERE `entry` = '%u'", item_entry);
                                         Field* fields1          = result4->Fetch();
                                         std::string item_name   = fields1[0].GetString();
                                         int item_quality        = fields1[1].GetUInt8();
