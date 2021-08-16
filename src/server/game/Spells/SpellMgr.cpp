@@ -4870,7 +4870,119 @@ void SpellMgr::LoadSpellInfoCorrections()
 
     // END OF HALLS OF ORIGINATION SPELLS
 
-    //
+    // SILVERPINE FOREST SPELLS
+
+    ApplySpellFix({
+    83464,  // Chain Visual
+    83467,
+    86803,
+    86805,
+    84112   // Camera spell
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_TARGET_ANY);
+    });
+
+    ApplySpellFix({
+        83982  // Summon Agatha
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValueB = 3050;
+    });
+
+    ApplySpellFix({
+        85411 // Raise Forsaken
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_200_YARDS);
+    });
+
+    ApplySpellFix({
+        85600 // Toss Torch
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_SRC_AREA_ENTRY);
+        spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_15_YARDS);
+    });
+
+    ApplySpellFix({
+        85870, // Summon Agatha
+        85869, // Summon Arthura
+        85871, // Summon Daschla
+        85868, // Summon Cromush
+        85864  // Summon Sylvanas
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].TargetA = SpellImplicitTargetInfo(TARGET_DEST_DB);
+    });
+
+    ApplySpellFix({
+        83150, // Forsaken Trooper (Male 01)
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44596;
+    });
+
+    ApplySpellFix({
+        83164, // Forsaken Trooper (Male 02)
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44601;
+    });
+
+    ApplySpellFix({
+    83163, // Forsaken Trooper (Male 03)
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44602;
+    });
+
+    ApplySpellFix({
+    83165, // Forsaken Trooper (Male 04)
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44603;
+    });
+
+    ApplySpellFix({
+        83152, // Forsaken Trooper (Female 01)
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44601;
+    });
+
+    ApplySpellFix({
+        83166, // Forsaken Trooper (Female 02)
+    }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44604;
+    });
+
+    ApplySpellFix({
+        83167, // Forsaken Trooper (Female 03)
+        }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44605;
+    });
+
+    ApplySpellFix({
+        83168, // Forsaken Trooper (Female 04)
+    }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].MiscValue = 44606;
+    });
+
+    ApplySpellFix({
+        6660,  // Shoot
+        80012, // Quimaera Shoot
+        79721, // Fire Shoot
+    }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(135); // 100yd
+    });
+
+    // END OF SILVERPINE FOREST SPELLS
+
     // SHADOWFANG KEEP SPELLS
     //
     // Summon Spirit of Wolf Master Nandos
