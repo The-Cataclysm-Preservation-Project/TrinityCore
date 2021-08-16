@@ -3340,8 +3340,8 @@ enum FenrisIsleQuests
     NPC_FORSAKEN                    = 44959,
     NPC_FENRIS_KEEP_STALKER         = 45032,
     NPC_FENRIS_KEEP_CAMERA          = 45003,
-    NPC_BLOODFANG                   = 44990,
-    NPC_CROWLEY                     = 44989,
+    NPC_BLOODFANG_FENRIS            = 44990,
+    NPC_CROWLEY_FENRIS              = 44989,
     NPC_PHIN_ODELIC                 = 44993,
     NPC_BARTOLO_GINSETTI            = 44994,
     NPC_LOREMASTER_DIBBS            = 44995,
@@ -3353,18 +3353,18 @@ enum FenrisIsleQuests
     SPELL_SUMMON_AGATHA             = 83982,
     SPELL_DEATH_WALK                = 85451,
     SPELL_AGATHA_BROADCAST          = 83978,
-    SPELL_RIDE_VEHICLE              = 84109,
+    SPELL_NOTIFY_AGATHA             = 83990,
+    SPELL_RISE_FORSAKEN             = 83993,
+    SPELL_KILL_CREDIT_RISE          = 83996,
     SPELL_DETECT_INV_ZONE_4         = 84184,
     SPELL_DOOMHOWL                  = 84012,
     SPELL_UNHOLY_DARKNESS           = 84013,
     SPELL_UNHOLY_SMITE              = 84014,
     SPELL_BROADCAST                 = 83978,
-    SPELL_NOTIFY_AGATHA             = 83990,
-    SPELL_RISE_FORSAKEN             = 83993,
-    SPELL_KILL_CREDIT_RISE          = 83996,
     SPELL_GENERAL_TRIGGER_84107     = 84107,
     SPELL_GENERAL_TRIGGER_84114     = 84114,
-    SPELL_SUMMON_SYLVANAS_HORSE     = 84128,
+    SPELL_ARMORE_CAMERA_1           = 84112,
+    SPELL_RIDE_VEHICLE              = 84109,
 
     SPELL_BLOOD_ODELIC              = 84094,
     SPELL_BLOOD_BARTOLO             = 84095,
@@ -3384,8 +3384,10 @@ enum FenrisIsleQuests
     SPELL_SUMMON_SOPHIA             = 84061,
     SPELL_CONVERSATION_TRIGGER_84076 = 84076, 
     SPELL_CONVERSATION_TRIGGER_84077 = 84077, 
-    SPELL_ARMORE_CAMERA             = 84104,
-    SPELL_GENERAL_TRIGGER_84102     = 84102,  
+    SPELL_ARMORE_CAMERA_2           = 84104,
+    SPELL_GENERAL_TRIGGER_84102     = 84102,
+
+    SPELL_SUMMON_SYLVANAS_HORSE     = 84128,
 
     EVENT_CHECK_QUEST               = 101,
     EVENT_MASTER_RESET,
@@ -3401,6 +3403,7 @@ enum FenrisIsleQuests
     EVENT_HEAL_COOLDOWN,
     EVENT_RUN,
 
+    DATA_WAYPOINT_AGATHA            = 4495101,
     DATA_SOUND_HOWLING              = 17671
 };
 
@@ -3506,8 +3509,11 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
     {
         if (type == POINT_MOTION_TYPE && id == 1231)
             _events.ScheduleEvent(EVENT_RUN + 1, 100ms);
+    }
 
-        if (type == WAYPOINT_MOTION_TYPE && id == 42)
+    void WaypointReached(uint32 waypointId, uint32 pathId) override
+    {
+        if (pathId == DATA_WAYPOINT_AGATHA && waypointId == 42)
             _events.ScheduleEvent(EVENT_RUN + 4, 100ms);
     }
 
@@ -3635,9 +3641,9 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                     {
                         player->ExitVehicle();
 
-                        me->CastSpell(player, 84112, true); // Camera spell
+                        me->CastSpell(player, SPELL_ARMORE_CAMERA_2, true);
 
-                        Talk(3);
+                        Talk(TALK_3);
                     }
 
                     _events.ScheduleEvent(EVENT_RUN + 2, 1s + 500ms);
@@ -3649,6 +3655,8 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         me->CastSpell(player, SPELL_RIDE_VEHICLE);
+
+                        player->EnterVehicle(me);
 
                         Talk(TALK_4);
                     }
@@ -3662,14 +3670,22 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         player->KilledMonsterCredit(NPC_AGATHA_FENRIS);
 
-                    me->GetMotionMaster()->MovePath(4495101, false);
+                    me->SetDisableGravity(true);
+
+                    me->GetMotionMaster()->MovePath(DATA_WAYPOINT_AGATHA, false);
                     break;
                 }
 
                 case EVENT_RUN + 4:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        me->RemoveAura(SPELL_RIDE_VEHICLE);
                         player->ExitVehicle();
+                    }
+
+                    me->GetMotionMaster()->Clear();
+                    me->GetMotionMaster()->MoveFollow(me->GetOwner(), 4.0f, (float)M_PI / 2, false, true, false);
 
                     break;
                 }
@@ -3695,11 +3711,12 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
     void SetForQuest27099()
     {
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+
         me->SetReactState(REACT_PASSIVE);
 
         me->GetMotionMaster()->MovePoint(1234, 982.57f, 671.04f, 77.298f);
 
-        me->AI()->Talk(TALK_2);
+        Talk(TALK_2);
 
         if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
             player->RemoveAura(SPELL_BOND_OF_THE_VALKYR);
@@ -3724,8 +3741,11 @@ class spell_silverpine_agatha_broadcast : public SpellScript
         {
             if (Creature* agatha = caster->FindNearestCreature(NPC_AGATHA_FENRIS, 50.0f))
             {
-                if (agatha->IsAIEnabled && agatha->GetOwner() == caster)
-                    agatha->AI()->Talk(TALK_0);
+                if (agatha->IsAIEnabled)
+                {
+                    if (agatha->GetOwner() == caster)
+                        agatha->AI()->Talk(TALK_0);
+                }
             }
         }
     }
@@ -3830,23 +3850,7 @@ public:
 // Fenris Keep Stalker - 45032
 struct npc_silverpine_fenris_stalker : public ScriptedAI
 {
-    npc_silverpine_fenris_stalker(Creature* creature) : ScriptedAI(creature), _animationIsStarted(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID     = ObjectGuid::Empty;
-        _bloodfangGUID  = ObjectGuid::Empty;
-        _crowleyGUID    = ObjectGuid::Empty;
-        _phinGUID       = ObjectGuid::Empty;
-        _bartoloGUID    = ObjectGuid::Empty;
-        _loremasterGUID = ObjectGuid::Empty;
-        _henryGUID      = ObjectGuid::Empty;
-        _caretakersGUID = ObjectGuid::Empty;
-        _sophiaGUID     = ObjectGuid::Empty;
-    }
+    npc_silverpine_fenris_stalker(Creature* creature) : ScriptedAI(creature), _animationIsStarted(false) { }
 
     void Reset() override
     {
@@ -3855,76 +3859,13 @@ struct npc_silverpine_fenris_stalker : public ScriptedAI
         _animationIsStarted = false;
     }
 
-    void JustSummoned(Creature* summon) override
-    {
-        switch (summon->GetEntry())
-        {
-            case NPC_CROWLEY:
-                _crowleyGUID = summon->GetGUID();
-                break;
-
-            case NPC_BLOODFANG:
-                _bloodfangGUID = summon->GetGUID();
-                break;
-
-            case NPC_PHIN_ODELIC:
-                _phinGUID = summon->GetGUID();
-                SetCreatureValues(summon);
-                break;
-
-            case NPC_BARTOLO_GINSETTI:
-                _bartoloGUID = summon->GetGUID();
-                SetCreatureValues(summon);
-                break;
-
-            case NPC_LOREMASTER_DIBBS:
-                _loremasterGUID = summon->GetGUID();
-                SetCreatureValues(summon);
-                break;
-
-            case NPC_MAGISTRATE_HENRY_MALEB:
-                _henryGUID = summon->GetGUID();
-                SetCreatureValues(summon);
-                break;
-
-            case NPC_CARETAKER_SMITHERS:
-                _caretakersGUID = summon->GetGUID();
-                SetCreatureValues(summon);
-                break;
-
-            case NPC_SOPHIA_ZWOSKI:
-                _sophiaGUID = summon->GetGUID();
-                SetCreatureValues(summon);
-                break;
-
-            default:
-                break;
-        }
-
-        summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-    }
-
-    void SpellHit(Unit* caster, SpellInfo const* spell) override
+    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
     {
         switch (spell->Id)
         {
             case SPELL_GENERAL_TRIGGER_84107:
             {
                 _events.RescheduleEvent(EVENT_MASTER_RESET, 30s);
-                break;
-            }
-
-            case SPELL_GENERAL_TRIGGER_84102:
-            {
-                if (Creature* camera = me->FindNearestCreature(NPC_FENRIS_KEEP_CAMERA, 25.0f))
-                {
-                    if (Creature* crowley = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                    {
-                        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                            camera->CastSpell(crowley, SPELL_ARMOIRE_CAMERA_A, true);
-                    }
-                }
-
                 break;
             }
 
@@ -3953,45 +3894,25 @@ struct npc_silverpine_fenris_stalker : public ScriptedAI
 
                                 _animationIsStarted = true;
 
-                                _events.ScheduleEvent(EVENT_START_ANIMATION, 10ms);
-                                _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
+                                _events.ScheduleEvent(EVENT_START_ANIMATION, 1s);
                                 _events.ScheduleEvent(EVENT_MASTER_RESET, 250s);
                             }
                         }
                     }
                     else
                         _events.ScheduleEvent(EVENT_CHECK_QUEST, 1s);
-                    break;
-                }
 
-                case EVENT_CHECK_PLAYER:
-                {
-                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    {
-                        if (player->IsAlive() || player->IsInWorld())
-                            _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
-                    }
                     break;
                 }
 
                 case EVENT_MASTER_RESET:
                 {
-                    DespawnAllSummons();
                     Reset();
                     break;
                 }
 
                 case EVENT_START_ANIMATION:
                 {
-                    me->CastSpell(me, SPELL_SUMMON_CROWLEY_FENRIS, false);
-                    me->CastSpell(me, SPELL_SUMMON_BLOODFANG_FENRIS, false);
-                    me->CastSpell(me, SPELL_SUMMON_PHIN_ODELIC, false);
-                    me->CastSpell(me, SPELL_SUMMON_BARTOLO_GINSETTI, false);
-                    me->CastSpell(me, SPELL_SUMMON_LOREMASTER_DIBBS, false);
-                    me->CastSpell(me, SPELL_SUMMON_MAGISTRATE_HENRY, false);
-                    me->CastSpell(me, SPELL_SUMMON_CARETAKER_SMITHERS, false);
-                    me->CastSpell(me, SPELL_SUMMON_SOPHIA, false);
-
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         me->CastSpell(player, SPELL_FORCE_CAST_FENRIS_CAMERA, true);
 
@@ -4004,57 +3925,16 @@ struct npc_silverpine_fenris_stalker : public ScriptedAI
         }
     }
 
-    void DespawnAllSummons()
-    {
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _phinGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _bartoloGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _loremasterGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _henryGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _caretakersGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = ObjectAccessor::GetCreature(*me, _sophiaGUID))
-            creature->DespawnOrUnsummon(10s);
-        if (Creature* creature = me->FindNearestCreature(NPC_FENRIS_KEEP_CAMERA, 30.0f))
-            creature->DespawnOrUnsummon(10s);
-    }
-
-    void SetCreatureValues(Creature* npc)
-    {
-        Position pos = npc->GetPosition();
-
-        pos.SetOrientation(3.33f);
-
-        npc->SetHomePosition(pos);
-
-        npc->GetMotionMaster()->MoveTargetedHome();
-    }
-
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
-    ObjectGuid _bloodfangGUID;
-    ObjectGuid _crowleyGUID;
-    ObjectGuid _phinGUID;
-    ObjectGuid _bartoloGUID;
-    ObjectGuid _loremasterGUID;
-    ObjectGuid _henryGUID;
-    ObjectGuid _caretakersGUID;
-    ObjectGuid _sophiaGUID;
     bool _animationIsStarted;
 };
 
 // Fenris Keep Camera - 45003
 struct npc_silverpine_fenris_camera : public ScriptedAI
 {
-    npc_silverpine_fenris_camera(Creature* creature) : ScriptedAI(creature)
+    npc_silverpine_fenris_camera(Creature* creature) : ScriptedAI(creature), _summons(me)
     {
         Initialize();
     }
@@ -4077,6 +3957,24 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
             _playerGUID = player->GetGUID();
     }
 
+    void JustSummoned(Creature* summon) override
+    {
+        switch (summon->GetEntry())
+        {
+            _summons.Summon(summon);
+
+            case NPC_BLOODFANG_FENRIS:
+            case NPC_CROWLEY_FENRIS:
+                break;
+
+            default:
+                SetCreatureValues(summon);
+                break;
+        }
+
+        summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+    }
+
     void PassengerBoarded(Unit* passenger, int8 seatId, bool apply) override
     {
         if (apply && seatId == 0)
@@ -4086,13 +3984,39 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
             passenger->SetFacingTo(0.0f);
 
         if (!apply && seatId == 1)
-            me->DespawnOrUnsummon(1s);
+        {
+            _events.ScheduleEvent(EVENT_FINISH, 100ms);
+            me->DespawnOrUnsummon(2s);
+        }
     }
 
     void MovementInform(uint32 type, uint32 id) override
     {
         if (type == POINT_MOTION_TYPE && id == 1230)
-            _events.ScheduleEvent(EVENT_CHANGE_TO_SEAT_2, 100ms);
+            _events.ScheduleEvent(EVENT_CHANGE_TO_SEAT_2, 1s);
+    }
+
+    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
+    {
+        switch (spell->Id)
+        {
+            case SPELL_GENERAL_TRIGGER_84102:
+            {
+                if (Creature* camera = me->FindNearestCreature(NPC_FENRIS_KEEP_CAMERA, 50.0f))
+                {
+                    if (Creature* crowley = me->FindNearestCreature(NPC_CROWLEY_FENRIS, 50.0f))
+                    {
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                            camera->CastSpell(crowley, SPELL_ARMORE_CAMERA_1, true);
+                    }
+                }
+
+                break;
+            }
+
+            default:
+                break;
+        }
     }
 
     void UpdateAI(uint32 diff) override
@@ -4106,6 +4030,8 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
                 case EVENT_MOVE_TO_STARTPOINT:
                 {
                     me->GetMotionMaster()->MovePoint(1230, 980.7f, 689.14f, 76.9f);
+
+                    _events.ScheduleEvent(EVENT_START_ANIMATION, 500ms);
                     break;
                 }
 
@@ -4125,15 +4051,43 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
                     break;
                 }
 
+                case EVENT_START_ANIMATION:
+                {
+                    me->SummonCreature(NPC_CROWLEY_FENRIS, 994.562f, 691.186f, 74.8984f, 0.018045f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+                    me->SummonCreature(NPC_BLOODFANG_FENRIS, 994.53f, 687.74f, 74.8984f, 0.018045f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+                    me->SummonCreature(NPC_PHIN_ODELIC, 1002.52f, 693.027f, 76.1922f, 3.1636f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+                    me->SummonCreature(NPC_BARTOLO_GINSETTI, 1002.76f, 687.195f, 76.1922f, 3.1636f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+                    me->SummonCreature(NPC_LOREMASTER_DIBBS, 1002.8f, 684.256f, 76.1922f, 3.1636f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+                    me->SummonCreature(NPC_MAGISTRATE_HENRY_MALEB, 1000.67f, 689.759f, 76.1922f, 3.1636f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+                    me->SummonCreature(NPC_CARETAKER_SMITHERS, 1002.7f, 695.775f, 76.1922f, 3.1636f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+                    me->SummonCreature(NPC_SOPHIA_ZWOSKI, 1004.53f, 688.619f, 76.1922f, 3.1636f, TEMPSUMMON_MANUAL_DESPAWN, 0, _playerGUID);
+
+                    break;
+                }
+
+                case EVENT_FINISH:
+                {
+                    _summons.DespawnAll();
+                    break;
+                }
+
                 default:
                     break;
             }
         }
     }
 
+    void SetCreatureValues(Creature* npc)
+    {
+        Position pos = npc->GetPosition();
+
+        pos.SetOrientation(3.33f);
+    }
+
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
+    SummonList _summons;
 };
 
 // Lord Darius Crowley - 44989
@@ -4496,7 +4450,7 @@ struct npc_silverpine_henry_fenris : public ScriptedAI
             case SPELL_CONVERSATION_TRIGGER_84076:
             {
                 if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    me->CastSpell(player, SPELL_ARMORE_CAMERA, true);
+                    me->CastSpell(player, SPELL_ARMORE_CAMERA_1, true);
 
                 _events.ScheduleEvent(EVENT_ANIMATION, 500ms);
                 break;
