@@ -153,6 +153,11 @@ UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_henry_fenris' WHERE
 UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_caretaker_fenris' WHERE `entry` = 44997;
 UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_sophia_fenris' WHERE `entry` = 45002;
 
+ -- Lordaeron Quest stuff
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_lady_sylvanas_windrunner_lordaeron' WHERE `entry` = 45051;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_forsaken_warhorse' WHERE `entry` = 45057;
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_dreadguard_lordaeron' WHERE `entry` = 45588;
+
 DELETE FROM `creature_addon` WHERE `guid` IN (321875, 321874, 321872, 321869, 321925, 321930, 321930, 321927, 321933, 321911, 321871, 321915);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321875, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '84186'),

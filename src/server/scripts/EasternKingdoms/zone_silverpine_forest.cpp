@@ -55,6 +55,12 @@ enum TalksFromCreatures
     TALK_13,
     TALK_14,
     TALK_15,
+    TALK_16,
+    TALK_17,
+    TALK_18,
+    TALK_19,
+    TALK_20,
+    TALK_21,
 };
 
 enum QuestTheGilneasLiberationFront
@@ -3427,6 +3433,15 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
         }
     }
 
+    void QuestReward(Player* player, Quest const* quest, uint32 /*opt*/) override
+    {
+        if (quest->GetQuestId() == QUEST_NO_ESCAPE)
+        {
+            player->RemoveAura(SPELL_BOND_OF_THE_VALKYR);
+            player->RemoveAura(SPELL_SUMMON_AGATHA);
+        }
+    }
+
     void Reset() override
     {
         _events.Reset();
@@ -4691,6 +4706,565 @@ private:
     bool _isWorgen;
 };
 
+enum LordaeronQuest
+{
+    NPC_SYLVANAS_LORDAERON = 45051,
+    NPC_FORSAKEN_WARHORSE = 45057,
+    NPC_DREADGUARD = 45588,
+
+    SPELL_HEARTSTRIKE = 84182,
+    SPELL_CAMERA_LORDAREON = 84112,
+    SPELL_RIDE_VEHICLE_HARD_CODED = 46598,
+    SPELL_EJECT_ALL_PASSENGERS = 50630,
+
+    EVENT_START_FOLLOW = 500,
+    EVENT_CHECK_PLAYER_STATUS = 501,
+    EVENT_CHAT_TO_PLAYER = 600,
+    EVENT_CHECK_WORGEN = 700,
+    EVENT_CHECK_FINISH = 701,
+    EVENT_CHECK_DREADGUARD = 702,
+
+    EVENT_WARHORSE_DESPAWN = 546,
+    EVENT_CAST_CAMERA = 547,
+    EVENT_RIDE_WARHORSE = 548,
+    EVENT_START_EMOTE = 549,
+
+    DATA_LORDAERON_RIDE = 54,
+    DATA_START_RIDE = 55,
+    DATA_EMOTE_SALUTE = 66,
+    DATA_EMOTE_PREPARE_BOW = 384,
+    DATA_SYLVANAS_PATHID = 4505101,
+    DATA_WARHORSE_PATHID = 4505701
+};
+
+// Lady Sylvanas Windrunner - 45051
+struct npc_silverpine_lady_sylvanas_windrunner_lordaeron : public ScriptedAI
+{
+    npc_silverpine_lady_sylvanas_windrunner_lordaeron(Creature* creature) : ScriptedAI(creature)
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        _playerGUID = ObjectGuid::Empty;
+        _horseGUID = ObjectGuid::Empty;
+        _events.Reset();
+    }
+
+    void IsSummonedBy(Unit* who) override
+    {
+        if (Player* player = who->ToPlayer())
+            _playerGUID = player->GetGUID();
+
+        if (Creature* playerhorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE, 10.0f))
+            _horseGUID = playerhorse->GetGUID();
+    }
+
+    void SetData(uint32 id, uint32 /*value*/) override
+    {
+        switch (id)
+        {
+            case DATA_LORDAERON_RIDE:
+            {
+                _events.ScheduleEvent(EVENT_START_FOLLOW, 0);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    void MovementInform(uint32 type, uint32 pointId) override
+    {
+        if (type == POINT_MOTION_TYPE && pointId == 1)
+        {
+            if (Creature* playerhorse = ObjectAccessor::GetCreature(*me, _horseGUID))
+            {
+                playerhorse->AI()->SetData(DATA_START_RIDE, DATA_START_RIDE);
+                me->SetFacingTo(4.40509f);
+                me->StopMoving();
+                _events.ScheduleEvent(EVENT_CHECK_FINISH, 1s);
+            }
+        }
+    }
+
+    void SetGUID(ObjectGuid const& guid, int32 id) override
+    {
+        switch (id)
+        {
+            case NPC_FORSAKEN_WARHORSE:
+            {
+                _horseGUID = guid;
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_START_FOLLOW:
+                {
+                    if (Creature* playerhorse = ObjectAccessor::GetCreature(*me, _horseGUID))
+                        me->GetMotionMaster()->MoveFollow(playerhorse, 2.5f, M_PI * 1.5f, false, true, false);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER, 6s + 500ms);
+
+                    _events.ScheduleEvent(EVENT_CHECK_WORGEN, 3s);
+                    _events.ScheduleEvent(EVENT_CHECK_DREADGUARD, 500ms);
+                    break;
+                }
+
+                case EVENT_CHECK_WORGEN:
+                {
+                    if (Creature* worgen = me->FindNearestCreature(NPC_WORGEN_RENEGATE, 30.0f, true))
+                    {
+                        if (me->HasUnitState(UNIT_STATE_CASTING))
+                            return;
+
+                        me->HandleEmoteCommand(DATA_EMOTE_PREPARE_BOW);
+
+                        me->CastSpell(worgen, SPELL_HEARTSTRIKE, false);
+                    }
+                    else
+                        me->HandleEmoteCommand(0);
+
+                    _events.ScheduleEvent(EVENT_CHECK_WORGEN, 3s);
+                    break;
+                }
+
+                case EVENT_CHECK_DREADGUARD:
+                {
+                    std::list<Creature*> dreadguards;
+                    GetCreatureListWithEntryInGrid(dreadguards, me, NPC_DREADGUARD, 10.0f);
+
+                    for (std::list<Creature*>::const_iterator itr = dreadguards.begin(); itr != dreadguards.end(); ++itr)
+                        (*itr)->AI()->SetData(DATA_LORDAERON_RIDE, DATA_LORDAERON_RIDE);
+
+                    _events.ScheduleEvent(EVENT_CHECK_DREADGUARD, 500ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_0);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 1, 3s + 500ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 1:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_1);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 2, 3s + 800ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 2:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_2);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 3, 7s + 200ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 3:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        Talk(TALK_3);
+                        me->AddAura(SPELL_DETECT_INV_ZONE_4, player);
+                    }
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 4, 3s + 800ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 4:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_4);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 5, 6s + 800ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 5:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_5);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 6, 7s + 300ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 6:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_6);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 7, 8s + 300ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 7:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_7);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 8, 9s + 300ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 8:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_8);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 9, 8s + 800ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 9:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_9);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 10, 4s + 800ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 10:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_10);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 11, 4s + 300ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 11:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_11);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 12, 8s + 300ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 12:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_12);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 13, 6s);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 13: // And though
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_13);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 14, 10s);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 14: // With Arthas
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_14);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 15, 10s + 200ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 15: // From
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_15);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 16, 8s + 200ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 16: // Our goal
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_16);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 17, 9s);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 17: // Lich dead
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_17);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 18, 5s);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 18:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_18);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 19, 7s);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 19: // But
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_19);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 20, 10s + 500ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 20: // I will never
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_20);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 21, 4s + 500ms);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 21: // Lordaeron
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_21);
+
+                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 22, 2s);
+                    break;
+                }
+
+                case EVENT_CHAT_TO_PLAYER + 22:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        me->GetMotionMaster()->MovePoint(1, 501.42f, 1565.80f, 128.3090f, false, 3.5f);
+                    break;
+                }
+
+                case EVENT_CHECK_FINISH:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        if (player->GetQuestStatus(QUEST_LORDAERON) == QUEST_STATUS_COMPLETE)
+                        {
+                            player->RemoveAura(SPELL_DETECT_INV_ZONE_4);
+                            me->DespawnOrUnsummon();
+                        }
+                    }
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+
+        UpdateVictim();
+    }
+
+private:
+    EventMap _events;
+    ObjectGuid _playerGUID;
+    ObjectGuid _horseGUID;
+};
+
+// Forsaken Warhorse - 45057
+struct npc_silverpine_forsaken_warhorse : public ScriptedAI
+{
+    npc_silverpine_forsaken_warhorse(Creature* creature) : ScriptedAI(creature) { }
+
+    void Reset() override
+    {
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
+        _playerGUID = ObjectGuid::Empty;
+        _events.Reset();
+    }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (Player* player = summoner->ToPlayer())
+        {
+            if (player->GetQuestStatus(QUEST_LORDAERON) == QUEST_STATUS_INCOMPLETE)
+            {
+                if (Vehicle* vehicle = me->GetVehicleKit())
+                {
+                    _playerGUID = player->GetGUID();
+                    _events.ScheduleEvent(EVENT_RIDE_WARHORSE, 0);
+                }
+            }
+        }
+    }
+
+    void SetData(uint32 id, uint32 /*value*/) override
+    {
+        switch (id)
+        {
+            case DATA_START_RIDE:
+            {
+                _events.ScheduleEvent(EVENT_WARHORSE_DESPAWN, 0);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    void JustDied(Unit* /*killer*/) override
+    {
+        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+        {
+            if (player->GetQuestStatus(QUEST_LORDAERON) == QUEST_STATUS_INCOMPLETE)
+            {
+                player->FailQuest(QUEST_LORDAERON);
+                player->NearTeleportTo(1379.41f, 1039.00f, 53.0639f, 3.7848f);
+            }
+        }
+    }
+
+    void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
+    {
+        if (apply && passenger->GetTypeId() == TYPEID_PLAYER)
+        {
+            if (Creature* sylvanas = me->FindNearestCreature(NPC_SYLVANAS_LORDAERON, 10.0f, true))
+            {
+                sylvanas->GetAI()->SetGUID(me->GetGUID(), me->GetEntry());
+                sylvanas->AI()->SetData(DATA_LORDAERON_RIDE, DATA_LORDAERON_RIDE);
+            }
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_RIDE_WARHORSE:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        player->ExitVehicle();
+                        me->CastSpell(player, SPELL_RIDE_VEHICLE);
+                        player->EnterVehicle(me);
+
+                        me->GetMotionMaster()->MovePath(DATA_WARHORSE_PATHID, false);
+                    }
+
+                    break;
+                }
+
+                case EVENT_WARHORSE_DESPAWN:
+                {
+                    me->RemoveAllAuras();
+                    me->GetVehicleKit()->RemoveAllPassengers();
+
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        player->KilledMonsterCredit(NPC_SYLVANAS_LORDAERON);
+
+                    me->DespawnOrUnsummon(1s);
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
+    }
+
+private:
+    EventMap _events;
+    ObjectGuid _playerGUID;
+};
+
+// Dreadguard - 45588
+struct npc_silverpine_dreadguard_lordaeron : public ScriptedAI
+{
+    npc_silverpine_dreadguard_lordaeron(Creature* creature) : ScriptedAI(creature), _done(false) { }
+
+    void Reset()
+    {
+        _events.Reset();
+    }
+
+    void SetData(uint32 id, uint32 /*value*/) override
+    {
+        switch (id)
+        {
+            case DATA_LORDAERON_RIDE:
+            {
+                _events.ScheduleEvent(EVENT_START_EMOTE, 100ms);
+                break;
+            }
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_START_EMOTE:
+                {
+                    if (_done)
+                        return;
+
+                    me->HandleEmoteCommand(DATA_EMOTE_SALUTE);
+
+                    _events.ScheduleEvent(EVENT_START_EMOTE + 1, 6s);
+
+                    _done = true;
+                    break;
+                }
+
+                case EVENT_START_EMOTE + 1:
+                {
+                    if (_done)
+                        _done = false;
+                    break;
+                }
+            }
+        }
+    }
+
+private:
+    EventMap _events;
+    bool _done;
+};
+
 void AddSC_silverpine_forest()
 {
     new playerScript_silverpine_zone();
@@ -4739,4 +5313,8 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_henry_fenris);
     RegisterCreatureAI(npc_silverpine_caretaker_fenris);
     RegisterCreatureAI(npc_silverpine_sophia_fenris);
+
+    RegisterCreatureAI(npc_silverpine_lady_sylvanas_windrunner_lordaeron);
+    RegisterCreatureAI(npc_silverpine_forsaken_warhorse);
+    RegisterCreatureAI(npc_silverpine_dreadguard_lordaeron);
 }
