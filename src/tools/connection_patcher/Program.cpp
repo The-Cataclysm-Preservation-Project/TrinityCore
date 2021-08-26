@@ -352,7 +352,7 @@ int main(int argc, char** argv)
                 std::wstring homedir_wstring(length, L'#');
                 mbstowcs(&homedir_wstring[0], homedir, length);
 
-                do_module<Patches::Windows::x86, Patterns::Windows::x86>
+                do_module<Patches::Windows::x64, Patterns::Windows::x64>
                     ("0a3afee2cade3a0e8b458c4b4660104cac7fc50e2ca9bef0d708942e77f15c1d.auth",
                      homedir_wstring + 
                      std::wstring(L"/.wine/drive_c/ProgramData/Blizzard Entertainment/Battle.net/Cache/"));
