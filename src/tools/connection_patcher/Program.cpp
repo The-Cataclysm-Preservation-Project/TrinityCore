@@ -257,8 +257,6 @@ int main(int argc, char** argv)
         std::string renamed_binary_path(binary_path);
 #ifdef _WIN32
         wchar_t* commonAppData(nullptr);
-#endif
-#ifdef _WIN32
         SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, &commonAppData);
 #endif
 
