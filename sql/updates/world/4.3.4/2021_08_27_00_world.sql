@@ -1,0 +1,1 @@
+UPDATE `creature` SET `ScriptName` = "npc_frostmane_builder" WHERE id=41251;
