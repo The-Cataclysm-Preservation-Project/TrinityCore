@@ -28,6 +28,7 @@ EndScriptData */
 #include "BattlegroundMgr.h"
 #include "CellImpl.h"
 #include "Chat.h"
+#include "GameTime.h"
 #include "GossipDef.h"
 #include "GridNotifiersImpl.h"
 #include "InstanceScript.h"
@@ -43,11 +44,25 @@ EndScriptData */
 #include "RBAC.h"
 #include "SpellMgr.h"
 #include "Transport.h"
+#include "Util.h"
+#include "Warden.h"
+#include "WardenCheck.h"
+#include "WardenDefines.h"
+#include "WardenInteropCheck.h"
+#include "WardenMemoryCheck.h"
+#include "WardenModuleCheck.h"
+#include "WardenProcCheck.h"
+#include "WardenTimingCheck.h"
 #include "WorldSession.h"
+
+#include <boost/algorithm/string.hpp>
+
 #include <fstream>
 #include <limits>
 #include <map>
 #include <set>
+
+#include <boost/algorithm/hex.hpp>
 
 class debug_commandscript : public CommandScript
 {
@@ -112,12 +127,174 @@ public:
             { "raidreset",     rbac::RBAC_PERM_COMMAND_INSTANCE_UNBIND,     false, &HandleDebugRaidResetCommand,        "" },
             { "neargraveyard", rbac::RBAC_PERM_COMMAND_NEARGRAVEYARD,       false, &HandleDebugNearGraveyard,           "" },
         };
+        
+        static std::vector<ChatCommand> wardenCommandTable =
+        {
+            { "interop",       rbac::RBAC_PERM_COMMAND_WARDEN,              false, &HandleWardenInterop,                "" },
+            { "memory",        rbac::RBAC_PERM_COMMAND_WARDEN,              false, &HandleWardenMemory,                 "" },
+            { "proc",          rbac::RBAC_PERM_COMMAND_WARDEN,              false, &HandleWardenProc,                   "" },
+            { "timing",        rbac::RBAC_PERM_COMMAND_WARDEN,              false, &HandleWardenTiming,                 "" },
+            { "module",        rbac::RBAC_PERM_COMMAND_WARDEN,              false, &HandleWardenModule,                 "" }
+        };
         static std::vector<ChatCommand> commandTable =
         {
             { "debug",         rbac::RBAC_PERM_COMMAND_DEBUG,               true,  nullptr,                             "", debugCommandTable },
             { "wpgps",         rbac::RBAC_PERM_COMMAND_WPGPS,               false, &HandleWPGPSCommand,                 "" },
+            { "warden",        rbac::RBAC_PERM_COMMAND_WARDEN,              false, nullptr,                             "", wardenCommandTable }
         };
         return commandTable;
+    }
+
+    template <typename T, typename... Args>
+    static auto HandleWardenCheck(ChatHandler* handler, Args&&... args)
+        -> std::enable_if_t<std::is_base_of_v<WardenCheck, T>, bool>
+    {
+        WorldSession* session = handler->GetSession();
+        std::shared_ptr<T> checkInstance = std::make_shared<T>(session, std::forward<Args>(args)...);
+        
+        return session->EnqueueWardenCheck(checkInstance);
+    }
+
+    static bool HandleWardenModule(ChatHandler* handler, std::string const& moduleName)
+    {
+        struct ScriptedModuleCheck : WardenModuleCheck
+        {
+            ScriptedModuleCheck(WorldSession* session, std::string const& moduleName) : WardenModuleCheck(moduleName), _session(session) { }
+
+        protected:
+            WardenCheckResult HandleResponse(bool checkFailed) const override
+            {
+                ChatHandler handler(_session);
+
+                handler.PSendSysMessage("Module %s %s found in game memory.", GetModuleName(), checkFailed ? "was not" : "was");
+                
+                return WardenCheckResult::Success;
+            }
+
+        private:
+            WorldSession* _session;
+        };
+
+        std::string uppercaseModuleName = boost::to_upper_copy(moduleName);
+        return HandleWardenCheck<ScriptedModuleCheck>(handler, uppercaseModuleName);
+    }
+
+    static bool HandleWardenTiming(ChatHandler* handler)
+    {
+        struct ScriptedTimingCheck : WardenTimingCheck
+        {
+            ScriptedTimingCheck(WorldSession* session) : WardenTimingCheck(), _session(session) { }
+
+        protected:
+            WardenCheckResult HandleExtendedResponse(bool /* checkFailed */, uint32 clientTicks) const override
+            {
+                ChatHandler handler(_session);
+
+                uint32 requestTime = _session->GetWarden()->GetCheatCheckRequestTime();
+
+                uint32 ticksNow = GameTime::GetGameTimeMS();
+                uint32 ourTicks = clientTicks + (ticksNow - _session->GetWarden()->GetCheatCheckRequestTime());
+        
+                handler.PSendSysMessage("Server ticks: %u", ticksNow);
+                handler.PSendSysMessage("Server ticks when emitted: %u", requestTime);
+                handler.PSendSysMessage("Client ticks: %u", clientTicks);
+                handler.PSendSysMessage("Tick delta: %u", ourTicks - clientTicks);
+
+                return WardenCheckResult::Success;
+            }
+
+        private:
+            WorldSession* _session;
+        };
+
+        return HandleWardenCheck<ScriptedTimingCheck>(handler);
+    }
+
+    static bool HandleWardenProc(ChatHandler* handler, std::string const& moduleName, std::string const& exportName, uint32 offset, std::string const& expectedDataString)
+    {
+        struct ScriptedProcCheck : WardenProcCheck
+        {
+            ScriptedProcCheck(WorldSession* session, std::string const& moduleName, std::string const& exportName, uint32 offset, std::vector<uint8> const& expectedData)
+                : WardenProcCheck(moduleName, exportName, offset, expectedData.size(), expectedData), _session(session)
+            { }
+
+        protected:
+            WardenCheckResult HandleResponse(bool checkFailed) const override
+            {
+                ChatHandler handler(_session);
+
+                handler.PSendSysMessage("Scan of %s!%s+%u %s.",
+                    GetModuleName(),
+                    GetFunctionName(),
+                    GetOffset(),
+                    checkFailed ? "failed" : "returned the expected data");
+                
+                return WardenCheckResult::Success;
+            }
+
+        private:
+            WorldSession* _session;
+        };
+
+        std::vector<uint8> expectedData;
+        boost::algorithm::unhex(expectedDataString.begin(), expectedDataString.end(), std::back_inserter(expectedData));
+
+        return HandleWardenCheck<ScriptedProcCheck>(handler, moduleName, exportName, offset, expectedData);
+    }
+
+    static bool HandleWardenMemory(ChatHandler* handler, std::string const& moduleName, uint64 offset, uint64 amount)
+    {
+        struct ScriptedMemoryCheck : WardenMemoryCheck
+        {
+            ScriptedMemoryCheck(WorldSession* session, std::string const& moduleName, uint64 offset, uint64 length)
+                : WardenMemoryCheck(moduleName, offset, length), _session(session)
+            {
+            }
+
+            WardenCheckResult HandleExtendedResponse(bool /* checkFailed */, std::vector<uint8> const& clientResponse) const override
+            {
+                ChatHandler handler(_session);
+
+                handler.PSendSysMessage("Read %u bytes at %s+0x%08x: %s",
+                    clientResponse.size(),
+                    GetModuleName(),
+                    GetScanOffset(),
+                    ByteArrayToHexStr(clientResponse.data(), clientResponse.size()));
+
+                // Pretend success.
+                return WardenCheckResult::Success;
+            }
+
+        private:
+            WorldSession* _session;
+        };
+
+        return HandleWardenCheck<ScriptedMemoryCheck>(handler, moduleName, offset, amount);
+    }
+
+    static bool HandleWardenInterop(ChatHandler* handler, char const* /* args */)
+    {
+        struct ScriptedInteropCheck : WardenInteropCheck
+        {
+            ScriptedInteropCheck(WorldSession* session) : WardenInteropCheck(), _session(session) { }
+
+        protected:
+            WardenCheckResult HandleExtendedResponse(uint64 moduleBase, uint64 executableBase, uint64 interfaceBase) const override
+            {
+                ChatHandler handler(_session);
+
+                handler.PSendSysMessage("Game executable base: 0x%016x", executableBase);
+                handler.PSendSysMessage("Warden module base : 0x%016x", moduleBase);
+                handler.PSendSysMessage("Module interface base : 0x%016x", interfaceBase);
+
+                return WardenCheckResult::Success;
+            }
+            
+        private:
+            WorldSession* _session;
+        };
+
+        return HandleWardenCheck<ScriptedInteropCheck>(handler);
     }
 
     static bool HandleDebugPlayCinematicCommand(ChatHandler* handler, char const* args)
