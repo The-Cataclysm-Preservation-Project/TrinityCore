@@ -47,7 +47,7 @@ struct ArgInfo<T, std::enable_if_t<advstd::is_integral_v<T> && advstd::is_signed
     {
         char const* next = args;
         std::string token(args, tokenize(next));
-        try { val = std::stoll(token); }
+        try { val = std::stoll(token, nullptr, 0); }
         catch (...) { return nullptr; }
         return next;
     }
@@ -61,7 +61,7 @@ struct ArgInfo<T, std::enable_if_t<advstd::is_integral_v<T> && advstd::is_unsign
     {
         char const* next = args;
         std::string token(args, tokenize(next));
-        try { val = std::stoull(token); }
+        try { val = std::stoull(token, nullptr, 0); }
         catch (...) { return nullptr; }
         return next;
     }
