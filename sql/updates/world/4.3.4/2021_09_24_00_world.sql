@@ -42,39 +42,6 @@ DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (13, 1, 84104, 0, 0, 31, 0, 3, 44989, 0, 0, 0, 0, '', 'Fenris Camera - Target Crowley');
 
- -- Fenris Isle phases
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=170 AND `SourceEntry`=235 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
-INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(26, 170, 235, 0, 0, 47, 0, 27099, 8, 0, 0, 0, 0, '', 'Fenris Keep - Add phase 170 - 27099 taken');
-
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=170 AND `SourceEntry`=172 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
-INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(26, 170, 172, 0, 0, 47, 0, 27099, 8, 0, 0, 0, 0, '', 'Fenris Isle - Add phase 170 - 27099 taken');
-
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=172 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
-INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(26, 169, 172, 0, 0, 47, 0, 27099, 8, 0, 1, 0, 0, '', 'Fenris Isle - Remove phase 169 - 27099 taken');
-
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=235 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27099 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
-INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(26, 169, 235, 0, 0, 47, 0, 27099, 8, 0, 1, 0, 0, '', 'Fenris Keep - Remove phase 169 - 27099 taken');
-
-DELETE FROM `phase_area` WHERE `AreaId`=172 AND `PhaseId`=169;
-INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
-(172, 169, 'Silverpine Forest - Fenris Isle (Base)');
-
-DELETE FROM `phase_area` WHERE `AreaId`=172 AND `PhaseId`=170;
-INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
-(172, 170, 'Silverpine Forest - Fenris Isle - No Escape quest');
-
-DELETE FROM `phase_area` WHERE `AreaId`=235 AND `PhaseId`=169;
-INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
-(235, 169, 'Silverpine Forest - Fenris Keep (Base)');
-
-DELETE FROM `phase_area` WHERE `AreaId`=235 AND `PhaseId`=170;
-INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
-(235, 170, 'Silverpine Forest - Fenris Keep - No Escape quest');
-
  -- Forsaken Apothecary
 SET @ENTRY := 46483;
 DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
@@ -353,7 +320,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
  -- Forsaken Warhorse (ported from MoP)
 DELETE FROM `creature_template` WHERE `entry`= 73595;
 INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, `KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `femaleName`, `subname`, `IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `exp_unk`, `faction`, `npcflag`, `speed_walk`, `speed_run`, `scale`, `rank`, `dmgschool`, `BaseAttackTime`, `RangeAttackTime`, `BaseVariance`, `RangeVariance`, `unit_class`, `unit_flags`, `unit_flags2`, `dynamicflags`, `family`, `trainer_type`, `trainer_class`, `trainer_race`, `type`, `type_flags`, `type_flags2`, `lootid`, `pickpocketloot`, `skinloot`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `spell1`, `spell2`, `spell3`, `spell4`, `spell5`, `spell6`, `spell7`, `spell8`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, `AIName`, `MovementType`, `HoverHeight`, `HealthModifier`, `HealthModifierExtra`, `ManaModifier`, `ManaModifierExtra`, `ArmorModifier`, `DamageModifier`, `ExperienceModifier`, `RacialLeader`, `movementId`, `RegenHealth`, `mechanic_immune_mask`, `spell_school_immune_mask`, `flags_extra`, `ScriptName`, `VerifiedBuild`) VALUES 
-(73595, 0, 0, 0, 0, 0, 29257, 0, 0, 0, 'Forsaken Warhorse', '', 'Sylvanas\' Pet', NULL, 0, 85, 85, 0, 0, 35, 0, 1, 1.14286, 1, 0, 0, 2000, 2000, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1077, 0, 0, '', 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 17614);
+(73595, 0, 0, 0, 0, 0, 29257, 0, 0, 0, 'Forsaken Warhorse', '', 'Lady Sylvanas Windrunner\'s Pet', NULL, 0, 85, 85, 0, 0, 35, 0, 1, 1.14286, 1, 0, 0, 2000, 2000, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1077, 0, 0, '', 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 17614);
 
 DELETE FROM `creature_template_addon` WHERE `entry`= 73595;
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -422,6 +389,8 @@ DELETE FROM `creature_addon` WHERE `guid`= @CGUID+81;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (@CGUID+81, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, '84183');
 
+ -- Follow from here, anything else doesn't belong to the questline pre-For Lordaeron quest
+
  -- Veteran Forsaken Trooper
 UPDATE `creature_template`SET `npcflag`= 16777216, `ScriptName`= 'npc_silverpine_veteran_forsaken_trooper' WHERE `entry` = 45197;
 
@@ -451,12 +420,6 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spe
  
  -- Forsaken Catapult
 UPDATE `creature_template_addon` SET `auras` = '29266' WHERE `entry` = 4518;
-
-
-
-
-
-
 
  -- Arthura 
 UPDATE `creature_template` SET `ScriptName`= 'npc_arthura_sepulcher' WHERE `entry` = 45318;
@@ -734,8 +697,16 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (322043, 449117, 0, 0, 0, 257, 0, 0, 0, 0, 3, '18950');
 
  -- Worgen Renegade
-UPDATE `creature` SET `MovementType`=1 WHERE `id` = 44793;
-UPDATE `creature` SET `spawndist`=5 WHERE `id` = 44793;
+UPDATE `creature` SET `MovementType`= 1 WHERE `id` = 44793;
+UPDATE `creature` SET `spawndist`= 5 WHERE `id` = 44793;
+
+UPDATE `creature` SET `MovementType`= 0 WHERE `guid` IN (321944, 321946, 321947);
+
+DELETE FROM `creature_addon` WHERE `guid` IN (321944, 321946, 321947);
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(321944, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, ''),
+(321946, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, ''),
+(321947, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, '');
 
  -- Worg
 UPDATE `creature` SET `MovementType`=1 WHERE `id` = 1765;
@@ -746,12 +717,130 @@ UPDATE `creature` SET `MovementType`=1 WHERE `id` = 1778;
 UPDATE `creature` SET `spawndist`=10 WHERE `id` = 1778;
 
  -- Giant Rabid Bear
-UPDATE `creature` SET `MovementType`=1 WHERE `id` = 1797;
-UPDATE `creature` SET `spawndist`=10 WHERE `id` = 1797;
+UPDATE `creature` SET `MovementType` = 1 WHERE `id` = 1797;
+UPDATE `creature` SET `spawndist` = 10 WHERE `id` = 1797;
+
+UPDATE `creature` SET `MovementType` = 0, `dynamicflags` = 32, `unit_flags` = 768, `spawndist` = 0 WHERE `guid` = 321853;
+
+DELETE FROM `creature_addon` WHERE `guid` = 321853;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(321853, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, '');
  
  -- Rabid Dog
-UPDATE `creature` SET `MovementType`=1 WHERE `id` = 1766;
-UPDATE `creature` SET `spawndist`=10 WHERE `id` = 1766;
+UPDATE `creature` SET `MovementType`= 1 WHERE `id` = 1766;
+UPDATE `creature` SET `spawndist`= 10 WHERE `id` = 1766;
+
+UPDATE `creature` SET `MovementType` = 0, `dynamicflags` = 32, `unit_flags` = 768, `spawndist` = 0 WHERE `guid` = 321854;
+UPDATE `creature` SET `MovementType` = 0, `dynamicflags` = 32, `unit_flags` = 768, `spawndist` = 0 WHERE `guid` = 321855;
+
+DELETE FROM `creature_addon` WHERE `guid` IN (321854, 321855);
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(321854, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, ''),
+(321855, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, '');
+
+ -- Bolgaff
+UPDATE `creature_template_addon` SET `mount` = 27820 WHERE `entry` = 47003;
+
+ -- Nightlash
+UPDATE `creature_template_addon` SET `waypointPathId` = 469810 WHERE `entry` = 46981;
+
+DELETE FROM `waypoint_data` WHERE `id` = 469810;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(469810, 0, 911.06824, 1270.41330, 45.41819, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 1, 909.81824, 1265.91330, 45.66819, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 2, 908.97410, 1262.90890, 45.80847, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 3, 912.97410, 1260.15890, 46.05847, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 4, 916.95800, 1256.92190, 46.34224, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 5, 917.20800, 1256.67190, 46.34224, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 6, 920.95800, 1253.92190, 46.59224, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 7, 924.88464, 1250.56960, 46.69588, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 8, 926.63464, 1249.06960, 46.94588, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 9, 923.13464, 1241.06960, 46.94588, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 10, 920.54330, 1234.87040, 47.10080, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 11, 912.37490, 1227.75950, 47.10230, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 12, 904.99620, 1233.75710, 46.93115, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 13, 904.74620, 1244.50710, 46.68115, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 14, 904.33550, 1250.21120, 46.67559, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 15, 899.58550, 1250.46120, 46.67559, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 16, 895.94020, 1250.64390, 47.03293, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 17, 895.33740, 1247.35500, 47.10951, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 18, 895.48535, 1233.29580, 47.42328, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 19, 891.23535, 1233.04580, 47.42328, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 20, 890.73535, 1233.04580, 47.42328, 0, 2.509363, 0, 1, 0, 0, 100, 0),
+(469810, 21, 889.98535, 1232.79580, 47.92328, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 22, 888.23535, 1232.54580, 47.92328, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 23, 887.59240, 1232.15120, 48.00124, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 24, 887.14954, 1232.07680, 48.02314, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 25, 884.01700, 1231.55000, 47.95763, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 26, 883.78485, 1231.42570, 47.96186, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 27, 882.97504, 1230.99180, 48.05737, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 28, 879.82840, 1229.09500, 47.98253, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 29, 879.82840, 1227.59500, 47.98253, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 30, 879.82840, 1226.09500, 47.98253, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 31, 879.82840, 1225.34500, 47.98253, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 32, 879.82840, 1225.09500, 48.23253, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 33, 879.75340, 1221.79880, 48.14466, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 34, 880.00340, 1221.54880, 48.14466, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 35, 883.27466, 1218.12770, 47.92551, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 36, 883.77466, 1218.37770, 48.17551, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 37, 885.86816, 1218.49850, 48.27330, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 38, 886.86816, 1218.49850, 48.52330, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 39, 886.86816, 1219.74850, 48.52330, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 40, 886.86816, 1222.74850, 50.52330, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 41, 886.77216, 1225.20950, 51.99682, 0, 2.509363, 0, 1, 0, 0, 100, 0),
+(469810, 42, 886.77216, 1226.45950, 52.74682, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 43, 887.02216, 1227.70950, 52.74682, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 44, 885.72580, 1231.73080, 52.91179, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 45, 884.47580, 1231.73080, 52.91179, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 46, 881.97580, 1231.73080, 52.91179, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 47, 877.02210, 1232.07670, 52.90244, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 48, 875.77210, 1232.07670, 52.90244, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 49, 870.77210, 1231.82670, 52.90244, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 50, 869.77210, 1231.82670, 52.90244, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 51, 868.52210, 1231.82670, 52.90244, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 52, 867.55200, 1231.64000, 52.65244, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 53, 868.646, 1231.9, 52.91179, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 54, 869.646, 1231.9, 52.91179, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 55, 870.896, 1231.9, 52.91179, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 56, 876.11426, 1232.263, 52.721924, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 57, 877.36426, 1232.013, 52.721924, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 58, 877.61426, 1232.013, 52.721924, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 59, 881.86426, 1231.763, 52.721924, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 60, 884.75226, 1231.5806, 52.902435, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 61, 885.75226, 1231.5806, 52.902435, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 62, 886.8419, 1227.5205, 52.82364, 0, 2.509363, 0, 1, 0, 0, 100, 0),
+(469810, 63, 886.8419, 1226.2705, 52.82364, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 64, 886.8419, 1225.0205, 52.07364, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 65, 886.8419, 1222.7705, 50.57364, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 66, 886.8928, 1219.5212, 48.489296, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 67, 886.8928, 1218.5212, 48.239296, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 68, 883.69885, 1218.236, 48.15583, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 69, 882.94885, 1218.236, 47.90583, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 70, 879.9572, 1221.766, 48.130825, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 71, 879.7072, 1222.016, 48.130825, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 72, 879.7072, 1224.766, 48.130825, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 73, 879.7072, 1225.016, 48.130825, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 74, 879.7072, 1225.766, 48.130825, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 75, 879.78674, 1227.9004, 47.906593, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 76, 879.78674, 1229.1504, 48.156593, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 77, 883.22485, 1231.2605, 48.2015, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 78, 884.22485, 1231.7605, 48.2015, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 79, 887.22485, 1232.0105, 48.2015, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 80, 887.47485, 1232.0105, 48.2015, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 81, 887.72485, 1232.0105, 48.2015, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 82, 888.47485, 1232.0105, 47.9515, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 83, 889.97485, 1232.2605, 47.9515, 0, 2.509363, 0, 1, 0, 0, 100, 0),
+(469810, 84, 891.22485, 1232.0105, 47.4515, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 85, 893.95905, 1231.5946, 47.16608, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 86, 895.70905, 1233.3446, 47.16608, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 87, 895.48865, 1247.5532, 47.087776, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 88, 896.07294, 1250.6682, 46.93219, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 89, 900.82294, 1250.4182, 46.68219, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 90, 904.46594, 1250.168, 46.674942, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 91, 904.46594, 1247.168, 46.674942, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 92, 904.74756, 1236.1887, 47.089577, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 93, 904.99756, 1233.4387, 47.089577, 0, 2.509363, 0, 1, 1, 0, 100, 0),
+(469810, 94, 911.934, 1232.4768, 46.85075, 0, 2.509363, 0, 1, 1, 0, 100, 0);
 
  -- Vile Fin Oracle
 UPDATE `creature` SET `MovementType`=1 WHERE `id` = 1908;
