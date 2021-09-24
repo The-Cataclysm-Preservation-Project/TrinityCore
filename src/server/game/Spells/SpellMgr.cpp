@@ -4903,6 +4903,18 @@ void SpellMgr::LoadSpellInfoCorrections()
 
     // END OF SHADOWFANG KEEP SPELLS
 
+    //
+    // SILVERPINE FOREST SPELLS
+    //
+    // Ride Warhorse
+    ApplySpellFix({ 84164 }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0].TargetA = SpellImplicitTargetInfo(TARGET_DEST_DB);
+        spellInfo->Effects[EFFECT_1].Effect &= ~SPELL_EFFECT_APPLY_AURA;
+    });
+
+    // END OF SILVERPINE FOREST SPELLS
+
     // Threatening Gaze
     ApplySpellFix({ 24314 }, [](SpellInfo* spellInfo)
     {
