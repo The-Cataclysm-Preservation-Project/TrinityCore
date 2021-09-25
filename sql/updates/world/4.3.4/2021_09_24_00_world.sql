@@ -650,9 +650,9 @@ INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`,
 (322043, 322043, 0, 0, 515, -1, -1),
 (322043, 322042, 3.5, 270, 515, -1, -1);
 
- -------------------------------
- -- The Warchief Cometh Quest --
- -------------------------------
+ --
+ -- The Warchief Cometh Quest
+ --
  
  -- Garrosh Hellscream (44629)
 DELETE FROM `creature_text` WHERE `CreatureID` = 44629;
@@ -694,9 +694,9 @@ DELETE FROM `spell_script_names` WHERE `spell_id` = 83149 AND `ScriptName` = 'sp
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83149, 'spell_silverpine_forsaken_trooper_masterscript_high_command');
 
- ---------------------------
- -- Forsaken High Command --
- ---------------------------
+ --
+ -- Forsaken High Command
+ --
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=264 AND `SourceEntry`=5369 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=26965 AND `ConditionValue2`=64 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
@@ -1134,6 +1134,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 
  -- Fallen Human
 UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44593;
+UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44592;
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+39 AND @CGUID+68;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1151,9 +1152,6 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 (@CGUID+50, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.57, 1036.9, 50.9154, 0.20944, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+51, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+52, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1373.35, 1031.58, 50.5358, 0.959931, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-
-UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44592;
-
 (@CGUID+53, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.71, 1040.19, 51.0212, 5.58505, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
 (@CGUID+54, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1367.33, 1035.38, 51.304, 0.890118, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
 (@CGUID+55, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.98, 1041.06, 51.381, 0.226893, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
@@ -1234,9 +1232,9 @@ INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Fligh
 (44609, 1, 0, 1, 0, 0, NULL),
 (44908, 1, 0, 1, 0, 0, NULL);
 
- -----------------------------
- -- Waiting to Exsanguinate --
- -----------------------------
+ --
+ -- Waiting to Exsanguinate
+ --
  
  -- Deathstalker
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_deathstalker' WHERE `entry` = 44790;
@@ -1389,9 +1387,9 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448844, 1, 1299.0449, 1209.605, 58.760803, 0, 7.878883, 0, 1, 0, 0, 0, 0),
 (448844, 2, 1297.27, 1212.28, 58.5105, 0, 7.878883, 0, 0, 0, 0, 0, 0);
 
- -------------------------
- -- Forsaken Rear Guard --
- -------------------------
+ --
+ -- Forsaken Rear Guard
+ --
  
   -- Detect: Quest Invis Zone 5
 DELETE FROM `spell_area` WHERE `spell`=84241 AND `area`=5386 AND `quest_start`=27065 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
@@ -1621,9 +1619,9 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (443671, 8, 818.707, 1677.33, 25.49682, 0, 3.9702425, 0, 1, 1, 0, 100, 0),
 (443671, 9, 790.498, 1643.38, 28.69943, 0, 3.9702425, 0, 1, 1, 0, 100, 0);
 
- ----------------------------
- -- North Tide's Beachhead --
- ----------------------------
+ --
+ -- North Tide's Beachhead
+ --
  
   -- Orc Sea Pup
 UPDATE creature_template SET `unit_flags` = 33288, `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
@@ -1718,9 +1716,9 @@ DELETE FROM `conditions` WHERE `SourceEntry`= 83902 AND `SourceTypeOrReferenceId
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
 (13, 1, 83902, 0, 0, 31, 0, 3, 44367, 0, 0, 0, '', 'Release Diseased Mutant Bush Chicken - Target Forest Ettin');
 
- -------------------------
- -- The Skittering Dark --
- -------------------------
+ --
+ -- The Skittering Dark
+ --
  
  -- Skitterweb Matriarch
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_skitterweb_matriarch', `AIName` = '', `flags_extra` = 512 WHERE `entry` = 44906;
@@ -1740,17 +1738,17 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 (@CGUID+85, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1280.06, 1818.83, 20.8724, 3.49063, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+86, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1372.55, 1954.99, 13.8267, 1.93161, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+87, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1379.09, 1977.50, 14.1315, 4.51165, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+88, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1398.48, 1972.15, 18.3701, 2.79556, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0);
-(@CGUID+89, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1422.53, 1930.36, 9.9526, 1.84131, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+88, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1398.48, 1972.15, 18.3701, 2.79556, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
+(@CGUID+89, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1422.53, 1930.36, 9.9526, 1.84131, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+90, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1417.66, 1941.61, 9.8029, 0.46687, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0);
 
  -- Skitterweb Lurker
 UPDATE `creature` SET `MovementType`= 1 WHERE `id` = 1781;
 UPDATE `creature` SET `spawndist`= 10 WHERE `id` = 1781;
 
- -----------------
- -- Fenris Isle --
- -----------------
+ --
+ -- Fenris Isle
+ --
  
   -- Vile Fin Oracle
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1908;
@@ -1866,9 +1864,9 @@ DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (13, 1, 84104, 0, 0, 31, 0, 3, 44989, 0, 0, 0, 0, '', 'Fenris Camera - Target Crowley');
 
- ---------------------
- -- Lordaeron Quest --
- ---------------------
+ --
+ -- Lordaeron Quest
+ --
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=267 AND `SourceEntry`=5369 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
@@ -1957,9 +1955,9 @@ UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_sylvanas_lordaeron'
  -- Dreadguard (45588)
 UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_dreadguard_lordaeron' WHERE `entry` = 45588;
 
- -------------------
- -- The Sepulcher --
- -------------------
+ --
+ -- The Sepulcher
+ --
  
  -- Forsaken Warhorse (ported from MoP)
 DELETE FROM `creature_template` WHERE `entry`= 73595;
@@ -2569,9 +2567,9 @@ INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`,
 (44764, 44766, 4, 1, 'On the top - Coffin', 8, 30000),
 (44764, 44766, 5, 1, 'On the middle - Coffin', 8, 30000);
 
- ----------------------
- -- UNCLASSIFIED YET --
- ----------------------
+ --
+ -- UNCLASSIFIED YET
+ --
 
 DELETE FROM `creature_questender` WHERE `id`=44615 AND `quest` IN (26964, 26965, 26989);
 INSERT INTO `creature_questender` (`id`, `quest`) VALUES
@@ -2644,9 +2642,9 @@ DELETE FROM `vehicle_template_accessory` WHERE `entry` = 45282;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
 (45282, 45374, 0, 0, 'Forsaken Catapult', 6, 30000);
 
- --------------------------
- -- Post-Lordaeron quest --
- --------------------------
+ --
+ -- Post-Lordaeron quest
+ --
  
  -- Veteran Forsaken Trooper
 UPDATE `creature_template`SET `npcflag`= 16777216, `ScriptName`= 'npc_silverpine_veteran_forsaken_trooper' WHERE `entry` = 45197;
