@@ -1265,7 +1265,7 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44882, 1, 0, 'THERE! Hide in the armoire! I\'ll hide in the shadow next to you.', 12, 0, 100, 25, 0, 0, 0, 44955, 0, NULL),
 (44882, 2, 0, 'I live... and die... for the Banshee Queen.', 12, 0, 100, 0, 0, 0, 0, 44971, 0, NULL);
 
-DELETE FROM `waypoint_data` WHERE `id`= 448820;
+DELETE FROM `waypoint_data` WHERE `id` = 448820;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (448820, 1, 1300.27, 1190.11, 52.600067, 2.45043, 3, 0, 1, 0, 0, 0, 0),
 (448820, 2, 1288.52, 1196.86, 52.850067, 2.49362, 3, 0, 1, 0, 0, 0, 0),
@@ -1283,32 +1283,17 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448820, 14, 1311.27, 1205.86, 58.600067, 5.53704, 3, 0, 1, 0, 0, 0, 0),
 (448820, 15, 1312.67, 1208.86, 58.5123, 6.2596, 3, 0, 0, 0, 0, 0, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`= 448821;
+DELETE FROM `waypoint_data` WHERE `id` = 448821;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (448821, 1, 1313.435, 1210.425, 58.7561, 0, 2.45043, 0, 1, 0, 0, 0, 0),
 (448821, 2, 1313.7, 1211.99, 58.4999, 0, 2.45043, 0, 0, 0, 0, 0, 0);
 
+DELETE FROM `summon_properties_parameters` WHERE `RecID` = 3024;
+INSERT INTO `summon_properties_parameters` (`RecID`, `ParamType`) VALUES 
+(3024, 1);
+
  -- Armoire (44893)
 UPDATE creature_template SET `unit_flags` = 33554440, `VehicleId` = 1055, `ScriptName` = 'npc_silverpine_armoire' WHERE `entry` = 44893;
-
- -- Armoire (44894)
-UPDATE creature_template SET `npcflag` = 16777216, `ScriptName` = 'npc_silverpine_armoire_click' WHERE `entry` = 44894;
-
-DELETE FROM `spell_script_names` WHERE `spell_id` = 83788 AND `ScriptName` = 'spell_silverpine_hide_in_armoire';
-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(83788, 'spell_silverpine_hide_in_armoire');
-
-DELETE FROM `spell_script_names` WHERE `spell_id` = 80743 AND `ScriptName` = 'spell_silverpine_eject_passenger_1';
-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(80743, 'spell_silverpine_eject_passenger_1');
-
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=18 AND `SourceGroup`=44894 AND `SourceEntry`=83756 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27045 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
-INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
-(18, 44894, 83756, 0, 0, 47, 0, 27045, 8, 0, 0, 0, 0, '', 'Allow spellclick if quest 27045 is active');
-
-DELETE FROM `npc_spellclick_spells` WHERE `npc_entry`= 44894 AND `spell_id`= 83756;
-INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
-(44894, 83756, 1, 0);
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83763 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44883 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
@@ -1317,6 +1302,15 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83764 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44884 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
 (13, 1, 83764, 0, 0, 31, 0, 3, 44884, 0, 0, 0, 0, '', 'Armoire Camera - Target Ivar');
+
+ -- Armoire (44894)
+DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` = 44894 AND `spell_id` = 83756;
+INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
+(44894, 83756, 1, 0);
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=18 AND `SourceGroup`=44894 AND `SourceEntry`=83756 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27045 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
+(18, 44894, 83756, 0, 0, 47, 0, 27045, 8, 0, 0, 0, 0, '', 'Allow spellclick if quest 27045 is active');
 
  -- Lord Darius Crowley (44883)
 UPDATE creature_template SET `unit_flags` = 2, `unit_flags2` = 16384, `ScriptName` = 'npc_silverpine_lord_darius_crowley_exhanguinate' WHERE `entry` = 44883;
@@ -1358,6 +1352,9 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44884, 9, 0, 'I was hoping you\'d say that...', 12, 0, 100, 0, 0, 0, 0, 44972, 0, ''),
 (44884, 10, 0, 'I will prepare the pack. It will take some time to gather them all, but we will join... for now.', 12, 0, 100, 1, 0, 0, 0, 44973, 0, '');
 
+DELETE FROM `spell_script_names` WHERE `spell_id` = 80743 AND `ScriptName` = 'spell_silverpine_eject_passenger_1';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(80743, 'spell_silverpine_eject_passenger_1');
 
 DELETE FROM `vehicle_seat_addon` WHERE `SeatEntry` = 8420;
 INSERT INTO `vehicle_seat_addon` (`SeatEntry`, `SeatOffsetX`, `SeatOffsetY`, `SeatOffsetZ`, `SeatOffsetO`, `ExitParamX`, `ExitParamY`, `ExitParamZ`, `ExitParamO`, `ExitParamValue`) VALUES 
@@ -1390,6 +1387,11 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448844, 0, 1304.2949, 1207.105, 58.760803, 0, 7.878883, 0, 1, 0, 0, 0, 0),
 (448844, 1, 1299.0449, 1209.605, 58.760803, 0, 7.878883, 0, 1, 0, 0, 0, 0),
 (448844, 2, 1297.27, 1212.28, 58.5105, 0, 7.878883, 0, 0, 0, 0, 0, 0);
+
+ -- Detect: Quest Invis Zone 1
+DELETE FROM `spell_area` WHERE `spell`=83232 AND `area`=239 AND `quest_start`=27045 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83232, 239, 27045, 0, 0, 0, 2, 3, 66, 1);
 
  --
  -- Forsaken Rear Guard

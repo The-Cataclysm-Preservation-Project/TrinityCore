@@ -1699,6 +1699,7 @@ enum QuestWaitingToExsanguinate
     MOVEPOINT_RANA                              = 1230,
 
     ACTION_RANE_JUMP_DEATH                      = 2,
+    ACTION_RANE_SKIP_PATH,
     ACTION_MOVE_TO_RANA                         = 500,
 
     MOVEPOINT_ARMOIRE                           = 15
@@ -1744,6 +1745,7 @@ struct go_silverpine_abandoned_outhouse : public GameObjectAI
     }
 };
 
+Position const YorickReady = { 1313.7f, 1211.99f, 58.5f };
 Position const YorickDeath = { 1295.52f, 1206.58f, 58.501f };
 
 // Deathstalker Rane Yorick - 44882
@@ -1793,8 +1795,21 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
             {
                 me->SetDisableGravity(true);
 
-                _events.CancelEvent(EVENT_SET_FACE_TO_BLOODFANG);
                 _events.ScheduleEvent(EVENT_RANE_LAST_MOVE, 10ms);
+                break;
+            }
+
+            case ACTION_RANE_SKIP_PATH:
+            {
+                _events.Reset();
+
+                _events.ScheduleEvent(EVENT_SET_FACE_TO_BLOODFANG, 4s);
+
+                me->GetMotionMaster()->Clear();
+
+                me->NearTeleportTo(YorickReady, false);
+
+                me->CastSpell(me, SPELL_STEALTH);
                 break;
             }
 
@@ -1846,7 +1861,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                     Talk(TALK_1);
 
                     _events.ScheduleEvent(EVENT_HIDE, 3s);
-                    _events.ScheduleEvent(EVENT_SET_FACE_TO_BLOODFANG, 10s);
+                    _events.ScheduleEvent(EVENT_SET_FACE_TO_BLOODFANG, 3s);
                     break;
                 }
 
@@ -1876,8 +1891,6 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         me->SetFacingToObject(ivar);
-
-                    _events.ScheduleEvent(EVENT_SET_FACE_TO_BLOODFANG, 1s);
                     break;
                 }
 
@@ -1895,7 +1908,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                     me->AddAura(SPELL_PERMANENT_FEIGN_DEATH, me);
 
-                    me->DespawnOrUnsummon(60s);
+                    me->DespawnOrUnsummon(15s);
                     break;
                 }
 
@@ -1938,8 +1951,16 @@ struct npc_silverpine_armoire : public VehicleAI
                 if (Vehicle* vehicle = me->GetVehicleKit())
                     _playerGUID = player->GetGUID();
 
-                if (Creature* rane = me->FindNearestCreature(NPC_DEATHSTALKER_RANE_YORICK, 30.0f, true))
+                if (Creature* rane = player->FindNearestCreature(NPC_DEATHSTALKER_RANE_YORICK, 100.0f, true))
+                {
                     _raneGUID = rane->GetGUID();
+
+                    if (rane->GetOwner() == player)
+                    {
+                        if (me->GetDistance2d(rane) > 2.0f)
+                            rane->GetAI()->DoAction(ACTION_RANE_SKIP_PATH);
+                    }
+                }
             }
         }
     }
@@ -2032,7 +2053,7 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->GetMotionMaster()->MovePath(DATA_WAYPOINT_IVAR, false);
 
-                    _events.ScheduleEvent(EVENT_ACTION, 5s + 500ms);
+                    _events.ScheduleEvent(EVENT_ACTION, 5s);
                     break;
                 }
 
@@ -2047,7 +2068,7 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 4s);
+                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 2s);
                     break;
                 }
 
@@ -2282,7 +2303,7 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->GetMotionMaster()->MovePath(DATA_WAYPOINT_IVAR_EXIT, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 8, 5s);
+                    _events.ScheduleEvent(EVENT_ACTION + 8, 3s);
                     _events.ScheduleEvent(EVENT_FINISH, 15s);
                     break;
                 }
@@ -2295,7 +2316,7 @@ struct npc_silverpine_armoire : public VehicleAI
                             darius->GetMotionMaster()->MovePath(DATA_WAYPOINT_DARIUS_EXIT, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_FINISH, 5s);
+                    _events.ScheduleEvent(EVENT_FINISH, 4s);
                     break;
                 }
 
@@ -2350,29 +2371,6 @@ private:
     ObjectGuid _raneGUID;
     ObjectGuid _crowleyGUID;
     ObjectGuid _bloodfangGUID;
-};
-
-// Armoire - 44894
-struct npc_silverpine_armoire_click : public ScriptedAI
-{
-    npc_silverpine_armoire_click(Creature* creature) : ScriptedAI(creature) {}
-
-    void OnSpellClick(Unit* clicker, bool& result) override
-    {
-        if (Player* player = clicker->ToPlayer())
-        {
-            if (player->GetQuestStatus(QUEST_WAITING_TO_EXSANGUINATE) == QUEST_STATUS_INCOMPLETE)
-            {
-                if (Creature* rane = me->FindNearestCreature(NPC_DEATHSTALKER_RANE_YORICK, 5.0f))
-                {
-                    player->CastSpell(me, SPELL_HIDE_IN_ARMOIRE, true);
-                    return;
-                }
-            }
-        }
-
-        result = false;
-    }
 };
 
 // Lord Darius Crowley - 44883
@@ -2486,7 +2484,11 @@ class spell_silverpine_eject_passenger_1 : public SpellScript
     void HandleScriptEffect(SpellEffIndex /*effIndex*/)
     {
         if (GetHitUnit()->IsVehicle())
-            GetHitUnit()->ToUnit()->GetVehicleKit()->RemoveAllPassengers();
+        {
+            Unit* rider = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(0);
+
+            GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(rider);
+        }
     }
 
     void Register() override
@@ -4084,16 +4086,7 @@ class spell_silverpine_agatha_broadcast : public SpellScript
                 if (agatha->GetOwner() == caster)
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*caster, _ownerGUID))
-                    {
-                        if (!_onCD)
-                        {
-                            agatha->AI()->Talk(TALK_0, player);
-
-                            _onCD = true;
-                        }
-                        else
-                            _onCD = false;
-                    }
+                        agatha->AI()->Talk(TALK_0, player);
                 }
             }
         }
@@ -4106,7 +4099,6 @@ class spell_silverpine_agatha_broadcast : public SpellScript
 
 private:
     ObjectGuid _ownerGUID;
-    bool _onCD;
 };
 
 // Notify Agatha - 83990
@@ -6138,8 +6130,6 @@ private:
     EventMap _events;
 };
 
-/* Gilneas Part */
-
 // Arthura - 45318
 struct npc_arthura_sepulcher : public ScriptedAI
 {
@@ -6202,6 +6192,8 @@ private:
     ObjectGuid _playerGUID;
 };
 
+/* Gilneas Part */
+
 void AddSC_silverpine_forest()
 {
     new playerScript_silverpine_zone();
@@ -6224,7 +6216,6 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_deathstalker);
     RegisterGameObjectAI(go_silverpine_abandoned_outhouse);
     RegisterCreatureAI(npc_silverpine_deathstalker_rane_yorick);
-    RegisterCreatureAI(npc_silverpine_armoire_click);
     RegisterCreatureAI(npc_silverpine_armoire);
     RegisterCreatureAI(npc_silverpine_lord_darius_crowley_exhanguinate);
     RegisterCreatureAI(npc_silverpine_packleader_ivar_bloodfang_exhanguinate);
