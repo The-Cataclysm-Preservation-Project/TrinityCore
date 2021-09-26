@@ -3775,6 +3775,7 @@ enum FenrisIsleQuests
     EVENT_HEAL_COOLDOWN,
     EVENT_RUN,
     EVENT_LORDAERON_MIGHT,
+    EVENT_TALK_REVIVE,
 
     DATA_WAYPOINT_AGATHA                       = 4495101,
     DATA_SOUND_HOWLING                         = 17671
@@ -3808,8 +3809,6 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
 
     void Reset() override
     {
-        _events.Reset();
-
         me->GetMotionMaster()->Clear();
 
         if (me->GetOwner()->GetGuardianPet())
@@ -4310,7 +4309,9 @@ struct npc_silverpine_forsaken_trooper_male_fenris : public ScriptedAI
             me->SetDisplayId(DISPLAY_MALE_04_F);
 
         if (roll_chance_i(50))
-            Talk(TALK_0);
+            _events.ScheduleEvent(EVENT_TALK_REVIVE, 1s);
+
+        me->DespawnOrUnsummon(3s);
     }
 
     void Reset() override
@@ -4321,6 +4322,21 @@ struct npc_silverpine_forsaken_trooper_male_fenris : public ScriptedAI
     void UpdateAI(uint32 diff) override
     {
         _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_TALK_REVIVE:
+                {
+                    Talk(TALK_0);
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
     }
 
 private:
@@ -4350,7 +4366,9 @@ struct npc_silverpine_forsaken_trooper_female_fenris : public ScriptedAI
             me->SetDisplayId(DISPLAY_FEMALE_04_F);
 
         if (roll_chance_i(50))
-            Talk(TALK_0);
+            _events.ScheduleEvent(EVENT_TALK_REVIVE, 1s);
+
+        me->DespawnOrUnsummon(3s);
     }
 
     void Reset() override
@@ -4361,6 +4379,21 @@ struct npc_silverpine_forsaken_trooper_female_fenris : public ScriptedAI
     void UpdateAI(uint32 diff) override
     {
         _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_TALK_REVIVE:
+                {
+                    Talk(TALK_0);
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
     }
 
 private:
