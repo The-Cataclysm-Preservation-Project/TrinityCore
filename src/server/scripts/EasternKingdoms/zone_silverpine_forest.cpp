@@ -1972,10 +1972,7 @@ struct npc_silverpine_armoire : public VehicleAI
             if (Player* player = passenger->ToPlayer())
             {
                 if (player->GetQuestStatus(QUEST_WAITING_TO_EXSANGUINATE) == QUEST_STATUS_INCOMPLETE)
-                {
                     _events.ScheduleEvent(EVENT_START_ANIMATION, 2s);
-                    return;
-                }
             }
         }
         else
