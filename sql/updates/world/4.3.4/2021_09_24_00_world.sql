@@ -357,7 +357,7 @@ SET @ENTRY := 46483;
 DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
 UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
-(@ENTRY, 0, 0, 0, 1, 0, 100, 0, 500, 1000, 20000, 35000, 10, 16, 432, 467, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 20 - 35 seconds (500ms - 1s initially) - Self: Play random emote: ONESHOT_KNEEL (16), ONESHOT_USESTANDING (432), ONESHOT_WORK_MINING (467),");
+(@ENTRY, 0, 0, 0, 1, 0, 100, 0, 500, 1000, 20000, 35000, 10, 16, 133, 467, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 20 - 35 seconds (0.5 - 1s initially) (OOC) - Self: Play random emote: ONESHOT_KNEEL (16), STATE_USESTANDING_NOSHEATHE (133), ONESHOT_WORK_MINING (467),");
 
  -- Forsaken Trooper (44791)
 UPDATE creature_template SET `spell1` = 19983, `spell2` = 8078, `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44791;
@@ -935,7 +935,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+10;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+10, 0, 0, 0, 0, 1, 69, 0, 0, 0, 0, NULL);
+(@CGUID+10, 0, 0, 0, 0, 1, 133, 0, 0, 0, 0, NULL);
 
  -- Apothecary Initiate
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+11 AND @CGUID+23;
@@ -1204,7 +1204,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+70;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+70, 0, 0, 0, 0, 4097, 69, 0, 0, 0, 0, NULL);
+(@CGUID+70, 0, 0, 0, 0, 4097, 133, 0, 0, 0, 0, NULL);
 
 DELETE FROM `creature_template_addon` WHERE `entry` IN (44608, 44609, 44610, 44615, 44592, 44593, 44825, 44821, 44882, 44893, 44894, 44884, 44883, 44632, 44764, 44731);
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
@@ -1297,6 +1297,10 @@ UPDATE creature_template SET `npcflag` = 16777216, `ScriptName` = 'npc_silverpin
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83788 AND `ScriptName` = 'spell_silverpine_hide_in_armoire';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83788, 'spell_silverpine_hide_in_armoire');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 80743 AND `ScriptName` = 'spell_silverpine_eject_passenger_1';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(80743, 'spell_silverpine_eject_passenger_1');
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=18 AND `SourceGroup`=44894 AND `SourceEntry`=83756 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27045 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
@@ -1730,7 +1734,7 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
  -- Webbed Victim
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_webbed_victim_skitterweb' WHERE `entry` = 44941;
 
-DELETE FROM `creature` WHERE `guid` IN (@CGUID+82, @CGUID+83, @CGUID+84, @CGUID+85, @CGUID+86, @CGUID+87, @CGUID+88);
+DELETE FROM `creature` WHERE `guid` IN (@CGUID+82, @CGUID+83, @CGUID+84, @CGUID+85, @CGUID+86, @CGUID+87, @CGUID+88, @CGUID+89, @CGUID+90);
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
 (@CGUID+82, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1285.29, 1866.04, 24.8907, 2.51675, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+83, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1252.66, 1857.56, 14.3729, 3.42388, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
