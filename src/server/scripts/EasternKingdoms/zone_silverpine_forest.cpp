@@ -1759,10 +1759,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
         _playerGUID = ObjectGuid::Empty;
         _armoireGUID = ObjectGuid::Empty;
         _bloodfangGUID = ObjectGuid::Empty;
-    }
 
-    void Reset() override
-    {
         me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 100, true);
@@ -2240,10 +2237,13 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_ACTION + 6:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->CastSpell(ivar, SPELL_EJECT_PASSENGER_01, false);
-
-                    if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
-                        rane->GetAI()->DoAction(ACTION_RANE_JUMP_DEATH);
+                    {
+                        if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
+                        {
+                            ivar->CastSpell(rane, SPELL_EJECT_PASSENGER_01, false);
+                            rane->GetAI()->DoAction(ACTION_RANE_JUMP_DEATH);
+                        }
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 14, 1s);
                     break;
@@ -2269,6 +2269,7 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         ivar->AI()->Talk(TALK_10);
 
+                    _events.ScheduleEvent(EVENT_CAMERA_A, 5s + 300ms);
                     _events.ScheduleEvent(EVENT_ACTION + 7, 6s);
                     break;
                 }
@@ -2294,7 +2295,7 @@ struct npc_silverpine_armoire : public VehicleAI
                             darius->GetMotionMaster()->MovePath(DATA_WAYPOINT_DARIUS_EXIT, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_FINISH, 9s);
+                    _events.ScheduleEvent(EVENT_FINISH, 5s);
                     break;
                 }
 
@@ -2477,6 +2478,21 @@ private:
     EventMap _events;
     ObjectGuid _playerGUID;
     ObjectGuid _armoireGUID;
+};
+
+// Eject Passenger 1 - 80743
+class spell_silverpine_eject_passenger_1 : public SpellScript
+{
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (GetHitUnit()->IsVehicle())
+            GetHitUnit()->ToUnit()->GetVehicleKit()->RemoveAllPassengers();
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_silverpine_eject_passenger_1::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
 };
 
 enum ForsakenRearGuardQuests
@@ -6212,6 +6228,7 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_armoire);
     RegisterCreatureAI(npc_silverpine_lord_darius_crowley_exhanguinate);
     RegisterCreatureAI(npc_silverpine_packleader_ivar_bloodfang_exhanguinate);
+    RegisterSpellScript(spell_silverpine_eject_passenger_1);
 
     RegisterCreatureAI(npc_silverpine_salty_rocka);
     RegisterCreatureAI(npc_silverpine_apothecary_wormcrud);
