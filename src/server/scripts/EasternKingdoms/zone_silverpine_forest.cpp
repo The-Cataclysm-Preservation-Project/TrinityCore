@@ -347,8 +347,6 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
         if (me->IsSummon())
             DoCastSelf(SPELL_KILL_ME_PERIODIC);
 
-        me->RemoveAura(SPELL_DARKENED);
-
         me->SetReactState(REACT_AGGRESSIVE);
     }
 
@@ -358,11 +356,7 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
             return;
 
         if (spell->Id == SPELL_HEARTSTRIKE)
-        {
-            DoCastSelf(SPELL_DARKENED);
-
             me->KillSelf();
-        }
     }
 
     void JustEngagedWith(Unit* /*who*/) override
@@ -5757,8 +5751,11 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
         }
         else if (quest->GetQuestId() == QUEST_LORDAERON)
         {
+            Position pos = player->GetPosition();
+
             player->CastSpell(player, SPELL_SUMMON_SYLVANAS_AND_HORSE, true);
             player->CastSpell(player, SPELL_SUMMON_FORSAKEN_WARHORSE, true);
+            player->NearTeleportTo(pos, false);
             player->CastSpell(player, SPELL_LORDAERON_AURA, true);
             player->CastSpell(player, SPELL_SUMMON_LORDAERON_ACTORS, true);
         }
@@ -6166,7 +6163,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_21, player);
 
-                    _events.ScheduleEvent(EVENT_FINISH_RIDE, 6s);
+                    _events.ScheduleEvent(EVENT_FINISH_RIDE, 10s);
                     break;
                 }
 
@@ -6371,100 +6368,57 @@ class spell_silverpine_summon_lordaeron_actors : public SpellScript
             _playerGUID = caster->GetGUID();
 
             for (auto pos : ForsakenTrooperMPos)
-            {
-                if (Creature* forsakenTrooperM = caster->SummonCreature(NPC_FORSAKEN_TROOPER1, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                    forsakenTrooperM->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-            }
+                caster->SummonCreature(NPC_FORSAKEN_TROOPER1, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
 
             for (auto pos : ForsakenTrooperFPos)
-            {
-                if (Creature* forsakenTrooperF = caster->SummonCreature(NPC_FORSAKEN_TROOPER2, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                    forsakenTrooperF->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-            }
+                caster->SummonCreature(NPC_FORSAKEN_TROOPER2, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
 
             for (auto pos : WorgenRenegadePos)
-            {
-                if (Creature* worgenRenegade = caster->SummonCreature(NPC_WORGEN_RENEGADE, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                    worgenRenegade->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-            }
+                caster->SummonCreature(NPC_WORGEN_RENEGADE, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
 
             for (auto pos : OrcDemolisherPos)
-            {
-                if (Creature * demolisher = caster->SummonCreature(NPC_ORC_DEMOLISHER_LORDAERON, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                    demolisher->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-            }
+                caster->SummonCreature(NPC_ORC_DEMOLISHER_LORDAERON, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
 
             for (auto pos : SeaOrcPos)
-            {
-                if (Creature* seaorc = caster->SummonCreature(NPC_ORC_MOVER, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                    seaorc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-            }
+                caster->SummonCreature(NPC_ORC_MOVER, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
 
             if (Creature* leaderOrc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos1, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
             {
                 leaderOrc->GetMotionMaster()->MovePath(PATH_ORC_LEADER1, true);
-                leaderOrc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos1, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 3.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos1, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 6.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos1, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 9.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos1, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 12.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
             }
 
             if (Creature* leaderOrc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos2, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
             {
                 leaderOrc->GetMotionMaster()->MovePath(PATH_ORC_LEADER2, true);
-                leaderOrc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos2, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 3.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos2, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 6.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos2, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 9.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos2, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                {
                     orc->GetMotionMaster()->MoveFollow(leaderOrc, 12.0f, 0.0f, false, true, false);
-                    orc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-                }
+
             }
 
             for (auto pos : DreadguardPos)
-            {
-                if (Creature* dreadguard = caster->SummonCreature(NPC_DREADGUARD_LORDAREON, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
-                    dreadguard->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
-            }
+                caster->SummonCreature(NPC_DREADGUARD_LORDAREON, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
         }
     }
 
@@ -6506,13 +6460,6 @@ class spell_silverpine_despawn_all_summons_lordaeron : public SpellScript
         entrys.push_back(NPC_SYLVANAS_LORDAERON);
         entrys.push_back(NPC_FORSAKEN_WARHORSE_SYLVANAS);
         entrys.push_back(NPC_FORSAKEN_WARHORSE_PLAYER);
-        entrys.push_back(NPC_ORC_DEMOLISHER_LORDAERON);
-        entrys.push_back(NPC_FORSAKEN_TROOPER1);
-        entrys.push_back(NPC_FORSAKEN_TROOPER2);
-        entrys.push_back(NPC_WORGEN_RENEGADE);
-        entrys.push_back(NPC_ORC_DEMOLISHER_LORDAERON);
-        entrys.push_back(NPC_ORC_MOVER);
-        entrys.push_back(NPC_DREADGUARD_LORDAREON);
 
         targets.remove_if(IsNotInEntryList(entrys));
     }
