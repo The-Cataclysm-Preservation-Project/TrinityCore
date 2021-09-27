@@ -2316,6 +2316,8 @@ INSERT INTO `areatrigger_scripts` (`entry`, `ScriptName`) VALUES
  -- Fenris Keep Stalker
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_fenris_stalker' WHERE `entry` = 45032;
 
+UPDATE `creature` SET `PhaseId` = 266 WHERE `id` = 45032;
+
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84114 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44951 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (13, 1, 84114, 0, 0, 31, 0, 3, 44951, 0, 0, 0, 0, '', 'General Trigger 11 - Target Agatha');
@@ -2324,12 +2326,12 @@ DELETE FROM `spell_script_names` WHERE `spell_id` = 84053 AND `ScriptName` = 'sp
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (84053, 'spell_silverpine_summon_fenris_actors');
 
-DELETE FROM `spell_script_names` WHERE `spell_id` = 84065 AND `ScriptName` = 'spell_silverpine_despawn_all_summons';
+DELETE FROM `spell_script_names` WHERE `spell_id` = 84065 AND `ScriptName` = 'spell_silverpine_despawn_all_summons_fenris';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(84065, 'spell_silverpine_despawn_all_summons');
+(84065, 'spell_silverpine_despawn_all_summons_fenris');
 
  -- Fenris Keep Camera
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_fenris_camera' WHERE `entry` = 45003;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_fenris_camera', `VehicleID` = 1070 WHERE `entry` = 45003;
 
  -- Lord Darius Crowley
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_crowley_fenris' WHERE `entry` = 44989;
@@ -2432,12 +2434,12 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spe
 (83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 75);
 
  -- Forsaken Warhorse (45041)
-UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_warhorse_player_lordaeron' WHERE `entry` = 45041;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_warhorse_player_lordaeron' WHERE `entry` = 45041;
 
  -- Forsaken Warhorse (45057)
-UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_warhorse_sylvanas_lordaeron' WHERE `entry` = 45057;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_warhorse_sylvanas_lordaeron' WHERE `entry` = 45057;
 
-DELETE FROM `waypoint_data` WHERE `id`= 450570;
+DELETE FROM `waypoint_data` WHERE `id` = 450570;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
 (450570, 1, 1361.34, 1026.57, 52.7564, 0, 6.3564, 0, 1, 1, 0, 100, 0),
 (450570, 2, 1341.41, 1015.48, 54.5546, 0, 6.3564, 0, 1, 1, 0, 100, 0),
@@ -2483,10 +2485,47 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (450570, 42, 501.087, 1524.91, 128.901, 0, 6.3564, 0, 0, 1, 0, 100, 0);
 
  -- Lady Sylvanas Windrunner (45051)
-UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_sylvanas_lordaeron' WHERE `entry` = 45051;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_sylvanas_lordaeron' WHERE `entry` = 45051;
+
+ -- Orc Sea Orc
+DELETE FROM `waypoint_data` WHERE `id` = 4494200;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(4494200, 1, 1002.19, 1305.97, 45.9039, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 2, 974.613, 1323.48, 45.6693, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 3, 941.259, 1342.61, 46.7854, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 4, 922.768, 1351.14, 47.8096, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 5, 895.555, 1361.47, 49.7753, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 6, 924.202, 1352.21, 47.7473, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 7, 946.228, 1340.19, 46.4945, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 8, 981.543, 1318.51, 45.6626, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494200, 9, 1025.23, 1291.7, 45.9554, 0, 0, 0, 1, 0, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id` = 4494201;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(4494201, 0, 1031.23, 1332.41, 37.9303, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 1, 1014.11, 1326.63, 41.121, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 2, 994.812, 1331.02, 45.0159, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 3, 963.834, 1335.98, 46.1114, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 4, 945.676, 1339.23, 46.4755, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 5, 923.799, 1350.95, 47.7382, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 6, 897.104, 1360.41, 49.5317, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 7, 865.078, 1363.33, 54.5691, 0, 0, 0, 1, 0, 0, 100, 0),
+(4494201, 8, 821.376, 1363.54, 56.3932, 0, 0, 0, 1, 0, 0, 100, 0);
 
  -- Dreadguard (45588)
-UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_dreadguard_lordaeron' WHERE `entry` = 45588;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_dreadguard_lordaeron' WHERE `entry` = 45588;
+
+DELETE FROM `creature_template_addon` WHERE `entry` = 45588;
+INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(45588, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, '');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 84127 AND `ScriptName` = 'spell_silverpine_summon_lordaeron_actors';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES 
+(84127, 'spell_silverpine_summon_lordaeron_actors');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 84173 AND `ScriptName` = 'spell_silverpine_despawn_all_summons_lordaeron';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(84173, 'spell_silverpine_despawn_all_summons_lordaeron');
 
  --
  -- The Sepulcher
@@ -3201,7 +3240,7 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spe
 (84459, 229, 27180, 0, 0, 0, 2, 3, 8, 0);
 
  -- Bloodfang Stalker
-UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_bloodfang_stalker' WHERE `entry` = 45195;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_bloodfang_stalker' WHERE `entry` = 45195;
 UPDATE `creature_template_addon` SET `auras` = '86237 86559' WHERE `entry` = 45195;
 
 DELETE FROM `spell_area` WHERE `spell`=86560 AND `area`=229 AND `quest_start`=27098 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
@@ -3212,7 +3251,7 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spe
 UPDATE `creature_template_addon` SET `auras` = '29266' WHERE `entry` = 4518;
 
  -- Arthura 
-UPDATE `creature_template` SET `ScriptName`= 'npc_arthura_sepulcher' WHERE `entry` = 45318;
+UPDATE `creature_template` SET `ScriptName` = 'npc_arthura_sepulcher' WHERE `entry` = 45318;
 
 UPDATE `creature_template_addon` SET `bytes1` = 50331648 WHERE `entry` = 45318;
 
