@@ -6719,7 +6719,6 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_dreadguard_lordaeron);
 
     RegisterCreatureAI(npc_silverpine_bloodfang_stalker);
-    RegisterCreatureAI(npc_silverpine_caretaker_smithers);
 
     RegisterCreatureAI(npc_arthura_sepulcher);
 
