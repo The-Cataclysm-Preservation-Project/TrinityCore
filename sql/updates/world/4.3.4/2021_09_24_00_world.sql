@@ -1360,6 +1360,10 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44884, 9, 0, 'I was hoping you\'d say that...', 12, 0, 100, 0, 0, 0, 0, 44972, 0, ''),
 (44884, 10, 0, 'I will prepare the pack. It will take some time to gather them all, but we will join... for now.', 12, 0, 100, 1, 0, 0, 0, 44973, 0, '');
 
+DELETE FROM `spell_script_names` WHERE `spell_id` = 83781 AND `ScriptName` = 'spell_gen_reverse_cast_ride_vehicle';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(83781, 'spell_gen_reverse_cast_ride_vehicle');
+
 DELETE FROM `spell_script_names` WHERE `spell_id` = 80743 AND `ScriptName` = 'spell_silverpine_eject_passenger_1';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (80743, 'spell_silverpine_eject_passenger_1');
@@ -3258,11 +3262,6 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 
  -- Forsaken Catapult
 UPDATE `creature_addon` SET `auras` = '29266' WHERE `guid` IN (321185, 321177, 321159, 321154, 321143, 321142, 321119, 321103);
-
-
-
-
-
 
  -- Arthura 
 UPDATE `creature_template` SET `ScriptName` = 'npc_arthura_sepulcher' WHERE `entry` = 45318;
