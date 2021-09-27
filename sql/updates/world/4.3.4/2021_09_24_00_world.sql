@@ -472,9 +472,9 @@ INSERT INTO `creature_sparring_template` (`CreatureID`, `HealthLimitPct`) VALUES
 
  -- Dreadguard (44911)
 UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_z`= 47.12907, `MovementType`= 2 WHERE `guid` = 322155;
-UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_z`= 47.12907, `MovementType`= 2 WHERE `guid` = 322154;
-UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_z`= 47.12907, `MovementType`= 2 WHERE `guid` = 322153;
-UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_z`= 47.12907, `MovementType`= 2 WHERE `guid` = 322152;
+UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_z`= 47.12907 WHERE `guid` = 322154;
+UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_z`= 47.12907 WHERE `guid` = 322153;
+UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_z`= 47.12907 WHERE `guid` = 322152;
 
 DELETE FROM `creature_addon` WHERE `guid` = 322155;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -616,7 +616,7 @@ INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`,
 (322251, 322254, 10.5, 0, 515, -1, -1);
 
 UPDATE `creature` SET `position_x`= 1070.115, `position_y`= 1506.748, `position_z`= 31.02911, `MovementType`= 2 WHERE `guid` = 322043;
-UPDATE `creature` SET `position_x`= 1070.115, `position_y`= 1506.748, `position_z`= 31.02911, `MovementType`= 2 WHERE `guid` = 322042;
+UPDATE `creature` SET `position_x`= 1070.115, `position_y`= 1506.748, `position_z`= 31.02911 WHERE `guid` = 322042;
 
 DELETE FROM `creature_addon` WHERE `guid` = 322043;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1236,6 +1236,10 @@ INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Fligh
  -- Waiting to Exsanguinate
  --
  
+DELETE FROM `phase_area` WHERE `AreaId` = 239 AND `PhaseId` = 169;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(239, 169, 'Silverpine Forest - The Ivar Patch - Base');
+ 
  -- Deathstalker
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_deathstalker' WHERE `entry` = 44790;
 
@@ -1295,13 +1299,13 @@ INSERT INTO `summon_properties_parameters` (`RecID`, `ParamType`) VALUES
  -- Armoire (44893)
 UPDATE creature_template SET `unit_flags` = 33554440, `VehicleId` = 1055, `ScriptName` = 'npc_silverpine_armoire' WHERE `entry` = 44893;
 
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83763 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44883 AND `ConditionValue3`=0;
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83763 AND `SourceId`=0 AND `ElseGroup`=1 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44883 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
-(13, 1, 83763, 0, 0, 31, 0, 3, 44883, 0, 0, 0, 0, '', 'Armoire Camera - Target Crowley');
+(13, 1, 83763, 0, 1, 31, 0, 3, 44883, 0, 0, 0, 0, '', 'Armoire Camera - Target Lord Darius Crowley');
  
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83764 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44884 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
-(13, 1, 83764, 0, 0, 31, 0, 3, 44884, 0, 0, 0, 0, '', 'Armoire Camera - Target Ivar');
+(13, 1, 83764, 0, 0, 31, 0, 3, 44884, 0, 0, 0, 0, '', 'Armoire Camera - Target Packleader Ivar Bloodfang');
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=239 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=29 AND `ConditionTarget`=0 AND `ConditionValue1`=44893 AND `ConditionValue2`=5 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
@@ -1759,12 +1763,38 @@ UPDATE `creature` SET `spawndist`= 10 WHERE `id` = 1781;
  --
  -- Fenris Isle
  --
- 
+
+DELETE FROM `phase_area` WHERE `AreaId`= 172 AND `PhaseId`= 169;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(172, 169, 'Silverpine Forest - Fenris Isle - Base');
+DELETE FROM `phase_area` WHERE `AreaId`= 172 AND `PhaseId`= 266;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(172, 266, 'Silverpine Forest - Fenris Isle - No Escape');
+
+DELETE FROM `phase_area` WHERE `AreaId`= 235 AND `PhaseId`= 169;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(235, 169, 'Silverpine Forest - Fenris Keep - Base');
+DELETE FROM `phase_area` WHERE `AreaId`= 235 AND `PhaseId`= 266;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
+(235, 266, 'Silverpine Forest - Fenris Keep - No Escape');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=172 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27097 AND `ConditionValue2`=64 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 169, 172, 0, 0, 47, 0, 27097, 64, 0, 1, 0, 0, '', 'Fenris Isle - Remove phase 169 - 27097 rewarded');
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=235 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27097 AND `ConditionValue2`=64 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 169, 235, 0, 0, 47, 0, 27097, 64, 0, 1, 0, 0, '', 'Fenris Keep - Remove phase 169 - 27097 rewarded');
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=266 AND `SourceEntry`=172 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27097 AND `ConditionValue2`=64 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 266, 172, 0, 0, 47, 0, 27097, 64, 0, 0, 0, 0, '', 'Fenris Isle - Add phase 266 - 27097 rewarded');
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=266 AND `SourceEntry`=235 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27097 AND `ConditionValue2`=64 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 266, 235, 0, 0, 47, 0, 27097, 64, 0, 0, 0, 0, '', 'Fenris Keep - Add phase 266 - 27097 rewarded');
+
   -- Vile Fin Oracle
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1908;
 
 UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1908;
-
 
  -- Vile Fin Tidehunter
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1768;
@@ -1780,21 +1810,21 @@ UPDATE `creature_template` SET `unit_class`= 2, `VehicleId`= 1109, `HoverHeight`
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44951;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
-(44951, 0, 0, 'Death is only the beginning.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 1, 'Different master, same insatiable thirst for power.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 2, 'Do you feel it, $n? The darkness surrounds us.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 3, 'I long for the frozen wastes of Northrend.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 4, 'I sense doom in your future, $n.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 5, 'Life is meaningless. It is in the afterlife that we are truly tested.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 6, 'The warmth of this place sickens me.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 7, 'Through me the Banshee Queen sees all...', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44951, 0, 8, 'Waste no time, $n. We mustn\'t keep the Banshee Queen waiting.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 0, 0, 'Death is only the beginning.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 1, 'Different master, same insatiable thirst for power.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 2, 'Do you feel it, $n? The darkness surrounds us.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 3, 'I long for the frozen wastes of Northrend.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 4, 'I sense doom in your future, $n.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 5, 'Life is meaningless. It is in the afterlife that we are truly tested.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 6, 'The warmth of this place sickens me.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 7, 'Through me the Banshee Queen sees all...', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44951, 0, 8, 'Waste no time, $n. We mustn\'t keep the Banshee Queen waiting.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
 (44951, 1, 0, 'Bow before your new master!', 14, 0, 100, 0, 0, 0, 0, 0, 0, ''),
 (44951, 1, 1, 'Rise and destroy our enemies!', 14, 0, 100, 0, 0, 0, 0, 0, 0, ''),
 (44951, 1, 2, 'Rise! Become Forsaken!', 14, 0, 100, 0, 0, 0, 0, 0, 0, ''),
-(44951, 2, 0, 'This way, $n. We will take them by surprise.', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
-(44951, 3, 0, 'Run...', 12, 0, 100, 0, 0, 0, 0, 0, 0, ''),
-(44951, 4, 0, 'RUN!', 12, 0, 100, 0, 0, 0, 0, 0, 0, '');
+(44951, 2, 0, 'This way, $n. We will take them by surprise.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 3, 0, 'Run...', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44951, 4, 0, 'RUN!', 12, 0, 100, 1, 0, 0, 0, 0, 0, '');
 
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83978 AND `ScriptName` = 'spell_silverpine_agatha_broadcast';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
@@ -1803,6 +1833,55 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83990 AND `ScriptName` = 'spell_silverpine_notify_agatha';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83990, 'spell_silverpine_notify_agatha');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 84109 AND `ScriptName` = 'spell_gen_reverse_cast_ride_vehicle';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(84109, 'spell_gen_reverse_cast_ride_vehicle');
+
+DELETE FROM `waypoint_data` WHERE `id` = 449510;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(449510, 0, 978.136, 701, 74.8986, 1.46946, 12, 0, 1, 1, 0, 0, 0),
+(449510, 1, 980.094, 707.503, 74.8986, 0.53484, 12, 0, 1, 1, 0, 0, 0),
+(449510, 2, 983.234, 707.653, 74.7912, 0.047892, 12, 0, 1, 1, 0, 0, 0),
+(449510, 3, 993.042, 708.16, 69.7968, 0.051819, 12, 0, 1, 1, 0, 0, 0),
+(449510, 4, 996.834, 706.651, 69.7968, 5.90304, 12, 0, 1, 1, 0, 0, 0),
+(449510, 5, 1000.6, 683.266, 69.7968, 5.55354, 12, 0, 1, 1, 0, 0, 0),
+(449510, 6, 1008.98, 683.597, 64.9641, 0.051824, 12, 0, 0, 1, 0, 0, 0),
+(449510, 7, 1011.67, 683.756, 64.9038, 0.201049, 12, 0, 0, 1, 0, 0, 0),
+(449510, 8, 1013.71, 686.315, 64.9038, 0.93147, 12, 0, 0, 1, 0, 0, 0),
+(449510, 9, 1012.84, 692.094, 60.9752, 1.7208, 12, 0, 0, 1, 0, 0, 0),
+(449510, 10, 1009.93, 696.019, 60.9752, 2.24701, 12, 0, 1, 1, 0, 0, 0),
+(449510, 11, 999.307, 695.548, 60.9752, 3.162, 12, 0, 1, 1, 0, 0, 0),
+(449510, 12, 995.605, 697.996, 60.9752, 2.55725, 12, 0, 1, 1, 0, 0, 0),
+(449510, 13, 996.038, 708.152, 60.9752, 1.74436, 12, 0, 1, 1, 0, 0, 0),
+(449510, 14, 991.277, 712.116, 60.9752, 2.44729, 12, 0, 1, 1, 0, 0, 0),
+(449510, 15, 987.566, 711.066, 60.9752, 3.41726, 12, 0, 1, 1, 0, 0, 0),
+(449510, 16, 983.57, 705.475, 60.9752, 4.12019, 12, 0, 1, 1, 0, 0, 0),
+(449510, 17, 983.716, 694.273, 59.4842, 4.70138, 12, 0, 1, 1, 0, 0, 0),
+(449510, 18, 978.321, 688.576, 59.4586, 3.93955, 12, 0, 1, 1, 0, 0, 0),
+(449510, 19, 972.144, 689.149, 59.7365, 3.18618, 12, 0, 1, 1, 0, 0, 0),
+(449510, 20, 947.125, 688.808, 64.7365, 3.11942, 12, 0, 1, 1, 0, 0, 0),
+(449510, 21, 940.742, 692.673, 72.2835, 2.58535, 12, 0, 1, 1, 0, 0, 0),
+(449510, 22, 942.05, 710.145, 78.3052, 1.41118, 12, 0, 1, 1, 0, 0, 0),
+(449510, 23, 962.522, 728.552, 86.2838, 0.70432, 12, 0, 1, 1, 0, 0, 0),
+(449510, 24, 1005.04, 732.69, 89.2657, 6.10786, 12, 0, 1, 1, 0, 0, 0),
+(449510, 25, 1011.23, 727.585, 95.5486, 5.59342, 12, 0, 1, 1, 0, 0, 0),
+(449510, 26, 1027.92, 725.552, 95.6229, 6.1864, 12, 0, 1, 1, 0, 0, 0),
+(449510, 27, 1034.91, 726.766, 95.5736, 6.15105, 12, 0, 1, 1, 0, 0, 0),
+(449510, 28, 1045.77, 725.625, 95.0414, 6.17854, 12, 0, 1, 1, 0, 0, 0),
+(449510, 29, 1075.92, 722.255, 95.5728, 6.16676, 12, 0, 1, 1, 0, 0, 0),
+(449510, 30, 1093.56, 720.191, 95.5834, 6.16676, 12, 0, 1, 1, 0, 0, 0),
+(449510, 31, 1117.21, 719.628, 95.318, 0.068142, 12, 0, 1, 1, 0, 0, 0),
+(449510, 32, 1192.31, 909.552, 95.9755, 1.22661, 12, 0, 1, 1, 0, 0, 0),
+(449510, 33, 1204.63, 938.817, 95.4178, 1.1677, 12, 0, 1, 1, 0, 0, 0),
+(449510, 34, 1222.83, 979.271, 95.9874, 1.12843, 12, 0, 1, 1, 0, 0, 0),
+(449510, 35, 1229.7, 991.419, 86.0195, 1.06167, 12, 0, 1, 1, 0, 0, 0),
+(449510, 36, 1252.7, 1031.86, 86.2167, 1.05382, 12, 0, 1, 1, 0, 0, 0),
+(449510, 37, 1265.05, 1043.25, 86.6448, 0.712169, 12, 0, 1, 1, 0, 0, 0),
+(449510, 38, 1275.69, 1048.93, 72.4272, 0.331248, 12, 0, 1, 1, 0, 0, 0),
+(449510, 39, 1311.69, 1060.33, 68.5986, 0.327321, 12, 0, 1, 1, 0, 0, 0),
+(449510, 40, 1367.73, 1050.51, 60.2519, 6.10393, 12, 0, 1, 1, 0, 0, 0),
+(449510, 41, 1379.51, 1044.31, 54.0962, 5.7937, 12, 0, 1, 1, 0, 0, 0);
 
  -- Hillsbrad Refugee (44954, 44966)
 UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` IN (44954, 44966);
@@ -1834,7 +1913,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 UPDATE `creature` SET `MovementType` = 1, `spawndist` = 3 WHERE `guid` IN (321951, 321953, 321550, 321551, 321549, 321766, 321771, 321765, 321773, 321827, 321828, 321829, 321952, 321824);
 
 UPDATE `creature` SET `position_x` = 858.1942, `position_y` = 596.9427, `position_z` = 36.42773, `MovementType` = 2 WHERE `guid` IN (321553, 321554);
-UPDATE `creature` SET `position_x`= 740.559, `position_y`= 704.448, `position_z`= 38.42833, `MovementType` = 2 WHERE `guid` = 321555;
+UPDATE `creature` SET `position_x`= 740.559, `position_y`= 704.448, `position_z`= 38.42833, `MovementType` = 2, `equipment_id` = 6 WHERE `guid` = 321555;
 UPDATE `creature` SET `position_x`= 714.8848, `position_y`= 681.1774, `position_z`= 44.46771, `MovementType` = 2 WHERE `guid` IN (321453, 321454);
 
 DELETE FROM `creature_addon` WHERE `guid` IN (321775, 321826, 321825, 321778, 321776, 321774, 321777, 321772, 321769, 321768, 321770, 321641, 321638, 321639, 321637, 321636, 321831, 321830, @CGUID+91, 321553, 321453, 321555, 321640, 321955);
@@ -2106,7 +2185,7 @@ INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`,
 (321453, 321453, 0, 0, 515, 0, 0),
 (321453, 321454, 3.5, 270, 515, -1, -1);
 
-UPDATE `creature` SET `MovementType` = 2 WHERE `guid` IN (321955, 321954);
+UPDATE `creature` SET `MovementType` = 2 WHERE `guid` = 321955;
 
 DELETE FROM `waypoint_data` WHERE `id` = 449661;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
@@ -2191,20 +2270,128 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44965, 0, 3, 'I am eternal... I am death.', 12, 0, 100, 16, 0, 0, 0, 0, 0, ''),
 (44965, 0, 4, 'I LIVE!', 12, 0, 100, 16, 0, 0, 0, 0, 0, '');
 
+ -- Worgen Sentry
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_worgen_sentry', `AIName` = '' WHERE `entry` = 44987;
+
+DELETE FROM `creature` WHERE `guid` IN (@CGUID+92, @CGUID+93, @CGUID+94, @CGUID+95, @CGUID+96);
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
+(@CGUID+92, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 985.293, 689.312, 59.4764, 3.19127, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 0),
+(@CGUID+93, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 979.146, 666.453, 60.9757, 6.27395, 300, 0, 0, 683, 0, 2, 0, 0, 0, NULL, 0),
+(@CGUID+94, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 999.823, 712.408, 60.9755, 3.14414, 300, 0, 0, 683, 0, 2, 0, 0, 0, NULL, 0),
+(@CGUID+95, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 1011.31, 695.133, 60.9755, 3.15591, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 0),
+(@CGUID+96, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 996.279, 690.808, 69.7955, 0.163545, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 0);
+
+DELETE FROM `creature_addon` WHERE `guid` IN (@CGUID+92, @CGUID+93, @CGUID+94, @CGUID+95, @CGUID+96);
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(@CGUID+92, 0, 0, 0, 0, 1, 27, 0, 0, 0, 0, ''),
+(@CGUID+93, 449871, 0, 0, 0, 1, 0, 0, 0, 0, 0, ''),
+(@CGUID+94, 449870, 0, 0, 0, 1, 0, 0, 0, 0, 0, ''),
+(@CGUID+95, 0, 0, 0, 0, 1, 27, 0, 0, 0, 0, ''),
+(@CGUID+96, 0, 0, 0, 0, 1, 27, 0, 0, 0, 0, '');
+
+DELETE FROM `creature_text` WHERE `CreatureID` = 44987;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
+(44987, 0, 0, 'Hurry, my lord! The enemy is upon us!', 14, 0, 100, 0, 0, 0, 0, 0, 0, ''),
+(44987, 0, 1, 'They come!', 14, 0, 100, 0, 0, 0, 0, 0, 0, '');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 80515 AND `ScriptName` = 'spell_silverpine_undying_frenzy';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(80515, 'spell_silverpine_undying_frenzy');
+
+DELETE FROM `waypoint_data` WHERE `id` = 449870;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(449870, 1, 977.275, 711.484, 60.9751, 0, 0, 0, 1, 0, 0, 100, 0),
+(449870, 2, 999.823, 712.408, 60.9755, 0, 0, 0, 1, 0, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id` = 449871;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(449871, 1, 1001.85, 667.365, 60.9754, 0, 0, 0, 1, 0, 0, 100, 0),
+(449871, 2, 979.146, 666.453, 60.9757, 0, 0, 0, 1, 0, 0, 100, 0);
+
+ -- AreaTrigger 6230 (Fenris Keep)
+DELETE FROM `areatrigger_scripts` WHERE `entry` = 6230;
+INSERT INTO `areatrigger_scripts` (`entry`, `ScriptName`) VALUES 
+(6230, 'at_silverpine_no_escape');
+
+ -- Fenris Keep Stalker
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_fenris_stalker' WHERE `entry` = 45032;
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84114 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44951 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 84114, 0, 0, 31, 0, 3, 44951, 0, 0, 0, 0, '', 'General Trigger 11 - Target Agatha');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 84053 AND `ScriptName` = 'spell_silverpine_summon_fenris_actors';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(84053, 'spell_silverpine_summon_fenris_actors');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 84065 AND `ScriptName` = 'spell_silverpine_despawn_all_summons';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(84065, 'spell_silverpine_despawn_all_summons');
+
+ -- Fenris Keep Camera
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_fenris_camera' WHERE `entry` = 45003;
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_crowley_fenris' WHERE `entry` = 44989;
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_odelic_fenris' WHERE `entry` = 44993;
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_bartolo_fenris' WHERE `entry` = 44994;
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_loremaster_fenris' WHERE `entry` = 44995;
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_henry_fenris' WHERE `entry` = 44996;
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_caretaker_fenris' WHERE `entry` = 44997;
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_sophia_fenris' WHERE `entry` = 45002;
 
  -- Lord Darius Crowley
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84104 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44989 AND `ConditionValue3`=0;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_crowley_fenris' WHERE `entry` = 44989;
+
+DELETE FROM `creature_text` WHERE `CreatureID` = 44989;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
+(44989, 0, 0, 'The Forsaken have broken through your defenses, magistrate.', 12, 0, 100, 396, 0, 0, 0, 0, 0, ''),
+(44989, 1, 0, 'You are out of time.', 12, 0, 100, 274, 0, 0, 0, 0, 0, ''),
+(44989, 2, 0, 'A decision must be made!', 12, 0, 100, 5, 0, 0, 0, 0, 0, ''),
+(44989, 3, 0, 'Die in battle and be raised as a servant of the Forsaken or...', 12, 0, 100, 396, 0, 0, 0, 0, 0, ''),
+(44989, 4, 0, 'Drink in my blood and reborn as worgen, immune to the depravity of the Forsaken.', 12, 0, 100, 5, 0, 0, 0, 0, 0, ''),
+(44989, 5, 0, 'Help us destroy the Forsaken and retake Lordaeron for the Alliance!', 12, 0, 100, 5, 0, 0, 0, 0, 0, '');
+
+ -- Packleader Ivar Bloodfang
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_bloodfang_fenris' WHERE `entry` = 44990;
+
+ -- Phin Odelic
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_odelic_fenris' WHERE `entry` = 44993;
+
+ -- Bartolo Ginsetti
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_bartolo_fenris' WHERE `entry` = 44994;
+
+ -- Loremaster Dibbs
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_loremaster_fenris' WHERE `entry` = 44995;
+
+ -- Magistrate Henry Maleb
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_henry_fenris' WHERE `entry` = 44996;
+
+DELETE FROM `creature_text` WHERE `CreatureID` = 44996;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
+(44996, 0, 0, 'We would rather die than be turned into worgen, but seeing as how even death provides no relief from the atrocities of this war...', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
+(44996, 1, 0, 'We choose vengeance!', 12, 0, 100, 5, 0, 0, 0, 0, 0, '');
+
+ -- Caretaker Smithers
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_caretaker_fenris' WHERE `entry` = 44997;
+
+ -- Sophia Zwoski
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_sophia_fenris' WHERE `entry` = 45002;
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84102 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44989 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(13, 1, 84104, 0, 0, 31, 0, 3, 44989, 0, 0, 0, 0, '', 'Fenris Camera - Target Crowley');
+(13, 1, 84102, 0, 0, 31, 0, 3, 44989, 0, 0, 0, 0, '', 'General Trigger 10 - Target Lord Darius Crowley');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83768 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44989 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 83768, 0, 0, 31, 0, 3, 44989, 0, 0, 0, 0, '', 'Armore Camera - Target Lord Darius Crowley');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83763 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44989 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 83763, 0, 0, 31, 0, 3, 44989, 0, 0, 0, 0, '', 'Armoire Camera - Target Lord Darius Crowley');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84076 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44996 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 84076, 0, 0, 31, 0, 3, 44996, 0, 0, 0, 0, '', 'Conversation Trigger 01 - Magistrate Henry Maleb');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84103 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44996 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 84103, 0, 0, 31, 0, 3, 44996, 0, 0, 0, 0, '', 'Armoire Camera - Magistrate Henry Maleb');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84111 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44951 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 84111, 0, 0, 31, 0, 3, 44951, 0, 0, 0, 0, '', 'Armoire Camera - Agatha');
 
  --
  -- Lordaeron Quest
@@ -2239,6 +2426,10 @@ DELETE FROM `phase_area` WHERE `AreaId`=130 AND `PhaseId`=267;
 INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES (130, 267, 'Silverpine Forest during 27098');
 DELETE FROM `phase_area` WHERE `AreaId`=228 AND `PhaseId`=267;
 INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES (228, 267, 'The Sepulcher during 27098');
+
+DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=27099 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 75);
 
  -- Forsaken Warhorse (45041)
 UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_warhorse_player_lordaeron' WHERE `entry` = 45041;
@@ -2381,7 +2572,7 @@ DELETE FROM `creature_addon` WHERE `guid`= @CGUID+81;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (@CGUID+81, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, '84183');
 
- -- Follow from here (next @CGUID+91)
+ -- Follow from here (next @CGUID+97)
 
  -- Horde Hauler
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_hauler'  WHERE `entry` = 44731;
@@ -2908,6 +3099,8 @@ INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`,
 (44764, 44766, 3, 1, 'On the bottom - Coffin', 8, 30000),
 (44764, 44766, 4, 1, 'On the top - Coffin', 8, 30000),
 (44764, 44766, 5, 1, 'On the middle - Coffin', 8, 30000);
+
+ -- Missing waypoints!!!
 
  --
  -- UNCLASSIFIED YET
