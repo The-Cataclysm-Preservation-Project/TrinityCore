@@ -93,33 +93,34 @@ enum SilverpineTransports
 
     SPELL_CHAIN_RIGHT                       = 83467,
     SPELL_CHAIN_LEFT                        = 83464,
+    SPELL_ANIMKIT_HORDE_ENGINEER            = 91298,
     SPELL_EJECT_PASSENGERS_3_8              = 83477,
 
     EVENT_TO_FORSAKEN_HIGH_COMMAND          = 1,
     EVENT_TO_THE_SEPULCHER                  = 2,
     EVENT_TO_THE_FORSAKEN_FRONT             = 3,
     EVENT_TO_DESPAWN                        = 4,
-    EVENT_YELL_1                            = 5,
-    EVENT_YELL_2                            = 6,
-    EVENT_YELL_3                            = 7,
+    EVENT_YELL_ON_FORSAKEN_HIGH             = 5,
+    EVENT_YELL_ON_SEPULCHER                 = 6,
+    EVENT_YELL_ON_DESPAWN_POINT             = 7,
 
-    DATA_WAYPOINT_TO_FORSAKEN_HIGH          = 447310,
-    DATA_WAYPOINT_TO_SEPULCHER              = 447311,
-    DATA_WAYPOINT_TO_FORSAKEN_FRONT         = 447312,
-    DATA_WAYPOINT_TO_DESPAWN                = 447313,
+    PATH_TO_FORSAKEN_HIGH                   = 447310,
+    PATH_TO_SEPULCHER                       = 447311,
+    PATH_TO_FORSAKEN_FRONT                  = 447312,
+    PATH_TO_DESPAWN                         = 447313,
 
-    DATA_ANIMKIT_HORDE_ENGINEER             = 91298
+    WAYPOINT_ON_FORSAKEN_HIGH               = 17,
+    WAYPOINT_ON_SEPULCHER                   = 207,
+    WAYPOINT_ON_FORSAKEN_FRONT              = 165,
+    WAYPOINT_ON_DESPAWN_POINT               = 32
 };
 
 // Horde Hauler - 44731
 struct npc_silverpine_horde_hauler : public ScriptedAI
 {
-    npc_silverpine_horde_hauler(Creature* creature) : ScriptedAI(creature)
-    {
-        Initilize();
-    }
+    npc_silverpine_horde_hauler(Creature* creature) : ScriptedAI(creature) { }
 
-    void Initilize()
+    void JustAppeared() override
     {
         if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f))
         {
@@ -127,7 +128,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
             {
                 engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
                 engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                engineer->AddAura(DATA_ANIMKIT_HORDE_ENGINEER, engineer);
+                engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
 
                 _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
             }
@@ -151,43 +152,46 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
             if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
             {
                 if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    engineer->AI()->Talk(TALK_0, player);
+                {
+                    if (engineer->IsAIEnabled())
+                        engineer->AI()->Talk(TALK_0, player);
+                }
             }
         }
     }
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == DATA_WAYPOINT_TO_FORSAKEN_HIGH)
+        if (pathId == PATH_TO_FORSAKEN_HIGH)
         {
-            if (waypointId == 17)
+            if (waypointId == WAYPOINT_ON_FORSAKEN_HIGH)
             {
                 _events.ScheduleEvent(EVENT_TO_THE_SEPULCHER, 15s);
-                _events.ScheduleEvent(EVENT_YELL_1, 1s);
+                _events.ScheduleEvent(EVENT_YELL_ON_FORSAKEN_HIGH, 1s);
             }
         }
 
-        if (pathId == DATA_WAYPOINT_TO_SEPULCHER)
+        if (pathId == WAYPOINT_ON_SEPULCHER)
         {
-            if (waypointId == 207)
+            if (waypointId == WAYPOINT_ON_SEPULCHER)
             {
                 _events.ScheduleEvent(EVENT_TO_THE_FORSAKEN_FRONT, 15s);
-                _events.ScheduleEvent(EVENT_YELL_2, 1s);
+                _events.ScheduleEvent(EVENT_YELL_ON_SEPULCHER, 1s);
             }
         }
 
-        if (pathId == DATA_WAYPOINT_TO_FORSAKEN_FRONT)
+        if (pathId == WAYPOINT_ON_FORSAKEN_FRONT)
         {
-            if (waypointId == 165)
+            if (waypointId == WAYPOINT_ON_FORSAKEN_FRONT)
             {
                 _events.ScheduleEvent(EVENT_TO_DESPAWN, 15s);
-                _events.ScheduleEvent(EVENT_YELL_3, 1s);
+                _events.ScheduleEvent(PATH_TO_DESPAWN, 1s);
             }
         }
 
-        if (pathId == DATA_WAYPOINT_TO_DESPAWN)
+        if (pathId == PATH_TO_DESPAWN)
         {
-            if (waypointId == 32)
+            if (waypointId == WAYPOINT_ON_DESPAWN_POINT)
                 me->DespawnOrUnsummon(1s);
         }
     }
@@ -208,19 +212,22 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                         {
                             engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
                             engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->AddAura(DATA_ANIMKIT_HORDE_ENGINEER, engineer);
+                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
 
-                            me->GetMotionMaster()->MovePath(DATA_WAYPOINT_TO_FORSAKEN_HIGH, false);
+                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
                         }
                     }
 
                     break;
                 }
 
-                case EVENT_YELL_1:
+                case EVENT_YELL_ON_FORSAKEN_HIGH:
                 {
                     if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
-                        engineer->AI()->Talk(TALK_1);
+                    {
+                        if (engineer->IsAIEnabled())
+                            engineer->AI()->Talk(TALK_1);
+                    }
                     break;
                 }
 
@@ -232,19 +239,22 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                         {
                             engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
                             engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->AddAura(DATA_ANIMKIT_HORDE_ENGINEER, engineer);
+                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
 
-                            me->GetMotionMaster()->MovePath(DATA_WAYPOINT_TO_SEPULCHER, false);
+                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
                         }
                     }
 
                     break;
                 }
 
-                case EVENT_YELL_2:
+                case EVENT_YELL_ON_SEPULCHER:
                 {
                     if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
-                        engineer->AI()->Talk(TALK_2);
+                    {
+                        if (engineer->IsAIEnabled())
+                            engineer->AI()->Talk(TALK_2);
+                    }
                     break;
                 }
 
@@ -256,21 +266,24 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                         {
                             engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
                             engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->AddAura(DATA_ANIMKIT_HORDE_ENGINEER, engineer);
+                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
 
-                            me->GetMotionMaster()->MovePath(DATA_WAYPOINT_TO_FORSAKEN_FRONT, false);
+                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
                         }
                     }
 
                     break;
                 }
 
-                case EVENT_YELL_3:
+                case EVENT_YELL_ON_DESPAWN_POINT:
                 {
                     if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
-                        engineer->AI()->Talk(TALK_3);
+                    {
+                        if (engineer->IsAIEnabled())
+                            engineer->AI()->Talk(TALK_3);
+                    }
 
-                    me->CastSpell(me, SPELL_EJECT_PASSENGERS_3_8, true);
+                    DoCastSelf(SPELL_EJECT_PASSENGERS_3_8);
 
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     break;
@@ -284,11 +297,12 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                         {
                             engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
                             engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->AddAura(DATA_ANIMKIT_HORDE_ENGINEER, engineer);
+                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
 
-                            me->GetMotionMaster()->MovePath(DATA_WAYPOINT_TO_DESPAWN, false);
+                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
                         }
                     }
+
                     break;
                 }
 
@@ -331,7 +345,7 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
         _events.Reset();
 
         if (me->IsSummon())
-            me->CastSpell(me, SPELL_KILL_ME_PERIODIC, true);
+            DoCastSelf(SPELL_KILL_ME_PERIODIC);
 
         me->RemoveAura(SPELL_DARKENED);
 
@@ -345,7 +359,7 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
 
         if (spell->Id == SPELL_HEARTSTRIKE)
         {
-            me->AddAura(SPELL_DARKENED, me);
+            DoCastSelf(SPELL_DARKENED);
 
             me->KillSelf();
         }
@@ -512,9 +526,9 @@ enum QuestTheWarchiefCometh
     MOVE_CROMUSH_TO_HOME                = 5405702,
     MOVE_GARROSH_TO_HOME                = 5405703,
 
-    WAYPOINT_CROMUSH_01                 = 446402,
-    WAYPOINT_CROMUSH_02                 = 446403,
-    WAYPOINT_GARROSH                    = 446290
+    PATH_CROMUSH_01                     = 446402,
+    PATH_CROMUSH_02                     = 446403,
+    PATH_GARROSH                        = 446290
 };
 
 Position const ElitePos[16] =
@@ -552,19 +566,7 @@ Position const CromushPos = { 1404.71f, 1063.73f, 60.5617f, 2.827433f };
 // Grand Executor Mortuus - 44615
 struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 {
-    npc_silverpine_grand_executor_mortuus(Creature* creature) : ScriptedAI(creature), _summons(me), _eventStarted(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _garroshGUID = ObjectGuid::Empty;
-        _cromushGUID = ObjectGuid::Empty;
-        _sylvanasGUID = ObjectGuid::Empty;
-        _agathaGUID = ObjectGuid::Empty;
-        _warhorseGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_grand_executor_mortuus(Creature* creature) : ScriptedAI(creature), _summons(me), _eventStarted(false) {}
 
     void QuestAccept(Player* /*player*/, const Quest* quest) override
     {
@@ -675,7 +677,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(TALK_0);
+                    {
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_0);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 1, 8s);
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 25, 4s + 500ms);
@@ -687,9 +692,6 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                         garrosh->GetMotionMaster()->MoveJump(1378.65f, 1044.23f, 53.8389f, 5.51524f, 15.595897f, 15.595897f);
 
-                    if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
-                        cromush->SetVisible(true);
-
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 2, 3s + 500ms);
                     break;
                 }
@@ -699,13 +701,19 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
                         if (Creature* warhorse = ObjectAccessor::GetCreature(*me, _warhorseGUID))
-                            warhorse->SetFacingTo(3.924652f);
+                        {
+                            if (warhorse->IsAIEnabled())
+                                warhorse->SetFacingTo(3.924652f);
+                        }
 
                         if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                         {
-                            garrosh->SetFacingToObject(sylvanas);
-                            garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_GARROSH_1);
-                            garrosh->AI()->Talk(TALK_0);
+                            if (garrosh->IsAIEnabled())
+                            {
+                                garrosh->SetFacingToObject(sylvanas);
+                                garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_GARROSH_1);
+                                garrosh->AI()->Talk(TALK_0);
+                            }
                         }
                     }
 
@@ -717,8 +725,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
-                        garrosh->SetFacingTo(3.9444442f);
-                        garrosh->AI()->Talk(TALK_1);
+                        if (garrosh->IsAIEnabled())
+                        {
+                            garrosh->SetFacingTo(3.9444442f);
+                            garrosh->AI()->Talk(TALK_1);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 4, 7s);
@@ -730,9 +741,13 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
                         if (Creature* warhorse = ObjectAccessor::GetCreature(*me, _warhorseGUID))
-                            warhorse->SetFacingTo(2.4260077f);
+                        {
+                            if (warhorse->IsAIEnabled())
+                                warhorse->SetFacingTo(2.4260077f);
+                        }
 
-                        sylvanas->AI()->Talk(TALK_2);
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_2);
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 5, 5s);
@@ -744,10 +759,16 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
                         if (Creature* warhorse = ObjectAccessor::GetCreature(*me, _warhorseGUID))
-                            warhorse->SetFacingTo(3.7350047f);
+                        {
+                            if (warhorse->IsAIEnabled())
+                                warhorse->SetFacingTo(3.7350047f);
+                        }
 
-                        sylvanas->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_1);
-                        sylvanas->AI()->Talk(TALK_3);
+                        if (sylvanas->IsAIEnabled())
+                        {
+                            sylvanas->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_1);
+                            sylvanas->AI()->Talk(TALK_3);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 6, 16s);
@@ -757,7 +778,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 6:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(TALK_4);
+                    {
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_4);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 7, 4s);
                     break;
@@ -766,7 +790,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 7:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(TALK_2);
+                    {
+                        if (garrosh->IsAIEnabled())
+                            garrosh->AI()->Talk(TALK_2);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 8, 3s);
                     break;
@@ -775,7 +802,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 8:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(TALK_5);
+                    {
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_5);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 9, 6s);
                     break;
@@ -784,7 +814,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 9:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(TALK_6);
+                    {
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_6);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 10, 6s);
                     break;
@@ -794,8 +827,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
-                        sylvanas->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_2);
-                        sylvanas->AI()->Talk(TALK_7);
+                        if (sylvanas->IsAIEnabled())
+                        {
+                            sylvanas->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_2);
+                            sylvanas->AI()->Talk(TALK_7);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 11, 9s);
@@ -805,7 +841,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 11:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(TALK_8);
+                    {
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_8);
+                    }
 
                     _events.ScheduleEvent(EVENT_AGATHA_RAISE_FORSAKEN, 3s);
                     break;
@@ -832,7 +871,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_AGATHA_RAISE_FORSAKEN + 2:
                 {
                     if (Creature* agatha = ObjectAccessor::GetCreature(*me, _agathaGUID))
-                        agatha->CastSpell(me, SPELL_RAISE_FORSAKEN);
+                        agatha->CastSpell(agatha, SPELL_RAISE_FORSAKEN);
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 12, 10s);
                     break;
@@ -841,7 +880,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 12:
                 {
                     if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
-                        cromush->AI()->Talk(TALK_0);
+                    {
+                        if (cromush->IsAIEnabled())
+                            cromush->AI()->Talk(TALK_0);
+                    }
 
                     if (Creature* agatha = ObjectAccessor::GetCreature(*me, _agathaGUID))
                         agatha->GetMotionMaster()->MovePoint(3, 1364.02f, 1028.54f, 55.9914f, false, 0.8775906f);
@@ -856,8 +898,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
-                        garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_3);
-                        garrosh->AI()->Talk(TALK_3);
+                        if (garrosh->IsAIEnabled())
+                        {
+                            garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_3);
+                            garrosh->AI()->Talk(TALK_3);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 14, 13s);
@@ -868,8 +913,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
-                        sylvanas->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_3);
-                        sylvanas->AI()->Talk(TALK_9);
+                        if (sylvanas->IsAIEnabled())
+                        {
+                            sylvanas->PlayOneShotAnimKitId(DATA_ANIMKIT_SYLV_3);
+                            sylvanas->AI()->Talk(TALK_9);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 15, 10s);
@@ -879,7 +927,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 15:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(TALK_4);
+                    {
+                        if (garrosh->IsAIEnabled())
+                            garrosh->AI()->Talk(TALK_4);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 16, 6s);
                     break;
@@ -888,7 +939,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 16:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->AI()->Talk(TALK_5);
+                    {
+                        if (garrosh->IsAIEnabled())
+                            garrosh->AI()->Talk(TALK_5);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 17, 6s);
                     break;
@@ -897,7 +951,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 17:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
-                        sylvanas->AI()->Talk(TALK_10);
+                    {
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_10);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 18, 5s);
                     break;
@@ -907,8 +964,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
-                        garrosh->SetFacingTo(5.51524f);
-                        garrosh->AI()->Talk(TALK_6);
+                        if (garrosh->IsAIEnabled())
+                        {
+                            garrosh->SetFacingTo(5.51524f);
+                            garrosh->AI()->Talk(TALK_6);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 19, 5s);
@@ -921,9 +981,12 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     {
                         if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
                         {
-                            garrosh->SetFacingToObject(cromush);
-                            garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_GARROSH_2);
-                            garrosh->AI()->Talk(TALK_7);
+                            if (garrosh->IsAIEnabled())
+                            {
+                                garrosh->SetFacingToObject(cromush);
+                                garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_GARROSH_2);
+                                garrosh->AI()->Talk(TALK_7);
+                            }
                         }
                     }
 
@@ -937,8 +1000,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     {
                         if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                         {
-                            cromush->SetFacingToObject(garrosh);
-                            cromush->AI()->Talk(TALK_1);
+                            if (cromush->IsAIEnabled())
+                            {
+                                cromush->SetFacingToObject(garrosh);
+                                cromush->AI()->Talk(TALK_1);
+                            }
                         }
                     }
 
@@ -950,9 +1016,12 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
-                        garrosh->SetFacingTo(5.6199603f);
-                        garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_GARROSH_2);
-                        garrosh->AI()->Talk(TALK_8);
+                        if (garrosh->IsAIEnabled())
+                        {
+                            garrosh->SetFacingTo(5.6199603f);
+                            garrosh->PlayOneShotAnimKitId(DATA_ANIMKIT_GARROSH_2);
+                            garrosh->AI()->Talk(TALK_8);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 22, 7s);
@@ -962,10 +1031,16 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 22:
                 {
                     if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
-                        cromush->GetMotionMaster()->MovePath(WAYPOINT_CROMUSH_02, false);
+                    {
+                        if (cromush->IsAIEnabled())
+                            cromush->GetMotionMaster()->MovePath(PATH_CROMUSH_02, false);
+                    }
 
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
-                        garrosh->GetMotionMaster()->MovePath(WAYPOINT_GARROSH, false);
+                    {
+                        if (garrosh->IsAIEnabled())
+                            garrosh->GetMotionMaster()->MovePath(PATH_GARROSH, false);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 23, 11s);
                     break;
@@ -985,7 +1060,10 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 case EVENT_TALK_SEQUENCE + 24:
                 {
                     if (Creature* agatha = ObjectAccessor::GetCreature(*me, _agathaGUID))
-                        agatha->SetFacingTo(0.855211f);
+                    {
+                        if (agatha->IsAIEnabled())
+                            agatha->SetFacingTo(0.855211f);
+                    }
 
                     break;
                 }
@@ -994,10 +1072,14 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
-                        sylvanas->AI()->Talk(TALK_1);
+                        if (sylvanas->IsAIEnabled())
+                            sylvanas->AI()->Talk(TALK_1);
 
                         if (Creature* warhorse = ObjectAccessor::GetCreature(*me, _warhorseGUID))
-                            warhorse->SetFacingTo(0.808979f);
+                        {
+                            if (warhorse->IsAIEnabled())
+                                warhorse->SetFacingTo(0.808979f);
+                        }
                     }
 
                     break;
@@ -1019,10 +1101,16 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     GetCreatureListWithEntryInGrid(femaleforsaken, me, NPC_FEMALE_FALLEN_HUMAN, 100.0f);
 
                     for (std::list<Creature*>::const_iterator itr = maleforsaken.begin(); itr != maleforsaken.end(); ++itr)
-                        (*itr)->AI()->DoAction(ACTION_START_WALKING);
+                    {
+                        if ((*itr)->IsAIEnabled())
+                            (*itr)->AI()->DoAction(ACTION_START_WALKING);
+                    }
 
                     for (std::list<Creature*>::const_iterator itr = femaleforsaken.begin(); itr != femaleforsaken.end(); ++itr)
-                        (*itr)->AI()->DoAction(ACTION_START_WALKING);
+                    {
+                        if ((*itr)->IsAIEnabled())
+                            (*itr)->AI()->DoAction(ACTION_START_WALKING);
+                    }
 
                     break;
                 }
@@ -1070,7 +1158,8 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
         {
             _cromushGUID = cromush->GetGUID();
 
-            cromush->GetMotionMaster()->MovePath(WAYPOINT_CROMUSH_01, false);
+            if (cromush->IsAIEnabled())
+                cromush->GetMotionMaster()->MovePath(PATH_CROMUSH_01, false);
         }
     }
 
@@ -1259,8 +1348,8 @@ enum FallenHumanActions
 
     DATA_EMOTE_SALUTE                                   = 66,
 
-    WAYPOINT_OPTION1                                    = 445920,
-    WAYPOINT_OPTION2                                    = 445921
+    PATH_OPTION1                                    = 445920,
+    PATH_OPTION2                                    = 445921
 };
 
 // Fallen Human - 44592, 44593
@@ -1275,7 +1364,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
         _events.Reset();
 
-        me->AddAura(SPELL_FEIGNED, me);
+        DoCastSelf(SPELL_FEIGNED);
 
         me->RemoveAura(SPELL_INVISIBLE);
 
@@ -1294,9 +1383,9 @@ struct npc_silverpine_fallen_human : public ScriptedAI
                     return;
 
                 if (urand(0, 1) == 0)
-                    me->GetMotionMaster()->MovePath(WAYPOINT_OPTION1, false);
+                    me->GetMotionMaster()->MovePath(PATH_OPTION1, false);
                 else
-                    me->GetMotionMaster()->MovePath(WAYPOINT_OPTION2, false);
+                    me->GetMotionMaster()->MovePath(PATH_OPTION2, false);
 
                 me->DespawnOrUnsummon(35s);
 
@@ -1385,12 +1474,13 @@ enum QuestIteratingUponSuccess
     ACTION_OPTION_ID                    = 1,
     ACTION_GO_HOME                      = 2,
 
-    DATA_POINT_FINISHED                 = 5,
-    DATA_POINT_START_QUEST              = 6,
+    PATH_BAT_ARRIVE                     = 448210,
+    PATH_BAT_CIRCLE                     = 448211,
+    PATH_BAT_HOME                       = 448212,
 
-    DATA_WAYPOINT_BAT_ARRIVE            = 448210,
-    DATA_WAYPOINT_BAT_CIRCLE            = 448211,
-    DATA_WAYPOINT_BAT_HOME              = 448212
+    WAYPOINT_ARRIVED_ON_ISLE            = 7,
+    WAYPOINT_LAST_CIRCLE                = 31,
+    WAYPOINT_ARRIVED_HOME               = 6
 };
 
 // Bat Handler Maggotbreath - 44825
@@ -1468,7 +1558,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
 
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
-                    me->GetMotionMaster()->MovePath(DATA_WAYPOINT_BAT_ARRIVE, false);
+                    me->GetMotionMaster()->MovePath(PATH_BAT_ARRIVE, false);
 
                     _events.ScheduleEvent(EVENT_CHECK_FINISH, 500ms);
                 }
@@ -1480,13 +1570,13 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
     {
         switch (pathId)
         {
-            case DATA_WAYPOINT_BAT_ARRIVE:
+            case PATH_BAT_ARRIVE:
             {
-                if (waypointId == 7)
+                if (waypointId == WAYPOINT_ARRIVED_ON_ISLE)
                 {
                     _goingIsland = false;
 
-                    me->GetMotionMaster()->MovePath(DATA_WAYPOINT_BAT_CIRCLE, false);
+                    me->GetMotionMaster()->MovePath(PATH_BAT_CIRCLE, false);
 
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_0, player);
@@ -1495,23 +1585,23 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                 break;
             }
 
-            case DATA_WAYPOINT_BAT_CIRCLE:
+            case PATH_BAT_CIRCLE:
             {
-                if (waypointId == 31)
+                if (waypointId == WAYPOINT_LAST_CIRCLE)
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (player->GetQuestStatus(QUEST_ITERATING_UPON_SUCCESS) == QUEST_STATUS_INCOMPLETE)
-                            me->GetMotionMaster()->MovePath(DATA_WAYPOINT_BAT_CIRCLE, false);
+                            me->GetMotionMaster()->MovePath(PATH_BAT_CIRCLE, false);
                     }
                 }
 
                 break;
             }
 
-            case DATA_WAYPOINT_BAT_HOME:
+            case PATH_BAT_HOME:
             {
-                if (waypointId == 6)
+                if (waypointId == WAYPOINT_ARRIVED_HOME)
                 {
                     me->GetVehicleKit()->RemoveAllPassengers();
 
@@ -1540,7 +1630,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
 
                         me->GetMotionMaster()->Clear();
 
-                        me->GetMotionMaster()->MovePath(DATA_WAYPOINT_BAT_HOME, false);
+                        me->GetMotionMaster()->MovePath(PATH_BAT_HOME, false);
 
                         Talk(TALK_1, player);
                     }
@@ -1688,23 +1778,27 @@ enum QuestWaitingToExsanguinate
     EVENT_TALK_TO_PLAYER                        = 700,
     EVENT_FINISH                                = 800,
 
-    DATA_WAYPOINT_UP                            = 448820,
-    DATA_WAYPOINT_HIDE                          = 448821,
-    DATA_WAYPOINT_DARIUS                        = 448830,
-    DATA_WAYPOINT_IVAR                          = 448840,
-    DATA_WAYPOINT_IVAR_RANE_01                  = 448841,
-    DATA_WAYPOINT_IVAR_RANE_02                  = 448842,
-    DATA_WAYPOINT_IVAR_RANE_03                  = 448843,
-    DATA_WAYPOINT_IVAR_EXIT                     = 448844,
-    DATA_WAYPOINT_DARIUS_EXIT                   = 448831,
-
-    MOVEPOINT_HIDDEN_PLACE                      = 1234,
-    MOVEPOINT_RANA                              = 1230,
-
     ACTION_RANE_JUMP_DEATH                      = 2,
     ACTION_RANE_SKIP_PATH,
     ACTION_MOVE_TO_RANA                         = 500,
 
+    PATH_UP                                     = 448820,
+    PATH_HIDE                                   = 448821,
+    PATH_DARIUS                                 = 448830,
+    PATH_IVAR                                   = 448840,
+    PATH_IVAR_RANE_01                           = 448841,
+    PATH_IVAR_RANE_02                           = 448842,
+    PATH_IVAR_RANE_03                           = 448843,
+    PATH_IVAR_EXIT                              = 448844,
+    PATH_DARIUS_EXIT                            = 448831,
+
+    WAYPOINT_CLOSE_TO_ARMOIRE                   = 15,
+    WAYPOINT_NEXT_TO_ARMOIRE                    = 2,
+    WAYPOINT_ON_DARIUS_DESPAWN                  = 2,
+    WAYPOINT_ON_IVAR_DESPAWN                    = 3,
+
+    MOVEPOINT_HIDDEN_PLACE                      = 1234,
+    MOVEPOINT_RANA                              = 1230,
     MOVEPOINT_ARMOIRE                           = 15
 };
 
@@ -1713,7 +1807,7 @@ struct npc_silverpine_deathstalker : public ScriptedAI
 {
     npc_silverpine_deathstalker(Creature* creature) : ScriptedAI(creature) { }
 
-    void Reset() override
+    void JustAppeared() override
     {
         me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
@@ -1754,17 +1848,10 @@ Position const YorickDeath = { 1295.52f, 1206.58f, 58.501f };
 // Deathstalker Rane Yorick - 44882
 struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 {
-    npc_silverpine_deathstalker_rane_yorick(Creature* creature) : ScriptedAI(creature), _playerArrived(false)
-    {
-        Initialize();
-    }
+    npc_silverpine_deathstalker_rane_yorick(Creature* creature) : ScriptedAI(creature), _playerArrived(false) { }
 
-    void Initialize()
+    void JustAppeared() override
     {
-        _playerGUID = ObjectGuid::Empty;
-        _armoireGUID = ObjectGuid::Empty;
-        _bloodfangGUID = ObjectGuid::Empty;
-
         me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 100, true);
@@ -1780,13 +1867,13 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == DATA_WAYPOINT_UP && waypointId == 15)
+        if (pathId == PATH_UP && waypointId == WAYPOINT_CLOSE_TO_ARMOIRE)
             _events.ScheduleEvent(EVENT_WAIT_ON_PLAYER, 1s);
 
-        if (pathId == DATA_WAYPOINT_HIDE && waypointId == 2)
+        if (pathId == PATH_HIDE && waypointId == WAYPOINT_NEXT_TO_ARMOIRE)
         {
             me->SetFacingTo(4.6425757f);
-            me->CastSpell(me, SPELL_STEALTH);
+            DoCastSelf(SPELL_STEALTH);
         }
     }
 
@@ -1812,7 +1899,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                 me->NearTeleportTo(YorickReady, false);
 
-                me->CastSpell(me, SPELL_STEALTH);
+                DoCastSelf(SPELL_STEALTH);
                 break;
             }
 
@@ -1839,7 +1926,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                 case EVENT_START_ANIM + 1:
                 {
-                    me->GetMotionMaster()->MovePath(DATA_WAYPOINT_UP, false);
+                    me->GetMotionMaster()->MovePath(PATH_UP, false);
                     break;
                 }
 
@@ -1870,7 +1957,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
 
                 case EVENT_HIDE:
                 {
-                    me->GetMotionMaster()->MovePath(DATA_WAYPOINT_HIDE, false);
+                    me->GetMotionMaster()->MovePath(PATH_HIDE, false);
                     break;
                 }
 
@@ -1909,7 +1996,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                 {
                     me->SetDisableGravity(false);
 
-                    me->AddAura(SPELL_PERMANENT_FEIGN_DEATH, me);
+                    DoCastSelf(SPELL_PERMANENT_FEIGN_DEATH);
 
                     me->DespawnOrUnsummon(15s);
                     break;
@@ -1932,18 +2019,7 @@ private:
 // Armoire - 44893
 struct npc_silverpine_armoire : public VehicleAI
 {
-    npc_silverpine_armoire(Creature* creature) : VehicleAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-        _raneGUID = ObjectGuid::Empty;
-        _crowleyGUID = ObjectGuid::Empty;
-        _bloodfangGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_armoire(Creature* creature) : VehicleAI(creature) { }
 
     void IsSummonedBy(Unit* who) override
     {
@@ -1961,7 +2037,10 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (rane->GetOwner() == player)
                     {
                         if (me->GetDistance2d(rane) > 2.0f)
-                            rane->GetAI()->DoAction(ACTION_RANE_SKIP_PATH);
+                        {
+                            if (rane->IsAIEnabled())
+                                rane->GetAI()->DoAction(ACTION_RANE_SKIP_PATH);
+                        }
                     }
                 }
             }
@@ -2048,10 +2127,16 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_START_ANIMATION + 1:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->GetMotionMaster()->MovePath(DATA_WAYPOINT_DARIUS, false);
+                    {
+                        if (darius->IsAIEnabled())
+                            darius->GetMotionMaster()->MovePath(PATH_DARIUS, false);
+                    }
 
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->GetMotionMaster()->MovePath(DATA_WAYPOINT_IVAR, false);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->GetMotionMaster()->MovePath(PATH_IVAR, false);
+                    }
 
                     _events.ScheduleEvent(EVENT_ACTION, 5s);
                     break;
@@ -2063,8 +2148,11 @@ struct npc_silverpine_armoire : public VehicleAI
                     {
                         if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         {
-                            darius->SetFacingToObject(ivar);
-                            ivar->SetFacingToObject(darius);
+                            if (darius->IsAIEnabled())
+                                darius->SetFacingToObject(ivar);
+
+                            if (ivar->IsAIEnabled())
+                                ivar->SetFacingToObject(darius);
                         }
                     }
 
@@ -2075,7 +2163,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(TALK_0);
+                    {
+                        if (darius->IsAIEnabled())
+                            darius->AI()->Talk(TALK_0);
+                    }
 
                     _events.ScheduleEvent(EVENT_CAMERA_B, 6s);
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 1, 6s + 700ms);
@@ -2085,7 +2176,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 1:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_0);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_0);
+                    }
 
                     _events.ScheduleEvent(EVENT_CAMERA_A, 6s);
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 2, 6s + 700ms);
@@ -2095,7 +2189,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 2:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(TALK_1);
+                    {
+                        if (darius->IsAIEnabled())
+                            darius->AI()->Talk(TALK_1);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 3, 12s);
                     break;
@@ -2104,7 +2201,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 3:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(TALK_2);
+                    {
+                        if (darius->IsAIEnabled())
+                            darius->AI()->Talk(TALK_2);
+                    }
 
                     _events.ScheduleEvent(EVENT_CAMERA_B, 7s);
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 4, 7s + 700ms);
@@ -2114,7 +2214,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 4:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_1);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_1);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 5, 7s + 300ms);
                     break;
@@ -2123,7 +2226,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 5:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_2);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_2);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 6, 3s);
                     break;
@@ -2132,7 +2238,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 6:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_3);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_3);
+                    }
 
                     _events.ScheduleEvent(EVENT_CAMERA_A, 9s);
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 7, 9s + 800ms);
@@ -2142,7 +2251,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 7:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                        darius->AI()->Talk(TALK_3);
+                    {
+                        if (darius->IsAIEnabled())
+                            darius->AI()->Talk(TALK_3);
+                    }
 
                     _events.ScheduleEvent(EVENT_CAMERA_B, 3s);
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 8, 3s + 700ms);
@@ -2152,7 +2264,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 8:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_4);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_4);
+                    }
 
                     _events.ScheduleEvent(EVENT_ACTION + 1, 2s + 500ms);
                     break;
@@ -2161,7 +2276,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_ACTION + 1:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->GetMotionMaster()->MovePath(DATA_WAYPOINT_IVAR_RANE_01, false);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->GetMotionMaster()->MovePath(PATH_IVAR_RANE_01, false);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 9, 3s);
                     break;
@@ -2170,7 +2288,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 9:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_5);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_5);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 10, 5s);
                     break;
@@ -2179,7 +2300,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 10:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_6);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_6);
+                    }
 
                     _events.ScheduleEvent(EVENT_ACTION + 2, 6s);
                     break;
@@ -2188,7 +2312,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_ACTION + 2:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->GetMotionMaster()->MovePath(DATA_WAYPOINT_IVAR_RANE_02, false);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->GetMotionMaster()->MovePath(PATH_IVAR_RANE_02, false);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 11, 3s);
                     break;
@@ -2197,7 +2324,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 11:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_7);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_7);
+                    }
 
                     _events.ScheduleEvent(EVENT_ACTION + 3, 4s);
                     break;
@@ -2209,9 +2339,11 @@ struct npc_silverpine_armoire : public VehicleAI
                     {
                         if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
                         {
-                            rane->RemoveAura(SPELL_STEALTH);
-                            ivar->CastSpell(rane, SPELL_REVERSE_RIDE_VEHICLE, true);
-                            rane->EnterVehicle(ivar, 0);
+                            if (rane->IsAIEnabled())
+                                rane->RemoveAura(SPELL_STEALTH);
+
+                            if (ivar->IsAIEnabled())
+                                ivar->CastSpell(rane, SPELL_REVERSE_RIDE_VEHICLE, true);
                         }
                     }
 
@@ -2222,7 +2354,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_ACTION + 4:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->GetMotionMaster()->MovePath(DATA_WAYPOINT_IVAR_RANE_03, false);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->GetMotionMaster()->MovePath(PATH_IVAR_RANE_03, false);
+                    }
 
                     _events.ScheduleEvent(EVENT_ACTION + 5, 3s);
                     break;
@@ -2231,7 +2366,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_ACTION + 5:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->SetFacingTo(3.054326f);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->SetFacingTo(3.054326f);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 12, 500ms);
                     break;
@@ -2240,7 +2378,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 12:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_8);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_8);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 13, 3s);
                     break;
@@ -2249,7 +2390,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 13:
                 {
                     if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
-                        rane->AI()->Talk(TALK_2);
+                    {
+                        if (rane->IsAIEnabled())
+                            rane->AI()->Talk(TALK_2);
+                    }
 
                     _events.ScheduleEvent(EVENT_ACTION + 6, 3s);
                     break;
@@ -2261,8 +2405,11 @@ struct npc_silverpine_armoire : public VehicleAI
                     {
                         if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
                         {
-                            ivar->CastSpell(rane, SPELL_EJECT_PASSENGER_01, false);
-                            rane->GetAI()->DoAction(ACTION_RANE_JUMP_DEATH);
+                            if (ivar->IsAIEnabled())
+                                ivar->CastSpell(rane, SPELL_EJECT_PASSENGER_01, false);
+
+                            if (rane->IsAIEnabled())
+                                rane->GetAI()->DoAction(ACTION_RANE_JUMP_DEATH);
                         }
                     }
 
@@ -2276,8 +2423,11 @@ struct npc_silverpine_armoire : public VehicleAI
                     {
                         if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                         {
-                            ivar->SetFacingToObject(darius);
-                            ivar->AI()->Talk(TALK_9);
+                            if (ivar->IsAIEnabled())
+                            {
+                                ivar->SetFacingToObject(darius);
+                                ivar->AI()->Talk(TALK_9);
+                            }
                         }
                     }
 
@@ -2288,7 +2438,10 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_TALK_TO_PLAYER + 15:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                        ivar->AI()->Talk(TALK_10);
+                    {
+                        if (ivar->IsAIEnabled())
+                            ivar->AI()->Talk(TALK_10);
+                    }
 
                     _events.ScheduleEvent(EVENT_CAMERA_A, 5s + 300ms);
                     _events.ScheduleEvent(EVENT_ACTION + 7, 6s);
@@ -2300,7 +2453,10 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                            ivar->GetMotionMaster()->MovePath(DATA_WAYPOINT_IVAR_EXIT, false);
+                        {
+                            if (ivar->IsAIEnabled())
+                                ivar->GetMotionMaster()->MovePath(PATH_IVAR_EXIT, false);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_ACTION + 8, 3s);
@@ -2313,7 +2469,10 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                            darius->GetMotionMaster()->MovePath(DATA_WAYPOINT_DARIUS_EXIT, false);
+                        {
+                            if (darius->IsAIEnabled())
+                                darius->GetMotionMaster()->MovePath(PATH_DARIUS_EXIT, false);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_FINISH, 4s);
@@ -2325,7 +2484,10 @@ struct npc_silverpine_armoire : public VehicleAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                            darius->CastSpell(player, SPELL_KILL_CREDIT_YORICK, false);
+                        {
+                            if (darius->IsAIEnabled())
+                                darius->CastSpell(player, SPELL_KILL_CREDIT_YORICK, false);
+                        }
 
                         player->GetMotionMaster()->Clear();
 
@@ -2348,14 +2510,21 @@ struct npc_silverpine_armoire : public VehicleAI
                 case EVENT_CAMERA_A:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        player->CastSpell(player, SPELL_ARMOIRE_CAMERA_A, true);
+                    {
+                        if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
+                            player->CastSpell(darius, SPELL_ARMOIRE_CAMERA_A, true);
+                    }
                     break;
                 }
 
                 case EVENT_CAMERA_B:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        player->CastSpell(player, SPELL_ARMOIRE_CAMERA_B, true);
+                    {
+                        if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
+                            player->CastSpell(ivar, SPELL_ARMOIRE_CAMERA_B, true);
+                    }
+
                     break;
                 }
 
@@ -2376,18 +2545,7 @@ private:
 // Lord Darius Crowley - 44883
 struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
 {
-    npc_silverpine_lord_darius_crowley_exhanguinate(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-        _armoireGUID = ObjectGuid::Empty;
-        _bloodfangGUID = ObjectGuid::Empty;
-        _events.Reset();
-    }
+    npc_silverpine_lord_darius_crowley_exhanguinate(Creature* creature) : ScriptedAI(creature) { }
 
     void Reset() override
     {
@@ -2404,7 +2562,7 @@ struct npc_silverpine_lord_darius_crowley_exhanguinate : public ScriptedAI
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == DATA_WAYPOINT_DARIUS_EXIT && waypointId == 2)
+        if (pathId == PATH_DARIUS_EXIT && waypointId == WAYPOINT_ON_DARIUS_DESPAWN)
             me->DespawnOrUnsummon();
     }
 
@@ -2437,16 +2595,7 @@ private:
 // Packleader Ivar Bloodfang - 44884
 struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
 {
-    npc_silverpine_packleader_ivar_bloodfang_exhanguinate(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-        _armoireGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_packleader_ivar_bloodfang_exhanguinate(Creature* creature) : ScriptedAI(creature) { }
 
     void Reset() override
     {
@@ -2468,7 +2617,7 @@ struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == DATA_WAYPOINT_IVAR_EXIT && waypointId == 3)
+        if (pathId == PATH_IVAR_EXIT && waypointId == WAYPOINT_ON_IVAR_DESPAWN)
             me->DespawnOrUnsummon();
     }
 
@@ -2533,10 +2682,6 @@ enum ForsakenRearGuardQuests
     SPELL_SUMMNON_SPIDERLINGS                   = 87084,
     SPELL_VENOM_SPLASH                          = 79607,
 
-    ACTION_DELIVER_CRATES                       = 2,
-    ACTION_EXPLODE                              = 3,
-    ACTION_GRAB_CHICKEN                         = 4,
-
     EVENT_CHECK_PLAYER                          = 100,
     EVENT_TALK_COOLDOWN                         = 101,
     EVENT_REMOVE_PROTECTION                     = 102,
@@ -2551,6 +2696,10 @@ enum ForsakenRearGuardQuests
     EVENT_VENOM_SPLASH                          = 901,
     EVENT_TALK_CHOOSE                           = 1000,
 
+    ACTION_DELIVER_CRATES                       = 2,
+    ACTION_EXPLODE                              = 3,
+    ACTION_GRAB_CHICKEN                         = 4,
+
     DATA_TOROK_ANIMKIT                          = 594,
     DATA_SPIDER_ANIMKIT1                        = 865,
     DATA_SPIDER_ANIMKIT2                        = 866,
@@ -2561,16 +2710,7 @@ enum ForsakenRearGuardQuests
 // "Salty" Rocka - 45498
 struct npc_silverpine_salty_rocka : public ScriptedAI
 {
-    npc_silverpine_salty_rocka(Creature* creature) : ScriptedAI(creature), _playerNear(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-        _gorgarGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_salty_rocka(Creature* creature) : ScriptedAI(creature), _playerNear(false) { }
 
     void Reset() override
     {
@@ -2651,7 +2791,10 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 1:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
-                        gorgar->AI()->Talk(TALK_0);
+                    {
+                        if (gorgar->IsAIEnabled())
+                            gorgar->AI()->Talk(TALK_0);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 2, 20s);
                     break;
@@ -2673,7 +2816,10 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 11:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
-                        gorgar->AI()->Talk(TALK_1);
+                    {
+                        if (gorgar->IsAIEnabled())
+                            gorgar->AI()->Talk(TALK_1);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 12, 20s);
                     break;
@@ -2695,7 +2841,10 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 21:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
-                        gorgar->AI()->Talk(TALK_2);
+                    {
+                        if (gorgar->IsAIEnabled())
+                            gorgar->AI()->Talk(TALK_2);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 22, 20s);
                     break;
@@ -2717,7 +2866,10 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 31:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
-                        gorgar->AI()->Talk(TALK_3);
+                    {
+                        if (gorgar->IsAIEnabled())
+                            gorgar->AI()->Talk(TALK_3);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 32, 20s);
                     break;
@@ -2739,7 +2891,10 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                 case EVENT_TALK + 41:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
-                        gorgar->AI()->Talk(TALK_4);
+                    {
+                        if (gorgar->IsAIEnabled())
+                            gorgar->AI()->Talk(TALK_4);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 2, 20s);
                     break;
@@ -2782,15 +2937,7 @@ private:
 // Apothecary Wormcrud - 44912
 struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
 {
-    npc_silverpine_apothecary_wormcrud(Creature* creature) : ScriptedAI(creature), _drunkenOrcSeaDog(), _orcSeaDogList(), _playerNear(false), _done(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_apothecary_wormcrud(Creature* creature) : ScriptedAI(creature), _drunkenOrcSeaDog(), _orcSeaDogList(), _playerNear(false), _done(false) { }
 
     void Reset() override
     {
@@ -2839,7 +2986,10 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
                 case EVENT_TALK:
                 {
                     if (Creature* orcsea1 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[0]))
-                        orcsea1->AI()->Talk(TALK_0);
+                    {
+                        if (orcsea1->IsAIEnabled())
+                            orcsea1->AI()->Talk(TALK_0);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 1, 12s);
                     break;
@@ -2848,7 +2998,10 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
                 case EVENT_TALK + 1:
                 {
                     if (Creature* orcsea2 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[1]))
-                        orcsea2->AI()->Talk(TALK_1);
+                    {
+                        if (orcsea2->IsAIEnabled())
+                            orcsea2->AI()->Talk(TALK_1);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 2, 12s);
                     break;
@@ -2857,7 +3010,10 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
                 case EVENT_TALK + 2:
                 {
                     if (Creature* orcsea3 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[2]))
-                        orcsea3->AI()->Talk(TALK_2);
+                    {
+                        if (orcsea3->IsAIEnabled())
+                            orcsea3->AI()->Talk(TALK_2);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 3, 12s);
                     break;
@@ -2905,16 +3061,7 @@ private:
 // Admiral Hatchet - 44916
 struct npc_silverpine_admiral_hatchet : public ScriptedAI
 {
-    npc_silverpine_admiral_hatchet(Creature* creature) : ScriptedAI(creature), _playerNear(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-        _torokGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_admiral_hatchet(Creature* creature) : ScriptedAI(creature), _playerNear(false) { }
 
     bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/) override
     {
@@ -2938,7 +3085,10 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
         if (quest->GetQuestId() == QUEST_STEEL_THUNDER)
         {
             if (Creature* pup = me->FindNearestCreature(NPC_ORC_SEA_PUP, 25.0f))
-                pup->GetAI()->DoAction(ACTION_DELIVER_CRATES);
+            {
+                if (pup->IsAIEnabled())
+                    pup->GetAI()->DoAction(ACTION_DELIVER_CRATES);
+            }
         }
 
         if (quest->GetQuestId() == QUEST_LOST_IN_THE_DARKNESS)
@@ -2957,9 +3107,6 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
     {
         _events.Reset();
         _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
-
-        me->SetPowerType(Powers::POWER_ENERGY);
-        me->SetMaxPower(Powers::POWER_ENERGY, 100);
     }
 
     void MoveInLineOfSight(Unit* who) override
@@ -3018,7 +3165,10 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
                 case EVENT_TALK + 2:
                 {
                     if (Creature* torok = ObjectAccessor::GetCreature(*me, _torokGUID))
-                        torok->AI()->Talk(TALK_0);
+                    {
+                        if (torok->IsAIEnabled())
+                            torok->AI()->Talk(TALK_0);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK + 3, 6s);
                     break;
@@ -3035,8 +3185,11 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
                 {
                     if (Creature* torok = ObjectAccessor::GetCreature(*me, _torokGUID))
                     {
-                        torok->PlayOneShotAnimKitId(DATA_TOROK_ANIMKIT);
-                        torok->AI()->Talk(TALK_1);
+                        if (torok->IsAIEnabled())
+                        {
+                            torok->PlayOneShotAnimKitId(DATA_TOROK_ANIMKIT);
+                            torok->AI()->Talk(TALK_1);
+                        }
                     }
 
                     break;
@@ -3069,15 +3222,7 @@ private:
 // Orc Sea Pup - 44914
 struct npc_silverpine_orc_sea_pup : public ScriptedAI
 {
-    npc_silverpine_orc_sea_pup(Creature* creature) : ScriptedAI(creature), _isJustSummoned(true)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_orc_sea_pup(Creature* creature) : ScriptedAI(creature), _isJustSummoned(true) { }
 
     void Reset() override
     {
@@ -3187,15 +3332,7 @@ private:
 // Orc Crate - 44915
 struct npc_silverpine_orc_crate : public ScriptedAI
 {
-    npc_silverpine_orc_crate(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _orcGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_orc_crate(Creature* creature) : ScriptedAI(creature) { }
 
     void IsSummonedBy(Unit* who) override
     {
@@ -3206,7 +3343,10 @@ struct npc_silverpine_orc_crate : public ScriptedAI
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             if (Creature* orc = ObjectAccessor::GetCreature(*me, _orcGUID))
-                me->CastSpell(orc, VEHICLE_SPELL_RIDE_HARDCODED, true);
+            {
+                if (orc->IsAIEnabled())
+                    me->CastSpell(orc, VEHICLE_SPELL_RIDE_HARDCODED, true);
+            }
         }
     }
 
@@ -3241,6 +3381,14 @@ class spell_silverpine_pick_up_orc_crate : public SpellScript
 // Sea Pup Trigger - 83865
 class spell_silverpine_sea_pup_trigger : public SpellScript
 {
+    bool Validate(SpellInfo const* /*spellInfi*/) override
+    {
+        return ValidateSpellInfo(
+            {
+                SPELL_SUMMON_SEA_PUP
+            });
+    }
+
     class IsNotPlayerGuid
     {
     public:
@@ -3280,15 +3428,7 @@ class spell_silverpine_sea_pup_trigger : public SpellScript
 // Mutant Bush Chicken - 44935
 struct npc_silverpine_mutant_bush_chicken : public ScriptedAI
 {
-    npc_silverpine_mutant_bush_chicken(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_mutant_bush_chicken(Creature* creature) : ScriptedAI(creature) { }
 
     void Reset() override
     {
@@ -3335,9 +3475,12 @@ struct npc_silverpine_mutant_bush_chicken : public ScriptedAI
                 {
                     if (Creature* ettin = me->FindNearestCreature(NPC_FOREST_ETTIN, 3.0f))
                     {
-                        ettin->SetFacingToObject(me);
+                        if (ettin->IsAIEnabled())
+                        {
+                            ettin->SetFacingToObject(me);
 
-                        _events.ScheduleEvent(EVENT_CHECK_ETTIN + 2, 2s);
+                            _events.ScheduleEvent(EVENT_CHECK_ETTIN + 2, 2s);
+                        }
                     }
 
                     break;
@@ -3346,7 +3489,10 @@ struct npc_silverpine_mutant_bush_chicken : public ScriptedAI
                 case EVENT_CHECK_ETTIN + 2:
                 {
                     if (Creature* ettin = me->FindNearestCreature(NPC_FOREST_ETTIN, 3.0f))
-                        ettin->GetAI()->DoAction(ACTION_GRAB_CHICKEN);
+                    {
+                        if (ettin->IsAIEnabled())
+                            ettin->GetAI()->DoAction(ACTION_GRAB_CHICKEN);
+                    }
 
                     break;
                 }
@@ -3388,7 +3534,10 @@ struct npc_silverpine_forest_ettin : public ScriptedAI
             case ACTION_GRAB_CHICKEN:
             {
                 if (Creature* chicken = me->FindNearestCreature(NPC_MUTANT_BUSH_CHICKEN, 5.0f))
-                    chicken->CastSpell(me, VEHICLE_SPELL_RIDE_HARDCODED, true);
+                {
+                    if (chicken->IsAIEnabled())
+                        chicken->CastSpell(me, VEHICLE_SPELL_RIDE_HARDCODED, true);
+                }
 
                 break;
             }
@@ -3410,9 +3559,12 @@ struct npc_silverpine_forest_ettin : public ScriptedAI
                 {
                     if (Unit* chicken = me->GetVehicleKit()->GetPassenger(0))
                     {
-                        chicken->CastSpell(me, SPELL_BUSH_EXPLOSION, true);
+                        if (chicken->IsAIEnabled())
+                        {
+                            chicken->CastSpell(me, SPELL_BUSH_EXPLOSION, true);
 
-                        AttackStart(chicken->GetOwner());
+                            AttackStart(chicken->GetOwner());
+                        }
                     }
 
                     break;
@@ -3437,15 +3589,7 @@ private:
 // Webbed Victim - 44941
 struct npc_silverpine_webbed_victim_skitterweb : public ScriptedAI
 {
-    npc_silverpine_webbed_victim_skitterweb(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_webbed_victim_skitterweb(Creature* creature) : ScriptedAI(creature) { }
 
     void Reset() override
     {
@@ -3469,7 +3613,10 @@ struct npc_silverpine_webbed_victim_skitterweb : public ScriptedAI
                             player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM1, true);
 
                             if (Creature* worgen = me->SummonCreature(NPC_BLOODFANG_SCAVENGER, me->GetPosition()))
-                                worgen->Attack(player, true);
+                            {
+                                if (worgen->IsAIEnabled())
+                                    worgen->Attack(player, true);
+                            }
                         }
                         else
                             player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM1, true);
@@ -3488,7 +3635,10 @@ struct npc_silverpine_webbed_victim_skitterweb : public ScriptedAI
                             player->CastSpell(me, SPELL_FREE_WEBBED_VICTIM2, true);
 
                             if (Creature* wolf = me->SummonCreature(NPC_RABID_DOG, me->GetPosition()))
-                                wolf->Attack(player, true);
+                            {
+                                if (wolf->IsAIEnabled())
+                                    wolf->Attack(player, true);
+                            }
                         }
                     }
                 }
@@ -3508,14 +3658,13 @@ private:
 // Orc Sea Dog - 44942
 struct npc_silverpine_orc_sea_dog : public ScriptedAI
 {
-    npc_silverpine_orc_sea_dog(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
+    npc_silverpine_orc_sea_dog(Creature* creature) : ScriptedAI(creature) { }
 
-    void Initialize()
+    void JustAppeared() override
     {
-        _playerGUID = ObjectGuid::Empty;
+        me->SetPowerType(POWER_ENERGY);
+        me->SetMaxPower(POWER_ENERGY, 100);
+        me->SetPower(POWER_ENERGY, 100, true);
     }
 
     void Reset() override
@@ -3791,7 +3940,12 @@ enum FenrisIsleQuests
 
     ACTION_ACTIVATE_SCENE,
 
-    DATA_WAYPOINT_AGATHA                       = 449510,
+    PATH_AGATHA_TO_FORSAKEN                    = 449510,
+
+    WAYPOINT_ARRIVED_TO_FORSAKEN               = 41,
+
+    POINT_FRONTYARD                            = 665,
+
     DATA_SOUND_HOWLING                         = 17671
 };
 
@@ -3863,7 +4017,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == DATA_WAYPOINT_AGATHA && waypointId == 41)
+        if (pathId == PATH_AGATHA_TO_FORSAKEN && waypointId == WAYPOINT_ARRIVED_TO_FORSAKEN)
             _events.ScheduleEvent(EVENT_RUN + 3, 100ms);
     }
 
@@ -3946,7 +4100,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
                             {
                                 if (!_doomHoulDone)
                                 {
-                                    me->CastSpell(me, SPELL_DOOMHOWL);
+                                    DoCastSelf(SPELL_DOOMHOWL);
 
                                     _doomHoulDone = true;
                                     break;
@@ -3985,14 +4139,13 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
 
                         Talk(TALK_4);
 
-                        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                            player->KilledMonsterCredit(NPC_AGATHA_FENRIS);
+                        player->KilledMonsterCredit(NPC_AGATHA_FENRIS);
 
                         me->SetDisableGravity(true);
                         me->SetCanFly(true);
 
                         me->GetMotionMaster()->Clear();
-                        me->GetMotionMaster()->MovePath(DATA_WAYPOINT_AGATHA, false);
+                        me->GetMotionMaster()->MovePath(PATH_AGATHA_TO_FORSAKEN, false);
                     }
                     break;
                 }
@@ -4069,7 +4222,10 @@ class spell_silverpine_agatha_broadcast : public SpellScript
                 if (agatha->GetOwner() == caster)
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*caster, _ownerGUID))
-                        agatha->AI()->Talk(TALK_0, player);
+                    {
+                        if (agatha->IsAIEnabled())
+                            agatha->AI()->Talk(TALK_0, player);
+                    }
                 }
             }
         }
@@ -4100,12 +4256,16 @@ class spell_silverpine_notify_agatha : public SpellScript
             {
                 if (agatha->GetOwner() == target)
                 {
-                    agatha->CastSpell(caster, SPELL_RISE_FORSAKEN, false);
+                    if (agatha->IsAIEnabled())
+                        agatha->CastSpell(caster, SPELL_RISE_FORSAKEN, false);
 
                     if (Player* player = ObjectAccessor::GetPlayer(*target, _ownerGUID))
                     {
                         if (roll_chance_i(50))
-                            agatha->AI()->Talk(TALK_1, player);
+                        {
+                            if (agatha->IsAIEnabled())
+                                agatha->AI()->Talk(TALK_1, player);
+                        }
                     }
                 }
             }
@@ -4217,7 +4377,7 @@ struct npc_silverpine_hillsbrad_refugee : public ScriptedAI
         {
             case SPELL_RISE_FORSAKEN:
             {
-                me->CastSpell(me, SPELL_FORSAKEN_TROOPER_MASTERSCRIPT_FENRIS, true);
+                DoCastSelf(SPELL_FORSAKEN_TROOPER_MASTERSCRIPT_FENRIS);
 
                 me->DespawnOrUnsummon(2s);
                 break;
@@ -4252,7 +4412,8 @@ struct npc_silverpine_hillsbrad_refugee : public ScriptedAI
             {
                 case EVENT_LORDAERON_MIGHT:
                 {
-                    me->CastSpell(me, SPELL_LORDAERON_MIGHT, false);
+
+                    DoCastSelf(SPELL_LORDAERON_MIGHT);
 
                     _events.RescheduleEvent(EVENT_LORDAERON_MIGHT, 15s, 18s);
                     break;
@@ -4298,7 +4459,7 @@ struct npc_silverpine_forsaken_trooper_male_fenris : public ScriptedAI
         if (roll_chance_i(50))
             _events.ScheduleEvent(EVENT_TALK_REVIVE, 1s);
 
-        me->DespawnOrUnsummon(3s);
+        me->DespawnOrUnsummon(4s);
     }
 
     void Reset() override
@@ -4355,7 +4516,7 @@ struct npc_silverpine_forsaken_trooper_female_fenris : public ScriptedAI
         if (roll_chance_i(50))
             _events.ScheduleEvent(EVENT_TALK_REVIVE, 1s);
 
-        me->DespawnOrUnsummon(3s);
+        me->DespawnOrUnsummon(4s);
     }
 
     void Reset() override
@@ -4465,7 +4626,7 @@ struct npc_silverpine_worgen_sentry : public ScriptedAI
 
     void JustEngagedWith(Unit* /*who*/) override
     {
-        me->CastSpell(me, SPELL_BATTLE_ROAR, false);
+        DoCastSelf(SPELL_BATTLE_ROAR);
 
         _events.ScheduleEvent(EVENT_UNDYING_FRENZY, 3s);
     }
@@ -4480,7 +4641,7 @@ struct npc_silverpine_worgen_sentry : public ScriptedAI
             {
                 case EVENT_UNDYING_FRENZY:
                 {
-                    me->CastSpell(me, SPELL_UNDYING_FRENZY, false);
+                    DoCastVictim(SPELL_UNDYING_FRENZY);
 
                     _events.RescheduleEvent(EVENT_UNDYING_FRENZY, 10s, 12s);
                     break;
@@ -4534,7 +4695,10 @@ public:
                         if (agatha->IsAIEnabled())
                         {
                             if (Creature* fenrisStalker = player->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
-                                fenrisStalker->AI()->SetGUID(player->GetGUID());
+                            {
+                                if (fenrisStalker->IsAIEnabled())
+                                    fenrisStalker->AI()->SetGUID(player->GetGUID());
+                            }
                         }
                     }
                 }
@@ -4641,15 +4805,7 @@ Position const NoEscapeStart = { 981.782f, 670.953f, 74.898f, 3.1887f };
 // Fenris Keep Stalker - 45032
 struct npc_silverpine_fenris_stalker : public ScriptedAI
 {
-    npc_silverpine_fenris_stalker(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_fenris_stalker(Creature* creature) : ScriptedAI(creature) { }
 
     void SetGUID(ObjectGuid const& guid, int32 /*id*/) override
     {
@@ -4724,15 +4880,7 @@ private:
 // Fenris Keep Camera - 45003
 struct npc_silverpine_fenris_camera : public ScriptedAI
 {
-    npc_silverpine_fenris_camera(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_fenris_camera(Creature* creature) : ScriptedAI(creature) { }
 
     void Reset() override
     {
@@ -4786,7 +4934,7 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
 
     void MovementInform(uint32 type, uint32 id) override
     {
-        if (type == POINT_MOTION_TYPE && id == 665)
+        if (type == POINT_MOTION_TYPE && id == POINT_FRONTYARD)
             _events.ScheduleEvent(EVENT_CHANGE_TO_SEAT_2, 500ms);
     }
 
@@ -4800,7 +4948,7 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
             {
                 case EVENT_MOVE_TO_STARTPOINT:
                 {
-                    me->GetMotionMaster()->MovePoint(665, 980.7f, 689.14f, 76.9f);
+                    me->GetMotionMaster()->MovePoint(POINT_FRONTYARD, 980.7f, 689.14f, 76.9f);
                     break;
                 }
 
@@ -4856,23 +5004,15 @@ private:
 // Lord Darius Crowley - 44989
 struct npc_silverpine_crowley_fenris : public ScriptedAI
 {
-    npc_silverpine_crowley_fenris(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_crowley_fenris(Creature* creature) : ScriptedAI(creature) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
     }
 
     void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
@@ -4981,23 +5121,15 @@ private:
 // Packleader Ivar Bloodfang - 44990
 struct npc_silverpine_bloodfang_fenris : public ScriptedAI
 {
-    npc_silverpine_bloodfang_fenris(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_bloodfang_fenris(Creature* creature) : ScriptedAI(creature) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
     }
 
     void UpdateAI(uint32 diff) override
@@ -5013,23 +5145,16 @@ private:
 // Phin Odelic - 44993
 struct npc_silverpine_odelic_fenris : public ScriptedAI
 {
-    npc_silverpine_odelic_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_odelic_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
 
         if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
             me->SetFacingToObject(fenrisStalker);
@@ -5073,7 +5198,8 @@ struct npc_silverpine_odelic_fenris : public ScriptedAI
                 case EVENT_MORPHING:
                 {
                     _isWorgen = true;
-                    me->CastSpell(me, SPELL_BLOOD_ODELIC);
+
+                    DoCastSelf(SPELL_BLOOD_ODELIC);
 
                     _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
                     break;
@@ -5100,23 +5226,15 @@ private:
 // Bartolo Ginsetti - 44994
 struct npc_silverpine_bartolo_fenris : public ScriptedAI
 {
-    npc_silverpine_bartolo_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_bartolo_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
 
         if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
             me->SetFacingToObject(fenrisStalker);
@@ -5160,7 +5278,8 @@ struct npc_silverpine_bartolo_fenris : public ScriptedAI
                 case EVENT_MORPHING:
                 {
                     _isWorgen = true;
-                    me->CastSpell(me, SPELL_BLOOD_BARTOLO);
+
+                    DoCastSelf(SPELL_BLOOD_BARTOLO);
 
                     _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
                     break;
@@ -5187,23 +5306,15 @@ private:
 // Loremaster Dibbs - 44995
 struct npc_silverpine_loremaster_fenris : public ScriptedAI
 {
-    npc_silverpine_loremaster_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_loremaster_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
 
         if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
             me->SetFacingToObject(fenrisStalker);
@@ -5247,7 +5358,8 @@ struct npc_silverpine_loremaster_fenris : public ScriptedAI
                 case EVENT_MORPHING:
                 {
                     _isWorgen = true;
-                    me->CastSpell(me, SPELL_BLOOD_DIBBS);
+
+                    DoCastSelf(SPELL_BLOOD_DIBBS);
 
                     _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
                     break;
@@ -5274,23 +5386,15 @@ private:
 // Magistrate Henry Maleb - 44996
 struct npc_silverpine_henry_fenris : public ScriptedAI
 {
-    npc_silverpine_henry_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_henry_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
 
         if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
             me->SetFacingToObject(fenrisStalker);
@@ -5358,7 +5462,7 @@ struct npc_silverpine_henry_fenris : public ScriptedAI
 
                 case EVENT_ANIMATION + 2:
                 {
-                    me->CastSpell(me, SPELL_CONVERSATION_TRIGGER_84077, true);
+                    DoCastSelf(SPELL_CONVERSATION_TRIGGER_84077, true);
                     break;
                 }
 
@@ -5372,7 +5476,7 @@ struct npc_silverpine_henry_fenris : public ScriptedAI
                 {
                     _isWorgen = true;
 
-                    me->CastSpell(me, SPELL_BLOOD_HENRY);
+                    DoCastSelf(SPELL_BLOOD_HENRY);
 
                     _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
                     break;
@@ -5408,23 +5512,15 @@ private:
 // Caretaker Smithers - 44997
 struct npc_silverpine_caretaker_fenris : public ScriptedAI
 {
-    npc_silverpine_caretaker_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_caretaker_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
 
         if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
             me->SetFacingToObject(fenrisStalker);
@@ -5468,7 +5564,8 @@ struct npc_silverpine_caretaker_fenris : public ScriptedAI
                 case EVENT_MORPHING:
                 {
                     _isWorgen = true;
-                    me->CastSpell(me, SPELL_BLOOD_SMITHERS);
+
+                    DoCastSelf(SPELL_BLOOD_SMITHERS);
 
                     _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
                     break;
@@ -5495,23 +5592,15 @@ private:
 // Sophia Zwoski - 45002
 struct npc_silverpine_sophia_fenris : public ScriptedAI
 {
-    npc_silverpine_sophia_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_sophia_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
         if (Player* player = summoner->ToPlayer())
             _playerGUID = player->GetGUID();
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
 
         if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
             me->SetFacingToObject(fenrisStalker);
@@ -5556,7 +5645,7 @@ struct npc_silverpine_sophia_fenris : public ScriptedAI
                 {
                     _isWorgen = true;
 
-                    me->CastSpell(me, SPELL_BLOOD_ZWOSKI);
+                    DoCastSelf(SPELL_BLOOD_ZWOSKI);
 
                     _events.ScheduleEvent(EVENT_HOWLING, 1s + 500ms);
                     _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
@@ -5621,14 +5710,19 @@ enum LordaeronQuest
     EVENT_START_EMOTE                   = 549,
     EVENT_FINISH_RIDE                   = 550,
 
-    DATA_LORDAERON_RIDE                 = 54,
-    DATA_FINISH_RIDE                    = 55,
+    PATH_WARHORSE_TO_SEPULCHER          = 450570,
+    PATH_ORC_LEADER1                    = 4494200,
+    PATH_ORC_LEADER2                    = 4494201,
+    PATH_ARTHURA_TO_GILNEAS             = 453180,
+
+    WAYPOINT_ARRIVED_TO_SEPULCHER       = 42,
+    WAYPOINT_JUST_TOOK_OFF              = 1,
+    WAYPOINT_ARRIVED_TO_GILNEAS         = 41,
+
+    POINT_CLOSE_TO_ZONE                 = 1,
+
     DATA_EMOTE_PREPARE_BOW              = 384,
     DATA_ANIMKIT_DREADGUARD             = 898,
-    DATA_WAYPOIHT_WARHORSE              = 450570,
-    DATA_ORC_LEADER_PATHID1             = 4494200,
-    DATA_ORC_LEADER_PATHID2             = 4494201,
-    DATA_ARTHURA_PATHID                 = 453180
 };
 
 // Lady Sylvanas Windrunner - 44365
@@ -5643,9 +5737,9 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
             if (Creature* warhorse = me->SummonCreature(NPC_FORSAKEN_WARHORSE_UNPHASED, me->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN))
             {
                 if (me->HasAura(SPELL_APPLY_INVIS_ZONE_1))
-                    warhorse->AddAura(SPELL_APPLY_INVIS_ZONE_1, warhorse);
+                    warhorse->CastSpell(warhorse, SPELL_APPLY_INVIS_ZONE_1, true);
                 else if (me->HasAura(SPELL_APPLY_INVIS_ZONE_4))
-                    warhorse->AddAura(SPELL_APPLY_INVIS_ZONE_4, warhorse);
+                    warhorse->CastSpell(warhorse, SPELL_APPLY_INVIS_ZONE_4, true);
 
                 me->EnterVehicle(warhorse, 0);
 
@@ -5698,17 +5792,7 @@ private:
 // Forsaken Warhorse (Player) - 45041
 struct npc_silverpine_warhorse_player_lordaeron : public ScriptedAI
 {
-    npc_silverpine_warhorse_player_lordaeron(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-        _playerGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_warhorse_player_lordaeron(Creature* creature) : ScriptedAI(creature) { }
 
     void IsSummonedBy(Unit* who) override
     {
@@ -5718,6 +5802,9 @@ struct npc_silverpine_warhorse_player_lordaeron : public ScriptedAI
 
             player->EnterVehicle(me);
         }
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
     }
 
     void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
@@ -5743,20 +5830,7 @@ private:
 // Forsaken Warhorse (Sylvanas) - 45057
 struct npc_silverpine_warhorse_sylvanas_lordaeron : public ScriptedAI
 {
-    npc_silverpine_warhorse_sylvanas_lordaeron(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _sylvanasGUID = ObjectGuid::Empty;
-        _playerGUID = ObjectGuid::Empty;
-        _playerHorseGUID = ObjectGuid::Empty;
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
+    npc_silverpine_warhorse_sylvanas_lordaeron(Creature* creature) : ScriptedAI(creature) { }
 
     void IsSummonedBy(Unit* who) override
     {
@@ -5771,6 +5845,10 @@ struct npc_silverpine_warhorse_sylvanas_lordaeron : public ScriptedAI
             if (Creature* playerhorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_PLAYER, 10.0f))
                 _playerHorseGUID = playerhorse->GetGUID();
         }
+
+
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+        me->SetReactState(REACT_PASSIVE);
     }
 
     void PassengerBoarded(Unit* /*passenger*/, int8 seatId, bool apply) override
@@ -5784,10 +5862,10 @@ struct npc_silverpine_warhorse_sylvanas_lordaeron : public ScriptedAI
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == DATA_WAYPOIHT_WARHORSE)
+        if (pathId == PATH_WARHORSE_TO_SEPULCHER)
         {
-            if (waypointId == 42)
-                me->GetMotionMaster()->MovePoint(1, 499.185f, 1549.9855f, 129.094f, false, 3.5f);
+            if (waypointId == WAYPOINT_ARRIVED_TO_SEPULCHER)
+                me->GetMotionMaster()->MovePoint(POINT_CLOSE_TO_ZONE, 499.185f, 1549.9855f, 129.094f, false, 3.5f);
         }
     }
 
@@ -5806,17 +5884,7 @@ private:
 // Lady Sylvanas Windrunner (Lordaeron) - 45051
 struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
 {
-    npc_silverpine_sylvanas_lordaeron(Creature* creature) : ScriptedAI(creature), _heartstrikeCD(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-        _playerHorseGUID = ObjectGuid::Empty;
-        _sylvanasHorseGUID = ObjectGuid::Empty;
-    }
+    npc_silverpine_sylvanas_lordaeron(Creature* creature) : ScriptedAI(creature), _heartstrikeCD(false) { }
 
     void IsSummonedBy(Unit* who) override
     {
@@ -5829,12 +5897,13 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
 
             me->EnterVehicle(sylvanashorse, 0);
 
-            sylvanashorse->HandleEmoteCommand(EMOTE_ONESHOT_MOUNT_SPECIAL);
+            if (sylvanashorse->IsAIEnabled())
+                sylvanashorse->HandleEmoteCommand(EMOTE_ONESHOT_MOUNT_SPECIAL);
 
             _events.ScheduleEvent(EVENT_RIDE_WARHORSE, 500ms);
         }
 
-        me->CastSpell(me, SPELL_DREADGUARD_SALUTE_PERIODIC, true);
+        DoCastSelf(SPELL_DREADGUARD_SALUTE_PERIODIC);
     }
 
     void SpellHit(Unit* caster, SpellInfo const* spell) override
@@ -5880,7 +5949,10 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                         _playerHorseGUID = playerhorse->GetGUID();
 
                         if (Creature* sylvanashorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_SYLVANAS, 10.0f))
-                            playerhorse->EnterVehicle(sylvanashorse, 1);
+                        {
+                            if (playerhorse->IsAIEnabled())
+                                playerhorse->EnterVehicle(sylvanashorse, 1);
+                        }
                     }
 
                     _events.ScheduleEvent(EVENT_RIDE_WARHORSE + 1, 1s);
@@ -5891,14 +5963,19 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_RIDE_WARHORSE + 1:
                 {
                     if (Creature* sylvanashorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_SYLVANAS, 10.0f))
-                        sylvanashorse->GetMotionMaster()->MovePath(DATA_WAYPOIHT_WARHORSE, false);
+                    {
+                        if (sylvanashorse->IsAIEnabled())
+                            sylvanashorse->GetMotionMaster()->MovePath(PATH_WARHORSE_TO_SEPULCHER, false);
+
+                    }
+
                     break;
                 }
 
                 case EVENT_CHAT_TO_PLAYER:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_0);
+                        Talk(TALK_0, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 1, 5s + 300ms);
                     break;
@@ -5907,7 +5984,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_1);
+                        Talk(TALK_1, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 2, 5s + 300ms);
                     break;
@@ -5916,7 +5993,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 2:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_2);
+                        Talk(TALK_2, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 3, 8s + 800ms);
                     break;
@@ -5925,10 +6002,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 3:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    {
-                        Talk(TALK_3);
-                        me->AddAura(SPELL_DETECT_INV_ZONE_4, player);
-                    }
+                        Talk(TALK_3, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 4, 5s + 300ms);
                     break;
@@ -5937,7 +6011,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 4:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_4);
+                        Talk(TALK_4, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 5, 8s + 300ms);
                     break;
@@ -5946,7 +6020,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 5:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_5);
+                        Talk(TALK_5, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 6, 8s + 900ms);
                     break;
@@ -5955,7 +6029,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 6:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_6);
+                        Talk(TALK_6, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 7, 9s + 900ms);
                     break;
@@ -5964,7 +6038,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 7:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_7);
+                        Talk(TALK_7, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 8, 10s + 900ms);
                     break;
@@ -5973,7 +6047,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 8:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_8);
+                        Talk(TALK_8, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 9, 9s + 800ms);
                     break;
@@ -5982,7 +6056,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 9:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_9);
+                        Talk(TALK_9, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 10, 5s + 800ms);
                     break;
@@ -5991,7 +6065,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 10:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_10);
+                        Talk(TALK_10, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 11, 5s + 300ms);
                     break;
@@ -6000,7 +6074,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 11:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_11);
+                        Talk(TALK_11, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 12, 9s + 300ms);
                     break;
@@ -6009,7 +6083,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 12:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_12);
+                        Talk(TALK_12, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 13, 6s + 800ms);
                     break;
@@ -6018,7 +6092,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 13:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_13);
+                        Talk(TALK_13, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 14, 11s + 300ms);
                     break;
@@ -6027,7 +6101,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 14:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_14);
+                        Talk(TALK_14, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 15, 11s + 300ms);
                     break;
@@ -6036,7 +6110,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 15:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_15);
+                        Talk(TALK_15, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 16, 9s + 300ms);
                     break;
@@ -6045,7 +6119,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 16:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_16);
+                        Talk(TALK_16, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 17, 9s + 800ms);
                     break;
@@ -6054,7 +6128,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 17:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_17);
+                        Talk(TALK_17, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 18, 5s + 500ms);
                     break;
@@ -6063,7 +6137,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 18:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_18);
+                        Talk(TALK_18, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 19, 9s);
                     break;
@@ -6072,7 +6146,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 19:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_19);
+                        Talk(TALK_19, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 20, 12s + 500ms);
                     break;
@@ -6081,7 +6155,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 20:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_20);
+                        Talk(TALK_20, player);
 
                     _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 21, 7s);
                     break;
@@ -6090,7 +6164,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_CHAT_TO_PLAYER + 21:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        Talk(TALK_21);
+                        Talk(TALK_21, player);
 
                     _events.ScheduleEvent(EVENT_FINISH_RIDE, 6s);
                     break;
@@ -6159,7 +6233,7 @@ struct npc_silverpine_dreadguard_lordaeron : public ScriptedAI
 
                 me->SetAIAnimKitId(DATA_ANIMKIT_DREADGUARD);
 
-                _events.ScheduleEvent(EVENT_START_EMOTE, 5s);
+                _events.ScheduleEvent(EVENT_START_EMOTE, 3s);
 
                 _done = true;
                 break;
@@ -6328,7 +6402,7 @@ class spell_silverpine_summon_lordaeron_actors : public SpellScript
 
             if (Creature* leaderOrc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos1, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
             {
-                leaderOrc->GetMotionMaster()->MovePath(DATA_ORC_LEADER_PATHID1, true);
+                leaderOrc->GetMotionMaster()->MovePath(PATH_ORC_LEADER1, true);
                 leaderOrc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos1, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
@@ -6358,7 +6432,7 @@ class spell_silverpine_summon_lordaeron_actors : public SpellScript
 
             if (Creature* leaderOrc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos2, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
             {
-                leaderOrc->GetMotionMaster()->MovePath(DATA_ORC_LEADER_PATHID2, true);
+                leaderOrc->GetMotionMaster()->MovePath(PATH_ORC_LEADER2, true);
                 leaderOrc->ToUnit()->AddUnitTypeMask(UNIT_MASK_SUMMON);
 
                 if (Creature* orc = caster->SummonCreature(NPC_ORC_MOVER, SeaOrcLeaderPos2, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID))
@@ -6472,12 +6546,9 @@ enum SepulcherQuests
 // Bloodfang Stalker - 45195
 struct npc_silverpine_bloodfang_stalker : public ScriptedAI
 {
-    npc_silverpine_bloodfang_stalker(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
+    npc_silverpine_bloodfang_stalker(Creature* creature) : ScriptedAI(creature) { }
 
-    void Initialize()
+    void JustAppeared() override
     {
         me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
@@ -6527,20 +6598,7 @@ private:
 // Arthura - 45318
 struct npc_arthura_sepulcher : public ScriptedAI
 {
-    npc_arthura_sepulcher(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        _playerGUID = ObjectGuid::Empty;
-    }
-
-    void Reset() override
-    {
-        _events.Reset();
-    }
+    npc_arthura_sepulcher(Creature* creature) : ScriptedAI(creature) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
@@ -6550,19 +6608,19 @@ struct npc_arthura_sepulcher : public ScriptedAI
             {
                 _playerGUID = player->GetGUID();
 
-                me->GetMotionMaster()->MovePath(DATA_ARTHURA_PATHID, false);
+                me->GetMotionMaster()->MovePath(PATH_ARTHURA_TO_GILNEAS, false);
             }
         }
     }
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == DATA_ARTHURA_PATHID)
+        if (pathId == PATH_ARTHURA_TO_GILNEAS)
         {
-            if (waypointId == 1)
+            if (waypointId == WAYPOINT_JUST_TOOK_OFF)
                 Talk(TALK_0);
 
-            if (waypointId == 20)
+            if (waypointId == WAYPOINT_ARRIVED_TO_GILNEAS)
             {
                 if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                 {
@@ -6661,5 +6719,8 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_dreadguard_lordaeron);
 
     RegisterCreatureAI(npc_silverpine_bloodfang_stalker);
+    RegisterCreatureAI(npc_silverpine_caretaker_smithers);
+
     RegisterCreatureAI(npc_arthura_sepulcher);
+
 }

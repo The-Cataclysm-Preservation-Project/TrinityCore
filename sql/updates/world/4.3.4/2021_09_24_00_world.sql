@@ -1211,7 +1211,7 @@ INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplineP
 (44608, 0, 0, 0, 50331648, 1, 0, 0, 0, 0, 3, ''),
 (44609, 0, 0, 0, 50331648, 1, 0, 0, 0, 0, 3, ''),
 (44610, 0, 0, 0, 50331648, 1, 0, 0, 0, 0, 3, ''),
-(44615, 0, 0, 0, 0, 257, 0, 0, 0, 0, 3, '83231'),
+(44615, 0, 0, 0, 0, 257, 0, 0, 0, 0, 3, ''),
 (44592, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, '80636'),
 (44593, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, '80636'),
 (44825, 0, 0, 0, 0, 257, 0, 0, 0, 0, 0, ''),
@@ -2431,7 +2431,7 @@ INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES (228, 267, 'The
 
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=27099 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 75);
+(83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 2);
 
  -- Forsaken Warhorse (45041)
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_warhorse_player_lordaeron' WHERE `entry` = 45041;
@@ -3217,11 +3217,11 @@ INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`,
 (45282, 45374, 0, 0, 'Forsaken Catapult', 6, 30000);
 
  --
- -- Post-Lordaeron quest
+ -- Olsen's Farthing
  --
  
  -- Veteran Forsaken Trooper
-UPDATE `creature_template`SET `npcflag`= 16777216, `ScriptName`= 'npc_silverpine_veteran_forsaken_trooper' WHERE `entry` = 45197;
+UPDATE `creature_template` SET `npcflag`= 16777216, `ScriptName`= 'npc_silverpine_veteran_forsaken_trooper' WHERE `entry` = 45197;
 
 DELETE FROM `npc_spellclick_spells` WHERE `npc_entry`=45197 AND `spell_id`=84379;
 INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
@@ -3246,9 +3246,23 @@ UPDATE `creature_template_addon` SET `auras` = '86237 86559' WHERE `entry` = 451
 DELETE FROM `spell_area` WHERE `spell`=86560 AND `area`=229 AND `quest_start`=27098 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (86560, 229, 27098, 27181, 0, 0, 2, 3, 64, 1);
- 
+
+ -- Caretaker Smithers
+UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_caretaker_smithers' WHERE `entry` = 45219;
+
+DELETE FROM `creature_text` WHERE `CreatureID`=45219;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(45219, 0, 0, 'Come to die, have you?', 12, 0, 100, 5, 0, 0, 0, 2384, 0, 'combat Frenzy'),
+(45219, 1, 0, 'Shovel meet head!', 12, 0, 100, 5, 0, 0, 0, 2384, 0, 'combat Frenzy'),
+(45219, 2, 0, '%s goes into a frenzy!', 16, 0, 100, 0, 0, 0, 0, 2384, 0, 'combat Frenzy');
+
  -- Forsaken Catapult
-UPDATE `creature_template_addon` SET `auras` = '29266' WHERE `entry` = 4518;
+UPDATE `creature_addon` SET `auras` = '29266' WHERE `guid` IN (321185, 321177, 321159, 321154, 321143, 321142, 321119, 321103);
+
+
+
+
+
 
  -- Arthura 
 UPDATE `creature_template` SET `ScriptName` = 'npc_arthura_sepulcher' WHERE `entry` = 45318;

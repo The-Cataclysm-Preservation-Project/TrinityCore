@@ -4903,29 +4903,6 @@ void SpellMgr::LoadSpellInfoCorrections()
 
     // END OF SHADOWFANG KEEP SPELLS
 
-    //
-    // SILVERPINE FOREST SPELLS
-    //
-    // Ride Warhorse
-    ApplySpellFix({ 84164 }, [](SpellInfo* spellInfo)
-    {
-        spellInfo->Effects[EFFECT_1].Effect &= ~SPELL_EFFECT_APPLY_AURA;
-    });
-
-    // Despawn All Summons (Lordaeron)
-    ApplySpellFix({ 84173 }, [](SpellInfo* spellInfo)
-    {
-        spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_50000_YARDS);
-    });
-
-    // Lordaeron Complete
-    ApplySpellFix({ 84185 }, [](SpellInfo* spellInfo)
-    {
-        spellInfo->Effects[EFFECT_0].BasePoints = 45051;
-    });
-
-    // END OF SILVERPINE FOREST SPELLS
-
     // Threatening Gaze
     ApplySpellFix({ 24314 }, [](SpellInfo* spellInfo)
     {
