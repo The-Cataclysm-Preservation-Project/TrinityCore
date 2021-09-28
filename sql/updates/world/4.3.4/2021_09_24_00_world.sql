@@ -2702,11 +2702,11 @@ UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_hauler'  WHERE
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83464 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44737 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
-(13, 1, 83464, 0, 2, 31, 0, 3, 44737, 0, 0, 0, 0, '', 'Chain Visual Left - Target Subdued Forest Ettin');
+(13, 1, 83464, 0, 2, 31, 0, 3, 44737, 0, 0, 0, 0, '', 'Magical Chains - Target Subdued Forest Ettin');
  
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83467 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44737 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
-(13, 1, 83467, 0, 2, 31, 0, 3, 44737, 0, 0, 0, 0, '', 'Chain Visual Right - Target Subdued Forest Ettin');
+(13, 1, 83467, 0, 2, 31, 0, 3, 44737, 0, 0, 0, 0, '', 'Magical Chains - Target Subdued Forest Ettin');
 
 DELETE FROM `vehicle_template_accessory` WHERE `entry` = 44731;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
@@ -3373,13 +3373,25 @@ INSERT INTO `waypoint_data_addon` (`PathID`, `PointID`, `SplinePointIndex`, `Pos
 (447310, 72, 5, -252.4463, 1185.25, 64.12181),
 (447310, 72, 6, -273.4463, 1186.5, 63.87181);
 
- -- Horde Coffin Hauler (waypoints not sniffed yet)
+ -- Horde Coffin Hauler
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_coffin_hauler'  WHERE `entry` = 44764;
+
+DELETE FROM `creature` WHERE `guid` = @CGUID+104;
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
+(@CGUID+104, 44764, 0, 130, 5387, 1, 0, 1, 169, 0, -1, 0, 0, -117.411, 1230.56, 55.5076, 5.51349, 5, 0, 0, 484, 0, 0, 0, 0, 0, NULL, 0);
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=86803 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=46560 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
+(13, 1, 86803, 0, 2, 31, 0, 3, 46560, 0, 0, 0, 0, '', 'Magical Chains - Target Subdued Forest Ettin');
+ 
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=86805 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=46560 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
+(13, 1, 86805, 0, 2, 31, 0, 3, 46560, 0, 0, 0, 0, '', 'Magical Chains - Target Subdued Forest Ettin');
 
 DELETE FROM `vehicle_template_accessory` WHERE `entry` = 44764;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
-(44764, 44734, 0, 1, 'Sitting on top - Horde Engineer', 8, 30000),
-(44764, 44737, 1, 1, 'Subdued Forest Ettin', 8, 30000),
+(44764, 46559, 0, 1, 'Sitting on top - Horde Engineer', 8, 30000),
+(44764, 46560, 1, 1, 'Subdued Forest Ettin', 8, 30000),
 (44764, 0, 2, 1, 'Sitting on floor (top left) - Player side', 8, 30000),
 (44764, 44766, 3, 1, 'On the bottom - Coffin', 8, 30000),
 (44764, 44766, 4, 1, 'On the top - Coffin', 8, 30000),
@@ -3391,7 +3403,77 @@ INSERT INTO `vehicle_seat_addon` (`SeatEntry`, `SeatOffsetX`, `SeatOffsetY`, `Se
 (8406, 0, 0, 0, 4.8, 0, 0, 0, 0, 0),
 (8407, 0, 0, 0, 4.8, 0, 0, 0, 0, 0);
 
- -- Missing waypoints!!!
+DELETE FROM `waypoint_data` WHERE `id` = 447640;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
+(447640, 0, -117.41100, 1230.56, 55.54657, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 1, -102.92700, 1218.8, 59.2818, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 2, -66.37500, 1184.06, 63.99207, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 3, -46.65450, 1185.78, 64.11707, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 4, 1.94444, 1199.56, 64.70892, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 5, 42.86110, 1212.04, 65.84613, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 6, 80.60420, 1221.84, 67.42341, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 7, 125.36800, 1236.16, 70.28318, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 8, 164.26400, 1247.69, 70.80186, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 9, 196.69400, 1257.29, 73.3636, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 10, 227.42500, 1265.73, 75.30868, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 11, 259.83900, 1266.92, 76.99137, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 12, 290.63700, 1259.89, 77.74521, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 13, 321.12200, 1248.55, 80.27526, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 14, 348.63000, 1238.95, 81.33462, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 15, 377.66500, 1232.35, 82.33951, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 16, 408.66100, 1228.99, 83.95744, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 17, 434.09500, 1227.37, 86.83578, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 18, 459.56800, 1225.69, 88.30685, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 19, 491.82300, 1225.08, 88.62835, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 20, 517.55200, 1226.84, 89.29454, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 21, 517.55200, 1226.84, 89.29454, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 22, 517.55200, 1226.84, 89.29454, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 23, 517.55200, 1226.84, 89.29454, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 24, 517.55200, 1226.84, 89.29454, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 25, 517.55200, 1226.84, 89.29454, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 26, 539.95100, 1227.97, 87.95242, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 27, 565.58900, 1240.91, 86.3036, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 28, 593.23100, 1264.48, 86.96415, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 29, 614.43400, 1281.03, 87.28932, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 30, 641.00900, 1295.6, 85.58892, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 31, 679.59570, 1316.697, 79.99839, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 32, 705.91500, 1337.64, 76.90922, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 33, 729.47100, 1355.33, 72.16178, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 34, 764.51000, 1360.41, 66.8047, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 35, 807.17400, 1360.44, 58.98963, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 36, 856.98600, 1360.4, 55.25849, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 37, 898.45700, 1355.6, 49.37231, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 38, 941.95100, 1331.43, 46.78953, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 39, 973.59400, 1310.07, 45.94234, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 40, 1005.93000, 1289.97, 46.02351, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 41, 1031.99000, 1272.48, 46.02351, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 42, 1050.65000, 1256.24, 46.20926, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 43, 1077.91000, 1230.41, 46.39299, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 44, 1105.17000, 1203.85, 46.38932, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 45, 1125.41000, 1191.25, 47.20314, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 46, 1164.13000, 1166.6, 48.49153, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 47, 1205.52000, 1138.63, 50.2557, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 48, 1231.77000, 1119.27, 50.48178, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 49, 1257.36000, 1098.19, 51.55489, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 50, 1278.56000, 1075.08, 53.07847, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 51, 1298.53000, 1048.62, 54.57921, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 52, 1311.31000, 1024.76, 54.71355, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 53, 1321.94, 996.939, 54.67904, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 54, 1329.3, 962.304, 54.63904, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 55, 1333.87, 935.286, 54.63557, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 56, 1344.24, 899.521, 54.61447, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 57, 1356.26, 860.464, 52.08118, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 58, 1370.99, 818.764, 48.20725, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 59, 1381.19, 792.486, 47.12907, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 60, 1396.33, 757.024, 47.16698, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 61, 1412.98, 716.194, 47.1535, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 62, 1424.52, 695.526, 47.22198, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 63, 1441.25, 670.429, 47.21392, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 64, 1461.05, 646.566, 47.37313, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 65, 1497.09, 619.132, 47.61504, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 66, 1515.07, 605.33, 47.62585, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 67, 1542.72, 585.91, 44.23084, 0, 10.4569, 0, 1, 1, 0, 100, 0),
+(447640, 68, 1557.53, 571.729, 42.92298, 0, 10.4569, 0, 0, 1, 0, 100, 0);
 
  --
  -- UNCLASSIFIED YET

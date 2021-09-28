@@ -41,13 +41,21 @@
 
 enum SilverpineVehicleSeats
 {
-    SEAT_HORDE_HAULER_PLAYER     = 2,
+    SEAT_HAULER_PLAYER           = 2,
+    SEAT_HAULER_TROOPER_0        = 3,
+    SEAT_HAULER_TROOPER_1        = 4,
+    SEAT_HAULER_TROOPER_2        = 5,
+    SEAT_HAULER_TROOPER_3        = 6,
+    SEAT_HAULER_TROOPER_4        = 7,
+    SEAT_HAULER_TROOPER_4        = 8,
+
+    SEAT_BLOODFANG               = 0,
     SEAT_FORSAKEN_BAT            = 0,
-    SEAT_WARHORSE_PLAYER         = 0,
     SEAT_FENRIS_CAMERA           = 0,
     SEAT_FENRIS_CAMERA_FORCE     = 1,
+    SEAT_WARHORSE_PLAYER         = 0,
     SEAT_WARHORSE_SYLVANAS       = 0,
-    SEAT_WARHORSE_PLAYER_BOARDED = 1
+    SEAT_WARHORSE_PLAYER_BOARDED = 1,
 };
 
 enum SilverpineAnimKits
@@ -86,13 +94,17 @@ enum SilverpinePhases
 
 enum SilverpineTransports
 {
-    NPC_HORDE_ENGINEER                      = 44734,
-    NPC_SUBDUED_FOREST_ETTIN                = 44737,
+    NPC_HORDE_ENGINEER_HAULER               = 44734,
+    NPC_SUBDUED_FOREST_ETTIN_HAULER         = 44737,
     NPC_FORSAKEN_TROOPER_F                  = 44732,
     NPC_FORSAKEN_TROOPER_M                  = 44733,
+    NPC_HORDE_ENGINEER_COFFIN               = 46559,
+    NPC_SUBDUED_FOREST_ETTIN_COFFIN         = 46560,
 
-    SPELL_CHAIN_RIGHT                       = 83467,
-    SPELL_CHAIN_LEFT                        = 83464,
+    SPELL_CHAIN_RIGHT_HAULER                = 83467,
+    SPELL_CHAIN_LEFT_HAULER                 = 83464,
+    SPELL_CHAIN_RIGHT_COFFIN                = 86803,
+    SPELL_CHAIN_LEFT_COFFIN                 = 86805,
     SPELL_ANIMKIT_HORDE_ENGINEER            = 91298,
     SPELL_EJECT_PASSENGERS_3_8              = 83477,
 
@@ -109,12 +121,48 @@ enum SilverpineTransports
     TALK_ON_SEPULCHER                       = 2,
     TALK_ON_FORSAKEN_FRONT                  = 3,
 
-    PATH_FROM_NORTH_TO_SOUTH                = 447310,
+    PATH_FROM_NORTH_TO_SOUTH                = 447310, 
+    PATH_FROM_SOUTH_TO_NORTH                = 447640,
 
     WAYPOINT_ON_FORSAKEN_HIGH               = 10,
     WAYPOINT_ON_SEPULCHER                   = 34,
     WAYPOINT_ON_FORSAKEN_FRONT              = 69,
-    WAYPOINT_ON_DESPAWN_POINT               = 72
+    WAYPOINT_ON_DESPAWN_POINT_SOUTH         = 72,
+    WAYPOINT_ON_DESPAWN_POINT_NORTH         = 68
+};
+
+// Eject Passengers 3-8 - 83477
+class spell_silverpine_eject_passengers_3_8 : public SpellScript
+{
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (GetHitUnit()->IsVehicle())
+        {
+            Unit* passenger2 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_PLAYER);
+            Unit* passenger3 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_0);
+            Unit* passenger4 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_1);
+            Unit* passenger5 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_2);
+            Unit* passenger6 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_3);
+            Unit* passenger7 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_4);
+            Unit* passenger8 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_4);
+
+            if (GetHitUnit()->IsAIEnabled())
+            {
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger2);
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger3);
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger4);
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger5);
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger6);
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger7);
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger8);
+            }
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_silverpine_eject_passengers_3_8::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
 };
 
 // Horde Hauler - 44731
@@ -124,14 +172,14 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
     void JustAppeared() override
     {
-        if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f))
+        if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f))
         {
-            if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
+            if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN_HAULER, 15.0f))
             {
                 if (engineer->IsAIEnabled())
                 {
-                    engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                    engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                    engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT_HAULER, true);
+                    engineer->CastSpell(ettin, SPELL_CHAIN_LEFT_HAULER, true);
                     engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
                 }
 
@@ -147,9 +195,9 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
         _playerGUID = passenger->GetGUID();
 
-        if (seatId == SEAT_HORDE_HAULER_PLAYER)
+        if (seatId == SEAT_HAULER_PLAYER)
         {
-            if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
+            if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f, true))
             {
                 if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                 {
@@ -182,7 +230,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                 _events.ScheduleEvent(EVENT_YELL_ON_FORSAKEN_FRONT, 1s);
             }
 
-            if (waypointId == WAYPOINT_ON_DESPAWN_POINT)
+            if (waypointId == WAYPOINT_ON_DESPAWN_POINT_SOUTH)
                 me->DespawnOrUnsummon(1s);
         }
     }
@@ -204,7 +252,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
                 case EVENT_YELL_ON_FORSAKEN_HIGH:
                 {
-                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
+                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f, true))
                     {
                         if (engineer->IsAIEnabled())
                             engineer->AI()->Talk(TALK_ON_FORSAKEN_HIGH);
@@ -215,14 +263,14 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
                 case EVENT_TO_THE_SEPULCHER:
                 {
-                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f))
+                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f))
                     {
-                        if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
+                        if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN_HAULER, 15.0f))
                         {
                             if (engineer->IsAIEnabled())
                             {
-                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT_HAULER, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT_HAULER, true);
                                 engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
                             }
                         }
@@ -233,7 +281,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
                 case EVENT_YELL_ON_SEPULCHER:
                 {
-                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
+                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f, true))
                     {
                         if (engineer->IsAIEnabled())
                             engineer->AI()->Talk(TALK_ON_SEPULCHER);
@@ -244,14 +292,14 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
                 case EVENT_TO_THE_FORSAKEN_FRONT:
                 {
-                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f))
+                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f))
                     {
-                        if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
+                        if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN_HAULER, 15.0f))
                         {
                             if (engineer->IsAIEnabled())
                             {
-                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT_HAULER, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT_HAULER, true);
                                 engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
                             }
                         }
@@ -262,7 +310,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
                 case EVENT_YELL_ON_FORSAKEN_FRONT:
                 {
-                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
+                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f, true))
                     {
                         if (engineer->IsAIEnabled())
                             engineer->AI()->Talk(TALK_ON_FORSAKEN_FRONT);
@@ -276,14 +324,14 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
                 case EVENT_TO_DESPAWN:
                 {
-                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f))
+                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f))
                     {
-                        if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
+                        if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN_HAULER, 15.0f))
                         {
                             if (engineer->IsAIEnabled())
                             {
-                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT_HAULER, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT_HAULER, true);
                                 engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
                             }
                         }
@@ -301,6 +349,60 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
+};
+
+// Horde Coffin Hauler - 44764
+struct npc_silverpine_horde_coffin_hauler : public ScriptedAI
+{
+    npc_silverpine_horde_coffin_hauler(Creature* creature) : ScriptedAI(creature) { }
+
+    void JustAppeared() override
+    {
+        if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_COFFIN, 15.0f))
+        {
+            if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN_COFFIN, 15.0f))
+            {
+                if (engineer->IsAIEnabled())
+                {
+                    engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT_COFFIN, true);
+                    engineer->CastSpell(ettin, SPELL_CHAIN_LEFT_COFFIN, true);
+                    engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
+                }
+
+                _events.ScheduleEvent(EVENT_TO_DESPAWN, 8s);
+            }
+        }
+    }
+
+    void WaypointReached(uint32 waypointId, uint32 pathId) override
+    {
+        if (pathId == PATH_FROM_SOUTH_TO_NORTH)
+        {
+            if (waypointId == WAYPOINT_ON_DESPAWN_POINT_NORTH)
+                me->DespawnOrUnsummon(1s);
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_TO_DESPAWN:
+                {
+                    me->GetMotionMaster()->MovePath(PATH_FROM_SOUTH_TO_NORTH, false);
+
+                    break;
+                }
+            }
+        }
+    }
+
+private:
+    EventMap _events;
 };
 
 enum QuestTheGilneasLiberationFront
@@ -2716,10 +2818,10 @@ class spell_silverpine_eject_passenger_1 : public SpellScript
     {
         if (GetHitUnit()->IsVehicle())
         {
-            Unit* rider = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(0);
+            Unit* passenger0 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_BLOODFANG);
 
             if (GetHitUnit()->IsAIEnabled())
-                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(rider);
+                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger0);
         }
     }
 
@@ -6795,7 +6897,9 @@ void AddSC_silverpine_forest()
 {
     new playerScript_silverpine_zone();
 
+    RegisterSpellScript(spell_silverpine_eject_passengers_3_8);
     RegisterCreatureAI(npc_silverpine_horde_hauler);
+    RegisterCreatureAI(npc_silverpine_horde_coffin_hauler); 
 
     RegisterCreatureAI(npc_silverpine_worgen_renegade);
     RegisterCreatureAI(npc_silverpine_forsaken_trooper);
