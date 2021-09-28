@@ -52,7 +52,7 @@ enum SilverpineVehicleSeats
 
 enum SilverpineAnimKits
 {
-    ANIMKIT_RESET                 = 0,
+    ANIMKIT_RESET                = 0,
     ANIMKIT_INTERACT             = 1,
     ANIMKIT_SYLV_1               = 595,
     ANIMKIT_SYLV_2               = 606,
@@ -65,23 +65,23 @@ enum SilverpineAnimKits
     ANIMKIT_SPIDER_2             = 866
 };
 
-enum PhasesforQuestline
+enum SilverpinePhases
 {
     PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION            = 264, 
     PHASE_WAITING_TO_EXSANGUINATE                       = 265,
     PHASE_NO_ESCAPE                                     = 266,
-    PHASE_FOR_LORDAERON                                 = 267,
-    PHASE_THE_WATERS_RUN_RED                            = 273, // NYI
-    PHASE_GILNEAS_ACT_I                                 = 274, // After accepting To Forsaken Forward Command
-    PHASE_GILNEAS_ACT_II                                = 275, // Most likely after during Arthura and Belmont scort quest
-    PHASE_GILNEAS_ACT_III                               = 276, // Most likely after the Gilneas part is completed or rewarded
-    PHASE_THE_FORSAKEN_FRONT_I                          = 277, // Most likely pre Rise Godfrey quest
-    PHASE_THE_FORSAKEN_FRONT_II                         = 278, // Most likely after Rise Godfrey quest
-    PHASE_AMBER_MILL_I                                  = 279, // During Transdimensional Warfare: Chapter I and II quests
-    PHASE_AMBER_MILL_II                                 = 280, // After Transdimensional Warfare: Chapter III is completed but not rewarded
-    PHASE_AMBER_MILL_III                                = 281, // After Transdimensional Warfrase: Chapter III is rewarded
-    PHASE_THE_FORSAKEN_FRONT_III                        = 284, // During Cities in Dust quest
-    PHASE_THE_FORSAKEN_FRONT_IV                         = 289  // After Cities in Dust is completed or rewarded
+    PHASE_FOR_LORDAERON                                 = 267, // There seems to be a PhaseGroup (2491)
+    PHASE_THE_WATERS_RUN_RED                            = 273, 
+    PHASE_GILNEAS_ACT_I                                 = 274, // There seems to be a PhaseGroup (2489)
+    PHASE_GILNEAS_ACT_II                                = 275, // There seems to be a PhaseGroup (2490)
+    PHASE_GILNEAS_ACT_III                               = 276,
+    PHASE_THE_FORSAKEN_FRONT_I                          = 277, 
+    PHASE_THE_FORSAKEN_FRONT_II                         = 278, 
+    PHASE_AMBER_MILL_I                                  = 279,  // There seems to be a PhaseGroup (2492, 2496)
+    PHASE_AMBER_MILL_II                                 = 280,  // There seems to be a PhaseGroup (2493)
+    PHASE_AMBER_MILL_III                                = 281,  // There seems to be a PhaseGroup (2494)
+    PHASE_THE_FORSAKEN_FRONT_III                        = 284, 
+    PHASE_THE_FORSAKEN_FRONT_IV                         = 289  
 };
 
 enum SilverpineTransports
@@ -102,22 +102,19 @@ enum SilverpineTransports
     EVENT_TO_DESPAWN                        = 4,
     EVENT_YELL_ON_FORSAKEN_HIGH             = 5,
     EVENT_YELL_ON_SEPULCHER                 = 6,
-    EVENT_YELL_ON_DESPAWN_POINT             = 7,
+    EVENT_YELL_ON_FORSAKEN_FRONT            = 7,
 
     TALK_HAULER_BOARDED                     = 0,
     TALK_ON_FORSAKEN_HIGH                   = 1,
     TALK_ON_SEPULCHER                       = 2,
     TALK_ON_FORSAKEN_FRONT                  = 3,
 
-    PATH_TO_FORSAKEN_HIGH                   = 447310,
-    PATH_TO_SEPULCHER                       = 447311,
-    PATH_TO_FORSAKEN_FRONT                  = 447312,
-    PATH_TO_DESPAWN                         = 447313,
+    PATH_FROM_NORTH_TO_SOUTH                = 447310,
 
-    WAYPOINT_ON_FORSAKEN_HIGH               = 17,
-    WAYPOINT_ON_SEPULCHER                   = 207,
-    WAYPOINT_ON_FORSAKEN_FRONT              = 165,
-    WAYPOINT_ON_DESPAWN_POINT               = 32
+    WAYPOINT_ON_FORSAKEN_HIGH               = 10,
+    WAYPOINT_ON_SEPULCHER                   = 34,
+    WAYPOINT_ON_FORSAKEN_FRONT              = 69,
+    WAYPOINT_ON_DESPAWN_POINT               = 72
 };
 
 // Horde Hauler - 44731
@@ -131,11 +128,14 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
         {
             if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
             {
-                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
+                if (engineer->IsAIEnabled())
+                {
+                    engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
+                    engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                    engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
+                }
 
-                _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
+                _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 8s);
             }
         }
     }
@@ -162,35 +162,26 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
-        if (pathId == PATH_TO_FORSAKEN_HIGH)
+        if (pathId == PATH_FROM_NORTH_TO_SOUTH)
         {
             if (waypointId == WAYPOINT_ON_FORSAKEN_HIGH)
             {
                 _events.ScheduleEvent(EVENT_TO_THE_SEPULCHER, 15s);
                 _events.ScheduleEvent(EVENT_YELL_ON_FORSAKEN_HIGH, 1s);
             }
-        }
 
-        if (pathId == WAYPOINT_ON_SEPULCHER)
-        {
             if (waypointId == WAYPOINT_ON_SEPULCHER)
             {
                 _events.ScheduleEvent(EVENT_TO_THE_FORSAKEN_FRONT, 15s);
                 _events.ScheduleEvent(EVENT_YELL_ON_SEPULCHER, 1s);
             }
-        }
 
-        if (pathId == WAYPOINT_ON_FORSAKEN_FRONT)
-        {
             if (waypointId == WAYPOINT_ON_FORSAKEN_FRONT)
             {
                 _events.ScheduleEvent(EVENT_TO_DESPAWN, 15s);
-                _events.ScheduleEvent(PATH_TO_DESPAWN, 1s);
+                _events.ScheduleEvent(EVENT_YELL_ON_FORSAKEN_FRONT, 1s);
             }
-        }
 
-        if (pathId == PATH_TO_DESPAWN)
-        {
             if (waypointId == WAYPOINT_ON_DESPAWN_POINT)
                 me->DespawnOrUnsummon(1s);
         }
@@ -206,17 +197,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
             {
                 case EVENT_TO_FORSAKEN_HIGH_COMMAND:
                 {
-                    if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f))
-                    {
-                        if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
-                        {
-                            engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                            engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
-
-                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
-                        }
-                    }
+                    me->GetMotionMaster()->MovePath(PATH_FROM_NORTH_TO_SOUTH, false);
 
                     break;
                 }
@@ -228,6 +209,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                         if (engineer->IsAIEnabled())
                             engineer->AI()->Talk(TALK_ON_FORSAKEN_HIGH);
                     }
+
                     break;
                 }
 
@@ -237,11 +219,12 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                     {
                         if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
                         {
-                            engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                            engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
-
-                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
+                            if (engineer->IsAIEnabled())
+                            {
+                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                                engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
+                            }
                         }
                     }
 
@@ -255,6 +238,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                         if (engineer->IsAIEnabled())
                             engineer->AI()->Talk(TALK_ON_SEPULCHER);
                     }
+
                     break;
                 }
 
@@ -264,18 +248,19 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                     {
                         if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
                         {
-                            engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                            engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
-
-                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
+                            if (engineer->IsAIEnabled())
+                            {
+                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                                engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
+                            }
                         }
                     }
 
                     break;
                 }
 
-                case EVENT_YELL_ON_DESPAWN_POINT:
+                case EVENT_YELL_ON_FORSAKEN_FRONT:
                 {
                     if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER, 15.0f, true))
                     {
@@ -295,11 +280,12 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
                     {
                         if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN, 15.0f))
                         {
-                            engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
-                            engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
-                            engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
-
-                            _events.ScheduleEvent(EVENT_TO_FORSAKEN_HIGH_COMMAND, 5s);
+                            if (engineer->IsAIEnabled())
+                            {
+                                engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT, true);
+                                engineer->CastSpell(ettin, SPELL_CHAIN_LEFT, true);
+                                engineer->CastSpell(engineer, SPELL_ANIMKIT_HORDE_ENGINEER, true);
+                            }
                         }
                     }
 
