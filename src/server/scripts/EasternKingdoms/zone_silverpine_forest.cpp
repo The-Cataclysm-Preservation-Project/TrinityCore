@@ -1361,29 +1361,32 @@ class spell_silverpine_forsaken_trooper_masterscript_high_command : public Spell
         {
             if (Creature* fallenHuman = unit->ToCreature())
             {
-                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_01_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_01_HC, true);
+                if (fallenHuman->IsAIEnabled())
+                {
+                    if (fallenHuman->GetDisplayId() == DISPLAY_MALE_01_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_01_HC, true);
 
-                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_02_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_02_HC, true);
+                    if (fallenHuman->GetDisplayId() == DISPLAY_MALE_02_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_02_HC, true);
 
-                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_03_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_03_HC, true);
+                    if (fallenHuman->GetDisplayId() == DISPLAY_MALE_03_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_03_HC, true);
 
-                if (fallenHuman->GetDisplayId() == DISPLAY_MALE_04_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_04_HC, true);
+                    if (fallenHuman->GetDisplayId() == DISPLAY_MALE_04_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_MALE_04_HC, true);
 
-                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_01_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_01_HC, true);
+                    if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_01_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_01_HC, true);
 
-                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_02_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_02_HC, true);
+                    if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_02_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_02_HC, true);
 
-                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_03_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_03_HC, true);
+                    if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_03_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_03_HC, true);
 
-                if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_04_HC)
-                    fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_04_HC, true);
+                    if (fallenHuman->GetDisplayId() == DISPLAY_FEMALE_04_HC)
+                        fallenHuman->CastSpell(fallenHuman, SPELL_FORSAKEN_TROOPER_FEMALE_04_HC, true);
+                }
             }
         }
     }
