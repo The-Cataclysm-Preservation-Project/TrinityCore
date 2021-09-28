@@ -47,7 +47,7 @@ enum SilverpineVehicleSeats
     SEAT_HAULER_TROOPER_2        = 5,
     SEAT_HAULER_TROOPER_3        = 6,
     SEAT_HAULER_TROOPER_4        = 7,
-    SEAT_HAULER_TROOPER_4        = 8,
+    SEAT_HAULER_TROOPER_5        = 8,
 
     SEAT_BLOODFANG               = 0,
     SEAT_FORSAKEN_BAT            = 0,
@@ -144,7 +144,7 @@ class spell_silverpine_eject_passengers_3_8 : public SpellScript
             Unit* passenger5 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_2);
             Unit* passenger6 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_3);
             Unit* passenger7 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_4);
-            Unit* passenger8 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_4);
+            Unit* passenger8 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_5);
 
             if (GetHitUnit()->IsAIEnabled())
             {
