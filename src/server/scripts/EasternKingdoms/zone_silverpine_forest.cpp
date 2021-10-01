@@ -4370,7 +4370,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
         JustEnteredCombat(attacker);
     }
 
-    void JustEngagedWith(Unit* who) override
+    void JustEngagedWith(Unit* /*who*/) override
     {
         _events.ScheduleEvent(EVENT_CAST_UNHOLY_SMITE, 500ms);
         _events.ScheduleEvent(EVENT_CAST_AGGRO, 2s, 3s);
