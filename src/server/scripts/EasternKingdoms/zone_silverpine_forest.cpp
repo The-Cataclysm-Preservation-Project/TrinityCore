@@ -2949,7 +2949,7 @@ public:
     {
         if (player->IsAlive())
         {
-            if (!player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) == QUEST_STATUS_COMPLETE)
+            if (player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) != QUEST_STATUS_COMPLETE || player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) != QUEST_STATUS_REWARDED)
             {
                 if (Creature* hatchet = player->FindNearestCreature(NPC_ADMIRAL_HATCHET, 50.0f))
                 {
