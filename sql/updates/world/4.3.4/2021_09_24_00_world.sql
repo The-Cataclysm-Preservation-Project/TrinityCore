@@ -2360,7 +2360,7 @@ SET @ENTRY := 45496;
 DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
 UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
-(@ENTRY, 0, 0, 0, 1, 0, 100, 0, 1000, 2000, 35000, 45000, 80, 32192200, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 35 - 45 seconds (1 - 2s initially) (OOC) - Self: Start timed action list id #32192200 (update out of combat)");
+(@ENTRY, 0, 0, 0, 1, 0, 100, 0, 1000, 2000, 65000, 75000, 80, 32192200, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 65 - 75 seconds (1 - 2s initially) (OOC) - Self: Start timed action list id #32192200 (update out of combat)");
 
 SET @ENTRY := 32192200;
 DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 9;
@@ -2599,7 +2599,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
  --
  
   -- Orc Sea Pup
-UPDATE creature_template SET `unit_flags` = 33288, `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
+UPDATE creature_template SET `unit_flags` = 33288, `VehicleId` = 1060, `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
 
 DELETE FROM `conditions` WHERE `SourceEntry`= 83838 AND `SourceTypeOrReferenceId`= 13;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
@@ -2619,9 +2619,17 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
  -- According to SummonProperties.dbc, this RecID has ParamType 4, not 3; in fact, it wouldn't make the entire script work because of this.
 UPDATE `summon_properties_parameters` SET `ParamType`= 4 WHERE `RecID` = 3033;
 
-DELETE FROM `spell_script_names` WHERE `spell_id` = 83865 AND `ScriptName` = 'spell_silverpine_sea_pup_trigger';
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83865 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44914 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 83865, 0, 0, 31, 0, 3, 44914, 0, 0, 0, 0, '', 'Sea Pup Trigger - Target Orc Sea Pup');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 68576 AND `ScriptName` = 'spell_silverpine_eject_all_passengers';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(83865, 'spell_silverpine_sea_pup_trigger');
+(68576, 'spell_silverpine_eject_all_passengers');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` = 83840 AND `ScriptName` = 'spell_silverpine_despawn_all_summons_rear_guard';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(83840, 'spell_silverpine_despawn_all_summons_rear_guard');
 
  -- Orc Crate
 UPDATE creature_template SET `npcflag` = 16777216 WHERE `entry` = 44915;

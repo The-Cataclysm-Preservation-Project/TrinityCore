@@ -2865,10 +2865,13 @@ enum ForsakenRearGuardQuests
     NPC_SKITTERWEB_STALKER                      = 44908,
 
     SPELL_SUMMON_SEA_PUP                        = 83839,
-    SPELL_SUMMON_ORC_CRATE                      = 83835,
     SPELL_PICK_UP_ORC_CRATE                     = 83838,
-    SPELL_DESPAWN_SUMMONS                       = 83840,
+    SPELL_SUMMON_ORC_CRATE                      = 83835,
     SPELL_KILL_CREDIT_SEA_DOG_CRATE             = 83843,
+    SPELL_SEA_PUP_TRIGGER                       = 83865,
+    SPELL_EJECT_ALL_PASSENGERS                  = 68576,
+    SPELL_DESPAWN_ALL_SUMMONS                   = 83840,
+    SPELL_ANIM_DEAD                             = 98190,
     SPELL_BONK                                  = 80146,
     SPELL_LOG_SMASH                             = 88421,
     SPELL_ETTIN_MOUTH                           = 83907,
@@ -2877,7 +2880,6 @@ enum ForsakenRearGuardQuests
     SPELL_FREE_WEBBED_VICTIM2                   = 83921,
     SPELL_FREE_WEBBED_VICTIM3                   = 83927,
     SPELL_SICK                                  = 83885,
-    SPELL_SEA_PUP_TRIGGER                       = 83865,
     SPELL_SKITTERWEB                            = 83827,
     SPELL_SUMMNON_SPIDERLINGS                   = 87084,
     SPELL_VENOM_SPLASH                          = 79607,
@@ -2886,6 +2888,7 @@ enum ForsakenRearGuardQuests
     EVENT_TALK_COOLDOWN                         = 101,
     EVENT_REMOVE_PROTECTION                     = 102,
     EVENT_JUST_SUMMONED                         = 104,
+    EVENT_TRIGGER_DESPAWN                       = 105,
     EVENT_TALK                                  = 200,
     EVENT_CHECK_PLAYER_ALIVE                    = 300,
     EVENT_CHECK_TALK                            = 400,
@@ -2898,7 +2901,6 @@ enum ForsakenRearGuardQuests
     EVENT_LOG_SMASH,
     EVENT_BONK,
 
-    ACTION_DELIVER_CRATES                       = 2,
     ACTION_EXPLODE                              = 3,
     ACTION_GRAB_CHICKEN                         = 4,
     ACTION_ADMIRAL_START_EVENT                  = 5,
@@ -3339,16 +3341,10 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
         return false;
     }
 
-    void QuestReward(Player* /*player*/, Quest const* quest, uint32 /*opt*/) override
+    void QuestReward(Player* player, Quest const* quest, uint32 /*opt*/) override
     {
         if (quest->GetQuestId() == QUEST_STEEL_THUNDER)
-        {
-            if (Creature* pup = me->FindNearestCreature(NPC_ORC_SEA_PUP, 25.0f))
-            {
-                if (pup->IsAIEnabled())
-                    pup->GetAI()->DoAction(ACTION_DELIVER_CRATES);
-            }
-        }
+            player->CastSpell(player, SPELL_SEA_PUP_TRIGGER, true);
 
         if (quest->GetQuestId() == QUEST_LOST_IN_THE_DARKNESS)
         {
@@ -3466,9 +3462,9 @@ private:
 };
 
 // Orc Sea Pup - 44914
-struct npc_silverpine_orc_sea_pup : public ScriptedAI
+struct npc_silverpine_orc_sea_pup : public VehicleAI
 {
-    npc_silverpine_orc_sea_pup(Creature* creature) : ScriptedAI(creature), _isJustSummoned(true) { }
+    npc_silverpine_orc_sea_pup(Creature* creature) : VehicleAI(creature), _isJustSummoned(true) { }
 
     void JustAppeared() override
     {
@@ -3506,32 +3502,33 @@ struct npc_silverpine_orc_sea_pup : public ScriptedAI
             if (apply)
             {
                 if (!_isJustSummoned)
-                    Talk(seatId + 1);
-            }
-            else
-            {
-                if (Creature* crate = passenger->ToCreature())
                 {
-                    if (crate->IsAIEnabled())
-                        crate->DespawnOrUnsummon(6s);
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(seatId + 1);
                 }
             }
+            else
+                passenger->GetMotionMaster()->MoveJump(me->GetPositionX() + frand(1.5f, 2.5f), me->GetPositionY() + frand(0.5f, 1.5f), me->GetPositionZ(), 5.0f, 5.0f);
         }
     }
 
-    void DoAction(int32 param) override
+    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
     {
-        if (param == ACTION_DELIVER_CRATES)
+        switch (spell->Id)
         {
-            _events.CancelEvent(EVENT_TALK_TO_PLAYER);
+            case SPELL_SEA_PUP_TRIGGER:
+            {
+                _events.CancelEvent(EVENT_TALK_TO_PLAYER);
 
-            Talk(TALK_ORC_PUP_DELIVER_CRATES);
+                if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    Talk(TALK_ORC_PUP_DELIVER_CRATES, player);
 
-            me->GetVehicleKit()->RemoveAllPassengers();
+                _events.ScheduleEvent(EVENT_TRIGGER_DESPAWN, 3s);
+                break;
+            }
 
-            me->HandleEmoteCommand(EMOTE_STATE_FALL);
-
-            me->DespawnOrUnsummon(6s);
+            default:
+                break;
         }
     }
 
@@ -3552,7 +3549,10 @@ struct npc_silverpine_orc_sea_pup : public ScriptedAI
                 case EVENT_TALK_TO_PLAYER:
                 {
                     if (me->GetVehicleKit()->IsVehicleInUse())
-                        Talk(TALK_ORC_PUP_WORN_OFF);
+                    {
+                        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                            Talk(TALK_ORC_PUP_WORN_OFF);
+                    }
 
                     _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 45s, 65s);
                     break;
@@ -3561,6 +3561,18 @@ struct npc_silverpine_orc_sea_pup : public ScriptedAI
                 case EVENT_REMOVE_PROTECTION:
                 {
                     _isJustSummoned = false;
+                    break;
+                }
+
+                case EVENT_TRIGGER_DESPAWN:
+                {
+                    DoCastSelf(SPELL_EJECT_ALL_PASSENGERS);
+                    DoCastSelf(SPELL_ANIM_DEAD);
+
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        player->CastSpell(player, SPELL_DESPAWN_ALL_SUMMONS, true);
+
+                    me->DespawnOrUnsummon(4s);
                     break;
                 }
 
@@ -3576,29 +3588,66 @@ private:
     bool _isJustSummoned;
 };
 
-// Orc Crate - 44915
-struct npc_silverpine_orc_crate : public ScriptedAI
+// Despawn All Summons - 83840
+class spell_silverpine_despawn_all_summons_rear_guard : public SpellScript
 {
-    npc_silverpine_orc_crate(Creature* creature) : ScriptedAI(creature) { }
-
-    void IsSummonedBy(Unit* who) override
+    class IsNotInEntryList
     {
-        if (who->GetEntry() == NPC_ORC_SEA_PUP)
+    public:
+        explicit IsNotInEntryList(std::list<uint32>entrys) : _entrys(entrys) { }
+
+        bool operator()(WorldObject* obj) const
         {
-            _orcGUID = who->GetGUID();
+            if (Creature* target = obj->ToCreature())
+                for (std::list<uint32>::const_iterator itr = _entrys.begin(); itr != _entrys.end(); ++itr)
+                    if (target->GetEntry() == *itr)
+                        return false;
 
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            return true;
+        }
 
-            if (Creature* orc = ObjectAccessor::GetCreature(*me, _orcGUID))
-            {
-                if (orc->IsAIEnabled())
-                    me->CastSpell(orc, VEHICLE_SPELL_RIDE_HARDCODED, true);
-            }
+    private:
+        std::list<uint32> _entrys;
+    };
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        std::list<uint32>entrys;
+
+        entrys.push_back(NPC_ORC_CRATE);
+
+        targets.remove_if(IsNotInEntryList(entrys));
+    }
+
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* caster = GetCaster())
+        {
+            if (GetHitUnit()->IsSummon())
+                GetHitUnit()->ToCreature()->DespawnOrUnsummon();
         }
     }
 
-private:
-    ObjectGuid _orcGUID;
+    void Register() override
+    {
+        OnObjectAreaTargetSelect.Register(&spell_silverpine_despawn_all_summons_rear_guard::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+        OnEffectHitTarget.Register(&spell_silverpine_despawn_all_summons_rear_guard::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
+};
+
+// Eject All Passengers - 68576
+class spell_silverpine_eject_all_passengers : public SpellScript
+{
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        if (GetHitUnit()->IsAIEnabled())
+            GetHitUnit()->GetVehicleKit()->RemoveAllPassengers();
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_silverpine_eject_all_passengers::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
 };
 
 // Pick Up Orc Crate - 83838
@@ -3625,51 +3674,29 @@ class spell_silverpine_pick_up_orc_crate : public SpellScript
     }
 };
 
-// Sea Pup Trigger - 83865
-class spell_silverpine_sea_pup_trigger : public SpellScript
+// Orc Crate - 44915
+struct npc_silverpine_orc_crate : public ScriptedAI
 {
-    bool Validate(SpellInfo const* /*spellInfi*/) override
-    {
-        return ValidateSpellInfo(
-            {
-                SPELL_SUMMON_SEA_PUP
-            });
-    }
+    npc_silverpine_orc_crate(Creature* creature) : ScriptedAI(creature) { }
 
-    class IsNotPlayerGuid
+    void IsSummonedBy(Unit* who) override
     {
-    public:
-        explicit IsNotPlayerGuid(ObjectGuid guid) : _guid(guid) { }
-
-        bool operator()(WorldObject* obj) const
+        if (who->GetEntry() == NPC_ORC_SEA_PUP)
         {
-            if (Player* player = obj->ToPlayer())
-                return player->GetGUID() != _guid;
+            _orcGUID = who->GetGUID();
 
-            return true;
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+
+            if (Creature* orc = ObjectAccessor::GetCreature(*me, _orcGUID))
+            {
+                if (orc->IsAIEnabled())
+                    me->EnterVehicle(orc);
+            }
         }
-
-    private:
-        ObjectGuid _guid;
-    };
-
-    void FilterTargets(std::list<WorldObject*>& targets)
-    {
-        targets.remove_if(IsNotPlayerGuid(GetCaster()->GetGUID()));
     }
 
-    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
-    {
-        if (Unit* unit = GetCaster())
-            if (Player* player = unit->ToPlayer())
-                player->CastSpell(player, SPELL_SUMMON_SEA_PUP);
-    }
-
-    void Register() override
-    {
-        OnObjectAreaTargetSelect.Register(&spell_silverpine_sea_pup_trigger::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-        OnEffectHitTarget.Register(&spell_silverpine_sea_pup_trigger::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-    }
+private:
+    ObjectGuid _orcGUID;
 };
 
 // Mutant Bush Chicken - 44935
@@ -6941,7 +6968,8 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_orc_sea_pup);
     RegisterCreatureAI(npc_silverpine_orc_crate);
     RegisterSpellScript(spell_silverpine_pick_up_orc_crate);
-    RegisterSpellScript(spell_silverpine_sea_pup_trigger);
+    RegisterSpellScript(spell_silverpine_eject_all_passengers);
+    RegisterSpellScript(spell_silverpine_despawn_all_summons_rear_guard);
     RegisterCreatureAI(npc_silverpine_mutant_bush_chicken);
     RegisterCreatureAI(npc_silverpine_forest_ettin);
     RegisterCreatureAI(npc_silverpine_webbed_victim_skitterweb);
