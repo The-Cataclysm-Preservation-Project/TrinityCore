@@ -2949,7 +2949,7 @@ public:
     {
         if (player->IsAlive())
         {
-            if (!player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) == QUEST_STATUS_COMPLETE || !player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) == QUEST_STATUS_REWARDED)
+            if (!player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) == QUEST_STATUS_COMPLETE)
             {
                 if (Creature* hatchet = player->FindNearestCreature(NPC_ADMIRAL_HATCHET, 50.0f))
                 {
@@ -3507,8 +3507,6 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
                         Talk(seatId + 1);
                 }
             }
-            else
-                passenger->GetMotionMaster()->MoveJump(me->GetPositionX() + frand(1.5f, 2.5f), me->GetPositionY() + frand(0.5f, 1.5f), me->GetPositionZ(), 5.0f, 5.0f);
         }
     }
 
