@@ -16,19 +16,19 @@ DELETE FROM `vehicle_template_accessory` WHERE `entry` = 44731;
 INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`, `minion`, `description`, `summontype`, `summontimer`) VALUES
 (44731, 44734, 0, 1, 'Sitting on top - Horde Engineer', 8, 30000),
 (44731, 44737, 1, 1, 'Subdued Forest Ettin', 8, 30000),
-(44731, 0, 2, 1, 'Sitting on floor (top left) - Player side', 8, 30000),
-(44731, 44733, 3, 1, 'Sitting on floor (top right) - Female Trooper', 8, 30000),
-(44731, 44732, 4, 1, 'Sitting on floor (bottom left) - Male Trooper', 8, 30000),
-(44731, 44733, 5, 1, 'Sitting on floor (bottom right) - Female Trooper', 8, 30000),
-(44731, 44733, 6, 1, 'Sitting on shelf (bottom left) - Female trooper', 8, 30000),
-(44731, 44732, 7, 1, 'Sitting on shelf (bottom right) - Male trooper', 8, 30000);
+(44731, 0, 2, 0, 'Sitting on floor (top left) - Player side', 8, 30000),
+(44731, 44733, 3, 0, 'Sitting on floor (top right) - Female Trooper', 8, 30000),
+(44731, 44732, 4, 0, 'Sitting on floor (bottom left) - Male Trooper', 8, 30000),
+(44731, 44733, 5, 0, 'Sitting on floor (bottom right) - Female Trooper', 8, 30000),
+(44731, 44733, 6, 0, 'Sitting on shelf (bottom left) - Female trooper', 8, 30000),
+(44731, 44732, 7, 0, 'Sitting on shelf (bottom right) - Male trooper', 8, 30000);
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44734;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
-(44734, 0, 0, 'This is one way trip, kid, and you definetely don\'t want to be comin\' back on the other wagon.', 12, 0, 100, 1, 0, 0, 0, 0, 0, ''),
-(44734, 1, 0, 'ALL ABOARD! Next stop: The Sepulcher.\r\n', 14, 0, 100, 1, 0, 0, 0, 0, 2, ''),
-(44734, 2, 0, 'ALL ABOARD! Last stop: The Forsaken Front!', 14, 0, 100, 1, 0, 0, 0, 0, 2, ''),
-(44734, 3, 0, 'Final stop, the Forsaken Front! EVERYBODY OUT!', 14, 0, 100, 1, 0, 0, 0, 0, 2, '');
+(44734, 0, 0, 'This is one way trip, kid, and you definitely don\'t want to be comin\' back on the other wagon.', 12, 0, 100, 1, 0, 0, 0, 44790, 0, ''),
+(44734, 1, 0, 'ALL ABOARD! Next stop: The Sepulcher.\r\n', 14, 0, 100, 1, 0, 0, 0, 44796, 2, ''),
+(44734, 2, 0, 'ALL ABOARD! Last stop: The Forsaken Front!', 14, 0, 100, 1, 0, 0, 0, 44797, 2, ''),
+(44734, 3, 0, 'Final stop, the Forsaken Front! EVERYBODY OUT!', 14, 0, 100, 1, 0, 0, 0, 44788, 2, '');
 
 DELETE FROM `vehicle_seat_addon` WHERE `SeatEntry` IN (8394, 8395, 8396, 8397);
 INSERT INTO `vehicle_seat_addon` (`SeatEntry`, `SeatOffsetX`, `SeatOffsetY`, `SeatOffsetZ`, `SeatOffsetO`, `ExitParamX`, `ExitParamY`, `ExitParamZ`, `ExitParamO`, `ExitParamValue`) VALUES 
@@ -676,6 +676,46 @@ INSERT INTO `waypoint_data_addon` (`PathID`, `PointID`, `SplinePointIndex`, `Pos
 (447310, 72, 4, -240.6963, 1184.5, 64.37181),
 (447310, 72, 5, -252.4463, 1185.25, 64.12181),
 (447310, 72, 6, -273.4463, 1186.5, 63.87181);
+
+ -- Forsaken Trooper
+UPDATE creature_template SET `AIName` = 'SmartAI' WHERE `entry` IN (44732, 44733);
+
+DELETE FROM `waypoint_data` WHERE `id` = 447320;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(447320, 0, -138.467, 1210.44, 57.902, NULL, 0, 0, 1, 1, 0, 100, 0),
+(447320, 1, -147.641, 1199.19, 60.5892, NULL, 0, 0, 0, 1, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id` = 447321;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(447321, 0, -132.394, 1210.54, 58.138, NULL, 0, 0, 1, 1, 0, 100, 0),
+(447321, 1, -120.899, 1201.57, 60.6242, NULL, 0, 0, 0, 1, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id` = 447322;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(447322, 0, -121.82, 1219.51, 56.9907, NULL, 0, 0, 1, 1, 0, 100, 0),
+(447322, 1, -109.419, 1222.84, 57.6165, NULL, 0, 0, 0, 1, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id` = 447323;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(447323, 0, -127.809, 1233.05, 54.2031, NULL, 0, 0, 1, 1, 0, 100, 0),
+(447323, 1, -124.922, 1245.05, 53.6781, NULL, 0, 0, 0, 1, 0, 100, 0);
+
+DELETE FROM `waypoint_data` WHERE `id`=447324 AND `point`=0;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
+(447324, 0, -144.589, 1234.47, 52.8815, NULL, 0, 0, 0, 1, 0, 100, 0),
+(447324, 1, -142.385, 1242.93, 53.0675, NULL, 0, 0, 0, 1, 0, 100, 0);
+
+SET @ENTRY := 44732;
+DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
+UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(@ENTRY, 0, 0, 0, 40, 0, 100, 0, 1, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "On wapoint 1 of any path reached - Self: Despawn instantly");
+
+SET @ENTRY := 44733;
+DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
+UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(@ENTRY, 0, 0, 0, 40, 0, 100, 0, 1, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "On wapoint 1 of any path reached - Self: Despawn instantly");
 
  -- Horde Coffin Hauler
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_coffin_hauler'  WHERE `entry` = 44764;
@@ -2292,9 +2332,12 @@ DELETE FROM `spell_area` WHERE `spell`=84241 AND `area`=5386 AND `quest_start`=2
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (84241, 5386, 27065, 27098, 0, 0, 2, 3, 74, 1);
 
- -- Commander Hickley
-UPDATE `creature_template` SET `ScriptName`= 'npc_innkeeper' WHERE `subname` = 'Innkeeper';
+ -- AreaTrigger - 6222 (Forsaken Rear Guard)
+DELETE FROM `areatrigger_scripts` WHERE `entry` = 6222;
+INSERT INTO `areatrigger_scripts` (`entry`, `ScriptName`) VALUES 
+(6222, 'at_silverpine_forsaken_rear_guard');
 
+ -- Commander Hickley
 UPDATE gossip_menu_option SET `OptionNpcflag` = '65536', `OptionType` = '8' WHERE `MenuId` = 12025 AND `OptionIndex` = 0;
 UPDATE gossip_menu_option SET `OptionNpcflag` = '128', `OptionType` = '3' WHERE `MenuId` = 12025 AND `OptionIndex` = 1;
 
@@ -2312,6 +2355,19 @@ INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `Exte
 (45496, 9, 1205, 0, 0, 0, 1, 0, 15595), 
 (45496, 10, 4542, 0, 0, 0, 1, 0, 15595),
 (45496, 11, 5048, 0, 0, 0, 1, 0, 15595);
+
+SET @ENTRY := 45496;
+DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
+UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(@ENTRY, 0, 0, 0, 1, 0, 100, 0, 1000, 2000, 35000, 45000, 80, 32192200, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 35 - 45 seconds (1 - 2s initially) (OOC) - Self: Start timed action list id #32192200 (update out of combat)");
+
+SET @ENTRY := 32192200;
+DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 9;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(@ENTRY, 9, 0, 0, 0, 0, 100, 0, 1000, 1000, 0, 0, 66, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0.2617994, "After 1 seconds - Self: Set orientation to 0.2617994"),
+(@ENTRY, 9, 1, 0, 0, 0, 100, 0, 2000, 2000, 0, 0, 5, 274, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "After 2 seconds - Self: Play emote ONESHOT_NO(DNR) (274)"),
+(@ENTRY, 9, 2, 0, 0, 0, 100, 0, 20000, 25000, 0, 0, 66, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 3.2463124, "After 20 - 25 seconds - Self: Set orientation to 3.2463124");
  
  -- "Salty" Gorgar
  -- Extracted from https://cata-twinhead.twinstar.cz/?npc=45497, a Cataclysm database on version 15595
@@ -2370,6 +2426,15 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (45498, 8, 0, '"Malty!" Hey, "Malty!" I thought you were going to get us shome more booze! What\'sh the hold up?', 14, 1, 100, 5, 0, 0, 0, 45626, 0, 'Rocka 40'),
 (45498, 9, 0, 'I didn\'t like that pet anyways. Beshides... people stop by all the time and give me their pets. If I lost one, it doesn\'t matter. I\'ve got dozens more to lose!', 14, 1, 100, 5, 0, 0, 0, 45637, 0, 'Rocka 41');
 
+ -- "Salty" Gorgar
+DELETE FROM `creature_text` WHERE `CreatureID` = 45497;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(45497, 0, 0, 'Hey, shtop bothering me. You\'re a dishgrace to us all. You can\'t even hold onto your own petsh!', 14, 1, 100, 5, 0, 0, 0, 45631, 0, 'Gorgar 00'),
+(45497, 1, 0, 'Maybe you should worry about your pet and not me! I\'m taking care of my bushinesh jusht fine!', 14, 1, 100, 5, 0, 0, 0, 45628, 0, 'Gorgar 10'),
+(45497, 2, 0, 'Hey, shtop bothering me. You\'re a dishgrace to us all. You can\'t even hold onto your own petsh!', 14, 1, 100, 5, 0, 0, 0, 45631, 0, 'Gorgar 20'),
+(45497, 3, 0, 'It\'s "Salty!" I got here firsht! I got off the boat and onto land firsht! I called the name "Salty." Hey... Where\'s your pet at?', 14, 1, 100, 5, 0, 0, 0, 45627, 0, 'Gorgar 30'),
+(45497, 4, 0, '"Shalty." That\'s my name! Your name should be "I can\'t hold onto petsh." I can\'t believe anyone would trusht you with a beasht.', 14, 1, 100, 5, 0, 0, 0, 45629, 0, 'Gorgar 40');
+
  -- Admiral Hatchet 
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_admiral_hatchet' WHERE `entry` = 44916;
 
@@ -2377,8 +2442,26 @@ DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=11
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (15, 11901, 0, 0, 1, 9, 0, 27069, 0, 0, 0, 0, 0, '', 'Admiral Hatchet - Show gossip option if player has quest 27069');
 
+DELETE FROM `creature_text` WHERE `CreatureID`= 44916;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(44916, 0, 0, 'Who\'s not drunk, Torok?', 12, 0, 100, 0, 0, 0, 0, 45018, 0, 'Admiral Hatchet to Player'),
+(44916, 1, 0, 'Yes.', 12, 0, 100, 0, 0, 0, 0, 45020, 0, 'Admiral Hatchet to Player');
+
+ -- Warlord Torok
+DELETE FROM `creature_text` WHERE `CreatureID` = 44917;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(44917, 0, 0, 'Including me?', 12, 0, 100, 0, 0, 0, 0, 45019, 0, 'Warlord Torok to Player'),
+(44917, 1, 0, '<hic!> Well... Let\'s see... By my count, nobody. The whole crew\'s drunk out of their gourds, admiral... \'cept the sea pups... <hic!>', 12, 0, 100, 0, 0, 0, 0, 45021, 0, 'Warlord Torok to Player');
+
  -- Apothecary Wormcrud
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_apothecary_wormcrud'  WHERE `entry` = 44912;
+
+DELETE FROM `creature_text` WHERE `CreatureID` = 44912;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
+(44912, 0, 0, 'Touch my chicken and I will kill you in your sleep. Am I understood?', 12, 1, 100, 1, 0, 0, 0, 45069, 0, '');
+
+ -- Orc Crate
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_crate' WHERE `entry` = 44915;
 
  -- Orc Sea Dog (44942)
 UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_dog' WHERE `entry` = 44942;
@@ -2416,11 +2499,6 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (3218710, 1, 1039.96, 1575.8, 27.8389, 0, 1.5, 0, 1, 0, 0, 100, 0),
 (3218710, 2, 1041.15, 1573.23, 27.8719, 0, 1.5, 0, 1, 0, 0, 100, 0),
 (3218710, 3, 1043.72, 1574.41, 27.8719, 0, 1.5, 0, 1, 0, 0, 100, 0);
-
- -- Orc Sea Dog (44912)
-DELETE FROM `creature_text` WHERE `CreatureID`=44912;
-INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
-(44912, 0, 0, 'Touch my chicken and I will kill you in your sleep. Am I understood?', 12, 1, 100, 1, 0, 0, 0, 45069, 0, NULL);
 
  -- Orc Sea Dog (44913)
 DELETE FROM `creature_text` WHERE `CreatureID` = 44913;
@@ -2686,6 +2764,10 @@ UPDATE creature_template SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  
 UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1768;
  
  -- Agatha (44951)
+DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44951;
+INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
+(44951, 2, 0, 1, 0, 0, NULL);
+
 DELETE FROM `creature_template_addon` WHERE `entry` = 44951;
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (44951, 0, 0, 0, 50331648, 1, 0, 0, 0, 0, 3, '85451');
@@ -2710,9 +2792,9 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44951, 3, 0, 'Run...', 12, 0, 100, 1, 0, 0, 0, 45184, 0, ''),
 (44951, 4, 0, 'RUN!', 12, 0, 100, 1, 0, 0, 0, 45185, 0, '');
 
-DELETE FROM `spell_script_names` WHERE `spell_id` = 83978 AND `ScriptName` = 'spell_silverpine_agatha_broadcast';
-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(83978, 'spell_silverpine_agatha_broadcast');
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83978 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44951 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 83978, 0, 0, 31, 0, 3, 44951, 0, 0, 0, 0, '', 'Agatha Broadcast - Target Agatha');
 
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83990 AND `ScriptName` = 'spell_silverpine_notify_agatha';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
@@ -3283,24 +3365,27 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
  -- Lordaeron Quest
  --
 
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=267 AND `SourceEntry`=5369 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=130 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(26, 267, 5369, 0, 2, 47, 0, 27098, 8, 0, 0, 0, 0, '', 'Forsaken High Command - Add phase 267 - 27098 taken');
+(26, 169, 130, 0, 0, 47, 0, 27098, 8, 0, 1, 0, 0, '', 'Silverpine Forest - Remove Phase 169 - 27098 taken');
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=267 AND `SourceEntry`=130 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (26, 267, 130, 0, 2, 47, 0, 27098, 8, 0, 0, 0, 0, '', 'Silverpine Forest - Add phase 267 - 27098 taken');
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=228 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 169, 228, 0, 0, 47, 0, 27098, 8, 0, 1, 0, 0, '', 'The Sepulcher - Remove Phase 169 - 27098 taken');
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=228 AND `SourceId`=0 AND `ElseGroup`=1 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(26, 169, 228, 0, 1, 47, 0, 27098, 8, 0, 1, 0, 0, '', 'The Sepulcher - Remove Phase 169 - 27098 taken');
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=267 AND `SourceEntry`=228 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (26, 267, 228, 0, 2, 47, 0, 27098, 8, 0, 0, 0, 0, '', 'The Sepulcher - Add phase 267 - 27098 taken');
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=5369 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (26, 169, 5369, 0, 2, 47, 0, 27098, 8, 0, 1, 0, 0, '', 'Forsaken High Command - Remove Phase 169 - 27098 taken');
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=130 AND `SourceId`=0 AND `ElseGroup`=1 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=267 AND `SourceEntry`=5369 AND `SourceId`=0 AND `ElseGroup`=2 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(26, 169, 130, 0, 1, 47, 0, 27098, 8, 0, 1, 0, 0, '', 'Silverpine Forest - Remove Phase 169 - 27098 taken');
-DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=169 AND `SourceEntry`=228 AND `SourceId`=0 AND `ElseGroup`=1 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=27098 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
-INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
-(26, 169, 228, 0, 1, 47, 0, 27098, 8, 0, 1, 0, 0, '', 'The Sepulcher - Remove Phase 169 - 27098 taken');
+(26, 267, 5369, 0, 2, 47, 0, 27098, 8, 0, 0, 0, 0, '', 'Forsaken High Command - Add phase 267 - 27098 taken');
 
 DELETE FROM `phase_area` WHERE `AreaId`=5369 AND `PhaseId`=169;
 INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES (5369, 169, 'Forsaken High Command after 26965 is rewarded');
@@ -3418,7 +3503,7 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
  -- Forsaken Warhorse (ported from MoP)
 DELETE FROM `creature_template` WHERE `entry`= 73595;
 INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, `KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `femaleName`, `subname`, `IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `exp_unk`, `faction`, `npcflag`, `speed_walk`, `speed_run`, `scale`, `rank`, `dmgschool`, `BaseAttackTime`, `RangeAttackTime`, `BaseVariance`, `RangeVariance`, `unit_class`, `unit_flags`, `unit_flags2`, `dynamicflags`, `family`, `trainer_type`, `trainer_class`, `trainer_race`, `type`, `type_flags`, `type_flags2`, `lootid`, `pickpocketloot`, `skinloot`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `spell1`, `spell2`, `spell3`, `spell4`, `spell5`, `spell6`, `spell7`, `spell8`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, `AIName`, `MovementType`, `HoverHeight`, `HealthModifier`, `HealthModifierExtra`, `ManaModifier`, `ManaModifierExtra`, `ArmorModifier`, `DamageModifier`, `ExperienceModifier`, `RacialLeader`, `movementId`, `RegenHealth`, `mechanic_immune_mask`, `spell_school_immune_mask`, `flags_extra`, `ScriptName`, `VerifiedBuild`) VALUES 
-(73595, 0, 0, 0, 0, 0, 29257, 0, 0, 0, 'Forsaken Warhorse', '', 'Lady Sylvanas Windrunner\'s Pet', NULL, 0, 85, 85, 0, 0, 118, 0, 1, 1.14286, 1, 0, 0, 2000, 2000, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1077, 0, 0, '', 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 17614);
+(73595, 0, 0, 0, 0, 0, 29257, 0, 0, 0, 'Forsaken Warhorse', '', 'Lady Sylvanas Windrunner\'s Pet', NULL, 0, 85, 85, 0, 0, 118, 0, 1, 1.14286, 1, 0, 0, 2000, 2000, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1077, 0, 0, '', 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 17614);
 
 DELETE FROM `creature_template_addon` WHERE `entry`= 73595;
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
