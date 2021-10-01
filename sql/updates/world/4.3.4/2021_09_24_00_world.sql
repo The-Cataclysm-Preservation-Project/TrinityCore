@@ -700,7 +700,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (447323, 0, -127.809, 1233.05, 54.2031, NULL, 0, 0, 1, 1, 0, 100, 0),
 (447323, 1, -124.922, 1245.05, 53.6781, NULL, 0, 0, 0, 1, 0, 100, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=447324 AND `point`=0;
+DELETE FROM `waypoint_data` WHERE `id` = 447324;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
 (447324, 0, -144.589, 1234.47, 52.8815, NULL, 0, 0, 0, 1, 0, 100, 0),
 (447324, 1, -142.385, 1242.93, 53.0675, NULL, 0, 0, 0, 1, 0, 100, 0);

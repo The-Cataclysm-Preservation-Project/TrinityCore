@@ -2955,10 +2955,10 @@ public:
                         hatchet->AI()->DoAction(ACTION_ADMIRAL_START_EVENT);
                 }
 
-                if (Creature* hatchet = player->FindNearestCreature(NPC_APOTHECARY_WORMCRUD, 50.0f))
+                if (Creature* wormcrud = player->FindNearestCreature(NPC_APOTHECARY_WORMCRUD, 50.0f))
                 {
-                    if (hatchet->IsAIEnabled())
-                        hatchet->AI()->DoAction(EVENT_WORMCRUD_START_EVENT);
+                    if (wormcrud->IsAIEnabled())
+                        wormcrud->AI()->DoAction(EVENT_WORMCRUD_START_EVENT);
                 }
             }
         }
