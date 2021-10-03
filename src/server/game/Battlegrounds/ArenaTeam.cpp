@@ -18,6 +18,7 @@
 #include "ArenaTeam.h"
 #include "ArenaTeamMgr.h"
 #include "BattlegroundMgr.h"
+#include "BattlegroundPackets.h"
 #include "CharacterCache.h"
 #include "DatabaseEnv.h"
 #include "Group.h"
@@ -332,11 +333,10 @@ void ArenaTeam::DelMember(ObjectGuid guid, bool cleanDb)
                     if (queue.GetPlayerGroupInfoData(playerMember->GetGUID(), &ginfo))
                         if (!ginfo.IsInvitedToBGInstanceGUID)
                         {
-                            WorldPacket data;
-                            playerMember->RemoveBattlegroundQueueId(bgQueue);
-                            sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, nullptr, playerMember, playerMember->GetBattlegroundQueueIndex(bgQueue), STATUS_NONE, 0, 0, GetType());
+                            WorldPackets::Battleground::BattlefieldStatusNone battlefieldStatus;
+                            sBattlegroundMgr->BuildBattlegroundStatusNone(&battlefieldStatus, playerMember, playerMember->GetBattlegroundQueueIndex(bgQueue), playerMember->GetBattlegroundQueueJoinTime(bgQueue));
                             queue.RemovePlayer(playerMember->GetGUID(), true);
-                            playerMember->GetSession()->SendPacket(&data);
+                            playerMember->SendDirectMessage(battlefieldStatus.Write());
                         }
                 }
             }

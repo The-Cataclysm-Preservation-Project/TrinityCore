@@ -60,7 +60,7 @@ WorldPacket const* WorldPackets::Battleground::BattlefieldRatedInfo::Write()
     _worldPacket << int32(RewardPointsThisWeek);
     _worldPacket << int32(RatedMaxRewardPointsThisWeek);    // this and MaxRewardPointsThisWeek are weekly conquest limits but not sure which one is for rated BGs
     _worldPacket << int32(RatedRewardPointsThisWeek);
-    _worldPacket << int32(0);                               // values are being sent in in sniffs but this filed is unused in the client and interface code
+    _worldPacket << int32(0);                               // values are being sent in sniffs but this field is unused in the client and interface code
     _worldPacket << int32(MaxRewardPointsThisWeek);
 
     return &_worldPacket;
@@ -105,6 +105,215 @@ WorldPacket const* WorldPackets::Battleground::BattlefieldList::Write()
     _worldPacket.WriteByteSeq(BattlemasterGuid[2]);
     _worldPacket.WriteByteSeq(BattlemasterGuid[4]);
     _worldPacket.WriteByteSeq(BattlemasterGuid[3]);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Battleground::BattlefieldStatusNone::Write()
+{
+    _worldPacket.WriteBit(Ticket.RequesterGuid[0]);
+    _worldPacket.WriteBit(Ticket.RequesterGuid[4]);
+    _worldPacket.WriteBit(Ticket.RequesterGuid[7]);
+    _worldPacket.WriteBit(Ticket.RequesterGuid[1]);
+    _worldPacket.WriteBit(Ticket.RequesterGuid[6]);
+    _worldPacket.WriteBit(Ticket.RequesterGuid[3]);
+    _worldPacket.WriteBit(Ticket.RequesterGuid[5]);
+    _worldPacket.WriteBit(Ticket.RequesterGuid[2]);
+
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[5]);
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[6]);
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[7]);
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[2]);
+
+    _worldPacket << uint32(Ticket.Type);
+
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[3]);
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[1]);
+
+    _worldPacket << uint32(Ticket.Id);
+    _worldPacket << int32(Ticket.Time);
+
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[0]);
+    _worldPacket.WriteByteSeq(Ticket.RequesterGuid[4]);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Battleground::BattlefieldStatusNeedConfirmation::Write()
+{
+    _worldPacket << uint32(Hdr.InstanceID);
+    _worldPacket << uint32(Timeout);
+    _worldPacket << uint8(Hdr.RangeMax); // @todo: validate
+    _worldPacket << uint32(Hdr.Ticket.Id);
+    _worldPacket << int32(Hdr.Ticket.Time);
+    _worldPacket << uint8(Hdr.RangeMin); // @todo: validate
+    _worldPacket << uint32(Hdr.Ticket.Type);
+    _worldPacket << uint32(Mapid);
+    _worldPacket << uint8(Role); // Roles?
+
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[5]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[2]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[1]);
+    _worldPacket.WriteBit(Hdr.QueueID[2]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[4]);
+    _worldPacket.WriteBit(Hdr.QueueID[6]);
+    _worldPacket.WriteBit(Hdr.QueueID[3]);
+    _worldPacket.WriteBit(Hdr.RegisteredMatch);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[7]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[3]);
+    _worldPacket.WriteBit(Hdr.QueueID[7]);
+    _worldPacket.WriteBit(Hdr.QueueID[0]);
+    _worldPacket.WriteBit(Hdr.QueueID[4]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[6]);
+    _worldPacket.WriteBit(Hdr.QueueID[1]);
+    _worldPacket.WriteBit(Hdr.QueueID[5]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[0]);
+
+    _worldPacket.FlushBits();
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[6]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[5]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[7]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[2]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[0]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[7]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[4]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[1]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[0]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[4]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[1]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[5]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[3]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[6]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[2]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[3]);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Battleground::BattlefieldStatusActive::Write()
+{
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[2]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[7]);
+    _worldPacket.WriteBit(Hdr.QueueID[7]);
+    _worldPacket.WriteBit(Hdr.QueueID[1]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[5]);
+    _worldPacket.WriteBit(ArenaFaction); // 0 = Horde, 1 = Alliance
+    _worldPacket.WriteBit(Hdr.QueueID[0]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[1]);
+    _worldPacket.WriteBit(Hdr.QueueID[3]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[6]);
+    _worldPacket.WriteBit(Hdr.QueueID[5]);
+    _worldPacket.WriteBit(Hdr.RegisteredMatch);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[4]);
+    _worldPacket.WriteBit(Hdr.QueueID[6]);
+    _worldPacket.WriteBit(Hdr.QueueID[4]);
+    _worldPacket.WriteBit(Hdr.QueueID[2]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[3]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[0]);
+
+    _worldPacket.FlushBits();
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[4]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[5]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[5]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[1]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[6]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[3]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[7]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[6]);
+
+    _worldPacket << int32(Hdr.Ticket.Time);
+    _worldPacket << uint8(Hdr.TeamSize); // @todo: validate
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[4]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[1]);
+
+    _worldPacket << uint32(Hdr.Ticket.Id);
+    _worldPacket << uint8(Hdr.RangeMax); // @todo: validate
+    _worldPacket << uint32(Hdr.Ticket.Type);
+    _worldPacket << uint32(Mapid);
+    _worldPacket << uint8(Hdr.RangeMin);
+    _worldPacket << uint32(StartTimer); // @todo: validate
+
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[2]);
+
+    _worldPacket << uint32(ShutdownTimer); // @todo: validate
+
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[0]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[3]);
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[2]);
+
+    _worldPacket << uint32(Hdr.InstanceID);
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[0]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[7]);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Battleground::BattlefieldStatusQueued::Write()
+{
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[3]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[0]);
+    _worldPacket.WriteBit(Hdr.QueueID[3]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[2]);
+    _worldPacket.WriteBit(EligibleForMatchmaking);
+    _worldPacket.WriteBit(SuspendedQueue); // @todo: validate
+    _worldPacket.WriteBit(Hdr.QueueID[2]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[1]);
+    _worldPacket.WriteBit(Hdr.QueueID[0]);
+    _worldPacket.WriteBit(Hdr.QueueID[6]);
+    _worldPacket.WriteBit(Hdr.QueueID[4]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[6]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[7]);
+    _worldPacket.WriteBit(Hdr.QueueID[7]);
+    _worldPacket.WriteBit(Hdr.QueueID[5]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[4]);
+    _worldPacket.WriteBit(Hdr.Ticket.RequesterGuid[5]);
+    _worldPacket.WriteBit(Hdr.RegisteredMatch);
+    _worldPacket.WriteBit(AsGroup); // @todo: validate
+    _worldPacket.WriteBit(Hdr.QueueID[1]);
+
+    _worldPacket.FlushBits();
+
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[0]);
+
+    _worldPacket << uint32(Hdr.Ticket.Type);
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[5]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[3]);
+
+    _worldPacket << uint32(AverageWaitTime);
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[7]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[1]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[2]);
+
+    _worldPacket << uint8(0); // @todo: research
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[4]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[2]);
+
+    _worldPacket << uint8(0); // @todo: research
+
+    _worldPacket.WriteByteSeq(Hdr.QueueID[6]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[7]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[3]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[6]);
+    _worldPacket.WriteByteSeq(Hdr.QueueID[0]);
+
+    _worldPacket << int32(Hdr.Ticket.Time);
+    _worldPacket << uint32(Hdr.Ticket.Id);
+    _worldPacket << uint8(Hdr.RangeMin);
+    _worldPacket << uint32(WaitTime);
+
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[1]);
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[5]);
+
+    _worldPacket << uint32(Hdr.InstanceID);
+
+    _worldPacket.WriteByteSeq(Hdr.Ticket.RequesterGuid[4]);
 
     return &_worldPacket;
 }

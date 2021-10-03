@@ -18,8 +18,7 @@
 #ifndef BattlegroundPackets_h__
 #define BattlegroundPackets_h__
 
-#include "Packet.h"
-#include "ObjectGuid.h"
+#include "LFGPacketsCommon.h"
 #include <array>
 
 namespace WorldPackets
@@ -98,6 +97,70 @@ namespace WorldPackets
             bool IsRandomBG = false;
             bool HasRandomWinToday = false;
             bool HasHolidayWinToday = false;
+        };
+
+        struct BattlefieldStatusHeader
+        {
+            WorldPackets::LFG::RideTicket Ticket;
+            ObjectGuid QueueID;
+            uint8 RangeMin = 0;
+            uint8 RangeMax = 0;
+            uint8 TeamSize = 0;
+            uint32 InstanceID = 0;
+            bool RegisteredMatch = false;
+            bool TournamentRules = false;
+        };
+
+        class BattlefieldStatusNone final : public ServerPacket
+        {
+        public:
+            BattlefieldStatusNone() : ServerPacket(SMSG_BATTLEFIELD_STATUS_NONE, 8 + 4 + 4 + 4) { }
+
+            WorldPacket const* Write() override;
+
+            WorldPackets::LFG::RideTicket Ticket;
+        };
+
+        class BattlefieldStatusNeedConfirmation final : public ServerPacket
+        {
+        public:
+            BattlefieldStatusNeedConfirmation() : ServerPacket(SMSG_BATTLEFIELD_STATUS_NEED_CONFIRMATION, 4 + 4 + sizeof(BattlefieldStatusHeader) + 1) { }
+
+            WorldPacket const* Write() override;
+
+            uint8 Role = 0;
+            uint32 Timeout = 0;
+            uint32 Mapid = 0;
+            BattlefieldStatusHeader Hdr;
+        };
+
+        class BattlefieldStatusActive final : public ServerPacket
+        {
+        public:
+            BattlefieldStatusActive() : ServerPacket(SMSG_BATTLEFIELD_STATUS_ACTIVE, sizeof(BattlefieldStatusHeader) + 4 + 1 + 1 + 4 + 4) { }
+
+            WorldPacket const* Write() override;
+
+            BattlefieldStatusHeader Hdr;
+            uint32 ShutdownTimer = 0;
+            uint8 ArenaFaction = 0;
+            uint32 StartTimer = 0;
+            uint32 Mapid = 0;
+        };
+
+        class BattlefieldStatusQueued final : public ServerPacket
+        {
+        public:
+            BattlefieldStatusQueued() : ServerPacket(SMSG_BATTLEFIELD_STATUS_QUEUED, 4 + sizeof(BattlefieldStatusHeader) + 1 + 1 + 1 + 4) { }
+
+            WorldPacket const* Write() override;
+
+            BattlefieldStatusHeader Hdr;
+            uint32 WaitTime = 0;
+            uint32 AverageWaitTime = 0;
+            bool AsGroup = false;
+            bool SuspendedQueue = false;
+            bool EligibleForMatchmaking = false;
         };
     }
 
