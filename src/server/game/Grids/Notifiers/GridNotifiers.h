@@ -1424,6 +1424,28 @@ namespace Trinity
             float m_fRange;
     };
 
+    class AllDeadCreaturesInRange
+    {
+    public:
+        AllDeadCreaturesInRange(WorldObject const* obj, float range, bool reqAlive = true) : _obj(obj), _range(range), _reqAlive(reqAlive) { }
+
+        bool operator()(Unit* unit) const
+        {
+            if (_reqAlive && unit->IsAlive())
+                return false;
+
+            if (!_obj->IsWithinDistInMap(unit, _range))
+                return false;
+
+            return true;
+        }
+
+    private:
+        WorldObject const* _obj;
+        float _range;
+        bool _reqAlive;
+    };
+
     class PlayerAtMinimumRangeAway
     {
     public:
