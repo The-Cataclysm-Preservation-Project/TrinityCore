@@ -25549,16 +25549,19 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot, GameObject* go)
 
     LootItem* item = loot->LootItemInSlot(lootSlot, this, &qitem, &ffaitem, &conditem);
 
-    if (sConfigMgr->GetBoolDefault("AOE.LOOT.enable", true))
-    {
-        //SendEquipError(EQUIP_ERR_LOOT_GONE, nullptr, nullptr); prevents error already loot from spamming
-        return;
-    }
+    if (!item)
+	{
+        if (sConfigMgr->GetBoolDefault("AOE.LOOT.enable", true))
+        {
+            //SendEquipError(EQUIP_ERR_LOOT_GONE, nullptr, nullptr); prevents error already loot from spamming
+            return;
+        }
 
-    else
-    {
-        SendEquipError(EQUIP_ERR_LOOT_GONE, nullptr, nullptr);
-        return;
+        else
+        {
+            SendEquipError(EQUIP_ERR_LOOT_GONE, nullptr, nullptr);
+            return;
+        }
     }
 
     if (!item->AllowedForPlayer(this))
