@@ -21,6 +21,7 @@
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "GridNotifiers.h"
+#include "Group.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
@@ -56,6 +57,8 @@ enum SilverpineVehicleSeats
     SEAT_WARHORSE_PLAYER         = 0,
     SEAT_WARHORSE_SYLVANAS       = 0,
     SEAT_WARHORSE_PLAYER_BOARDED = 1,
+    SEAT_FORTESSKI               = 0,
+    SEAT_CANNON                  = 0,
 };
 
 enum SilverpineAnimKits
@@ -101,8 +104,10 @@ enum SilverpineTransports
     NPC_HORDE_ENGINEER_COFFIN               = 46559,
     NPC_SUBDUED_FOREST_ETTIN_COFFIN         = 46560,
 
+    SPELL_CHAIN_HAULER                      = 84238,
     SPELL_CHAIN_RIGHT_HAULER                = 83467,
     SPELL_CHAIN_LEFT_HAULER                 = 83464,
+    SPELL_CHAIN_COFFIN                      = 86802,
     SPELL_CHAIN_RIGHT_COFFIN                = 86803,
     SPELL_CHAIN_LEFT_COFFIN                 = 86805,
     SPELL_EJECT_PASSENGERS_3_8              = 83477,
@@ -134,57 +139,6 @@ enum SilverpineTransports
     WAYPOINT_ON_TROOPER_DESPAWN             = 1
 };
 
-// Eject Passengers 3-8 - 83477
-class spell_silverpine_eject_passengers_3_8 : public SpellScript
-{
-    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
-    {
-        if (GetHitUnit()->IsAIEnabled())
-        {
-            if (Unit* passenger2 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_PLAYER))
-            {
-                if (passenger2->IsAIEnabled())
-                    passenger2->ExitVehicle();
-            }
-
-            if (Unit* passenger3 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_3))
-            {
-                if (passenger3->IsAIEnabled())
-                    passenger3->ExitVehicle();
-            }
-
-            if (Unit* passenger4 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_4))
-            {
-                if (passenger4->IsAIEnabled())
-                    passenger4->ExitVehicle();
-            }
-
-            if (Unit* passenger5 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_5))
-            {
-                if (passenger5->IsAIEnabled())
-                    passenger5->ExitVehicle();
-            }
-
-            if (Unit* passenger6 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_6))
-            {
-                if (passenger6->IsAIEnabled())
-                    passenger6->ExitVehicle();
-            }
-
-            if (Unit* passenger7 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_7))
-            {
-                if (passenger7->IsAIEnabled())
-                    passenger7->ExitVehicle();
-            }
-        }
-    }
-
-    void Register() override
-    {
-        OnEffectHitTarget.Register(&spell_silverpine_eject_passengers_3_8::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-    }
-};
-
 // Horde Hauler - 44731
 struct npc_silverpine_horde_hauler : public ScriptedAI
 {
@@ -200,8 +154,6 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 
     void JustAppeared() override
     {
-        SetChains();
-
         _events.ScheduleEvent(EVENT_START_PATH, 8s);
     }
 
@@ -242,22 +194,13 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
         if (pathId == PATH_FROM_NORTH_TO_SOUTH)
         {
             if (waypointId == WAYPOINT_ON_FORSAKEN_HIGH)
-            {
-                SetChains();
                 _events.ScheduleEvent(EVENT_YELL_ON_FORSAKEN_HIGH, 1s);
-            }
 
             if (waypointId == WAYPOINT_ON_SEPULCHER)
-            {
-                SetChains();
                 _events.ScheduleEvent(EVENT_YELL_ON_SEPULCHER, 1s);
-            }
 
             if (waypointId == WAYPOINT_ON_FORSAKEN_FRONT)
-            {
-                SetChains();
                 _events.ScheduleEvent(EVENT_YELL_ON_FORSAKEN_FRONT, 1s);
-            }
 
             if (waypointId == WAYPOINT_ON_DESPAWN_POINT_SOUTH)
                 me->DespawnOrUnsummon(1s);
@@ -320,24 +263,87 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
         }
     }
 
-    void SetChains()
+private:
+    EventMap _events;
+    ObjectGuid _playerGUID;
+};
+
+// Magical Chains (Hauler) - 84238
+class spell_silverpine_magical_chains_hauler : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_HAULER, 15.0f))
-        {
-            if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN_HAULER, 15.0f))
+        return ValidateSpellInfo(
             {
-                if (engineer->IsAIEnabled())
-                {
-                    engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT_HAULER, true);
-                    engineer->CastSpell(ettin, SPELL_CHAIN_LEFT_HAULER, true);
-                }
+                SPELL_CHAIN_RIGHT_HAULER,
+                SPELL_CHAIN_LEFT_HAULER
+            });
+    }
+
+    void HandlePeriodic(AuraEffect const* /*aurEff*/)
+    {
+        if (Unit* caster = GetCaster())
+        {
+            caster->CastSpell(caster, SPELL_CHAIN_RIGHT_HAULER, true);
+            caster->CastSpell(caster, SPELL_CHAIN_LEFT_HAULER, true);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic.Register(&spell_silverpine_magical_chains_hauler::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+// Eject Passengers 3-8 - 83477
+class spell_silverpine_eject_passengers_3_8 : public SpellScript
+{
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (GetHitUnit()->IsAIEnabled())
+        {
+            if (Unit* passenger2 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_PLAYER))
+            {
+                if (passenger2->IsAIEnabled())
+                    passenger2->ExitVehicle();
+            }
+
+            if (Unit* passenger3 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_3))
+            {
+                if (passenger3->IsAIEnabled())
+                    passenger3->ExitVehicle();
+            }
+
+            if (Unit* passenger4 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_4))
+            {
+                if (passenger4->IsAIEnabled())
+                    passenger4->ExitVehicle();
+            }
+
+            if (Unit* passenger5 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_5))
+            {
+                if (passenger5->IsAIEnabled())
+                    passenger5->ExitVehicle();
+            }
+
+            if (Unit* passenger6 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_6))
+            {
+                if (passenger6->IsAIEnabled())
+                    passenger6->ExitVehicle();
+            }
+
+            if (Unit* passenger7 = GetHitUnit()->GetVehicleKit()->GetPassenger(SEAT_HAULER_TROOPER_7))
+            {
+                if (passenger7->IsAIEnabled())
+                    passenger7->ExitVehicle();
             }
         }
     }
 
-private:
-    EventMap _events;
-    ObjectGuid _playerGUID;
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_silverpine_eject_passengers_3_8::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
 };
 
 // Horde Coffin Hauler - 44764
@@ -358,15 +364,7 @@ struct npc_silverpine_horde_coffin_hauler : public ScriptedAI
         if (Creature* engineer = me->FindNearestCreature(NPC_HORDE_ENGINEER_COFFIN, 15.0f))
         {
             if (Creature* ettin = me->FindNearestCreature(NPC_SUBDUED_FOREST_ETTIN_COFFIN, 15.0f))
-            {
-                if (engineer->IsAIEnabled())
-                {
-                    engineer->CastSpell(ettin, SPELL_CHAIN_RIGHT_COFFIN, true);
-                    engineer->CastSpell(ettin, SPELL_CHAIN_LEFT_COFFIN, true);
-                }
-
                 _events.ScheduleEvent(EVENT_START_PATH, 4s);
-            }
         }
     }
 
@@ -398,6 +396,33 @@ struct npc_silverpine_horde_coffin_hauler : public ScriptedAI
 
 private:
     EventMap _events;
+};
+
+// Magical Chains (Coffin) - 86802
+class spell_silverpine_magical_chains_coffin : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo(
+            {
+                SPELL_CHAIN_RIGHT_COFFIN,
+                SPELL_CHAIN_LEFT_COFFIN
+            });
+    }
+
+    void HandlePeriodic(AuraEffect const* /*aurEff*/)
+    {
+        if (Unit* caster = GetCaster())
+        {
+            caster->CastSpell(caster, SPELL_CHAIN_RIGHT_COFFIN, true);
+            caster->CastSpell(caster, SPELL_CHAIN_LEFT_COFFIN, true);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic.Register(&spell_silverpine_magical_chains_coffin::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
 };
 
 enum QuestTheGilneasLiberationFront
@@ -573,7 +598,7 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 
 private:
     EventMap _events;
-    uint32 _spellId;
+    uint8 _spellId;
     uint8 _randomSpellIndex;
 };
 
@@ -1907,8 +1932,7 @@ enum QuestWaitingToExsanguinate
     SPELL_SUMMON_HIDING_SPOT                    = 83756,
     SPELL_HIDE_IN_ARMOIRE                       = 83788,
     SPELL_STEALTH                               = 34189,
-    SPELL_PERMANENT_FEIGN_DEATH                 = 29266,
-    SPELL_EJECT_PASSENGER_1                     = 80743,
+    SPELL_PERMANENT_FEIGN_DEATH_01              = 29266,
     SPELL_SUMMON_CROWLEY                        = 83752,
     SPELL_SUMMON_BLOODFANG                      = 83753,
     SPELL_SUMMON_CROWLEY_BLOODFANG_MASTER       = 83762,
@@ -2184,7 +2208,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                 {
                     me->SetDisableGravity(false);
 
-                    DoCastSelf(SPELL_PERMANENT_FEIGN_DEATH);
+                    DoCastSelf(SPELL_PERMANENT_FEIGN_DEATH_01);
 
                     me->DespawnOrUnsummon(15s);
                     break;
@@ -2827,10 +2851,11 @@ class spell_silverpine_eject_passenger_1 : public SpellScript
     {
         if (GetHitUnit()->IsVehicle())
         {
-            Unit* passenger0 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_BLOODFANG);
-
-            if (GetHitUnit()->IsAIEnabled())
-                GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger0);
+            if (Unit* passenger0 = GetHitUnit()->ToUnit()->GetVehicleKit()->GetPassenger(SEAT_BLOODFANG))
+            {
+                if (GetHitUnit()->IsAIEnabled())
+                    GetHitUnit()->ToUnit()->GetVehicleKit()->RemovePassenger(passenger0);
+            }
         }
     }
 
@@ -2949,7 +2974,7 @@ public:
     {
         if (player->IsAlive())
         {
-            if (player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) != QUEST_STATUS_COMPLETE || player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) != QUEST_STATUS_REWARDED)
+            if (player->GetQuestStatus(QUEST_ORCS_ARE_IN_ORDER) != QUEST_STATUS_REWARDED)
             {
                 if (Creature* hatchet = player->FindNearestCreature(NPC_ADMIRAL_HATCHET, 50.0f))
                 {
@@ -5663,7 +5688,7 @@ struct npc_silverpine_loremaster_fenris : public ScriptedAI
 
 private:
     EventMap _events;
-    uint64 _playerGUID;
+    ObjectGuid _playerGUID;
     bool _isWorgen;
 };
 
@@ -6479,7 +6504,10 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_FINISH_RIDE:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        player->CastSpell(player, SPELL_FADE_TO_BLACK, true);
                         me->CastSpell(player, SPELL_LORDAERON_COMPLETE, true);
+                    }
 
                     _events.ScheduleEvent(EVENT_FINISH_RIDE + 1, 100ms);
                     break;
@@ -6488,11 +6516,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_FINISH_RIDE + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    {
                         player->CastSpell(player, SPELL_DESPAWN_ALL_SUMMONS_LORDAERON, true);
-                        player->CastSpell(player, SPELL_FADE_TO_BLACK, true);
-                    }
-
                     break;
                 }
 
@@ -6579,36 +6603,48 @@ private:
     bool _done;
 };
 
-Position const ForsakenTrooperMPos[5] =
+Position const ForsakenTrooperMPos[8] =
 {
     { 1278.29f, 1053.83f, 54.284f, 3.16124f },
     { 1258.23f, 1078.28f, 52.430f, 3.30653f },
     { 1251.07f, 1161.13f, 51.974f, 3.53822f },
     { 1204.23f, 1174.21f, 46.824f, 3.53822f },
-    { 1180.46f, 1227.42f, 54.059f, 3.53822f }
+    { 1180.46f, 1227.42f, 54.059f, 3.53822f },
+    { 1244.08f, 1137.64f, 50.124f, 1.24199f },
+    { 1219.74f, 1207.46f, 52.489f, 3.94696f },
+    { 1278.76f, 1144.46f, 51.269f, 5.58114f }
 };
 
-Position const ForsakenTrooperFPos[5] =
-{
-    { 1308.89f, 1059.138f, 54.598f, 3.16124f },
-    { 1227.65f, 1107.85f, 50.456f, 3.30653f },
-    { 1252.97f, 1148.88f, 49.575f, 3.53822f },
-    { 1178.60f, 1200.06f, 48.753f, 3.53822f },
-    { 1144.25f, 1153.30f, 48.406f, 3.53822f }
-};
-
-Position const WorgenRenegadePos[10] =
+Position const ForsakenTrooperFPos[8] =
 {
     { 1308.89f, 1059.138f, 54.598f, 3.16124f },
     { 1227.65f, 1107.85f, 50.456f, 3.30653f },
     { 1252.97f, 1148.88f, 49.575f, 3.53822f },
     { 1178.60f, 1200.06f, 48.753f, 3.53822f },
     { 1144.25f, 1153.30f, 48.406f, 3.53822f },
+    { 1308.06f, 1107.48f, 48.315f, 2.19707f },
+    { 1163.96f, 1198.18f, 47.255f, 2.64785f },
+    { 1301.43f, 1153.10f, 52.386f, 0.43350f }
+};
+
+Position const WorgenRenegadePos[16] =
+{
     { 1278.29f, 1053.83f, 54.284f, 3.16124f },
     { 1258.23f, 1078.28f, 52.430f, 3.30653f },
     { 1251.07f, 1161.13f, 51.974f, 3.53822f },
     { 1204.23f, 1174.21f, 46.824f, 3.53822f },
-    { 1180.46f, 1227.42f, 54.059f, 3.53822f }
+    { 1180.46f, 1227.42f, 54.059f, 3.53822f },
+    { 1244.08f, 1137.64f, 50.124f, 1.24199f },
+    { 1219.74f, 1207.46f, 52.489f, 3.94696f },
+    { 1278.76f, 1144.46f, 51.269f, 5.58114f },
+    { 1308.89f, 1059.138f, 54.598f, 3.16124f },
+    { 1227.65f, 1107.85f, 50.456f, 3.30653f },
+    { 1252.97f, 1148.88f, 49.575f, 3.53822f },
+    { 1178.60f, 1200.06f, 48.753f, 3.53822f },
+    { 1144.25f, 1153.30f, 48.406f, 3.53822f },
+    { 1308.06f, 1107.48f, 48.315f, 2.19707f },
+    { 1163.96f, 1198.18f, 47.255f, 2.64785f },
+    { 1301.43f, 1153.10f, 52.386f, 0.43350f }
 };
 
 Position const OrcDemolisherPos[3] =
@@ -6816,127 +6852,15 @@ class spell_silverpine_despawn_all_summons_lordaeron : public SpellScript
     }
 };
 
-enum SepulcherQuests
-{
-    QUEST_EXCISING_THE_TAINT        = 27181,
-
-    SPELL_STALKING                  = 86237,
-    SPELL_SHADOWSTEP                = 79864,
-    SPELL_KILL_ME_QUEST             = 86559,
-
-    TALK_ARTHURA_FLIGHT             = 0,
-};
-
-// Bloodfang Stalker - 45195
-struct npc_silverpine_bloodfang_stalker : public ScriptedAI
-{
-    npc_silverpine_bloodfang_stalker(Creature* creature) : ScriptedAI(creature) { }
-
-    void JustAppeared() override
-    {
-        me->SetPowerType(POWER_ENERGY);
-        me->SetMaxPower(POWER_ENERGY, 100);
-        me->SetPower(POWER_ENERGY, 100, true);
-    }
-
-    void Reset() override
-    {
-        DoCastSelf(SPELL_STALKING);
-        DoCastSelf(SPELL_KILL_ME_QUEST);
-    }
-
-    void JustEngagedWith(Unit* who) override
-    {
-        me->CastSpell(who, SPELL_SHADOWSTEP);
-
-        me->RemoveAura(SPELL_STALKING);
-        me->RemoveAura(SPELL_KILL_ME_QUEST);
-    }
-
-    void JustDied(Unit* killer) override
-    {
-        if (Player* player = killer->ToPlayer())
-        {
-            if (player->GetQuestStatus(QUEST_EXCISING_THE_TAINT) == QUEST_STATUS_NONE)
-            {
-                if (const Quest* ExcisingTheTaint = sObjectMgr->GetQuestTemplate(QUEST_EXCISING_THE_TAINT))
-                    player->AddQuest(ExcisingTheTaint, nullptr);
-            }
-        }
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-
-        if (!UpdateVictim())
-            return;
-
-        DoMeleeAttackIfReady();
-    }
-
-private:
-    EventMap _events;
-};
-
-// Arthura - 45318
-struct npc_arthura_sepulcher : public ScriptedAI
-{
-    npc_arthura_sepulcher(Creature* creature) : ScriptedAI(creature) { }
-
-    void IsSummonedBy(Unit* summoner) override
-    {
-        if (Player* player = summoner->ToPlayer())
-        {
-            if (Vehicle* vehicle = me->GetVehicleKit())
-            {
-                _playerGUID = player->GetGUID();
-
-                me->GetMotionMaster()->MovePath(PATH_ARTHURA_TO_GILNEAS, false);
-            }
-        }
-    }
-
-    void WaypointReached(uint32 waypointId, uint32 pathId) override
-    {
-        if (pathId == PATH_ARTHURA_TO_GILNEAS)
-        {
-            if (waypointId == WAYPOINT_JUST_TOOK_OFF)
-                Talk(TALK_ARTHURA_FLIGHT);
-
-            if (waypointId == WAYPOINT_ARRIVED_TO_GILNEAS)
-            {
-                if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                {
-                    player->KilledMonsterCredit(NPC_ARTHURA_FHC);
-
-                    me->GetVehicleKit()->RemoveAllPassengers();
-
-                    me->DespawnOrUnsummon(3s);
-                }
-            }
-        }
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-    }
-
-private:
-    EventMap _events;
-    ObjectGuid _playerGUID;
-};
-
-/* Gilneas Part */
-
 void AddSC_silverpine_forest()
 {
     new playerScript_silverpine_zone();
 
-    RegisterSpellScript(spell_silverpine_eject_passengers_3_8);
     RegisterCreatureAI(npc_silverpine_horde_hauler);
+    RegisterSpellScript(spell_silverpine_magical_chains_hauler);
+    RegisterSpellScript(spell_silverpine_eject_passengers_3_8);
     RegisterCreatureAI(npc_silverpine_horde_coffin_hauler);
+    RegisterSpellScript(spell_silverpine_magical_chains_coffin);
 
     RegisterCreatureAI(npc_silverpine_worgen_renegade);
     RegisterCreatureAI(npc_silverpine_forsaken_trooper);
@@ -7004,9 +6928,4 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_warhorse_sylvanas_lordaeron);
     RegisterCreatureAI(npc_silverpine_sylvanas_lordaeron);
     RegisterCreatureAI(npc_silverpine_dreadguard_lordaeron);
-
-    RegisterCreatureAI(npc_silverpine_bloodfang_stalker);
-
-    RegisterCreatureAI(npc_arthura_sepulcher);
-
 }
