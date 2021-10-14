@@ -495,21 +495,13 @@ enum WorgenRenegade
     SPELL_KILL_ME_AURA                      = 84181,
     SPELL_FLURRY_OF_CLAWS                   = 80365,
 
-    EVENT_FLURRY_OF_CLAWS                   = 1,
+    EVENT_FLURRY_OF_CLAWS                   = 1
 };
 
 // Worgen Renegade - 44793
 struct npc_silverpine_worgen_renegade : public ScriptedAI
 {
-    npc_silverpine_worgen_renegade(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        me->setActive(true);
-    }
+    npc_silverpine_worgen_renegade(Creature* creature) : ScriptedAI(creature) { }
 
     void Reset() override
     {
@@ -593,15 +585,7 @@ enum ForsakenTrooper
 // Forsaken Trooper - 44791, 44792
 struct npc_silverpine_forsaken_trooper : public ScriptedAI
 {
-    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        me->setActive(true);
-    }
+    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature) { }
 
     void Reset() override
     {
@@ -631,7 +615,7 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
                 {
                     _spellIds = { SPELL_CLEAVE, SPELL_THUNDERCLAP };
 
-                    _chosenSpellId = Trinity::Containers::SelectRandomContainerElement(_spellIds);
+                    uint32 _chosenSpellId = Trinity::Containers::SelectRandomContainerElement(_spellIds);
 
                     DoCastVictim(_chosenSpellId);
 
@@ -653,7 +637,6 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 private:
     EventMap _events;
     std::vector<uint32> _spellIds;
-    uint32 _chosenSpellId;
 };
 
 Position const ElitePos[16] =
@@ -1599,12 +1582,12 @@ enum FallenHuman
 // Fallen Human - 44592, 44593
 struct npc_silverpine_fallen_human : public ScriptedAI
 {
-    npc_silverpine_fallen_human(Creature* creature) : ScriptedAI(creature), _done1(false), _done2(false) {}
+    npc_silverpine_fallen_human(Creature* creature) : ScriptedAI(creature), _transformDone(false), _pathChosen(false) {}
 
     void Reset() override
     {
-        _done1 = false;
-        _done2 = false;
+        _transformDone = false;
+        _pathChosen = false;
 
         _events.Reset();
 
@@ -1623,7 +1606,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
         {
             case EVENT_MOVE:
             {
-                if (_done2)
+                if (_pathChosen)
                     return;
 
                 if (urand(0, 1) == 0)
@@ -1633,7 +1616,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
                 me->DespawnOrUnsummon(35s);
 
-                _done2 = true;
+                _pathChosen = true;
                 break;
             }
 
@@ -1655,7 +1638,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
             {
                 case EVENT_TRANSFORM:
                 {
-                    if (_done1)
+                    if (_transformDone)
                         return;
 
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_STAND_STATE_DEAD);
@@ -1668,7 +1651,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
                     _events.ScheduleEvent(EVENT_FACING, 1s + 500ms);
 
-                    _done1 = true;
+                    _transformDone = true;
                     break;
                 }
 
@@ -1694,8 +1677,8 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
 private:
     EventMap _events;
-    bool _done1;
-    bool _done2;
+    bool _transformDone;
+    bool _pathChosen;
 };
 
 enum BatHandlerMaggotbreath
@@ -2277,7 +2260,7 @@ enum ArmoireExsanguinate
     PATH_IVAR_RANE_02                       = 448842,
     PATH_IVAR_RANE_03                       = 448843,
     PATH_IVAR_EXIT                          = 448844,
-    PATH_DARIUS_EXIT                        = 448831,
+    PATH_DARIUS_EXIT                        = 448831
 };
 
 // Armoire - 44893
@@ -3351,7 +3334,7 @@ enum HatchetRearGuard
     TALK_TOROK_1                            = 1,
     TALK_TOROK_2                            = 2,
 
-    ANIMKIT_TOROK                           = 594,
+    ANIMKIT_TOROK                           = 594
 };
 
 // Admiral Hatchet - 44916
@@ -3709,7 +3692,7 @@ class spell_silverpine_eject_all_passengers : public SpellScript
 
 enum PickUpOrcCrate
 {
-    SPELL_KILL_CREDIT_SEA_DOG_CRATE         = 83843,
+    SPELL_KILL_CREDIT_SEA_DOG_CRATE         = 83843
 };
 
 // Pick Up Orc Crate - 83838
@@ -3738,7 +3721,7 @@ class spell_silverpine_pick_up_orc_crate : public SpellScript
 
 enum OrcCrate
 {
-    NPC_ORC_SEA_PUP                         = 44914,
+    NPC_ORC_SEA_PUP                         = 44914
 };
 
 // Orc Crate - 44915
@@ -3878,7 +3861,7 @@ enum ForestEttin
     EVENT_LOG_SMASH                         = 2,
     EVENT_BONK                              = 3,
 
-    SEAT_ETTIN                              = 0,
+    SEAT_ETTIN                              = 0
 };
 
 // Forest Ettin - 44367
@@ -4326,7 +4309,7 @@ enum AgathaFenris
 
     WAYPOINT_ARRIVED_TO_FORSAKEN            = 41,
 
-    POINT_AGATHA_BACK_FRONTYARD             = 1,
+    POINT_AGATHA_BACK_FRONTYARD             = 1
 };
 
 // Agatha - 44951
@@ -4703,7 +4686,7 @@ enum HillsbradRefugee
     SPELL_NOTIFY_AGATHA_FENRIS              = 83990,
     SPELL_LORDAERON_MIGHT                   = 87104,
 
-    EVENT_LORDAERON_MIGHT                   = 1,
+    EVENT_LORDAERON_MIGHT                   = 1
 };
 
 // Hillsbrad Refugee - 44954, 44966
@@ -4791,7 +4774,7 @@ enum ForsakenTrooperFenris
     DISPLAY_FEMALE_01_D_F                   = 33991,
     DISPLAY_FEMALE_02_D_F                   = 33992,
     DISPLAY_FEMALE_03_D_F                   = 33993,
-    DISPLAY_FEMALE_04_D_F                   = 33994,
+    DISPLAY_FEMALE_04_D_F                   = 33994
 };
 
 // Forsaken Trooper (Male) - 44958, 44959, 44960, 44961
@@ -4915,7 +4898,7 @@ enum WorgenSentry
 
     EVENT_UNDYING_FRENZY                    = 1,
 
-    TALK_SENTRY_WARNING                     = 0,
+    TALK_SENTRY_WARNING                     = 0
 };
 
 // Worgen Sentry - 44987
@@ -4987,7 +4970,7 @@ class spell_silverpine_undying_frenzy : public AuraScript
 
 enum AtNoEscape
 {
-    NPC_FENRIS_KEEP_STALKER                 = 45032,
+    NPC_FENRIS_KEEP_STALKER                 = 45032
 };
 
 // No Escape - 6230
@@ -5241,7 +5224,7 @@ enum FenrisKeepCamera
     POINT_CAMERA_FRONTYARD                  = 1,
 
     SEAT_FENRIS_CAMERA                      = 0,
-    SEAT_FENRIS_CAMERA_FORCE                = 1,
+    SEAT_FENRIS_CAMERA_FORCE                = 1
 };
 
 // Fenris Keep Camera - 45003
@@ -6398,7 +6381,7 @@ enum SummonLordaeronActors
     NPC_DREADGUARD_LORDAREON                = 45588,
 
     PATH_ORC_LEADER1                        = 4494200,
-    PATH_ORC_LEADER2                        = 4494201,
+    PATH_ORC_LEADER2                        = 4494201
 };
 
 // Summon Lordaeron Actors - 84127
