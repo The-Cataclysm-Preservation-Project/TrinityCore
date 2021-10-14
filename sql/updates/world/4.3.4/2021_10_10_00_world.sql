@@ -1300,10 +1300,10 @@ DELETE FROM `creature` WHERE `guid`= @CGUID+9;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
 (@CGUID+9, 44632, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1435.85, 1068.76, 60.4794, 5.5292, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 0);
 
-DELETE FROM `creature_addon` WHERE `guid` BETWEEN @CGUID+8 AND @CGUID+9;
+DELETE FROM `creature_addon` WHERE `guid` IN (@CGUID+8, @CGUID+9);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+8, 446321, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL),
-(@CGUID+9, 446320, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
+(@CGUID+8, 3990000, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL),
+(@CGUID+9, 3990010, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
 
  -- Apothecary Witherbloom
 DELETE FROM `creature` WHERE `guid`= @CGUID+10;
