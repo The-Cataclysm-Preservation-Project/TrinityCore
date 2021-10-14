@@ -329,16 +329,21 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (80365, 'spell_silverpine_flurry_of_claws');
 
  -- Worg
-UPDATE `creature` SET `MovementType`= 1 WHERE `id` = 1765;
-UPDATE `creature` SET `spawndist`= 10 WHERE `id` = 1765;
+UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1765;
+
+DELETE FROM `creature_loot_template` WHERE `Entry` = 1765 AND `Item` = 60742;
+INSERT INTO `creature_loot_template` (`Entry`, `Item`, `Reference`, `Chance`, `QuestRequired`, `IsCurrency`, `LootMode`, `GroupId`, `MinCount`, `MaxCount`, `Comment`) VALUES 
+(1765, 60742, 0, 33.323, 1, 0, 1, 0, 1, 1, NULL);
 
  -- Ferocious Grizzled Bear
-UPDATE `creature` SET `MovementType`= 1 WHERE `id` = 1778;
-UPDATE `creature` SET `spawndist`= 10 WHERE `id` = 1778;
+UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1778;
+
+DELETE FROM `creature_loot_template` WHERE `Entry` = 1778 AND `Item` = 60742;
+INSERT INTO `creature_loot_template` (`Entry`, `Item`, `Reference`, `Chance`, `QuestRequired`, `IsCurrency`, `LootMode`, `GroupId`, `MinCount`, `MaxCount`, `Comment`) VALUES 
+(1778, 60742, 0, 33.323, 1, 0, 1, 0, 1, 1, NULL);
 
  -- Giant Rabid Bear
-UPDATE `creature` SET `MovementType` = 1 WHERE `id` = 1797;
-UPDATE `creature` SET `spawndist` = 10 WHERE `id` = 1797;
+UPDATE `creature` SET `MovementType` = 1, `spawndist` = 10 WHERE `id` = 1797;
 
 UPDATE `creature` SET `MovementType` = 0, `dynamicflags` = 32, `unit_flags` = 768, `spawndist` = 0 WHERE `guid` = 321853;
 
@@ -347,8 +352,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (321853, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, '');
  
  -- Rabid Dog
-UPDATE `creature` SET `MovementType`= 1 WHERE `id` = 1766;
-UPDATE `creature` SET `spawndist`= 10 WHERE `id` = 1766;
+UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1766;
 
 UPDATE `creature` SET `id` = 1797, `MovementType` = 0, `dynamicflags` = 32, `unit_flags` = 768, `spawndist` = 0 WHERE `guid` = 321854;
 UPDATE `creature` SET `MovementType` = 0, `dynamicflags` = 32, `unit_flags` = 768, `spawndist` = 0 WHERE `guid` = 321855;
