@@ -1019,7 +1019,7 @@ INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`,
  -- The Warchief Cometh Quest
  --
  
- -- Garrosh Hellscream (44629)
+ -- Garrosh Hellscream
 DELETE FROM `creature_text` WHERE `CreatureID` = 44629;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44629, 0, 0, 'This better be important, Sylvanas. You know how I detest this place and its foul stench. Why have you called for me?', 12, 0, 100, 0, 0, 20496, 0, 44699, 0, 'VO_QE_Garrosh_SPEvent01'),
@@ -1088,10 +1088,18 @@ DELETE FROM `spell_area` WHERE `spell`=83232 AND `area`=5369 AND `quest_start`=2
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES
 (83232, 5369, 26964, 27098, 0, 0, 2, 3, 66, 1);
 
+DELETE FROM `spell_area` WHERE `spell`=83232 AND `area`=5369 AND `quest_start`=28568 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES
+(83232, 5369, 28568, 27098, 0, 0, 2, 3, 66, 1);
+
  -- Detect: Quest Invis Zone 3
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=26964 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (83989, 5369, 26964, 27097, 0, 0, 2, 3, 74, 1);
+
+DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=28568 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83989, 5369, 28568, 27097, 0, 0, 2, 3, 74, 1);
 
  -- Dark Ranger
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44632;
@@ -1283,47 +1291,6 @@ INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 (44784, 26995),
 (44784, 26998);
 
- -- Lady Sylvanas Windrunner
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_sylvanas_fhc' WHERE `entry` = 44365;
-
-DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44365;
-INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
-(44365, 1, 2179, 0, 42775, 15595);
-
-DELETE FROM `creature` WHERE `guid` = @CGUID+7;
-INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+7, 44365, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 0);
-
-DELETE FROM `creature_addon` WHERE `guid`= @CGUID+7;
-INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+7, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, '83231');
-
-DELETE FROM `creature_text` WHERE `CreatureID`= 44365;
-INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
-(44365, 0, 0, 'Where is that ogre-headed buffoon?', 12, 0, 100, 6, 0, 20459, 0, 44695, 0, 'VO_QE_SP_Sylvanas_SPEvent01'),
-(44365, 1, 0, 'Ah, speak of the devil...', 12, 0, 100, 1, 0, 20460, 0, 44696, 0, 'VO_QE_SP_Sylvanas_SPEvent02'),
-(44365, 2, 0, 'Warchief, so glad you could make it.', 12, 0, 100, 1, 0, 20461, 0, 44701, 0, 'VO_QE_SP_Sylvanas_SPEvent03'),
-(44365, 3, 0, 'With the death of the Lich King, many of the more intelligent Scourge became... unemployed. Those \'fiends,\' as you so delicately put it, are called val\'kyr. They are under my command now...', 12, 0, 100, 0, 0, 20462, 0, 44702, 0, 'VO_QE_SP_Sylvanas_SPEvent04'),
-(44365, 4, 0, '...and they are part of the reason that I asked to see you.', 12, 0, 100, 1, 0, 20463, 0, 44703, 0, 'VO_QE_SP_Sylvanas_SPEvent05'),
-(44365, 5, 0, 'Very well, Warchief. I have solved the plight of the Forsaken!', 12, 0, 100, 5, 0, 20464, 0, 44705, 0, 'VO_QE_SP_Sylvanas_SPEvent06'),
-(44365, 6, 0, 'As a race, we Forsaken are unable to procreate.', 12, 0, 100, 274, 0, 20465, 0, 44706, 0, 'VO_QE_SP_Sylvanas_SPEvent07'),
-(44365, 7, 0, 'With the aid of the val\'kyr, we are now able to take the corpses of the fallen and create new Forsaken.', 12, 0, 100, 0, 0, 20466, 0, 44707, 0, 'VO_QE_SP_Sylvanas_SPEvent08'),
-(44365, 8, 0, 'Agatha, show the Warchief!', 12, 0, 100, 5, 0, 20467, 0, 44709, 0, 'VO_QE_SP_Sylvanas_SPEvent09'),
-(44365, 9, 0, 'Warchief, without these new Forsaken my people would die out... Our hold upon Gilneas and northern Lordaeron would crumble.', 12, 0, 100, 0, 0, 20468, 0, 44715, 0, 'VO_QE_SP_Sylvanas_SPEvent10'),
-(44365, 10, 0, 'Isn\'t it obvious, Warchief? I serve the Horde.', 12, 0, 100, 66, 0, 20469, 0, 44718, 0, 'VO_QE_SP_Sylvanas_SPEvent11');
-
-DELETE FROM `creature_questender` WHERE `id` = 44365 AND `quest` = 27056;
-INSERT INTO `creature_questender` (`id`, `quest`) VALUES
-(44365, 27056);
-
-DELETE FROM `creature_queststarter` WHERE `id`=44365 AND `quest` = 27065;
-INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
-(44365, 27065);
-
-DELETE FROM `creature_queststarter` WHERE `id`=44365 AND `quest` = 27065;
-INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
-(44365, 27065);
-
  -- Dark Ranger
 DELETE FROM `creature` WHERE `guid`= @CGUID+8;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1466,6 +1433,20 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (322163, 0, 0, 0, 50397184, 0, 0, 0, 0, 0, 3, '83988');
 
  -- Lady Sylvanas Windrunner
+UPDATE creature_template SET `ScriptName` = 'npc_silverpine_sylvanas_fhc' WHERE `entry` = 44365;
+
+DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44365;
+INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
+(44365, 1, 2179, 0, 42775, 15595);
+
+DELETE FROM `creature` WHERE `guid` = @CGUID+7;
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
+(@CGUID+7, 44365, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 0);
+
+DELETE FROM `creature_addon` WHERE `guid`= @CGUID+7;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(@CGUID+7, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, '83231');
+
 DELETE FROM `creature` WHERE `guid` = @CGUID+29;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
 (@CGUID+29, 44365, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 0);
@@ -1473,6 +1454,32 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+29;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (@CGUID+29, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, '83231');
+
+DELETE FROM `creature_text` WHERE `CreatureID`= 44365;
+INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
+(44365, 0, 0, 'Where is that ogre-headed buffoon?', 12, 0, 100, 6, 0, 20459, 0, 44695, 0, 'VO_QE_SP_Sylvanas_SPEvent01'),
+(44365, 1, 0, 'Ah, speak of the devil...', 12, 0, 100, 1, 0, 20460, 0, 44696, 0, 'VO_QE_SP_Sylvanas_SPEvent02'),
+(44365, 2, 0, 'Warchief, so glad you could make it.', 12, 0, 100, 1, 0, 20461, 0, 44701, 0, 'VO_QE_SP_Sylvanas_SPEvent03'),
+(44365, 3, 0, 'With the death of the Lich King, many of the more intelligent Scourge became... unemployed. Those \'fiends,\' as you so delicately put it, are called val\'kyr. They are under my command now...', 12, 0, 100, 0, 0, 20462, 0, 44702, 0, 'VO_QE_SP_Sylvanas_SPEvent04'),
+(44365, 4, 0, '...and they are part of the reason that I asked to see you.', 12, 0, 100, 1, 0, 20463, 0, 44703, 0, 'VO_QE_SP_Sylvanas_SPEvent05'),
+(44365, 5, 0, 'Very well, Warchief. I have solved the plight of the Forsaken!', 12, 0, 100, 5, 0, 20464, 0, 44705, 0, 'VO_QE_SP_Sylvanas_SPEvent06'),
+(44365, 6, 0, 'As a race, we Forsaken are unable to procreate.', 12, 0, 100, 274, 0, 20465, 0, 44706, 0, 'VO_QE_SP_Sylvanas_SPEvent07'),
+(44365, 7, 0, 'With the aid of the val\'kyr, we are now able to take the corpses of the fallen and create new Forsaken.', 12, 0, 100, 0, 0, 20466, 0, 44707, 0, 'VO_QE_SP_Sylvanas_SPEvent08'),
+(44365, 8, 0, 'Agatha, show the Warchief!', 12, 0, 100, 5, 0, 20467, 0, 44709, 0, 'VO_QE_SP_Sylvanas_SPEvent09'),
+(44365, 9, 0, 'Warchief, without these new Forsaken my people would die out... Our hold upon Gilneas and northern Lordaeron would crumble.', 12, 0, 100, 0, 0, 20468, 0, 44715, 0, 'VO_QE_SP_Sylvanas_SPEvent10'),
+(44365, 10, 0, 'Isn\'t it obvious, Warchief? I serve the Horde.', 12, 0, 100, 66, 0, 20469, 0, 44718, 0, 'VO_QE_SP_Sylvanas_SPEvent11');
+
+DELETE FROM `creature_questender` WHERE `id` = 44365 AND `quest` = 27056;
+INSERT INTO `creature_questender` (`id`, `quest`) VALUES
+(44365, 27056);
+
+DELETE FROM `creature_queststarter` WHERE `id`=44365 AND `quest` = 27065;
+INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
+(44365, 27065);
+
+DELETE FROM `creature_queststarter` WHERE `id`=44365 AND `quest` = 27065;
+INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
+(44365, 27065);
 
  -- Bat Handler Maggotbreath
 DELETE FROM `creature` WHERE `guid` = @CGUID+30;
@@ -3444,10 +3451,74 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
  --
  -- Quests
  --
+ 
+DELETE FROM `quest_offer_reward` WHERE `ID` = 28568;
+INSERT INTO `quest_offer_reward` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `RewardText`, `VerifiedBuild`) VALUES 
+(28568, 5, 21, 0, 0, 0, 0, 0, 0, 'Most excellent! A new recruit has arrived. There is much to do... much to do I say.', 15595);
 
-UPDATE quest_template_addon SET `PrevQuestID` = '27098', `NextQuestID` = '27232' WHERE `ID` = 27231;
-UPDATE quest_template_addon SET `PrevQuestID` = '27094' WHERE `ID` = 27096;
-UPDATE quest_template_addon SET `PrevQuestID` = '27096' WHERE `ID` = 27097;
-UPDATE quest_template_addon SET `NextQuestID` = '27180' WHERE `ID` = 27098;
-UPDATE quest_template_addon SET `PrevQuestID` = '27098' WHERE `ID` = 27226;
-UPDATE quest_template_addon SET `PrevQuestID` = '27098' WHERE `ID` = 27180;
+ 
+ -- Take to the Skies
+UPDATE quest_template_addon SET `NextQuestID` = 26964 WHERE `ID` = 25012;
+
+ -- Warchief's Command: Silverpine Forest!
+UPDATE quest_template_addon SET `PrevQuestID` = 25012, `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 26964;
+ -- Warchief's Command: Silverpine Forest!
+UPDATE quest_template_addon SET `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 28568;
+
+ -- The Warchief Cometh
+UPDATE quest_template_addon SET `NextQuestID` = 26989 WHERE `ID` = 26965;
+
+ -- The Gilneas Liberation Front
+UPDATE quest_template_addon SET `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26989;
+
+ -- Agony Abounds
+UPDATE quest_template_addon SET `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26992;
+
+ -- Guts and Gore
+UPDATE quest_template_addon SET `NextQuestID` = 26998 WHERE `ID` = 26995;
+
+ -- Iterating Upon Success
+UPDATE quest_template_addon SET `PrevQuestID` = 26995, `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26998;
+
+ -- Dangerous Intentions
+UPDATE quest_template_addon SET `NextQuestID` = 27045 WHERE `ID` = 27039;
+
+ -- Waiting to Exsanguinate
+UPDATE quest_template_addon SET `PrevQuestID` = 27039, `NextQuestID` = 27056 WHERE `ID` = 27045;
+ 
+ -- Belmont's Report
+UPDATE quest_template_addon SET `PrevQuestID` = 27045, `NextQuestID` = 27065 WHERE `ID` = 27056;
+ 
+ -- The Warchief's Fleet
+UPDATE quest_template_addon SET `PrevQuestID` = 27056, `NextQuestID` = 27069 WHERE `ID` = 27065;
+
+ -- Steel Thunder
+UPDATE quest_template_addon SET `PrevQuestID` = 27065, `NextQuestID` = 27094, `ExclusiveGroup` = -27069 WHERE `ID` = 27069;
+
+ -- Give 'em Hell!
+UPDATE quest_template_addon SET `PrevQuestID` = 27065, `NextQuestID` = 27094, `ExclusiveGroup` = -27069 WHERE `ID` = 27073;
+
+ -- Lost in the Darkness
+UPDATE quest_template_addon SET `NextQuestID` = 27094 WHERE `ID` = 27093;
+
+ -- Deeper into Darkness
+UPDATE quest_template_addon SET `PrevQuestID` = 27093, `NextQuestID` = 27096, `ExclusiveGroup` = -27094 WHERE `ID` = 27094;
+
+ -- Playing Dirty
+UPDATE quest_template_addon SET `PrevQuestID` = 27065, `NextQuestID` = 27088 WHERE `ID` = 27082;
+
+ -- It's Only Poisonous if You Ingest It
+UPDATE quest_template_addon SET `PrevQuestID` = 27082, `NextQuestID` = 27096, `ExclusiveGroup` = -27094 WHERE `ID` = 27088;
+
+ -- Orcs are in Order
+UPDATE quest_template_addon SET `PrevQuestID` = 0, `NextQuestID` = 27097 WHERE `ID` = 27096;
+
+ -- Rise, Forsaken
+UPDATE quest_template_addon SET `PrevQuestID` = 27096, `NextQuestID` = 27099 WHERE `ID` = 27097;
+
+ -- No Escape
+UPDATE quest_template_addon SET `PrevQuestID` = 27097, `NextQuestID` = 27098 WHERE `ID` = 27099;
+
+ -- Lordaeron
+UPDATE quest_template_addon SET `PrevQuestID` = 27099, `NextQuestID` = 27180 WHERE `ID` = 27098;
+

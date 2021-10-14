@@ -45,16 +45,16 @@ enum SilverpinePhases
     PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION            = 264, 
     PHASE_WAITING_TO_EXSANGUINATE                       = 265,
     PHASE_NO_ESCAPE                                     = 266,
-    PHASE_FOR_LORDAERON                                 = 267, // There seems to be a PhaseGroup (2491)
+    PHASE_FOR_LORDAERON                                 = 267, // PhaseGroup 521 (Phases 267 and 279)
     PHASE_THE_WATERS_RUN_RED                            = 273, 
-    PHASE_GILNEAS_ACT_I                                 = 274, // There seems to be a PhaseGroup (2489)
-    PHASE_GILNEAS_ACT_II                                = 275, // There seems to be a PhaseGroup (2490)
+    PHASE_GILNEAS_ACT_I                                 = 274, // PhaseGroup 520 (Phases 274 and 275)
+    PHASE_GILNEAS_ACT_II                                = 275, // PhaseGroup 520 (Phases 274 and 275)
     PHASE_GILNEAS_ACT_III                               = 276,
     PHASE_THE_FORSAKEN_FRONT_I                          = 277, 
     PHASE_THE_FORSAKEN_FRONT_II                         = 278, 
-    PHASE_AMBER_MILL_I                                  = 279,  // There seems to be a PhaseGroup (2492, 2496)
-    PHASE_AMBER_MILL_II                                 = 280,  // There seems to be a PhaseGroup (2493)
-    PHASE_AMBER_MILL_III                                = 281,  // There seems to be a PhaseGroup (2494)
+    PHASE_AMBER_MILL_I                                  = 279,  // PhaseGroup 523 (Phases 169 and 279)
+    PHASE_AMBER_MILL_II                                 = 280,  // PhaseGroup 522 (Phases 280 and 281)
+    PHASE_AMBER_MILL_III                                = 281,  // PhaseGroup 522 (Phases 280 and 281)
     PHASE_THE_FORSAKEN_FRONT_III                        = 284, 
     PHASE_THE_FORSAKEN_FRONT_IV                         = 289  
 };
@@ -64,12 +64,17 @@ enum SilverpineForest
     QUEST_STEEL_THUNDER                     = 27069,
     QUEST_RISE_FORSAKEN                     = 27097,
     QUEST_NO_ESCAPE                         = 27099,
+    QUEST_SILVERPINE_COMMAND_1              = 26964,
+    QUEST_SILVERPINE_COMMAND_2              = 28568,
 
     SPELL_SUMMON_SEA_PUP                    = 83839,
     SPELL_SUMMON_AGATHA                     = 83982,
     SPELL_BOND_OF_THE_VALKYR_FENRIS         = 83979,
+    SPELL_DETECT_QUEST_INVIS_ZONE_1         = 83232,
 
-    ZONE_SILVERPINE                         = 130
+    ZONE_SILVERPINE                         = 130,
+
+    AREA_FORSAKEN_HIGH_COMMAND              = 5369
 };
 
 // Silverpine Forest - 130
@@ -130,6 +135,21 @@ public:
             }
         }
     }
+
+    void OnUpdateZone(Player* player, uint32 /*newZone*/, uint32 newArea)
+    {
+        if (newArea == AREA_FORSAKEN_HIGH_COMMAND)
+        {
+            if (player->getLevel() >= 9)
+            {
+                if (player->GetQuestStatus(QUEST_SILVERPINE_COMMAND_1) == QUEST_STATUS_NONE && player->GetQuestStatus(QUEST_SILVERPINE_COMMAND_2) == QUEST_STATUS_NONE)
+                {
+                    if (const Quest* WarchiefCommandSilverpineForest = sObjectMgr->GetQuestTemplate(QUEST_SILVERPINE_COMMAND_2))
+                        player->AddQuest(WarchiefCommandSilverpineForest, nullptr);
+                }
+            }
+        }
+    }
 };
 
 enum HordeHauler
@@ -179,6 +199,23 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
     void Initialize()
     {
         me->setActive(true);
+
+        /*
+        Blizzard was lazy on these vehicles: in retail, as of today, the vehicle is present in all phases
+        and it is only accessible for one player no matter their phase. Once a player gets in,
+        the vehicle becomes unaccesible for the rest of the players in any phase and the mounted player
+        will not be seen by players in a different phase, though the vehicle is seen by any player.
+
+        There's no existing PhaseGroup that shares all of these phases, so we're just gonna set it
+        visible for the affected phases. They can't be added on JustAppeared() because it has accessories
+        and they only inherit these phases if set on Initialize().
+        */
+
+        me->GetPhaseShift().AddPhase(PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_NO_ESCAPE, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_I, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_II, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_III, PhaseFlags::None, 0);
     }
 
     void JustAppeared() override
@@ -415,6 +452,23 @@ struct npc_silverpine_horde_coffin_hauler : public ScriptedAI
     void Initialize()
     {
         me->setActive(true);
+
+        /*
+        Blizzard was lazy on these vehicles: in retail, as of today, the vehicle is present in all phases
+        and it is only accessible for one player no matter their phase. Once a player gets in,
+        the vehicle becomes unaccesible for the rest of the players in any phase and the mounted player
+        will not be seen by players in a different phase, though the vehicle is seen by any player.
+
+        There's no existing PhaseGroup that shares all of these phases, so we're just gonna set it
+        visible for the affected phases. They can't be added on JustAppeared() because it has accessories
+        and they only inherit these phases if set on Initialize().
+        */
+
+        me->GetPhaseShift().AddPhase(PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_NO_ESCAPE, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_I, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_II, PhaseFlags::None, 0);
+        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_III, PhaseFlags::None, 0);
     }
 
     void JustAppeared() override
