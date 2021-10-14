@@ -40,42 +40,6 @@
 #include "Unit.h"
 #include "Vehicle.h"
 
-enum SilverpineVehicleSeats
-{
-    SEAT_HAULER_PLAYER           = 2,
-    SEAT_HAULER_TROOPER_3        = 3,
-    SEAT_HAULER_TROOPER_4        = 4,
-    SEAT_HAULER_TROOPER_5        = 5,
-    SEAT_HAULER_TROOPER_6        = 6,
-    SEAT_HAULER_TROOPER_7        = 7,
-
-    SEAT_BLOODFANG               = 0,
-    SEAT_FORSAKEN_BAT            = 0,
-    SEAT_ETTIN                   = 0,
-    SEAT_FENRIS_CAMERA           = 0,
-    SEAT_FENRIS_CAMERA_FORCE     = 1,
-    SEAT_WARHORSE_PLAYER         = 0,
-    SEAT_WARHORSE_SYLVANAS       = 0,
-    SEAT_WARHORSE_PLAYER_BOARDED = 1,
-    SEAT_FORTESSKI               = 0,
-    SEAT_CANNON                  = 0,
-};
-
-enum SilverpineAnimKits
-{
-    ANIMKIT_RESET                = 0,
-    ANIMKIT_INTERACT             = 1,
-    ANIMKIT_SYLV_1               = 595,
-    ANIMKIT_SYLV_2               = 606,
-    ANIMKIT_SYLV_3               = 609,
-    ANIMKIT_GARROSH_1            = 662,
-    ANIMKIT_GARROSH_2            = 595,
-    ANIMKIT_FALLEN_HUMAN         = 721,
-    ANIMKIT_TOROK                = 594,
-    ANIMKIT_SPIDER_1             = 865,
-    ANIMKIT_SPIDER_2             = 866
-};
-
 enum SilverpinePhases
 {
     PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION            = 264, 
@@ -95,21 +59,86 @@ enum SilverpinePhases
     PHASE_THE_FORSAKEN_FRONT_IV                         = 289  
 };
 
-enum SilverpineTransports
+enum SilverpineForest
+{
+    QUEST_STEEL_THUNDER                     = 27069,
+    QUEST_RISE_FORSAKEN                     = 27097,
+    QUEST_NO_ESCAPE                         = 27099,
+
+    SPELL_SUMMON_SEA_PUP                    = 83839,
+    SPELL_SUMMON_AGATHA                     = 83982,
+    SPELL_BOND_OF_THE_VALKYR_FENRIS         = 83979,
+
+    ZONE_SILVERPINE                         = 130
+};
+
+// Silverpine Forest - 130
+class playerScript_silverpine_zone : public PlayerScript
+{
+public:
+    playerScript_silverpine_zone() : PlayerScript("playerScript_silverpine_zone") { }
+
+    void OnLogin(Player* player, bool /*firstLogin*/) override
+    {
+        // HACK FIX: we need this to make sure the player summons the NPC after logging in. Since the aura is based on spell_area, adding the aura again won't summon the NPCs
+        // because the player still has the aura on log off (this kind of behaviour should be implemented at some point, simply adding the aura as not kept after logging off won't make it work).
+        if (player->GetZoneId() == ZONE_SILVERPINE)
+        {
+            if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
+            {
+                if (player->HasAura(SPELL_SUMMON_SEA_PUP))
+                {
+                    player->RemoveAura(SPELL_SUMMON_SEA_PUP);
+
+                    player->CastSpell(player, SPELL_SUMMON_SEA_PUP, true);
+                }
+                else
+                    player->CastSpell(player, SPELL_SUMMON_SEA_PUP, true);
+            }
+
+            if (player->GetQuestStatus(QUEST_RISE_FORSAKEN) == QUEST_STATUS_INCOMPLETE)
+            {
+                if (player->HasAura(SPELL_SUMMON_AGATHA))
+                {
+                    player->RemoveAura(SPELL_SUMMON_AGATHA);
+
+                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
+                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
+                }
+                else
+                {
+                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
+                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
+                }
+
+            }
+
+            if (player->GetQuestStatus(QUEST_NO_ESCAPE) == QUEST_STATUS_INCOMPLETE)
+            {
+                if (player->HasAura(SPELL_SUMMON_AGATHA))
+                {
+                    player->RemoveAura(SPELL_SUMMON_AGATHA);
+
+                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
+                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
+                }
+                else
+                {
+                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
+                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
+                }
+            }
+        }
+    }
+};
+
+enum HordeHauler
 {
     NPC_HORDE_ENGINEER_HAULER               = 44734,
     NPC_SUBDUED_FOREST_ETTIN_HAULER         = 44737,
     NPC_FORSAKEN_TROOPER_F                  = 44732,
     NPC_FORSAKEN_TROOPER_M                  = 44733,
-    NPC_HORDE_ENGINEER_COFFIN               = 46559,
-    NPC_SUBDUED_FOREST_ETTIN_COFFIN         = 46560,
 
-    SPELL_CHAIN_HAULER                      = 84238,
-    SPELL_CHAIN_RIGHT_HAULER                = 83467,
-    SPELL_CHAIN_LEFT_HAULER                 = 83464,
-    SPELL_CHAIN_COFFIN                      = 86802,
-    SPELL_CHAIN_RIGHT_COFFIN                = 86803,
-    SPELL_CHAIN_LEFT_COFFIN                 = 86805,
     SPELL_EJECT_PASSENGERS_3_8              = 83477,
 
     EVENT_START_PATH                        = 1,
@@ -123,8 +152,7 @@ enum SilverpineTransports
     TALK_ON_SEPULCHER                       = 2,
     TALK_ON_FORSAKEN_FRONT                  = 3,
 
-    PATH_FROM_NORTH_TO_SOUTH                = 447310, 
-    PATH_FROM_SOUTH_TO_NORTH                = 447640,
+    PATH_FROM_NORTH_TO_SOUTH                = 447310,
     PATH_TROOPER_1                          = 447320,
     PATH_TROOPER_2                          = 447321,
     PATH_TROOPER_3                          = 447322,
@@ -135,8 +163,9 @@ enum SilverpineTransports
     WAYPOINT_ON_SEPULCHER                   = 34,
     WAYPOINT_ON_FORSAKEN_FRONT              = 69,
     WAYPOINT_ON_DESPAWN_POINT_SOUTH         = 72,
-    WAYPOINT_ON_DESPAWN_POINT_NORTH         = 68,
-    WAYPOINT_ON_TROOPER_DESPAWN             = 1
+    WAYPOINT_ON_TROOPER_DESPAWN             = 1,
+
+    SEAT_HAULER_PLAYER                      = 2
 };
 
 // Horde Hauler - 44731
@@ -180,11 +209,11 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
         {
             if (passenger->IsAIEnabled())
             {
-                std::vector<uint32> pathIds = { PATH_TROOPER_1, PATH_TROOPER_2, PATH_TROOPER_3, PATH_TROOPER_4, PATH_TROOPER_5 };
+                _pathIds = { PATH_TROOPER_1, PATH_TROOPER_2, PATH_TROOPER_3, PATH_TROOPER_4, PATH_TROOPER_5 };
 
-                uint32 chosenPathId = Trinity::Containers::SelectRandomContainerElement(pathIds);
+                _chosenPathId = Trinity::Containers::SelectRandomContainerElement(_pathIds);
 
-                passenger->GetMotionMaster()->MovePath(chosenPathId, false);
+                passenger->GetMotionMaster()->MovePath(_chosenPathId, false);
             }
         }
     }
@@ -266,6 +295,14 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
+    std::vector<uint32> _pathIds;
+    uint32 _chosenPathId;
+};
+
+enum MagicalChainsHauler
+{
+    SPELL_CHAIN_RIGHT_HAULER                = 83467,
+    SPELL_CHAIN_LEFT_HAULER                 = 83464
 };
 
 // Magical Chains (Hauler) - 84238
@@ -293,6 +330,15 @@ class spell_silverpine_magical_chains_hauler : public AuraScript
     {
         OnEffectPeriodic.Register(&spell_silverpine_magical_chains_hauler::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
+};
+
+enum EjectPassengers3to8
+{
+    SEAT_HAULER_TROOPER_3                   = 3,
+    SEAT_HAULER_TROOPER_4                   = 4,
+    SEAT_HAULER_TROOPER_5                   = 5,
+    SEAT_HAULER_TROOPER_6                   = 6,
+    SEAT_HAULER_TROOPER_7                   = 7
 };
 
 // Eject Passengers 3-8 - 83477
@@ -344,6 +390,18 @@ class spell_silverpine_eject_passengers_3_8 : public SpellScript
     {
         OnEffectHitTarget.Register(&spell_silverpine_eject_passengers_3_8::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
+};
+
+enum HordeCoffinHauler
+{
+    NPC_HORDE_ENGINEER_COFFIN               = 46559,
+    NPC_SUBDUED_FOREST_ETTIN_COFFIN         = 46560,
+
+    EVENT_HORDE_HAULER_START_PATH           = 1,
+
+    PATH_FROM_SOUTH_TO_NORTH                = 447640,
+
+    WAYPOINT_ON_DESPAWN_POINT_NORTH         = 68
 };
 
 // Horde Coffin Hauler - 44764
@@ -398,6 +456,12 @@ private:
     EventMap _events;
 };
 
+enum MagicalChainsCoffin
+{
+    SPELL_CHAIN_RIGHT_COFFIN                = 86803,
+    SPELL_CHAIN_LEFT_COFFIN                 = 86805
+};
+
 // Magical Chains (Coffin) - 86802
 class spell_silverpine_magical_chains_coffin : public AuraScript
 {
@@ -425,22 +489,13 @@ class spell_silverpine_magical_chains_coffin : public AuraScript
     }
 };
 
-enum QuestTheGilneasLiberationFront
+enum WorgenRenegade
 {
-    NPC_FORSAKEN_TROOPER1           = 44791,
-    NPC_FORSAKEN_TROOPER2           = 44792,
-    NPC_WORGEN_RENEGADE             = 44793,
+    SPELL_HEARTSTRIKE                       = 84182,
+    SPELL_KILL_ME_AURA                      = 84181,
+    SPELL_FLURRY_OF_CLAWS                   = 80365,
 
-    SPELL_HEARTSTRIKE               = 84182,
-    SPELL_DARKENED                  = 73307,
-    SPELL_KILL_ME_PERIODIC          = 84181,
-    SPELL_FLURRY_OF_CLAWS_CHANNEL   = 80365,
-    SPELL_FLURRY_OF_CLAWS           = 80367,
-
-    EVENT_FLURRY_OF_CLAWS           = 102,
-    EVENT_SPELL_DAMAGE,
-
-    TALK_TROOPER_RESET              = 0
+    EVENT_FLURRY_OF_CLAWS                   = 1,
 };
 
 // Worgen Renegade - 44793
@@ -461,7 +516,7 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
         _events.Reset();
 
         if (me->IsSummon())
-            DoCastSelf(SPELL_KILL_ME_PERIODIC);
+            DoCastSelf(SPELL_KILL_ME_AURA);
 
         me->SetReactState(REACT_AGGRESSIVE);
     }
@@ -490,7 +545,7 @@ struct npc_silverpine_worgen_renegade : public ScriptedAI
             {
                 case EVENT_FLURRY_OF_CLAWS:
                 {
-                    DoCastVictim(SPELL_FLURRY_OF_CLAWS_CHANNEL);
+                    DoCastVictim(SPELL_FLURRY_OF_CLAWS);
 
                     _events.Repeat(16s, 18s);
                     break;
@@ -525,10 +580,20 @@ class spell_silverpine_flurry_of_claws : public AuraScript
     }
 };
 
+enum ForsakenTrooper
+{
+    SPELL_CLEAVE                            = 19983,
+    SPELL_THUNDERCLAP                       = 8078,
+
+    EVENT_FORSAKEN_CAST_SPELL               = 1,
+
+    TALK_TROOPER_RESET                      = 0
+};
+
 // Forsaken Trooper - 44791, 44792
 struct npc_silverpine_forsaken_trooper : public ScriptedAI
 {
-    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature), _spellId(0), _randomSpellIndex(0)
+    npc_silverpine_forsaken_trooper(Creature* creature) : ScriptedAI(creature)
     {
         Initialize();
     }
@@ -551,7 +616,7 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 
     void JustEngagedWith(Unit* /*who*/) override
     {
-        _events.ScheduleEvent(EVENT_SPELL_DAMAGE, 5s, 8s);
+        _events.ScheduleEvent(EVENT_FORSAKEN_CAST_SPELL, 5s, 8s);
     }
 
     void UpdateAI(uint32 diff) override
@@ -562,24 +627,13 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_SPELL_DAMAGE:
+                case EVENT_FORSAKEN_CAST_SPELL:
                 {
-                    _spellId = me->GetCreatureTemplate()->spells[_randomSpellIndex];
+                    _spellIds = { SPELL_CLEAVE, SPELL_THUNDERCLAP };
 
-                    if (!_spellId)
-                    {
-                        _randomSpellIndex = 0;
+                    _chosenSpellId = Trinity::Containers::SelectRandomContainerElement(_spellIds);
 
-                        _spellId = me->GetCreatureTemplate()->spells[_randomSpellIndex];
-                    }
-
-                    if (!_spellId)
-                        break;
-
-                    if (++_randomSpellIndex > 8)
-                        _randomSpellIndex = 0;
-
-                    DoCastVictim(_spellId);
+                    DoCastVictim(_chosenSpellId);
 
                     _events.Repeat(5s, 8s);
                     break;
@@ -598,77 +652,8 @@ struct npc_silverpine_forsaken_trooper : public ScriptedAI
 
 private:
     EventMap _events;
-    uint8 _spellId;
-    uint8 _randomSpellIndex;
-};
-
-enum QuestTheWarchiefCometh
-{
-    QUEST_THE_WARCHIEF_COMETH           = 26965,
-
-    NPC_LADY_SYLVANAS_WINDRUNNER_44365  = 44365,
-    NPC_AGATHA_44608                    = 44608,
-    NPC_GRAND_EXECUTOR_MORTUUS          = 44615,
-    NPC_MALE_FALLEN_HUMAN               = 44592,
-    NPC_FEMALE_FALLEN_HUMAN             = 44593,
-    NPC_PORTAL_FROM_ORGRIMMAR           = 44630,
-    NPC_GARROSH_HELLSCREAM              = 44629,
-    NPC_HIGH_WARLORD_CROMUSH            = 44640,
-    NPC_HELLSCREEMS_ELITE               = 44636,
-    NPC_QUEST_MONSTER_CREDIT            = 44629,
-    NPC_FORSAKEN_WARHORSE_UNPHASED      = 73595,
-
-    SPELL_RAISE_FORSAKEN                = 83173,
-    SPELL_AIR_REVENANT_ENTRANCE         = 55761,
-    SPELL_SIMPLE_TELEPORT               = 12980,
-    SPELL_WELCOME_TO_SILVERPINE_CREDIT  = 83384,
-
-    EVENT_START_ANIM_1                  = 102,
-    EVENT_AGATHA_RAISE_FORSAKEN         = 201,
-    EVENT_TALK_SEQUENCE                 = 301,
-    EVENT_SUMMON_PORTAL                 = 401,
-    EVENT_SUMMON_GARROSH,
-
-    ACTION_START_WALKING                = 1,
-    ACTION_START_ANIM                   = 101,
-
-    TALK_SYLVANAS_COMETH_0              = 0,
-    TALK_SYLVANAS_COMETH_1              = 1,
-    TALK_SYLVANAS_COMETH_2              = 2,
-    TALK_SYLVANAS_COMETH_3              = 3,
-    TALK_SYLVANAS_COMETH_4              = 4,
-    TALK_SYLVANAS_COMETH_5              = 5,
-    TALK_SYLVANAS_COMETH_6              = 6,
-    TALK_SYLVANAS_COMETH_7              = 7,
-    TALK_SYLVANAS_COMETH_8              = 8,
-    TALK_SYLVANAS_COMETH_9              = 9,
-    TALK_SYLVANAS_COMETH_10             = 10,
-    TALK_GARROSH_COMETH_0               = 0,
-    TALK_GARROSH_COMETH_1               = 1,
-    TALK_GARROSH_COMETH_2               = 2,
-    TALK_GARROSH_COMETH_3               = 3,
-    TALK_GARROSH_COMETH_4               = 4,
-    TALK_GARROSH_COMETH_5               = 5,
-    TALK_GARROSH_COMETH_6               = 6,
-    TALK_GARROSH_COMETH_7               = 7,
-    TALK_GARROSH_COMETH_8               = 8,
-    TALK_GARROSH_COMETH_9               = 9,
-    TALK_GARROSH_COMETH_10              = 10,
-    TALK_CROMUSH_COMETH_0               = 0,
-    TALK_CROMUSH_COMETH_1               = 1,
-
-    MOVE_CROMUSH_TO_SYLVANAS            = 5405701,
-    MOVE_CROMUSH_TO_HOME                = 5405702,
-    MOVE_GARROSH_TO_HOME                = 5405703,
-
-    PATH_CROMUSH_01                     = 446402,
-    PATH_CROMUSH_02                     = 446403,
-    PATH_GARROSH                        = 446290,
-
-    POINT_AGATHA_PRE_RISE_1             = 1,
-    POINT_AGATHA_PRE_RISE_2             = 2,
-    POINT_AGATHA_RISING                 = 3,
-    POINT_AGATHA_RESET                  = 4
+    std::vector<uint32> _spellIds;
+    uint32 _chosenSpellId;
 };
 
 Position const ElitePos[16] =
@@ -711,6 +696,81 @@ Position const AgathaRisingPos = { 1368.65f, 1032.19f, 63.3033f };
 
 Position const AgathaResetPos = { 1364.02f, 1028.54f, 55.9914f };
 
+enum QuestTheWarchiefCometh
+{
+    QUEST_THE_WARCHIEF_COMETH               = 26965,
+
+    NPC_LADY_SYLVANAS_WINDRUNNER_COMMETH    = 44365,
+    NPC_AGATHA_COMMETH                      = 44608,
+    NPC_GRAND_EXECUTOR_MORTUUS              = 44615,
+    NPC_MALE_FALLEN_HUMAN                   = 44592,
+    NPC_FEMALE_FALLEN_HUMAN                 = 44593,
+    NPC_PORTAL_FROM_ORGRIMMAR               = 44630,
+    NPC_GARROSH_HELLSCREAM                  = 44629,
+    NPC_HIGH_WARLORD_CROMUSH_COMMETH        = 44640,
+    NPC_HELLSCREAM_ELITE_COMMETH            = 44636,
+    NPC_QUEST_MONSTER_CREDIT                = 44629,
+    NPC_FORSAKEN_WARHORSE_UNPHASED          = 73595,
+
+    SPELL_RAISE_FORSAKEN_COMMETH            = 83173,
+    SPELL_AIR_REVENANT_ENTRANCE             = 55761,
+    SPELL_SIMPLE_TELEPORT                   = 12980,
+    SPELL_WELCOME_TO_SILVERPINE_CREDIT      = 83384,
+
+    EVENT_START_SCENE_COMMETH               = 1,
+    EVENT_SUMMON_PORTAL_COMMETH             = 2,
+    EVENT_SUMMON_GARROSH_COMMETH            = 3,
+    EVENT_AGATHA_RAISE_FORSAKEN             = 4,
+    EVENT_SCENE_TALK_COMMETH                = 7,
+
+    ACTION_UNDEAD_START_WALKING             = 1,
+    ACTION_START_START_SCENE_COMETH         = 1,
+
+    TALK_SYLVANAS_COMETH_0                  = 0,
+    TALK_SYLVANAS_COMETH_1                  = 1,
+    TALK_SYLVANAS_COMETH_2                  = 2,
+    TALK_SYLVANAS_COMETH_3                  = 3,
+    TALK_SYLVANAS_COMETH_4                  = 4,
+    TALK_SYLVANAS_COMETH_5                  = 5,
+    TALK_SYLVANAS_COMETH_6                  = 6,
+    TALK_SYLVANAS_COMETH_7                  = 7,
+    TALK_SYLVANAS_COMETH_8                  = 8,
+    TALK_SYLVANAS_COMETH_9                  = 9,
+    TALK_SYLVANAS_COMETH_10                 = 10,
+    TALK_GARROSH_COMETH_0                   = 0,
+    TALK_GARROSH_COMETH_1                   = 1,
+    TALK_GARROSH_COMETH_2                   = 2,
+    TALK_GARROSH_COMETH_3                   = 3,
+    TALK_GARROSH_COMETH_4                   = 4,
+    TALK_GARROSH_COMETH_5                   = 5,
+    TALK_GARROSH_COMETH_6                   = 6,
+    TALK_GARROSH_COMETH_7                   = 7,
+    TALK_GARROSH_COMETH_8                   = 8,
+    TALK_GARROSH_COMETH_9                   = 9,
+    TALK_GARROSH_COMETH_10                  = 10,
+    TALK_CROMUSH_COMETH_0                   = 0,
+    TALK_CROMUSH_COMETH_1                   = 1,
+
+    MOVE_CROMUSH_TO_SYLVANAS                = 5405701,
+    MOVE_CROMUSH_TO_HOME                    = 5405702,
+    MOVE_GARROSH_TO_HOME                    = 5405703,
+
+    PATH_CROMUSH_01                         = 446402,
+    PATH_CROMUSH_02                         = 446403,
+    PATH_GARROSH                            = 446290,
+        
+    POINT_AGATHA_PRE_RISE_1                 = 1,
+    POINT_AGATHA_PRE_RISE_2                 = 2,
+    POINT_AGATHA_RISING                     = 3,
+    POINT_AGATHA_RESET                      = 4,
+
+    ANIMKIT_SYLV_1                          = 595,
+    ANIMKIT_SYLV_2                          = 606,
+    ANIMKIT_SYLV_3                          = 609,
+    ANIMKIT_GARROSH_1                       = 662,
+    ANIMKIT_GARROSH_2                       = 595
+};
+
 // Grand Executor Mortuus - 44615
 struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 {
@@ -723,7 +783,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
             if (_eventStarted)
                 return;
 
-            DoAction(ACTION_START_ANIM);
+            DoAction(ACTION_START_START_SCENE_COMETH);
 
             _eventStarted = true;
         }
@@ -732,11 +792,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
     void Reset() override
     {
         _events.Reset();
-        _garroshGUID = ObjectGuid::Empty;
-        _cromushGUID = ObjectGuid::Empty;
-        _sylvanasGUID = ObjectGuid::Empty;
-        _agathaGUID = ObjectGuid::Empty;
-        _warhorseGUID = ObjectGuid::Empty;
+        _garroshGUID.Clear();
+        _cromushGUID.Clear();
+        _sylvanasGUID.Clear();
+        _agathaGUID.Clear();
+        _warhorseGUID.Clear();
         _summons.clear();
         _eventStarted = false;
     }
@@ -755,7 +815,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                 break;
             }
 
-            case NPC_HELLSCREEMS_ELITE:
+            case NPC_HELLSCREAM_ELITE_COMMETH:
             {
                 summon->CastSpell(summon, SPELL_SIMPLE_TELEPORT);
                 break;
@@ -770,11 +830,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
     {
         switch (param)
         {
-            case ACTION_START_ANIM:
+            case ACTION_START_START_SCENE_COMETH:
             {
-                if (Creature* sylvanas = me->FindNearestCreature(NPC_LADY_SYLVANAS_WINDRUNNER_44365, 100.0f))
+                if (Creature* sylvanas = me->FindNearestCreature(NPC_LADY_SYLVANAS_WINDRUNNER_COMMETH, 100.0f))
                 {
-                    if (Creature* agatha = me->FindNearestCreature(NPC_AGATHA_44608, 100.0f))
+                    if (Creature* agatha = me->FindNearestCreature(NPC_AGATHA_COMMETH, 100.0f))
                     {
                         _sylvanasGUID = sylvanas->GetGUID();
                         _agathaGUID = agatha->GetGUID();
@@ -782,7 +842,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         if (Creature* warhorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_UNPHASED, 100.0f))
                             _warhorseGUID = warhorse->GetGUID();
 
-                        _events.ScheduleEvent(EVENT_START_ANIM_1, 250ms);
+                        _events.ScheduleEvent(EVENT_START_SCENE_COMMETH, 250ms);
                     }
                 }
 
@@ -802,27 +862,27 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_START_ANIM_1:
+                case EVENT_START_SCENE_COMMETH:
                 {
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE, 1s);
-                    _events.ScheduleEvent(EVENT_SUMMON_PORTAL, 4s);
-                    _events.ScheduleEvent(EVENT_SUMMON_GARROSH, 7s + 500ms);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH, 1s);
+                    _events.ScheduleEvent(EVENT_SUMMON_PORTAL_COMMETH, 4s);
+                    _events.ScheduleEvent(EVENT_SUMMON_GARROSH_COMMETH, 7s + 500ms);
                     break;
                 }
 
-                case EVENT_SUMMON_PORTAL:
+                case EVENT_SUMMON_PORTAL_COMMETH:
                 {
                     SummonPortalsFromOrgrimmar();
                     break;
                 }
 
-                case EVENT_SUMMON_GARROSH:
+                case EVENT_SUMMON_GARROSH_COMMETH:
                 {
                     SummonGarroshAndHisEliteGuards();
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE:
+                case EVENT_SCENE_TALK_COMMETH:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -830,12 +890,12 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             sylvanas->AI()->Talk(TALK_SYLVANAS_COMETH_0);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 1, 8s);
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 25, 4s + 500ms);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 1, 8s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 25, 4s + 500ms);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 1:
+                case EVENT_SCENE_TALK_COMMETH + 1:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -843,11 +903,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             garrosh->GetMotionMaster()->MoveJump(GarroshJumpPos, 15.595897f, 15.595897f);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 2, 3s + 500ms);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 2, 3s + 500ms);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 2:
+                case EVENT_SCENE_TALK_COMMETH + 2:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -868,11 +928,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 3, 12s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 3, 12s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 3:
+                case EVENT_SCENE_TALK_COMMETH + 3:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -883,11 +943,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 4, 7s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 4, 7s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 4:
+                case EVENT_SCENE_TALK_COMMETH + 4:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -901,11 +961,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             sylvanas->AI()->Talk(TALK_SYLVANAS_COMETH_2);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 5, 5s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 5, 5s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 5:
+                case EVENT_SCENE_TALK_COMMETH + 5:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -922,11 +982,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 6, 16s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 6, 16s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 6:
+                case EVENT_SCENE_TALK_COMMETH + 6:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -934,11 +994,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             sylvanas->AI()->Talk(TALK_SYLVANAS_COMETH_4);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 7, 4s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 7, 4s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 7:
+                case EVENT_SCENE_TALK_COMMETH + 7:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -946,11 +1006,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             garrosh->AI()->Talk(TALK_GARROSH_COMETH_2);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 8, 3s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 8, 3s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 8:
+                case EVENT_SCENE_TALK_COMMETH + 8:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -958,11 +1018,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             sylvanas->AI()->Talk(TALK_SYLVANAS_COMETH_5);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 9, 6s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 9, 6s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 9:
+                case EVENT_SCENE_TALK_COMMETH + 9:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -970,11 +1030,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             sylvanas->AI()->Talk(TALK_SYLVANAS_COMETH_6);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 10, 6s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 10, 6s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 10:
+                case EVENT_SCENE_TALK_COMMETH + 10:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -985,11 +1045,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 11, 9s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 11, 9s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 11:
+                case EVENT_SCENE_TALK_COMMETH + 11:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -1030,14 +1090,14 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     if (Creature* agatha = ObjectAccessor::GetCreature(*me, _agathaGUID))
                     {
                         if (agatha->IsAIEnabled())
-                            agatha->CastSpell(agatha, SPELL_RAISE_FORSAKEN);
+                            agatha->CastSpell(agatha, SPELL_RAISE_FORSAKEN_COMMETH);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 12, 10s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 12, 10s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 12:
+                case EVENT_SCENE_TALK_COMMETH + 12:
                 {
                     if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
                     {
@@ -1051,13 +1111,13 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             agatha->GetMotionMaster()->MovePoint(POINT_AGATHA_RISING, AgathaResetPos, false, 0.8775906f);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 13, 3s + 500ms);
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 24, 10s);
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 26, 3s + 500ms);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 13, 3s + 500ms);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 24, 10s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 26, 3s + 500ms);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 13:
+                case EVENT_SCENE_TALK_COMMETH + 13:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -1068,11 +1128,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 14, 13s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 14, 13s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 14:
+                case EVENT_SCENE_TALK_COMMETH + 14:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -1083,11 +1143,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 15, 10s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 15, 10s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 15:
+                case EVENT_SCENE_TALK_COMMETH + 15:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -1095,11 +1155,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             garrosh->AI()->Talk(TALK_GARROSH_COMETH_4);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 16, 6s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 16, 6s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 16:
+                case EVENT_SCENE_TALK_COMMETH + 16:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -1107,11 +1167,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             garrosh->AI()->Talk(TALK_GARROSH_COMETH_5);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 17, 6s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 17, 6s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 17:
+                case EVENT_SCENE_TALK_COMMETH + 17:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -1119,11 +1179,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             sylvanas->AI()->Talk(TALK_SYLVANAS_COMETH_10);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 18, 5s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 18, 5s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 18:
+                case EVENT_SCENE_TALK_COMMETH + 18:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -1134,11 +1194,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 19, 5s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 19, 5s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 19:
+                case EVENT_SCENE_TALK_COMMETH + 19:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -1153,11 +1213,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 20, 14s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 20, 14s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 20:
+                case EVENT_SCENE_TALK_COMMETH + 20:
                 {
                     if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
                     {
@@ -1171,11 +1231,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 21, 2s + 500ms);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 21, 2s + 500ms);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 21:
+                case EVENT_SCENE_TALK_COMMETH + 21:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -1187,11 +1247,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 22, 7s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 22, 7s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 22:
+                case EVENT_SCENE_TALK_COMMETH + 22:
                 {
                     if (Creature* cromush = ObjectAccessor::GetCreature(*me, _cromushGUID))
                     {
@@ -1205,11 +1265,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             garrosh->GetMotionMaster()->MovePath(PATH_GARROSH, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 23, 11s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 23, 11s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 23:
+                case EVENT_SCENE_TALK_COMMETH + 23:
                 {
                     if (Creature* garrosh = ObjectAccessor::GetCreature(*me, _garroshGUID))
                     {
@@ -1219,11 +1279,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
                     DespawnGarroshAndHisEliteGuards();
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 28, 500ms);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 28, 500ms);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 24:
+                case EVENT_SCENE_TALK_COMMETH + 24:
                 {
                     if (Creature* agatha = ObjectAccessor::GetCreature(*me, _agathaGUID))
                     {
@@ -1234,7 +1294,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 25:
+                case EVENT_SCENE_TALK_COMMETH + 25:
                 {
                     if (Creature* sylvanas = ObjectAccessor::GetCreature(*me, _sylvanasGUID))
                     {
@@ -1251,15 +1311,15 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 26:
+                case EVENT_SCENE_TALK_COMMETH + 26:
                 {
                     Talk(TALK_SYLVANAS_COMETH_0);
 
-                    _events.ScheduleEvent(EVENT_TALK_SEQUENCE + 27, 3s);
+                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 27, 3s);
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 27:
+                case EVENT_SCENE_TALK_COMMETH + 27:
                 {
                     std::list<Creature*> maleforsaken;
                     std::list<Creature*> femaleforsaken;
@@ -1269,19 +1329,19 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                     for (std::list<Creature*>::const_iterator itr = maleforsaken.begin(); itr != maleforsaken.end(); ++itr)
                     {
                         if ((*itr)->IsAIEnabled())
-                            (*itr)->AI()->DoAction(ACTION_START_WALKING);
+                            (*itr)->AI()->DoAction(ACTION_UNDEAD_START_WALKING);
                     }
 
                     for (std::list<Creature*>::const_iterator itr = femaleforsaken.begin(); itr != femaleforsaken.end(); ++itr)
                     {
                         if ((*itr)->IsAIEnabled())
-                            (*itr)->AI()->DoAction(ACTION_START_WALKING);
+                            (*itr)->AI()->DoAction(ACTION_UNDEAD_START_WALKING);
                     }
 
                     break;
                 }
 
-                case EVENT_TALK_SEQUENCE + 28:
+                case EVENT_SCENE_TALK_COMMETH + 28:
                 {
                     _summons.DespawnAll();
 
@@ -1319,11 +1379,11 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
     void SummonGarroshAndHisEliteGuards()
     {
         for (auto pos : ElitePos)
-            me->SummonCreature(NPC_HELLSCREEMS_ELITE, pos, TEMPSUMMON_TIMED_DESPAWN, 300s);
+            me->SummonCreature(NPC_HELLSCREAM_ELITE_COMMETH, pos, TEMPSUMMON_TIMED_DESPAWN, 300s);
 
         me->SummonCreature(NPC_GARROSH_HELLSCREAM, GarroshPos, TEMPSUMMON_TIMED_DESPAWN, 300s);
 
-        if (Creature* cromush = me->SummonCreature(NPC_HIGH_WARLORD_CROMUSH, CromushPos, TEMPSUMMON_TIMED_DESPAWN, 300s))
+        if (Creature* cromush = me->SummonCreature(NPC_HIGH_WARLORD_CROMUSH_COMMETH, CromushPos, TEMPSUMMON_TIMED_DESPAWN, 300s))
         {
             _cromushGUID = cromush->GetGUID();
 
@@ -1355,14 +1415,17 @@ private:
     bool _eventStarted;
 };
 
-enum SpellRaiseForsaken83173
+enum RaiseForsakenCometh
 {
-    NPC_FALLEN_HUMAN_44592          = 44592,
-    NPC_FALLEN_HUMAN_44593          = 44593,
+    NPC_FALLEN_HUMAN_MALE_COMETH            = 44592,
+    NPC_FALLEN_HUMAN_FEMALE_COMETH          = 44593,
 
-    SPELL_INVISIBLE                 = 78351,
+    SPELL_INVISIBLE                         = 78351,
 
-    POINT_BEING_RISEN               = 1,
+    POINT_BEING_RISEN                       = 1,
+
+    ANIMKIT_RESET                           = 0,
+    ANIMKIT_FALLEN_HUMAN                    = 721
 };
 
 // Raise Forsaken - 83173
@@ -1391,8 +1454,8 @@ class spell_silverpine_raise_forsaken_83173 : public SpellScript
     {
         std::list<uint32>entrys;
 
-        entrys.push_back(NPC_FALLEN_HUMAN_44592);
-        entrys.push_back(NPC_FALLEN_HUMAN_44593);
+        entrys.push_back(NPC_FALLEN_HUMAN_MALE_COMETH);
+        entrys.push_back(NPC_FALLEN_HUMAN_FEMALE_COMETH);
 
         targets.remove_if(IsNotInEntryList(entrys));
     }
@@ -1453,7 +1516,7 @@ class spell_silverpine_raise_forsaken_83173_aura : public AuraScript
     }
 };
 
-enum SpellForsakenTrooperMasterScriptHighCommand
+enum SpellForsakenTrooperMasterScriptCometh
 {
     SPELL_FORSAKEN_TROOPER_MALE_01_HC       = 83150,
     SPELL_FORSAKEN_TROOPER_MALE_02_HC       = 83163,
@@ -1519,18 +1582,18 @@ class spell_silverpine_forsaken_trooper_masterscript_high_command : public Spell
     }
 };
 
-enum FallenHumanActions
+enum FallenHuman
 {
-    SPELL_FEIGNED                                       = 80636,
-    SPELL_FORSAKEN_TROOPER_MASTERSCRIPT_HIGH_COMMAND    = 83149,
+    SPELL_FEIGNED                           = 80636,
+    SPELL_FORSAKEN_TROOPER_MS_COMETH        = 83149,
 
-    EVENT_MOVE                                          = 1,
-    EVENT_TRANSFORM                                     = 3,
-    EVENT_FACING                                        = 4,
-    EVENT_EMOTE                                         = 5,
+    EVENT_MOVE                              = 1,
+    EVENT_TRANSFORM                         = 3,
+    EVENT_FACING                            = 4,
+    EVENT_EMOTE                             = 5,
 
-    PATH_FALLEN_HUMAN_1                                 = 445920,
-    PATH_FALLEN_HUMAN_2                                 = 445921
+    PATH_FALLEN_HUMAN_1                     = 445920,
+    PATH_FALLEN_HUMAN_2                     = 445921
 };
 
 // Fallen Human - 44592, 44593
@@ -1601,7 +1664,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 
                     me->RemoveAura(SPELL_FEIGNED);
 
-                    DoCastSelf(SPELL_FORSAKEN_TROOPER_MASTERSCRIPT_HIGH_COMMAND);
+                    DoCastSelf(SPELL_FORSAKEN_TROOPER_MS_COMETH);
 
                     _events.ScheduleEvent(EVENT_FACING, 1s + 500ms);
 
@@ -1635,39 +1698,15 @@ private:
     bool _done2;
 };
 
-enum QuestIteratingUponSuccess
+enum BatHandlerMaggotbreath
 {
-    QUEST_ITERATING_UPON_SUCCESS        = 26998,
+    QUEST_ITERATING_UPON_SUCCESS            = 26998,
 
-    NPC_VILE_FIN_ORACLE                 = 1908,
-    NPC_BAT_HANDLER_MAGGOTBREATH        = 44825,
-    NPC_FORSAKEN_BAT                    = 44821,
+    SPELL_SUMMON_BAT                        = 83584,
 
-    SPELL_SUMMON_BAT                    = 83584,
-    SPELL_BLIGHT_CONCOCTION             = 83573,
-    SPELL_GO_HOME                       = 83594,
+    ACTION_OPTION_ID                        = 1,
 
-    EVENT_CHECK_FINISH                  = 101,
-    EVENT_START_MOVEMENT,
-    EVENT_GO_HOME2,
-    EVENT_GO_HOME,
-
-    ACTION_OPTION_ID                    = 1,
-    ACTION_GO_HOME                      = 2,
-
-    TALK_MAGGOTBREATH                   = 0,
-    TALK_BAT_ARRIVED_TO_ISLE            = 0,
-    TALK_BAT_GOING_HOME                 = 1,
-
-    PATH_BAT_ARRIVE                     = 448210,
-    PATH_BAT_CIRCLE                     = 448211,
-    PATH_BAT_HOME                       = 448212,
-
-    WAYPOINT_ARRIVED_ON_ISLE            = 7,
-    WAYPOINT_LAST_CIRCLE                = 31,
-    WAYPOINT_ARRIVED_HOME               = 6,
-
-    DATA_ITERATING_UPON_SUCCESS_REQ     = 50
+    TALK_MAGGOTBREATH                       = 0
 };
 
 // Bat Handler Maggotbreath - 44825
@@ -1701,6 +1740,35 @@ struct npc_silverpine_bat_handler_maggotbreath : public ScriptedAI
 
         return false;
     }
+};
+
+enum ForsakenBat
+{
+    NPC_VILE_FIN_ORACLE                     = 1908,
+    NPC_BAT_HANDLER_MAGGOTBREATH            = 44825,
+    NPC_FORSAKEN_BAT                        = 44821,
+
+    SPELL_BLIGHT_CONCOCTION                 = 83573,
+    SPELL_GO_HOME                           = 83594,
+
+    EVENT_CHECK_FINISH_ITERATING            = 1,
+    EVENT_START_MOVEMENT_ITERATING          = 2,
+    EVENT_GO_HOME_ITERATING                 = 3,
+
+    ACTION_GO_HOME                          = 1,
+
+    TALK_BAT_ARRIVED_TO_ISLE                = 0,
+    TALK_BAT_GOING_HOME                     = 1,
+
+    PATH_BAT_ARRIVE = 448210,
+    PATH_BAT_CIRCLE                         = 448211,
+    PATH_BAT_HOME                           = 448212,
+
+    WAYPOINT_ARRIVED_ON_ISLE                = 7,
+    WAYPOINT_LAST_CIRCLE                    = 31,
+    WAYPOINT_ARRIVED_HOME                   = 6,
+
+    DATA_ITERATING_UPON_SUCCESS_REQ         = 50
 };
 
 // Forsaken Bat - 44821
@@ -1745,7 +1813,7 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
 
                     me->GetMotionMaster()->MovePath(PATH_BAT_ARRIVE, false);
 
-                    _events.ScheduleEvent(EVENT_CHECK_FINISH, 500ms);
+                    _events.ScheduleEvent(EVENT_CHECK_FINISH_ITERATING, 500ms);
                 }
             }
         }
@@ -1837,14 +1905,14 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
         {
             switch (eventId)
             {
-                case EVENT_CHECK_FINISH:
+                case EVENT_CHECK_FINISH_ITERATING:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (player->GetReqKillOrCastCurrentCount(QUEST_ITERATING_UPON_SUCCESS, NPC_VILE_FIN_ORACLE) == DATA_ITERATING_UPON_SUCCESS_REQ)
                             player->CastSpell(me, SPELL_GO_HOME, true);
                         else
-                            _events.ScheduleEvent(EVENT_CHECK_FINISH, 500ms);
+                            _events.ScheduleEvent(EVENT_CHECK_FINISH_ITERATING, 500ms);
                     }
 
                     break;
@@ -1918,99 +1986,6 @@ private:
     EventMap _events;
 };
 
-enum QuestWaitingToExsanguinate
-{
-    QUEST_WAITING_TO_EXSANGUINATE               = 27045,
-
-    NPC_DEATHSTALKER_RANE_YORICK                = 44882,
-    NPC_ARMOIRE_IN_ROOM                         = 44894,
-    NPC_ARMOIRE_SUMMONED                        = 44893,
-    NPC_LORD_DARIUS_CROWLEY                     = 44883,
-    NPC_PACKLEADER_IVAR_BLOODFANG               = 44884,
-    NPC_KILLCREDIT_DEATHSTALKER_YORICK          = 44882,
-
-    SPELL_SUMMON_HIDING_SPOT                    = 83756,
-    SPELL_HIDE_IN_ARMOIRE                       = 83788,
-    SPELL_STEALTH                               = 34189,
-    SPELL_PERMANENT_FEIGN_DEATH_01              = 29266,
-    SPELL_SUMMON_CROWLEY                        = 83752,
-    SPELL_SUMMON_BLOODFANG                      = 83753,
-    SPELL_SUMMON_CROWLEY_BLOODFANG_MASTER       = 83762,
-    SPELL_ARMOIRE_CAMERA_A                      = 83763,
-    SPELL_ARMOIRE_CAMERA_B                      = 83764,
-    SPELL_ARMOIRE_CAMERA_D                      = 83769,
-    SPELL_CONVERSATION_TRIGGER_01A              = 83773,
-    SPELL_CONVERSATION_TRIGGER_01B              = 83774,
-    SPELL_CONVERSATION_TRIGGER_01C              = 83782,
-    SPELL_CONVERSATION_TRIGGER_02A              = 83775,
-    SPELL_CONVERSATION_TRIGGER_02B              = 83777,
-    SPELL_CONVERSATION_TRIGGER_02C              = 83779,
-    SPELL_CONVERSATION_TRIGGER_02D              = 83955,
-    SPELL_CONVERSATION_TRIGGER_03               = 83787,
-    SPELL_CONVERSATION_TRIGGER_04               = 83784,
-    SPELL_REVERSE_RIDE_VEHICLE                  = 83781,
-    SPELL_EJECT_PASSENGER_01                    = 80743,
-    SPELL_KILL_CREDIT_YORICK                    = 83786,
-    SPELL_DESPAWN_ALL                           = 83770,
-
-    EVENT_START_ANIM                            = 100,
-    EVENT_WAIT_ON_PLAYER                        = 102,
-    EVENT_HIDE,
-    EVENT_SET_FACE_TO_BLOODFANG,
-    EVENT_RANE_LAST_MOVE,
-    EVENT_START_ANIMATION                       = 201,
-    EVENT_ACTION                                = 300,
-    EVENT_CAMERA_A                              = 400,
-    EVENT_CAMERA_B                              = 401,
-    EVENT_TALK_TO_PLAYER                        = 700,
-    EVENT_FINISH                                = 800,
-
-    ACTION_RANE_JUMP_DEATH                      = 2,
-    ACTION_RANE_SKIP_PATH,
-    ACTION_MOVE_TO_RANA                         = 500,
-
-    TALK_YORICK_EXSANGUINATE_SUMMON             = 0,
-    TALK_YORICK_EXSANGUINATE_HIDE               = 1,
-    TALK_YORICK_EXSANGUINATE_DEATH              = 2,
-    TALK_DARIUS_EXSANGUINATE_0                  = 0,
-    TALK_DARIUS_EXSANGUINATE_1                  = 1,
-    TALK_DARIUS_EXSANGUINATE_2                  = 2,
-    TALK_DARIUS_EXSANGUINATE_3                  = 3,
-    TALK_DARIUS_EXSANGUINATE_4                  = 4,
-    TALK_DARIUS_EXSANGUINATE_5                  = 5,
-    TALK_DARIUS_EXSANGUINATE_6                  = 6,
-    TALK_IVAR_EXSANGUINATE_0                    = 0,
-    TALK_IVAR_EXSANGUINATE_1                    = 1,
-    TALK_IVAR_EXSANGUINATE_2                    = 2,
-    TALK_IVAR_EXSANGUINATE_3                    = 3,
-    TALK_IVAR_EXSANGUINATE_4                    = 4,
-    TALK_IVAR_EXSANGUINATE_5                    = 5,
-    TALK_IVAR_EXSANGUINATE_6                    = 6,
-    TALK_IVAR_EXSANGUINATE_7                    = 7,
-    TALK_IVAR_EXSANGUINATE_8                    = 8,
-    TALK_IVAR_EXSANGUINATE_9                    = 9,
-    TALK_IVAR_EXSANGUINATE_10                   = 10,
-
-    PATH_YORICK_UP                              = 448820,
-    PATH_YORICK_HIDE                            = 448821,
-    PATH_DARIUS_ENTER                           = 448830,
-    PATH_IVAR_ENTER                             = 448840,
-    PATH_IVAR_RANE_01                           = 448841,
-    PATH_IVAR_RANE_02                           = 448842,
-    PATH_IVAR_RANE_03                           = 448843,
-    PATH_IVAR_EXIT                              = 448844,
-    PATH_DARIUS_EXIT                            = 448831,
-
-    WAYPOINT_CLOSE_TO_ARMOIRE                   = 15,
-    WAYPOINT_NEXT_TO_ARMOIRE                    = 2,
-    WAYPOINT_ON_DARIUS_DESPAWN                  = 2,
-    WAYPOINT_ON_IVAR_DESPAWN                    = 3,
-
-    POINT_HIDDEN_PLACE                          = 1234,
-    POINT_RANA                                  = 1230,
-    POINT_ARMOIRE                               = 15
-};
-
 // Deathstalker - 44789, 44790
 struct npc_silverpine_deathstalker : public ScriptedAI
 {
@@ -2032,17 +2007,17 @@ private:
     EventMap _events;
 };
 
+enum AbandonedOuthouse
+{
+    QUEST_WAITING_TO_EXSANGUINATE           = 27045,
+
+    SPELL_SUMMON_DEATHSTALKER_YORICK        = 83751
+};
+
 // Abandoned Outhouse - 205143
 struct go_silverpine_abandoned_outhouse : public GameObjectAI
 {
     go_silverpine_abandoned_outhouse(GameObject* go) : GameObjectAI(go) { }
-
-    enum eData
-    {
-        QUEST_WAITING_TO_EXSANGUINATE = 27045,
-
-        SPELL_SUMMON_DEATHSTALKER_YORICK = 83751
-    };
 
     void QuestAccept(Player* player, Quest const* quest) override
     {
@@ -2054,6 +2029,34 @@ struct go_silverpine_abandoned_outhouse : public GameObjectAI
 Position const YorickReady = { 1313.7f, 1211.99f, 58.5f };
 
 Position const YorickDeath = { 1295.52f, 1206.58f, 58.501f };
+
+enum DeathstalkerRaneYorick
+{
+    NPC_ARMOIRE_SUMMONED                    = 44893,
+    NPC_PACKLEADER_IVAR_BLOODFANG           = 44884,
+
+    SPELL_STEALTH                           = 34189,
+    SPELL_PERMANENT_FEIGN_DEATH_RANE        = 29266,
+
+    EVENT_START_QUEST_EXSANGUINATE          = 1,
+    EVENT_WAIT_FOR_PLAYER_EXSANGUINATE      = 3,
+    EVENT_RANE_HIDE                         = 4,
+    EVENT_SET_FACE_TO_BLOODFANG             = 5,
+    EVENT_RANE_TALK_TO_PLAYER               = 6,
+    EVENT_RANE_LAST_MOVE                    = 7,
+
+    ACTION_RANE_JUMP_DEATH                  = 1,
+    ACTION_RANE_SKIP_PATH                   = 2,
+
+    TALK_YORICK_EXSANGUINATE_SUMMON         = 0,
+    TALK_YORICK_EXSANGUINATE_HIDE           = 1,
+
+    PATH_YORICK_UP                          = 448820,
+    PATH_YORICK_HIDE                        = 448821,
+
+    WAYPOINT_CLOSE_TO_ARMOIRE               = 15,
+    WAYPOINT_HIDDEN_NEXT_TO_ARMOIRE         = 2
+};
 
 // Deathstalker Rane Yorick - 44882
 struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
@@ -2072,15 +2075,15 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
         if (Player* player = who->ToPlayer())
             _playerGUID = player->GetGUID();
 
-        _events.ScheduleEvent(EVENT_START_ANIM, 1s);
+        _events.ScheduleEvent(EVENT_START_QUEST_EXSANGUINATE, 1s);
     }
 
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
         if (pathId == PATH_YORICK_UP && waypointId == WAYPOINT_CLOSE_TO_ARMOIRE)
-            _events.ScheduleEvent(EVENT_WAIT_ON_PLAYER, 1s);
+            _events.ScheduleEvent(EVENT_WAIT_FOR_PLAYER_EXSANGUINATE, 1s);
 
-        if (pathId == PATH_YORICK_HIDE && waypointId == WAYPOINT_NEXT_TO_ARMOIRE)
+        if (pathId == PATH_YORICK_HIDE && waypointId == WAYPOINT_HIDDEN_NEXT_TO_ARMOIRE)
         {
             me->SetFacingTo(4.6425757f);
 
@@ -2127,46 +2130,46 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_START_ANIM:
+                case EVENT_START_QUEST_EXSANGUINATE:
                 {
                     Talk(TALK_YORICK_EXSANGUINATE_SUMMON);
 
-                    _events.ScheduleEvent(EVENT_START_ANIM + 1, 1s + 500ms);
+                    _events.ScheduleEvent(EVENT_START_QUEST_EXSANGUINATE + 1, 1s + 500ms);
                     break;
                 }
 
-                case EVENT_START_ANIM + 1:
+                case EVENT_START_QUEST_EXSANGUINATE + 1:
                 {
                     me->GetMotionMaster()->MovePath(PATH_YORICK_UP, false);
                     break;
                 }
 
-                case EVENT_WAIT_ON_PLAYER:
+                case EVENT_WAIT_FOR_PLAYER_EXSANGUINATE:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (player->GetDistance2d(me) <= 5.0f && !_playerArrived)
                         {
-                            _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 1s);
+                            _events.ScheduleEvent(EVENT_RANE_TALK_TO_PLAYER, 1s);
                             _playerArrived = true;
                         }
                         else
-                            _events.ScheduleEvent(EVENT_WAIT_ON_PLAYER, 1s);
+                            _events.ScheduleEvent(EVENT_WAIT_FOR_PLAYER_EXSANGUINATE, 1s);
                     }
 
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER:
+                case EVENT_RANE_TALK_TO_PLAYER:
                 {
                     Talk(TALK_YORICK_EXSANGUINATE_HIDE);
 
-                    _events.ScheduleEvent(EVENT_HIDE, 3s);
+                    _events.ScheduleEvent(EVENT_RANE_HIDE, 3s);
                     _events.ScheduleEvent(EVENT_SET_FACE_TO_BLOODFANG, 3s);
                     break;
                 }
 
-                case EVENT_HIDE:
+                case EVENT_RANE_HIDE:
                 {
                     me->GetMotionMaster()->MovePath(PATH_YORICK_HIDE, false);
                     break;
@@ -2208,7 +2211,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                 {
                     me->SetDisableGravity(false);
 
-                    DoCastSelf(SPELL_PERMANENT_FEIGN_DEATH_01);
+                    DoCastSelf(SPELL_PERMANENT_FEIGN_DEATH_RANE);
 
                     me->DespawnOrUnsummon(15s);
                     break;
@@ -2226,6 +2229,55 @@ private:
     ObjectGuid _armoireGUID;
     ObjectGuid _bloodfangGUID;
     bool _playerArrived;
+};
+
+enum ArmoireExsanguinate
+{
+    NPC_DEATHSTALKER_RANE_YORICK            = 44882,
+
+    SPELL_SUMMON_CROWLEY_BLOODFANG_MASTER   = 83762,
+    SPELL_ARMOIRE_CAMERA_ON_CROWLEY         = 83763,
+    SPELL_ARMOIRE_CAMERA_ON_IVAR            = 83764,
+    SPELL_REVERSE_RIDE_VEHICLE              = 83781,
+    SPELL_EJECT_PASSENGER_01                = 80743,
+    SPELL_KILL_CREDIT_YORICK                = 83786,
+    SPELL_HIDE_IN_ARMOIRE                   = 83788,
+
+    EVENT_START_SCENE_EXSANGUINATE          = 1,
+    EVENT_SET_SCENE_EXSANGUINATE            = 3,
+    EVENT_TALK_SCENE_EXSANGUINATE           = 4,
+    EVENT_ACTION_SCENE_EXSANGUINATE         = 20,
+    EVENT_SET_SCENE_CAMARA_ON_IVAR          = 30,
+    EVENT_SET_SCENE_CAMARA_ON_CROWLEY       = 31,
+    EVENT_FINISH_SCENE_EXSANGUINATE         = 32,
+
+    TALK_YORICK_EXSANGUINATE_DEATH          = 2,
+    TALK_DARIUS_EXSANGUINATE_0              = 0,
+    TALK_DARIUS_EXSANGUINATE_1              = 1,
+    TALK_DARIUS_EXSANGUINATE_2              = 2,
+    TALK_DARIUS_EXSANGUINATE_3              = 3,
+    TALK_DARIUS_EXSANGUINATE_4              = 4,
+    TALK_DARIUS_EXSANGUINATE_5              = 5,
+    TALK_DARIUS_EXSANGUINATE_6              = 6,
+    TALK_IVAR_EXSANGUINATE_0                = 0,
+    TALK_IVAR_EXSANGUINATE_1                = 1,
+    TALK_IVAR_EXSANGUINATE_2                = 2,
+    TALK_IVAR_EXSANGUINATE_3                = 3,
+    TALK_IVAR_EXSANGUINATE_4                = 4,
+    TALK_IVAR_EXSANGUINATE_5                = 5,
+    TALK_IVAR_EXSANGUINATE_6                = 6,
+    TALK_IVAR_EXSANGUINATE_7                = 7,
+    TALK_IVAR_EXSANGUINATE_8                = 8,
+    TALK_IVAR_EXSANGUINATE_9                = 9,
+    TALK_IVAR_EXSANGUINATE_10               = 10,
+
+    PATH_DARIUS_ENTER                       = 448830,
+    PATH_IVAR_ENTER                         = 448840,
+    PATH_IVAR_RANE_01                       = 448841,
+    PATH_IVAR_RANE_02                       = 448842,
+    PATH_IVAR_RANE_03                       = 448843,
+    PATH_IVAR_EXIT                          = 448844,
+    PATH_DARIUS_EXIT                        = 448831,
 };
 
 // Armoire - 44893
@@ -2266,7 +2318,7 @@ struct npc_silverpine_armoire : public VehicleAI
             if (Player* player = passenger->ToPlayer())
             {
                 if (player->GetQuestStatus(QUEST_WAITING_TO_EXSANGUINATE) == QUEST_STATUS_INCOMPLETE)
-                    _events.ScheduleEvent(EVENT_START_ANIMATION, 2s);
+                    _events.ScheduleEvent(EVENT_START_SCENE_EXSANGUINATE, 2s);
             }
         }
         else
@@ -2293,33 +2345,6 @@ struct npc_silverpine_armoire : public VehicleAI
         }
     }
 
-    void SetGUID(ObjectGuid const& guid, int32 id) override
-    {
-        switch (id)
-        {
-            case NPC_DEATHSTALKER_RANE_YORICK:
-            {
-                _raneGUID = guid;
-                break;
-            }
-
-            case NPC_LORD_DARIUS_CROWLEY:
-            {
-                _crowleyGUID = guid;
-                break;
-            }
-
-            case NPC_PACKLEADER_IVAR_BLOODFANG:
-            {
-                _bloodfangGUID = guid;
-                break;
-            }
-
-            default:
-                break;
-        }
-    }
-
     void UpdateAI(uint32 diff) override
     {
         _events.Update(diff);
@@ -2328,18 +2353,18 @@ struct npc_silverpine_armoire : public VehicleAI
         {
             switch (eventId)
             {
-                case EVENT_START_ANIMATION:
+                case EVENT_START_SCENE_EXSANGUINATE:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         player->CastSpell(player, SPELL_SUMMON_CROWLEY_BLOODFANG_MASTER, true);
 
-                        _events.ScheduleEvent(EVENT_START_ANIMATION + 1, 1s);
+                        _events.ScheduleEvent(EVENT_START_SCENE_EXSANGUINATE + 1, 1s);
                     }
                     break;
                 }
 
-                case EVENT_START_ANIMATION + 1:
+                case EVENT_START_SCENE_EXSANGUINATE + 1:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
@@ -2353,11 +2378,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->GetMotionMaster()->MovePath(PATH_IVAR_ENTER, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION, 5s);
+                    _events.ScheduleEvent(EVENT_SET_SCENE_EXSANGUINATE, 5s);
                     break;
                 }
 
-                case EVENT_ACTION:
+                case EVENT_SET_SCENE_EXSANGUINATE:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
@@ -2371,11 +2396,11 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 2s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE, 2s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER:
+                case EVENT_TALK_SCENE_EXSANGUINATE:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
@@ -2383,12 +2408,12 @@ struct npc_silverpine_armoire : public VehicleAI
                             darius->AI()->Talk(TALK_DARIUS_EXSANGUINATE_0);
                     }
 
-                    _events.ScheduleEvent(EVENT_CAMERA_B, 6s);
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 1, 6s + 700ms);
+                    _events.ScheduleEvent(EVENT_SET_SCENE_CAMARA_ON_IVAR, 6s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 1, 6s + 700ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 1:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 1:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2396,12 +2421,12 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_0);
                     }
 
-                    _events.ScheduleEvent(EVENT_CAMERA_A, 6s);
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 2, 6s + 700ms);
+                    _events.ScheduleEvent(EVENT_SET_SCENE_CAMARA_ON_CROWLEY, 6s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 2, 6s + 700ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 2:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 2:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
@@ -2409,11 +2434,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             darius->AI()->Talk(TALK_DARIUS_EXSANGUINATE_1);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 3, 12s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 3, 12s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 3:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 3:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
@@ -2421,12 +2446,12 @@ struct npc_silverpine_armoire : public VehicleAI
                             darius->AI()->Talk(TALK_DARIUS_EXSANGUINATE_2);
                     }
 
-                    _events.ScheduleEvent(EVENT_CAMERA_B, 7s);
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 4, 7s + 700ms);
+                    _events.ScheduleEvent(EVENT_SET_SCENE_CAMARA_ON_IVAR, 7s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 4, 7s + 700ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 4:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 4:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2434,11 +2459,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_1);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 5, 7s + 300ms);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 5, 7s + 300ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 5:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 5:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2446,11 +2471,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_2);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 6, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 6, 3s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 6:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 6:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2458,12 +2483,12 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_3);
                     }
 
-                    _events.ScheduleEvent(EVENT_CAMERA_A, 9s);
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 7, 9s + 800ms);
+                    _events.ScheduleEvent(EVENT_SET_SCENE_CAMARA_ON_CROWLEY, 9s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 7, 9s + 800ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 7:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 7:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
@@ -2471,12 +2496,12 @@ struct npc_silverpine_armoire : public VehicleAI
                             darius->AI()->Talk(TALK_DARIUS_EXSANGUINATE_3);
                     }
 
-                    _events.ScheduleEvent(EVENT_CAMERA_B, 3s);
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 8, 3s + 700ms);
+                    _events.ScheduleEvent(EVENT_SET_SCENE_CAMARA_ON_IVAR, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 8, 3s + 700ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 8:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 8:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2484,11 +2509,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_4);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 1, 2s + 500ms);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 1, 2s + 500ms);
                     break;
                 }
 
-                case EVENT_ACTION + 1:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 1:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2496,11 +2521,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->GetMotionMaster()->MovePath(PATH_IVAR_RANE_01, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 9, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 9, 3s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 9:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 9:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2508,11 +2533,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_5);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 10, 5s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 10, 5s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 10:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 10:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2520,11 +2545,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_6);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 2, 6s);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 2, 6s);
                     break;
                 }
 
-                case EVENT_ACTION + 2:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 2:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2532,11 +2557,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->GetMotionMaster()->MovePath(PATH_IVAR_RANE_02, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 11, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 11, 3s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 11:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 11:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2544,11 +2569,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_7);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 3, 4s);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 3, 4s);
                     break;
                 }
 
-                case EVENT_ACTION + 3:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 3:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2562,11 +2587,11 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 4, 1s);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 4, 1s);
                     break;
                 }
 
-                case EVENT_ACTION + 4:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 4:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2574,11 +2599,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->GetMotionMaster()->MovePath(PATH_IVAR_RANE_03, false);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 5, 3s);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 5, 3s);
                     break;
                 }
 
-                case EVENT_ACTION + 5:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 5:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2586,11 +2611,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->SetFacingTo(3.054326f);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 12, 500ms);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 12, 500ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 12:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 12:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2598,11 +2623,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_8);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 13, 3s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 13, 3s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 13:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 13:
                 {
                     if (Creature* rane = ObjectAccessor::GetCreature(*me, _raneGUID))
                     {
@@ -2610,11 +2635,11 @@ struct npc_silverpine_armoire : public VehicleAI
                             rane->AI()->Talk(TALK_YORICK_EXSANGUINATE_DEATH);
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 6, 3s);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 6, 3s);
                     break;
                 }
 
-                case EVENT_ACTION + 6:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 6:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2628,11 +2653,11 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 14, 1s);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 14, 1s);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 14:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 14:
                 {
                     if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
                     {
@@ -2646,11 +2671,11 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER + 15, 5s + 500ms);
+                    _events.ScheduleEvent(EVENT_TALK_SCENE_EXSANGUINATE + 15, 5s + 500ms);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER + 15:
+                case EVENT_TALK_SCENE_EXSANGUINATE + 15:
                 {
                     if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
                     {
@@ -2658,12 +2683,12 @@ struct npc_silverpine_armoire : public VehicleAI
                             ivar->AI()->Talk(TALK_IVAR_EXSANGUINATE_10);
                     }
 
-                    _events.ScheduleEvent(EVENT_CAMERA_A, 5s + 300ms);
-                    _events.ScheduleEvent(EVENT_ACTION + 7, 6s);
+                    _events.ScheduleEvent(EVENT_SET_SCENE_CAMARA_ON_CROWLEY, 5s + 300ms);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 7, 6s);
                     break;
                 }
 
-                case EVENT_ACTION + 7:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 7:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -2674,12 +2699,11 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_ACTION + 8, 3s);
-                    _events.ScheduleEvent(EVENT_FINISH, 15s);
+                    _events.ScheduleEvent(EVENT_ACTION_SCENE_EXSANGUINATE + 8, 3s);
                     break;
                 }
 
-                case EVENT_ACTION + 8:
+                case EVENT_ACTION_SCENE_EXSANGUINATE + 8:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -2690,11 +2714,11 @@ struct npc_silverpine_armoire : public VehicleAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_FINISH, 4s);
+                    _events.ScheduleEvent(EVENT_FINISH_SCENE_EXSANGUINATE, 4s);
                     break;
                 }
 
-                case EVENT_FINISH:
+                case EVENT_FINISH_SCENE_EXSANGUINATE:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -2711,33 +2735,33 @@ struct npc_silverpine_armoire : public VehicleAI
                         player->ExitVehicle();
                     }
 
-                    _events.ScheduleEvent(EVENT_FINISH + 1, 1s);
+                    _events.ScheduleEvent(EVENT_FINISH_SCENE_EXSANGUINATE + 1, 1s);
                     break;
                 }
 
-                case EVENT_FINISH + 1:
+                case EVENT_FINISH_SCENE_EXSANGUINATE + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         me->DespawnOrUnsummon();
                     break;
                 }
 
-                case EVENT_CAMERA_A:
+                case EVENT_SET_SCENE_CAMARA_ON_CROWLEY:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (Creature* darius = ObjectAccessor::GetCreature(*me, _crowleyGUID))
-                            player->CastSpell(darius, SPELL_ARMOIRE_CAMERA_A, true);
+                            player->CastSpell(darius, SPELL_ARMOIRE_CAMERA_ON_CROWLEY, true);
                     }
                     break;
                 }
 
-                case EVENT_CAMERA_B:
+                case EVENT_SET_SCENE_CAMARA_ON_IVAR:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (Creature* ivar = ObjectAccessor::GetCreature(*me, _bloodfangGUID))
-                            player->CastSpell(ivar, SPELL_ARMOIRE_CAMERA_B, true);
+                            player->CastSpell(ivar, SPELL_ARMOIRE_CAMERA_ON_IVAR, true);
                     }
 
                     break;
@@ -2755,6 +2779,11 @@ private:
     ObjectGuid _raneGUID;
     ObjectGuid _crowleyGUID;
     ObjectGuid _bloodfangGUID;
+};
+
+enum DariusCrowleyExsanguinate
+{
+    WAYPOINT_ON_DARIUS_DESPAWN              = 2
 };
 
 // Lord Darius Crowley - 44883
@@ -2808,6 +2837,11 @@ private:
     ObjectGuid _bloodfangGUID;
 };
 
+enum IvarBloodfangExsanguinate
+{
+    WAYPOINT_ON_IVAR_DESPAWN                = 3
+};
+
 // Packleader Ivar Bloodfang - 44884
 struct npc_silverpine_packleader_ivar_bloodfang_exhanguinate : public ScriptedAI
 {
@@ -2844,6 +2878,11 @@ private:
     ObjectGuid _armoireGUID;
 };
 
+enum EjectPassenger1
+{
+    SEAT_BLOODFANG                          = 0
+};
+
 // Eject Passenger 1 - 80743
 class spell_silverpine_eject_passenger_1 : public SpellScript
 {
@@ -2865,103 +2904,15 @@ class spell_silverpine_eject_passenger_1 : public SpellScript
     }
 };
 
-enum ForsakenRearGuardQuests
+enum AtForsakenRearGuard
 {
-    QUEST_STEEL_THUNDER                         = 27069,
-    QUEST_LOST_IN_THE_DARKNESS                  = 27093,
-    QUEST_ITS_ONLY_POISONOUS_IF_YOU_INGEST_IT   = 27088,
-    QUEST_ORCS_ARE_IN_ORDER                     = 27096,
+    QUEST_ORCS_ARE_IN_ORDER                 = 27096,
 
-    NPC_SALTY_ROCKA                             = 45498,
-    NPC_SALTY_GORGAR                            = 45497,
-    NPC_DRUNKEN_ORC_SEA_DOG                     = 44913,
-    NPC_ADMIRAL_HATCHET                         = 44916,
-    NPC_WARLORD_TOROK                           = 44917,
-    NPC_APOTHECARY_WORMCRUD                     = 44912,
-    NPC_ORC_SEA_PUP                             = 44914,
-    NPC_ORC_CRATE                               = 44915,
-    NPC_MUTANT_BUSH_CHICKEN                     = 44935,
-    NPC_FOREST_ETTIN                            = 44367,
-    NPC_WEBBED_VICTIM                           = 44941,
-    NPC_ORC_SEA_DOG                             = 44942,
-    NPC_BLOODFANG_SCAVENGER                     = 44547,
-    NPC_RABID_DOG                               = 1766,
-    NPC_GIANT_RABBID_BEAR                       = 1797,
-    NPC_SKITTERWEB_STALKER                      = 44908,
+    NPC_ADMIRAL_HATCHET                     = 44916,
+    NPC_APOTHECARY_WORMCRUD                 = 44912,
 
-    SPELL_SUMMON_SEA_PUP                        = 83839,
-    SPELL_PICK_UP_ORC_CRATE                     = 83838,
-    SPELL_SUMMON_ORC_CRATE                      = 83835,
-    SPELL_KILL_CREDIT_SEA_DOG_CRATE             = 83843,
-    SPELL_SEA_PUP_TRIGGER                       = 83865,
-    SPELL_EJECT_ALL_PASSENGERS                  = 68576,
-    SPELL_DESPAWN_ALL_SUMMONS                   = 83840,
-    SPELL_ANIM_DEAD                             = 98190,
-    SPELL_BONK                                  = 80146,
-    SPELL_LOG_SMASH                             = 88421,
-    SPELL_ETTIN_MOUTH                           = 83907,
-    SPELL_BUSH_EXPLOSION                        = 83903,
-    SPELL_FREE_WEBBED_VICTIM1                   = 83919,
-    SPELL_FREE_WEBBED_VICTIM2                   = 83921,
-    SPELL_FREE_WEBBED_VICTIM3                   = 83927,
-    SPELL_SICK                                  = 83885,
-    SPELL_SKITTERWEB                            = 83827,
-    SPELL_SUMMNON_SPIDERLINGS                   = 87084,
-    SPELL_VENOM_SPLASH                          = 79607,
-
-    EVENT_CHECK_PLAYER                          = 100,
-    EVENT_TALK_COOLDOWN                         = 101,
-    EVENT_REMOVE_PROTECTION                     = 102,
-    EVENT_JUST_SUMMONED                         = 104,
-    EVENT_TRIGGER_DESPAWN                       = 105,
-    EVENT_TALK                                  = 200,
-    EVENT_CHECK_PLAYER_ALIVE                    = 300,
-    EVENT_CHECK_TALK                            = 400,
-    EVENT_EXPLODE                               = 500,
-    EVENT_CHECK_ETTIN                           = 501,
-    EVENT_AGGRO_SPIDER                          = 800,
-    EVENT_SUMMON_SPIDERLINGS                    = 900,
-    EVENT_VENOM_SPLASH                          = 901,
-    EVENT_TALK_CHOOSE                           = 1000,
-    EVENT_LOG_SMASH,
-    EVENT_BONK,
-
-    ACTION_EXPLODE                              = 3,
-    ACTION_GRAB_CHICKEN                         = 4,
-    ACTION_ADMIRAL_START_EVENT                  = 5,
-    EVENT_WORMCRUD_START_EVENT                  = 6,
-
-    TALK_ROCKA_0                                = 0,
-    TALK_ROCKA_1                                = 1,
-    TALK_ROCKA_2                                = 2,
-    TALK_ROCKA_3                                = 3,
-    TALK_ROCKA_4                                = 4,
-    TALK_ROCKA_5                                = 5,
-    TALK_ROCKA_6                                = 6,
-    TALK_ROCKA_7                                = 7,
-    TALK_ROCKA_8                                = 8,
-    TALK_ROCKA_9                                = 9,
-    TALK_GORGAR_0                               = 0,
-    TALK_GORGAR_1                               = 1,
-    TALK_GORGAR_2                               = 2,
-    TALK_GORGAR_3                               = 3,
-    TALK_GORGAR_4                               = 4,
-    TALK_GORGAR_5                               = 5,
-    TALK_WORMCRUD_0                             = 0,
-    TALK_ORCSEA_0                               = 0,
-    TALK_ORCSEA_1                               = 1,
-    TALK_ORCSEA_2                               = 2,
-    TALK_HATCHET_0                              = 0,
-    TALK_HATCHET_1                              = 1,
-    TALK_TOROK_0                                = 0,
-    TALK_TOROK_1                                = 1,
-    TALK_TOROK_2                                = 2,
-    TALK_ORC_PUP_SUMMONED                       = 0,
-    TALK_ORC_PUP_DELIVER_CRATES                 = 6,
-    TALK_ORC_PUP_WORN_OFF                       = 7,
-    TALK_ORC_FREED                              = 0,
-
-    SOUND_CHICKEN_MOUNT_WOUND                   = 15936,
+    ACTION_HATCHET_START_CONVERSATION       = 1,
+    ACTION_WORMCRUD_START_CONVERSATION      = 2
 };
 
 // Forsaken Rear Guard - 6222
@@ -2979,19 +2930,46 @@ public:
                 if (Creature* hatchet = player->FindNearestCreature(NPC_ADMIRAL_HATCHET, 50.0f))
                 {
                     if (hatchet->IsAIEnabled())
-                        hatchet->AI()->DoAction(ACTION_ADMIRAL_START_EVENT);
+                        hatchet->AI()->DoAction(ACTION_HATCHET_START_CONVERSATION);
                 }
 
                 if (Creature* wormcrud = player->FindNearestCreature(NPC_APOTHECARY_WORMCRUD, 50.0f))
                 {
                     if (wormcrud->IsAIEnabled())
-                        wormcrud->AI()->DoAction(EVENT_WORMCRUD_START_EVENT);
+                        wormcrud->AI()->DoAction(ACTION_WORMCRUD_START_CONVERSATION);
                 }
             }
         }
 
         return true;
     }
+};
+
+enum SaltyRocka
+{
+    NPC_SALTY_GORGAR                        = 45497,
+
+    EVENT_ROCKA_CHECK_CONVERSATION          = 1,
+    EVENT_ROCKA_CHOOSE_CONVERSATION         = 2,
+    EVENT_ROCKA_CONVERSATION_COOLDOWN       = 3,
+    EVENT_ROCKA_TALK                        = 4,
+
+    TALK_ROCKA_0                            = 0,
+    TALK_ROCKA_1                            = 1,
+    TALK_ROCKA_2                            = 2,
+    TALK_ROCKA_3                            = 3,
+    TALK_ROCKA_4                            = 4,
+    TALK_ROCKA_5                            = 5,
+    TALK_ROCKA_6                            = 6,
+    TALK_ROCKA_7                            = 7,
+    TALK_ROCKA_8                            = 8,
+    TALK_ROCKA_9                            = 9,
+    TALK_GORGAR_0                           = 0,
+    TALK_GORGAR_1                           = 1,
+    TALK_GORGAR_2                           = 2,
+    TALK_GORGAR_3                           = 3,
+    TALK_GORGAR_4                           = 4,
+    TALK_GORGAR_5                           = 5
 };
 
 // "Salty" Rocka - 45498
@@ -3007,7 +2985,7 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
     void Reset() override
     {
         _events.Reset();
-        _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
+        _events.ScheduleEvent(EVENT_ROCKA_CHECK_CONVERSATION, 1s);
     }
 
     void MoveInLineOfSight(Unit* who) override
@@ -3024,61 +3002,61 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_CHECK_TALK:
+                case EVENT_ROCKA_CHECK_CONVERSATION:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (player->GetDistance2d(me) < 20.0f && !_playerNear)
                         {
-                            _events.ScheduleEvent(EVENT_TALK_CHOOSE, 1s);
-                            _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 180s);
+                            _events.ScheduleEvent(EVENT_ROCKA_CHOOSE_CONVERSATION, 1s);
+                            _events.ScheduleEvent(EVENT_ROCKA_CONVERSATION_COOLDOWN, 180s);
 
                             _playerNear = true;
                         }
                         else
                         {
                             _playerNear = false;
-                            _events.ScheduleEvent(EVENT_CHECK_TALK, 1s);
+                            _events.ScheduleEvent(EVENT_ROCKA_CHECK_CONVERSATION, 1s);
                         }
                     }
 
                     break;
                 }
 
-                case EVENT_TALK_CHOOSE:
+                case EVENT_ROCKA_CHOOSE_CONVERSATION:
                 {
                     if (roll_chance_i(50))
                     {
                         if (roll_chance_i(50))
                         {
                             if (roll_chance_i(50))
-                                _events.ScheduleEvent(EVENT_TALK, 1s);
+                                _events.ScheduleEvent(EVENT_ROCKA_TALK, 1s);
                             else
-                                _events.ScheduleEvent(EVENT_TALK + 10, 1s);
+                                _events.ScheduleEvent(EVENT_ROCKA_TALK + 10, 1s);
                         }
                         else
                         {
                             if (roll_chance_i(50))
-                                _events.ScheduleEvent(EVENT_TALK + 20, 1s);
+                                _events.ScheduleEvent(EVENT_ROCKA_TALK + 20, 1s);
                             else
-                                _events.ScheduleEvent(EVENT_TALK + 30, 1s);
+                                _events.ScheduleEvent(EVENT_ROCKA_TALK + 30, 1s);
                         }
                     }
                     else
-                        _events.ScheduleEvent(EVENT_TALK + 40, 1s);
+                        _events.ScheduleEvent(EVENT_ROCKA_TALK + 40, 1s);
 
                     break;
                 }
 
-                case EVENT_TALK:
+                case EVENT_ROCKA_TALK:
                 {
                     Talk(TALK_ROCKA_0);
 
-                    _events.ScheduleEvent(EVENT_TALK + 1, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 1, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 1:
+                case EVENT_ROCKA_TALK + 1:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                     {
@@ -3086,25 +3064,25 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                             gorgar->AI()->Talk(TALK_GORGAR_0);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 2, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 2, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 2:
+                case EVENT_ROCKA_TALK + 2:
                 {
                     Talk(TALK_ROCKA_1);
                     break;
                 }
 
-                case EVENT_TALK + 10:
+                case EVENT_ROCKA_TALK + 10:
                 {
                     Talk(TALK_ROCKA_2);
 
-                    _events.ScheduleEvent(EVENT_TALK + 11, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 11, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 11:
+                case EVENT_ROCKA_TALK + 11:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                     {
@@ -3112,25 +3090,25 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                             gorgar->AI()->Talk(TALK_GORGAR_1);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 12, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 12, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 12:
+                case EVENT_ROCKA_TALK + 12:
                 {
                     Talk(TALK_ROCKA_3);
                     break;
                 }
 
-                case EVENT_TALK + 20:
+                case EVENT_ROCKA_TALK + 20:
                 {
                     Talk(TALK_ROCKA_4);
 
-                    _events.ScheduleEvent(EVENT_TALK + 21, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 21, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 21:
+                case EVENT_ROCKA_TALK + 21:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                     {
@@ -3138,25 +3116,25 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                             gorgar->AI()->Talk(TALK_GORGAR_2);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 22, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 22, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 22:
+                case EVENT_ROCKA_TALK + 22:
                 {
                     Talk(TALK_ROCKA_5);
                     break;
                 }
 
-                case EVENT_TALK + 30:
+                case EVENT_ROCKA_TALK + 30:
                 {
                     Talk(TALK_ROCKA_6);
 
-                    _events.ScheduleEvent(EVENT_TALK + 31, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 31, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 31:
+                case EVENT_ROCKA_TALK + 31:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                     {
@@ -3164,25 +3142,25 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                             gorgar->AI()->Talk(TALK_GORGAR_3);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 32, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 32, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 32:
+                case EVENT_ROCKA_TALK + 32:
                 {
                     Talk(TALK_ROCKA_7);
                     break;
                 }
 
-                case EVENT_TALK + 40:
+                case EVENT_ROCKA_TALK + 40:
                 {
                     Talk(TALK_ROCKA_8);
 
-                    _events.ScheduleEvent(EVENT_TALK + 1, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 1, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 41:
+                case EVENT_ROCKA_TALK + 41:
                 {
                     if (Creature* gorgar = ObjectAccessor::GetCreature(*me, _gorgarGUID))
                     {
@@ -3190,17 +3168,17 @@ struct npc_silverpine_salty_rocka : public ScriptedAI
                             gorgar->AI()->Talk(TALK_GORGAR_4);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 2, 20s);
+                    _events.ScheduleEvent(EVENT_ROCKA_TALK + 2, 20s);
                     break;
                 }
 
-                case EVENT_TALK + 42:
+                case EVENT_ROCKA_TALK + 42:
                 {
                     Talk(TALK_ROCKA_9);
                     break;
                 }
 
-                case EVENT_TALK_COOLDOWN:
+                case EVENT_ROCKA_CONVERSATION_COOLDOWN:
                 {
                     Reset();
                     break;
@@ -3228,6 +3206,21 @@ private:
     bool _playerNear;
 };
 
+enum ApothecaryWormcrud
+{
+    NPC_DRUNKEN_ORC_SEA_DOG                 = 44913,
+
+    EVENT_WORMCRUD_CHECK_CONVERSATION       = 1,
+    EVENT_WORMCRUD_CHOOSE_CONVERSATION      = 2,
+    EVENT_WORMCRUD_CONVERSATION_COOLDOWN    = 3,
+    EVENT_WORMCRUD_TALK                     = 4,
+
+    TALK_ORCSEA_0                           = 0,
+    TALK_ORCSEA_1                           = 1,
+    TALK_ORCSEA_2                           = 2,
+    TALK_WORMCRUD_0                         = 0
+};
+
 // Apothecary Wormcrud - 44912
 struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
 {
@@ -3247,14 +3240,14 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
 
     void DoAction(int32 param) override
     {
-        if (param == EVENT_WORMCRUD_START_EVENT)
+        if (param == ACTION_WORMCRUD_START_CONVERSATION)
         {
             if (!_eventCD)
             {
                 _eventCD = true;
 
-                _events.ScheduleEvent(EVENT_TALK, 15s);
-                _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 215s);
+                _events.ScheduleEvent(EVENT_WORMCRUD_TALK, 15s);
+                _events.ScheduleEvent(EVENT_WORMCRUD_CONVERSATION_COOLDOWN, 215s);
             }
         }
     }
@@ -3267,7 +3260,7 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_TALK:
+                case EVENT_WORMCRUD_TALK:
                 {
                     if (Creature* orcsea1 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[0]))
                     {
@@ -3275,11 +3268,11 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
                             orcsea1->AI()->Talk(TALK_ORCSEA_0);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 1, 12s);
+                    _events.ScheduleEvent(EVENT_WORMCRUD_TALK + 1, 12s);
                     break;
                 }
 
-                case EVENT_TALK + 1:
+                case EVENT_WORMCRUD_TALK + 1:
                 {
                     if (Creature* orcsea2 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[1]))
                     {
@@ -3287,11 +3280,11 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
                             orcsea2->AI()->Talk(TALK_ORCSEA_1);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 2, 12s);
+                    _events.ScheduleEvent(EVENT_WORMCRUD_TALK + 2, 12s);
                     break;
                 }
 
-                case EVENT_TALK + 2:
+                case EVENT_WORMCRUD_TALK + 2:
                 {
                     if (Creature* orcsea3 = ObjectAccessor::GetCreature(*me, _drunkenOrcSeaDog[2]))
                     {
@@ -3299,17 +3292,17 @@ struct npc_silverpine_apothecary_wormcrud : public ScriptedAI
                             orcsea3->AI()->Talk(TALK_ORCSEA_2);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 3, 12s);
+                    _events.ScheduleEvent(EVENT_WORMCRUD_TALK + 3, 12s);
                     break;
                 }
 
-                case EVENT_TALK + 3:
+                case EVENT_WORMCRUD_TALK + 3:
                 {
                     Talk(TALK_WORMCRUD_0);
                     break;
                 }
 
-                case EVENT_TALK_COOLDOWN:
+                case EVENT_WORMCRUD_CONVERSATION_COOLDOWN:
                 {
                     Reset();
                     break;
@@ -3339,6 +3332,28 @@ private:
     bool _eventCD;
 };
 
+enum HatchetRearGuard
+{
+    QUEST_LOST_IN_THE_DARKNESS              = 27093,
+
+    NPC_ORC_SEA_DOG                         = 44942,
+    NPC_WARLORD_TOROK                       = 44917,
+
+    SPELL_SEA_PUP_TRIGGER                   = 83865,
+
+    EVENT_HATCHET_CHECK_CONVERSATION        = 1,
+    EVENT_HATCHET_CONVERSATION_COOLDOWN     = 2,
+    EVENT_HATCHET_TALK                      = 3,
+
+    TALK_HATCHET_0                          = 0,
+    TALK_HATCHET_1                          = 1,
+    TALK_TOROK_0                            = 0,
+    TALK_TOROK_1                            = 1,
+    TALK_TOROK_2                            = 2,
+
+    ANIMKIT_TOROK                           = 594,
+};
+
 // Admiral Hatchet - 44916
 struct npc_silverpine_admiral_hatchet : public ScriptedAI
 {
@@ -3353,10 +3368,10 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
     {
         if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
         {
-            if (player->HasAura(SPELL_SEA_PUP_TRIGGER))
-                player->RemoveAura(SPELL_SEA_PUP_TRIGGER);
+            if (player->HasAura(SPELL_SUMMON_SEA_PUP))
+                player->RemoveAura(SPELL_SUMMON_SEA_PUP);
 
-            player->CastSpell(player, SPELL_SEA_PUP_TRIGGER);
+            player->CastSpell(player, SPELL_SUMMON_SEA_PUP);
 
             CloseGossipMenuFor(player);
 
@@ -3394,14 +3409,14 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
 
     void DoAction(int32 param) override
     {
-        if (param == ACTION_ADMIRAL_START_EVENT)
+        if (param == ACTION_HATCHET_START_CONVERSATION)
         {
             if (!_eventCD)
             {
                 _eventCD = true;
 
-                _events.ScheduleEvent(EVENT_TALK, 1s);
-                _events.ScheduleEvent(EVENT_TALK_COOLDOWN, 230s);
+                _events.ScheduleEvent(EVENT_HATCHET_TALK, 1s);
+                _events.ScheduleEvent(EVENT_HATCHET_CONVERSATION_COOLDOWN, 230s);
             }
         }
     }
@@ -3414,21 +3429,21 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_TALK_COOLDOWN:
+                case EVENT_HATCHET_CONVERSATION_COOLDOWN:
                 {
                     Reset();
                     break;
                 }
 
-                case EVENT_TALK:
+                case EVENT_HATCHET_TALK:
                 {
                     Talk(TALK_HATCHET_0);
 
-                    _events.ScheduleEvent(EVENT_TALK + 1, 8s);
+                    _events.ScheduleEvent(EVENT_HATCHET_TALK + 1, 8s);
                     break;
                 }
 
-                case EVENT_TALK + 1:
+                case EVENT_HATCHET_TALK + 1:
                 {
                     if (Creature* torok = ObjectAccessor::GetCreature(*me, _torokGUID))
                     {
@@ -3436,19 +3451,19 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
                             torok->AI()->Talk(TALK_TOROK_0);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK + 2, 6s);
+                    _events.ScheduleEvent(EVENT_HATCHET_TALK + 2, 6s);
                     break;
                 }
 
-                case EVENT_TALK + 2:
+                case EVENT_HATCHET_TALK + 2:
                 {
                     Talk(TALK_HATCHET_1);
 
-                    _events.ScheduleEvent(EVENT_TALK + 3, 6s);
+                    _events.ScheduleEvent(EVENT_HATCHET_TALK + 3, 6s);
                     break;
                 }
 
-                case EVENT_TALK + 3:
+                case EVENT_HATCHET_TALK + 3:
                 {
                     if (Creature* torok = ObjectAccessor::GetCreature(*me, _torokGUID))
                     {
@@ -3486,6 +3501,25 @@ private:
     bool _eventCD;
 };
 
+enum OrcSeaPupRearGuard
+{
+    NPC_ORC_CRATE                           = 44915,
+
+    SPELL_SUMMON_ORC_CRATE                  = 83835,
+    SPELL_EJECT_ALL_PASSENGERS              = 68576,
+    SPELL_ANIM_DEAD                         = 98190,
+    SPELL_DESPAWN_ALL_SUMMONS               = 83840,
+
+    EVENT_ORC_PUP_JUST_SUMMONED             = 1,
+    EVENT_ORC_PUP_REMOVE_PROTECTION         = 2,
+    EVENT_ORC_PUP_TALK                      = 3,
+    EVENT_ORC_PUP_DELIVER_CRATES            = 4,
+
+    TALK_ORC_PUP_SUMMONED                   = 0,
+    TALK_ORC_PUP_DELIVER_CRATES             = 6,
+    TALK_ORC_PUP_WORN_OFF                   = 7
+};
+
 // Orc Sea Pup - 44914
 struct npc_silverpine_orc_sea_pup : public VehicleAI
 {
@@ -3508,9 +3542,9 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
 
             if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
             {
-                _events.ScheduleEvent(EVENT_JUST_SUMMONED, 1s);
-                _events.ScheduleEvent(EVENT_REMOVE_PROTECTION, 1s + 500ms);
-                _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 5s);
+                _events.ScheduleEvent(EVENT_ORC_PUP_JUST_SUMMONED, 1s);
+                _events.ScheduleEvent(EVENT_ORC_PUP_REMOVE_PROTECTION, 1s + 500ms);
+                _events.ScheduleEvent(EVENT_ORC_PUP_TALK, 5s);
 
                 int c = player->GetReqKillOrCastCurrentCount(QUEST_STEEL_THUNDER, NPC_ORC_CRATE);
 
@@ -3541,12 +3575,12 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
         {
             case SPELL_SEA_PUP_TRIGGER:
             {
-                _events.CancelEvent(EVENT_TALK_TO_PLAYER);
+                _events.CancelEvent(EVENT_ORC_PUP_TALK);
 
                 if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     Talk(TALK_ORC_PUP_DELIVER_CRATES, player);
 
-                _events.ScheduleEvent(EVENT_TRIGGER_DESPAWN, 3s);
+                _events.ScheduleEvent(EVENT_ORC_PUP_DELIVER_CRATES, 3s);
                 break;
             }
 
@@ -3563,13 +3597,13 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
         {
             switch (eventId)
             {
-                case EVENT_JUST_SUMMONED:
+                case EVENT_ORC_PUP_JUST_SUMMONED:
                 {
                     Talk(TALK_ORC_PUP_SUMMONED);
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER:
+                case EVENT_ORC_PUP_TALK:
                 {
                     if (me->GetVehicleKit()->IsVehicleInUse())
                     {
@@ -3577,17 +3611,17 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
                             Talk(TALK_ORC_PUP_WORN_OFF);
                     }
 
-                    _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 45s, 65s);
+                    _events.ScheduleEvent(EVENT_ORC_PUP_TALK, 45s, 65s);
                     break;
                 }
 
-                case EVENT_REMOVE_PROTECTION:
+                case EVENT_ORC_PUP_REMOVE_PROTECTION:
                 {
                     _isJustSummoned = false;
                     break;
                 }
 
-                case EVENT_TRIGGER_DESPAWN:
+                case EVENT_ORC_PUP_DELIVER_CRATES:
                 {
                     DoCastSelf(SPELL_EJECT_ALL_PASSENGERS);
                     DoCastSelf(SPELL_ANIM_DEAD);
@@ -3673,6 +3707,11 @@ class spell_silverpine_eject_all_passengers : public SpellScript
     }
 };
 
+enum PickUpOrcCrate
+{
+    SPELL_KILL_CREDIT_SEA_DOG_CRATE         = 83843,
+};
+
 // Pick Up Orc Crate - 83838
 class spell_silverpine_pick_up_orc_crate : public SpellScript
 {
@@ -3697,6 +3736,11 @@ class spell_silverpine_pick_up_orc_crate : public SpellScript
     }
 };
 
+enum OrcCrate
+{
+    NPC_ORC_SEA_PUP                         = 44914,
+};
+
 // Orc Crate - 44915
 struct npc_silverpine_orc_crate : public ScriptedAI
 {
@@ -3711,15 +3755,26 @@ struct npc_silverpine_orc_crate : public ScriptedAI
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             if (Creature* orc = ObjectAccessor::GetCreature(*me, _orcGUID))
-            {
-                if (orc->IsAIEnabled())
-                    me->EnterVehicle(orc);
-            }
+                me->EnterVehicle(orc);
+
         }
     }
 
 private:
     ObjectGuid _orcGUID;
+};
+
+enum MutantBushChicken
+{
+    QUEST_POISONOUS_IF_YOU_INGEST_IT        = 27088,
+
+    NPC_FOREST_ETTIN                        = 44367,
+
+    EVENT_CHECK_ETTIN                       = 1,
+
+    ACTION_GRAB_CHICKEN                     = 1,
+
+    SOUND_CHICKEN_MOUNT_WOUND               = 15936
 };
 
 // Mutant Bush Chicken - 44935
@@ -3744,7 +3799,7 @@ struct npc_silverpine_mutant_bush_chicken : public ScriptedAI
 
             if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
             {
-                if (player->GetQuestStatus(QUEST_ITS_ONLY_POISONOUS_IF_YOU_INGEST_IT) == QUEST_STATUS_INCOMPLETE)
+                if (player->GetQuestStatus(QUEST_POISONOUS_IF_YOU_INGEST_IT) == QUEST_STATUS_INCOMPLETE)
                 {
                     me->PlayDirectSound(SOUND_CHICKEN_MOUNT_WOUND, player);
 
@@ -3810,6 +3865,22 @@ private:
     ObjectGuid _playerGUID;
 };
 
+enum ForestEttin
+{
+    NPC_MUTANT_BUSH_CHICKEN                 = 44935,
+
+    SPELL_ETTIN_MOUTH                       = 83907,
+    SPELL_BUSH_EXPLOSION                    = 83903,
+    SPELL_BONK                              = 80146,
+    SPELL_LOG_SMASH                         = 88421,
+
+    EVENT_CHICKEN_EXPLODE                   = 1,
+    EVENT_LOG_SMASH                         = 2,
+    EVENT_BONK                              = 3,
+
+    SEAT_ETTIN                              = 0,
+};
+
 // Forest Ettin - 44367
 struct npc_silverpine_forest_ettin : public ScriptedAI
 {
@@ -3833,7 +3904,7 @@ struct npc_silverpine_forest_ettin : public ScriptedAI
         if (passenger->GetEntry() == NPC_MUTANT_BUSH_CHICKEN)
         {
             if (apply)
-                _events.ScheduleEvent(EVENT_EXPLODE, 4s);
+                _events.ScheduleEvent(EVENT_CHICKEN_EXPLODE, 4s);
         }
     }
 
@@ -3886,7 +3957,8 @@ struct npc_silverpine_forest_ettin : public ScriptedAI
                     _events.Repeat(15s, 16s);
                     break;
                 }
-                case EVENT_EXPLODE:
+
+                case EVENT_CHICKEN_EXPLODE:
                 {
                     if (Unit* chicken = me->GetVehicleKit()->GetPassenger(SEAT_ETTIN))
                     {
@@ -3915,6 +3987,17 @@ struct npc_silverpine_forest_ettin : public ScriptedAI
 private:
     EventMap _events;
     ObjectGuid _chickenGUID;
+};
+
+enum WebbebVictim
+{
+    NPC_BLOODFANG_SCAVENGER                 = 44547,
+    NPC_RABID_DOG                           = 1766,
+    NPC_GIANT_RABBID_BEAR                   = 1797,
+
+    SPELL_FREE_WEBBED_VICTIM1               = 83919,
+    SPELL_FREE_WEBBED_VICTIM2               = 83921,
+    SPELL_FREE_WEBBED_VICTIM3               = 83927
 };
 
 // Webbed Victim - 44941
@@ -3989,6 +4072,16 @@ private:
     ObjectGuid _playerGUID;
 };
 
+enum WebbebOrcSeaDog
+{
+    // MISSING SINISTER STRIKE SPELL
+
+    EVENT_WEBBEB_ORC_CHECK_PLAYER           = 1,
+    EVENT_WEBBEB_ORC_TALK                   = 2,
+
+    TALK_WEBBEB_ORC_FREED                   = 0
+};
+
 // Orc Sea Dog - 44942
 struct npc_silverpine_orc_sea_dog : public ScriptedAI
 {
@@ -4014,8 +4107,8 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
 
             me->GetMotionMaster()->MoveFollow(player, 4.0f, frand(1.57f, 4.71f), true, true, false);
 
-            _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
-            _events.ScheduleEvent(EVENT_TALK_TO_PLAYER, 1s + 500ms);
+            _events.ScheduleEvent(EVENT_WEBBEB_ORC_CHECK_PLAYER, 1s);
+            _events.ScheduleEvent(EVENT_WEBBEB_ORC_TALK, 1s + 500ms);
         }
     }
 
@@ -4027,12 +4120,12 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_CHECK_PLAYER:
+                case EVENT_WEBBEB_ORC_CHECK_PLAYER:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         if (player->IsAlive() && player->IsInWorld() && player->hasQuest(QUEST_LOST_IN_THE_DARKNESS) && !player->IsQuestRewarded(QUEST_LOST_IN_THE_DARKNESS))
-                            _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
+                            _events.ScheduleEvent(EVENT_WEBBEB_ORC_CHECK_PLAYER, 1s);
                     }
                     else
                         me->DespawnOrUnsummon();
@@ -4040,9 +4133,9 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
                     break;
                 }
 
-                case EVENT_TALK_TO_PLAYER:
+                case EVENT_WEBBEB_ORC_TALK:
                 {
-                    Talk(TALK_ORC_FREED);
+                    Talk(TALK_WEBBEB_ORC_FREED);
                     break;
                 }
 
@@ -4062,6 +4155,23 @@ private:
     ObjectGuid _playerGUID;
 };
 
+enum SkitterwebMatriarch
+{
+    NPC_SKITTERWEB_STALKER                  = 44908,
+
+    SPELL_SKITTERWEB                        = 83827,
+    SPELL_SUMMNON_SPIDERLINGS               = 87084,
+    SPELL_VENOM_SPLASH                      = 79607,
+
+    EVENT_MATRIARCH_AGGRO                   = 1,
+    EVENT_SUMMON_SPIDERLINGS                = 4,
+    EVENT_VENOM_SPLASH                      = 5,
+
+    ANIMKIT_MATRIARCH_INTERACT              = 1,
+    ANIMKIT_MATRIARCH_POSITION1             = 865,
+    ANIMKIT_MATRIARCH_POSITION2             = 866
+};
+
 // Skitterweb Matriarch - 44906
 struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
 {
@@ -4074,7 +4184,7 @@ struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
         me->SetDisableGravity(true);
         me->SetHover(true);
 
-        me->SetAIAnimKitId(ANIMKIT_SPIDER_1);
+        me->SetAIAnimKitId(ANIMKIT_MATRIARCH_POSITION1);
 
         me->SetReactState(REACT_PASSIVE);
 
@@ -4095,9 +4205,9 @@ struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
             _alreadyPulled = true;
 
             me->SetAIAnimKitId(ANIMKIT_RESET);
-            me->PlayOneShotAnimKitId(ANIMKIT_SPIDER_2);
+            me->PlayOneShotAnimKitId(ANIMKIT_MATRIARCH_POSITION2);
 
-            _events.ScheduleEvent(EVENT_AGGRO_SPIDER, 2s + 500ms);
+            _events.ScheduleEvent(EVENT_MATRIARCH_AGGRO, 2s + 500ms);
         }
         else
         {
@@ -4114,18 +4224,18 @@ struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_AGGRO_SPIDER:
+                case EVENT_MATRIARCH_AGGRO:
                 {
                     me->SetDisableGravity(false);
                     me->SetHover(false);
 
                     me->GetMotionMaster()->MoveFall();
 
-                    _events.ScheduleEvent(EVENT_AGGRO_SPIDER + 1, 1s);
+                    _events.ScheduleEvent(EVENT_MATRIARCH_AGGRO + 1, 1s);
                     break;
                 }
 
-                case EVENT_AGGRO_SPIDER + 1:
+                case EVENT_MATRIARCH_AGGRO + 1:
                 {
                     for (Creature* stalker : _stalkerList)
                     {
@@ -4133,17 +4243,17 @@ struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
                             stalker->RemoveAura(SPELL_SKITTERWEB);
                     }
 
-                    me->SetAIAnimKitId(ANIMKIT_INTERACT);
+                    me->SetAIAnimKitId(ANIMKIT_MATRIARCH_INTERACT);
 
                     me->UpdateMovementFlags();
 
                     me->SetHomePosition(me->GetPosition());
 
-                    _events.ScheduleEvent(EVENT_AGGRO_SPIDER + 2, 1s);
+                    _events.ScheduleEvent(EVENT_MATRIARCH_AGGRO + 2, 1s);
                     break;
                 }
 
-                case EVENT_AGGRO_SPIDER + 2:
+                case EVENT_MATRIARCH_AGGRO + 2:
                 {
                     me->SetReactState(REACT_AGGRESSIVE);
 
@@ -4183,122 +4293,41 @@ private:
     std::vector<Creature*> _stalkerList;
 };
 
-enum FenrisIsleQuests
-{
-    QUEST_RISE_FORSAKEN                        = 27097,
-    QUEST_NO_ESCAPE                            = 27099,
-    QUEST_LORDAERON                            = 27098,
-
-    NPC_AGATHA_FENRIS                          = 44951,
-    NPC_HILLSBRAD_REFUGEE_MALE                 = 44954,
-    NPC_HILLSBRAD_REFUGEE_FEMALE               = 44966,
-    NPC_FORSAKEN                               = 44959,
-    NPC_WORGEN_SENTRY                          = 44987,
-    NPC_FENRIS_KEEP_STALKER                    = 45032,
-    NPC_FENRIS_KEEP_CAMERA                     = 45003,
-    NPC_BLOODFANG_FENRIS                       = 44990,
-    NPC_CROWLEY_FENRIS                         = 44989,
-    NPC_PHIN_ODELIC                            = 44993,
-    NPC_BARTOLO_GINSETTI                       = 44994,
-    NPC_LOREMASTER_DIBBS                       = 44995,
-    NPC_MAGISTRATE_HENRY_MALEB                 = 44996,
-    NPC_CARETAKER_SMITHERS                     = 44997,
-    NPC_SOPHIA_ZWOSKI                          = 45002,
-
-    SPELL_BOND_OF_THE_VALKYR                   = 83979,
-    SPELL_SUMMON_AGATHA                        = 83982,
-    SPELL_DEATH_WALK                           = 85451,
-    SPELL_AGATHA_BROADCAST                     = 83978,
-    SPELL_NOTIFY_AGATHA                        = 83990,
-    SPELL_RISE_FORSAKEN                        = 83993,
-    SPELL_KILL_CREDIT_RISE                     = 83996,
-    SPELL_FORSAKEN_TROOPER_MASTERSCRIPT_FENRIS = 83997,
-    SPELL_DETECT_INV_ZONE_4                    = 84184,
-    SPELL_DOOMHOWL                             = 84012,
-    SPELL_UNHOLY_DARKNESS                      = 84013,
-    SPELL_UNHOLY_SMITE                         = 84014,
-    SPELL_LORDAERON_MIGHT                      = 87104,
-    SPELL_BROADCAST                            = 83978,
-    SPELL_BATTLE_ROAR                          = 6507,
-    SPELL_UNDYING_FRENZY                       = 80515,
-
-    SPELL_SUMMON_FENRIS_ACTORS                 = 84053,
-    SPELL_GENERAL_TRIGGER_84107                = 84107,
-    SPELL_GENERAL_TRIGGER_84114                = 84114,
-    SPELL_ARMORE_CAMERA_1                      = 84112,
-    SPELL_ARMORE_CAMERA_FENRIS                 = 83768,
-    SPELL_ARMORE_CAMERA_2                      = 84104,
-    SPELL_ARMORE_CAMERA_3                      = 84103,
-    SPELL_ARMORE_CAMERA_4                      = 84111,
-    SPELL_RIDE_REVERSE_CAST_RIDE_VEHICLE       = 84109,
-    SPELL_BLOOD_ODELIC                         = 84094,
-    SPELL_BLOOD_BARTOLO                        = 84095,
-    SPELL_BLOOD_DIBBS                          = 84096,
-    SPELL_BLOOD_HENRY                          = 84097,
-    SPELL_BLOOD_SMITHERS                       = 84098,
-    SPELL_BLOOD_ZWOSKI                         = 84099,
-    SPELL_FORCE_CAST_FENRIS_CAMERA             = 84113,
-    SPELL_FORCE_SEAT_2                         = 84091,
-    SPELL_SUMMON_BLOODFANG_FENRIS              = 84054,
-    SPELL_SUMMON_CROWLEY_FENRIS                = 84055,
-    SPELL_SUMMON_PHIN_ODELIC                   = 84056,
-    SPELL_SUMMON_BARTOLO_GINSETTI              = 84057,
-    SPELL_SUMMON_LOREMASTER_DIBBS              = 84058,
-    SPELL_SUMMON_MAGISTRATE_HENRY              = 84059,
-    SPELL_SUMMON_CARETAKER_SMITHERS            = 84060,
-    SPELL_SUMMON_SOPHIA                        = 84061,
-    SPELL_CONVERSATION_TRIGGER_84076           = 84076,
-    SPELL_CONVERSATION_TRIGGER_84077           = 84077,
-    SPELL_GENERAL_TRIGGER_84102                = 84102,
-    SPELL_DESPAWN_ALL_SUMMONS_FENRIS           = 84066,
-    SPELL_GENERAL_TRIGGER_84079                = 84079,
-
-    SPELL_SUMMON_SYLVANAS_AND_HORSE            = 84128,
-    SPELL_SUMMON_FORSAKEN_WARHORSE             = 84164,
-
-    EVENT_MASTER_RESET,
-    EVENT_DRINKING,
-    EVENT_MORPHING,
-    EVENT_MOVE_TO_STARTPOINT,
-    EVENT_CHANGE_TO_SEAT_2,
-    EVENT_TRIGGER_84102,
-    EVENT_ANIMATION                            = 200,
-    EVENT_CAST_AGGRO,
-    EVENT_CAST_UNHOLY_SMITE,
-    EVENT_HEAL_COOLDOWN,
-    EVENT_RUN,
-    EVENT_LORDAERON_MIGHT,
-    EVENT_TALK_REVIVE,
-    EVENT_UNDYING_FRENZY,
-    EVENT_HOWLING                              = 400,
-
-    TALK_AGATHA_BROADCAST                      = 0,
-    TALK_AGATHA_RISE_FORSAKEN                  = 1,
-    TALK_AGATHA_PRE_EVENT                      = 2,
-    TALK_AGATHA_POST_EVENT1                    = 3,
-    TALK_AGATHA_POST_EVENT2                    = 4,
-    TALK_SENTRY_WARNING                        = 0,
-    TALK_CROWLEY_NO_ESCAPE_0                   = 0,
-    TALK_CROWLEY_NO_ESCAPE_1                   = 1,
-    TALK_CROWLEY_NO_ESCAPE_2                   = 2,
-    TALK_CROWLEY_NO_ESCAPE_3                   = 3,
-    TALK_CROWLEY_NO_ESCAPE_4                   = 4,
-    TALK_CROWLEY_NO_ESCAPE_5                   = 5,
-    TALK_CROWLEY_NO_ESCAPE_6                   = 6,
-    TALK_HENRY_NO_ESCAPE_0                     = 0,
-    TALK_HENRY_NO_ESCAPE_1                     = 1,
-
-    PATH_AGATHA_TO_FORSAKEN                    = 449510,
-
-    WAYPOINT_ARRIVED_TO_FORSAKEN               = 41,
-
-    POINT_CAMERA_FRONTYARD                     = 665,
-    POINT_AGATHA_BACK_FRONTYARD                = 1234,
-
-    SOUND_HOWLING                              = 17671
-};
-
 Position const AgathaBackFrontyardPos = { 982.57f, 671.04f, 77.298f };
+
+enum AgathaFenris
+{
+    NPC_AGATHA_FENRIS                       = 44951,
+
+    SPELL_AGATHA_BROADCAST                  = 83978,
+    SPELL_DOOMHOWL                          = 84012,
+    SPELL_UNHOLY_DARKNESS                   = 84013,
+    SPELL_UNHOLY_SMITE                      = 84014,
+    SPELL_GENERAL_TRIGGER_84114             = 84114,
+    SPELL_GENERAL_TRIGGER_84107             = 84107,
+    SPELL_ARMORE_CAMERA_1                   = 84112,
+    SPELL_ARMORE_CAMERA_4                   = 84111,
+    SPELL_GENERAL_TRIGGER_84079             = 84079,
+    SPELL_RIDE_REVERSE_CAST_RIDE_VEHICLE    = 84109,
+
+    EVENT_AGATHA_CHECK_PLAYER               = 1,
+    EVENT_UNHOLY_SMITE                      = 2,
+    EVENT_DOOMHOWL                          = 3,
+    EVENT_UNHOLY_DARKNESS_COOLDOWN          = 4,
+    EVENT_FLEE_FROM_FENRIS                  = 5,
+
+    TALK_AGATHA_BROADCAST                   = 0,
+    TALK_AGATHA_RISE_FORSAKEN               = 1,
+    TALK_AGATHA_PRE_EVENT                   = 2,
+    TALK_AGATHA_POST_EVENT1                 = 3,
+    TALK_AGATHA_POST_EVENT2                 = 4,
+
+    PATH_AGATHA_TO_FORSAKEN                 = 449510,
+
+    WAYPOINT_ARRIVED_TO_FORSAKEN            = 41,
+
+    POINT_AGATHA_BACK_FRONTYARD             = 1,
+};
 
 // Agatha - 44951
 struct npc_silverpine_agatha_fenris : public VehicleAI
@@ -4321,15 +4350,15 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
 
         me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
 
-        _events.ScheduleEvent(EVENT_CHECK_PLAYER, 1s);
+        _events.ScheduleEvent(EVENT_AGATHA_CHECK_PLAYER, 1s);
 
         me->SetReactState(REACT_ASSIST);
     }
 
     void Reset() override
     {
-        _events.CancelEvent(EVENT_CAST_UNHOLY_SMITE);
-        _events.CancelEvent(EVENT_CAST_AGGRO);
+        _events.CancelEvent(EVENT_UNHOLY_SMITE);
+        _events.CancelEvent(EVENT_DOOMHOWL);
 
         if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
         {
@@ -4369,13 +4398,13 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
 
             case SPELL_ARMORE_CAMERA_4:
             {
-                _events.ScheduleEvent(EVENT_RUN + 1, 1s);
+                _events.ScheduleEvent(EVENT_FLEE_FROM_FENRIS + 1, 1s);
                 break;
             }
 
             case SPELL_GENERAL_TRIGGER_84079:
             {
-                _events.ScheduleEvent(EVENT_RUN + 2, 1s);
+                _events.ScheduleEvent(EVENT_FLEE_FROM_FENRIS + 2, 1s);
                 break;
             }
 
@@ -4387,7 +4416,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
     void WaypointReached(uint32 waypointId, uint32 pathId) override
     {
         if (pathId == PATH_AGATHA_TO_FORSAKEN && waypointId == WAYPOINT_ARRIVED_TO_FORSAKEN)
-            _events.ScheduleEvent(EVENT_RUN + 3, 100ms);
+            _events.ScheduleEvent(EVENT_FLEE_FROM_FENRIS + 3, 100ms);
     }
 
     void OwnerAttackedBy(Unit* attacker) override
@@ -4397,8 +4426,8 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
 
     void JustEngagedWith(Unit* /*who*/) override
     {
-        _events.ScheduleEvent(EVENT_CAST_UNHOLY_SMITE, 500ms);
-        _events.ScheduleEvent(EVENT_CAST_AGGRO, 2s, 3s);
+        _events.ScheduleEvent(EVENT_UNHOLY_SMITE, 500ms);
+        _events.ScheduleEvent(EVENT_DOOMHOWL, 2s, 3s);
     }
 
     void UpdateAI(uint32 diff) override
@@ -4409,7 +4438,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
         {
             switch (eventId)
             {
-                case EVENT_CHECK_PLAYER:
+                case EVENT_AGATHA_CHECK_PLAYER:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -4429,7 +4458,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
 
                                 _healCD = true;
 
-                                _events.ScheduleEvent(EVENT_HEAL_COOLDOWN, 8s);
+                                _events.ScheduleEvent(EVENT_UNHOLY_DARKNESS_COOLDOWN, 8s);
                             }
                         }
                     }
@@ -4438,7 +4467,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
                     break;
                 }
 
-                case EVENT_CAST_AGGRO:
+                case EVENT_DOOMHOWL:
                 {
                     DoCastSelf(SPELL_DOOMHOWL);
 
@@ -4446,7 +4475,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
                     break;
                 }
 
-                case EVENT_CAST_UNHOLY_SMITE:
+                case EVENT_UNHOLY_SMITE:
                 {
                     DoCastVictim(SPELL_UNHOLY_SMITE);
 
@@ -4454,13 +4483,13 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
                     break;
                 }
 
-                case EVENT_HEAL_COOLDOWN:
+                case EVENT_UNHOLY_DARKNESS_COOLDOWN:
                 {
                     _healCD = false;
                     break;
                 }
 
-                case EVENT_RUN + 1:
+                case EVENT_FLEE_FROM_FENRIS + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -4472,7 +4501,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
                     break;
                 }
 
-                case EVENT_RUN + 2:
+                case EVENT_FLEE_FROM_FENRIS + 2:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -4491,7 +4520,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
                     break;
                 }
 
-                case EVENT_RUN + 3:
+                case EVENT_FLEE_FROM_FENRIS + 3:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -4538,7 +4567,7 @@ struct npc_silverpine_agatha_fenris : public VehicleAI
         Talk(TALK_AGATHA_PRE_EVENT);
 
         if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-            player->RemoveAura(SPELL_BOND_OF_THE_VALKYR);
+            player->RemoveAura(SPELL_BOND_OF_THE_VALKYR_FENRIS);
     }
 
 private:
@@ -4546,6 +4575,11 @@ private:
     ObjectGuid _playerGUID;
     bool _healCD;
     bool _sceneStarted;
+};
+
+enum NotifyAgatha
+{
+    SPELL_RISE_FORSAKEN_FENRIS              = 83993
 };
 
 // Notify Agatha - 83990
@@ -4565,7 +4599,7 @@ class spell_silverpine_notify_agatha : public SpellScript
                 if (agatha->GetOwner() == target)
                 {
                     if (agatha->IsAIEnabled())
-                        agatha->CastSpell(caster, SPELL_RISE_FORSAKEN, false);
+                        agatha->CastSpell(caster, SPELL_RISE_FORSAKEN_FENRIS, false);
 
                     if (Player* player = ObjectAccessor::GetPlayer(*target, _ownerGUID))
                     {
@@ -4599,35 +4633,23 @@ and simply change their displayIds on summon until proper support for disabling 
 
 enum SpellForsakenTrooperMasterScriptFenris
 {
-    SPELL_FORSAKEN_TROOPER_MALE_01_F                = 83998,
-    SPELL_FORSAKEN_TROOPER_MALE_02_F                = 83999,
-    SPELL_FORSAKEN_TROOPER_MALE_03_F                = 84000,
-    SPELL_FORSAKEN_TROOPER_MALE_04_F                = 84001,
-    SPELL_FORSAKEN_TROOPER_FEMALE_01_F              = 84002,
-    SPELL_FORSAKEN_TROOPER_FEMALE_02_F              = 84003,
-    SPELL_FORSAKEN_TROOPER_FEMALE_03_F              = 84004,
-    SPELL_FORSAKEN_TROOPER_FEMALE_04_F              = 84005,
+    SPELL_FORSAKEN_TROOPER_MALE_01_F        = 83998,
+    SPELL_FORSAKEN_TROOPER_MALE_02_F        = 83999,
+    SPELL_FORSAKEN_TROOPER_MALE_03_F        = 84000,
+    SPELL_FORSAKEN_TROOPER_MALE_04_F        = 84001,
+    SPELL_FORSAKEN_TROOPER_FEMALE_01_F      = 84002,
+    SPELL_FORSAKEN_TROOPER_FEMALE_02_F      = 84003,
+    SPELL_FORSAKEN_TROOPER_FEMALE_03_F      = 84004,
+    SPELL_FORSAKEN_TROOPER_FEMALE_04_F      = 84005,
 
-    TALK_REFUGEE_JUST_RISEN                         = 0,
-
-    DISPLAY_MALE_01_D_F                             = 33986,
-    DISPLAY_MALE_02_D_F                             = 33987,
-    DISPLAY_MALE_03_D_F                             = 33988,
-    DISPLAY_MALE_04_D_F                             = 33989,
-    DISPLAY_FEMALE_01_D_F                           = 33991,
-    DISPLAY_FEMALE_02_D_F                           = 33992,
-    DISPLAY_FEMALE_03_D_F                           = 33993,
-    DISPLAY_FEMALE_04_D_F                           = 33994,
-
-    DISPLAY_MALE_01_F                               = 33978,
-    DISPLAY_MALE_02_F                               = 33979,
-    DISPLAY_MALE_03_F                               = 33980,
-    DISPLAY_MALE_04_F                               = 33981,
-    DISPLAY_FEMALE_01_F                             = 33982,
-    DISPLAY_FEMALE_02_F                             = 33983,
-    DISPLAY_FEMALE_03_F                             = 33984, 
-    DISPLAY_FEMALE_04_F                             = 33985,
-
+    DISPLAY_MALE_01_F                       = 33978,
+    DISPLAY_MALE_02_F                       = 33979,
+    DISPLAY_MALE_03_F                       = 33980,
+    DISPLAY_MALE_04_F                       = 33981,
+    DISPLAY_FEMALE_01_F                     = 33982,
+    DISPLAY_FEMALE_02_F                     = 33983,
+    DISPLAY_FEMALE_03_F                     = 33984, 
+    DISPLAY_FEMALE_04_F                     = 33985
 };
 
 // Forsaken Trooper Master Script (Fenris Isle) - 83997
@@ -4675,6 +4697,15 @@ class spell_silverpine_forsaken_trooper_masterscript_fenris : public SpellScript
     }
 };
 
+enum HillsbradRefugee
+{
+    SPELL_TROOPER_MASTERSCRIPT_FENRIS       = 83997,
+    SPELL_NOTIFY_AGATHA_FENRIS              = 83990,
+    SPELL_LORDAERON_MIGHT                   = 87104,
+
+    EVENT_LORDAERON_MIGHT                   = 1,
+};
+
 // Hillsbrad Refugee - 44954, 44966
 struct npc_silverpine_hillsbrad_refugee : public ScriptedAI
 {
@@ -4689,9 +4720,9 @@ struct npc_silverpine_hillsbrad_refugee : public ScriptedAI
     {
         switch (spell->Id)
         {
-            case SPELL_RISE_FORSAKEN:
+            case SPELL_RISE_FORSAKEN_FENRIS:
             {
-                DoCastSelf(SPELL_FORSAKEN_TROOPER_MASTERSCRIPT_FENRIS);
+                DoCastSelf(SPELL_TROOPER_MASTERSCRIPT_FENRIS);
 
                 me->DespawnOrUnsummon(2s);
                 break;
@@ -4707,7 +4738,7 @@ struct npc_silverpine_hillsbrad_refugee : public ScriptedAI
         if (Player* player = killer->ToPlayer())
         {
             if (player->GetQuestStatus(QUEST_RISE_FORSAKEN) == QUEST_STATUS_INCOMPLETE)
-                me->CastSpell(killer, SPELL_NOTIFY_AGATHA, true);
+                me->CastSpell(killer, SPELL_NOTIFY_AGATHA_FENRIS, true);
         }
     }
 
@@ -4747,6 +4778,22 @@ private:
     EventMap _events;
 };
 
+enum ForsakenTrooperFenris
+{
+    EVENT_REFUGEE_JUST_RISEN                = 1,
+
+    TALK_REFUGEE_JUST_RISEN                 = 0,
+
+    DISPLAY_MALE_01_D_F                     = 33986,
+    DISPLAY_MALE_02_D_F                     = 33987,
+    DISPLAY_MALE_03_D_F                     = 33988,
+    DISPLAY_MALE_04_D_F                     = 33989,
+    DISPLAY_FEMALE_01_D_F                   = 33991,
+    DISPLAY_FEMALE_02_D_F                   = 33992,
+    DISPLAY_FEMALE_03_D_F                   = 33993,
+    DISPLAY_FEMALE_04_D_F                   = 33994,
+};
+
 // Forsaken Trooper (Male) - 44958, 44959, 44960, 44961
 struct npc_silverpine_forsaken_trooper_male_fenris : public ScriptedAI
 {
@@ -4770,7 +4817,7 @@ struct npc_silverpine_forsaken_trooper_male_fenris : public ScriptedAI
             me->SetDisplayId(DISPLAY_MALE_04_F);
 
         if (roll_chance_i(50))
-            _events.ScheduleEvent(EVENT_TALK_REVIVE, 1s);
+            _events.ScheduleEvent(EVENT_REFUGEE_JUST_RISEN, 1s);
 
         me->DespawnOrUnsummon(4s);
     }
@@ -4788,7 +4835,7 @@ struct npc_silverpine_forsaken_trooper_male_fenris : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_TALK_REVIVE:
+                case EVENT_REFUGEE_JUST_RISEN:
                 {
                     Talk(TALK_REFUGEE_JUST_RISEN);
                     break;
@@ -4827,7 +4874,7 @@ struct npc_silverpine_forsaken_trooper_female_fenris : public ScriptedAI
             me->SetDisplayId(DISPLAY_FEMALE_04_F);
 
         if (roll_chance_i(50))
-            _events.ScheduleEvent(EVENT_TALK_REVIVE, 1s);
+            _events.ScheduleEvent(EVENT_REFUGEE_JUST_RISEN, 1s);
 
         me->DespawnOrUnsummon(4s);
     }
@@ -4845,7 +4892,7 @@ struct npc_silverpine_forsaken_trooper_female_fenris : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_TALK_REVIVE:
+                case EVENT_REFUGEE_JUST_RISEN:
                 {
                     Talk(TALK_REFUGEE_JUST_RISEN);
                     break;
@@ -4861,64 +4908,14 @@ private:
     EventMap _events;
 };
 
-// Silverpine Forest - 130
-class playerScript_silverpine_zone : public PlayerScript
+enum WorgenSentry
 {
-public:
-    playerScript_silverpine_zone() : PlayerScript("playerScript_silverpine_zone") { }
+    SPELL_BATTLE_ROAR                       = 6507,
+    SPELL_UNDYING_FRENZY                    = 80515,
 
-    void OnLogin(Player* player, bool /*firstLogin*/) override
-    {
-        // HACK FIX: we need this to make sure the player summons the NPC after logging in. Since the aura is based on spell_area, adding the aura again won't summon the NPCs
-        // because the player still has the aura on log off (this kind of behaviour should be implemented at some point, simply adding the aura as not kept after logging off won't make it work).
-        if (player->GetZoneId() == 130) // Silverpine Forest
-        {
-            if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
-            {
-                if (player->HasAura(SPELL_SUMMON_SEA_PUP))
-                {
-                    player->RemoveAura(SPELL_SUMMON_SEA_PUP);
+    EVENT_UNDYING_FRENZY                    = 1,
 
-                    player->CastSpell(player, SPELL_SUMMON_SEA_PUP, true);
-                }
-                else
-                    player->CastSpell(player, SPELL_SUMMON_SEA_PUP, true);
-            }
-
-            if (player->GetQuestStatus(QUEST_RISE_FORSAKEN) == QUEST_STATUS_INCOMPLETE)
-            {
-                if (player->HasAura(SPELL_SUMMON_AGATHA))
-                {
-                    player->RemoveAura(SPELL_SUMMON_AGATHA);
-
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-                else
-                {
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-
-            }
-
-            if (player->GetQuestStatus(QUEST_NO_ESCAPE) == QUEST_STATUS_INCOMPLETE)
-            {
-                if (player->HasAura(SPELL_SUMMON_AGATHA))
-                {
-                    player->RemoveAura(SPELL_SUMMON_AGATHA);
-
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-                else
-                {
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-            }
-        }
-    }
+    TALK_SENTRY_WARNING                     = 0,
 };
 
 // Worgen Sentry - 44987
@@ -4988,6 +4985,11 @@ class spell_silverpine_undying_frenzy : public AuraScript
     }
 };
 
+enum AtNoEscape
+{
+    NPC_FENRIS_KEEP_STALKER                 = 45032,
+};
+
 // No Escape - 6230
 class at_silverpine_no_escape : public AreaTriggerScript
 {
@@ -5019,6 +5021,18 @@ public:
 
         return true;
     }
+};
+
+enum SummonFenrisActors
+{
+    SPELL_SUMMON_BLOODFANG_FENRIS           = 84054,
+    SPELL_SUMMON_CROWLEY_FENRIS             = 84055,
+    SPELL_SUMMON_PHIN_ODELIC                = 84056,
+    SPELL_SUMMON_BARTOLO_GINSETTI           = 84057,
+    SPELL_SUMMON_LOREMASTER_DIBBS           = 84058,
+    SPELL_SUMMON_MAGISTRATE_HENRY           = 84059,
+    SPELL_SUMMON_CARETAKER_SMITHERS         = 84060,
+    SPELL_SUMMON_SOPHIA                     = 84061
 };
 
 // Summon Fenris Actors - 84053
@@ -5058,6 +5072,19 @@ class spell_silverpine_summon_fenris_actors : public SpellScript
     {
         OnEffectHitTarget.Register(&spell_silverpine_summon_fenris_actors::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
+};
+
+enum DespawnAllSummonsFenris
+{
+    NPC_BLOODFANG_FENRIS                    = 44990,
+    NPC_CROWLEY_FENRIS                      = 44989,
+    NPC_PHIN_ODELIC                         = 44993,
+    NPC_BARTOLO_GINSETTI                    = 44994,
+    NPC_LOREMASTER_DIBBS                    = 44995,
+    NPC_MAGISTRATE_HENRY_MALEB              = 44996,
+    NPC_CARETAKER_SMITHERS                  = 44997,
+    NPC_SOPHIA_ZWOSKI                       = 45002,
+    NPC_FENRIS_KEEP_CAMERA                  = 45003
 };
 
 // Despawn All Summons - 84065
@@ -5114,6 +5141,15 @@ class spell_silverpine_despawn_all_summons_fenris : public SpellScript
 
 Position const NoEscapeStartPos = { 981.782f, 670.953f, 74.898f, 3.1887f };
 
+enum FenrisKeepStalker
+{
+    SPELL_FORCE_CAST_FENRIS_CAMERA          = 84113,
+
+    EVENT_RESET_SCENE_FENRIS                = 1,
+
+    ACTION_START_SCENE_FENRIS               = 1
+};
+
 // Fenris Keep Stalker - 45032
 struct npc_silverpine_fenris_stalker : public ScriptedAI
 {
@@ -5126,7 +5162,7 @@ struct npc_silverpine_fenris_stalker : public ScriptedAI
 
         _playerGUID = guid;
 
-        DoAction(ACTION_START_ANIM);
+        DoAction(ACTION_START_SCENE_FENRIS);
     }
 
     void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
@@ -5135,7 +5171,7 @@ struct npc_silverpine_fenris_stalker : public ScriptedAI
         {
             case SPELL_GENERAL_TRIGGER_84107:
             {
-                _events.RescheduleEvent(EVENT_MASTER_RESET, 30s);
+                _events.RescheduleEvent(EVENT_RESET_SCENE_FENRIS, 30s);
                 break;
             }
 
@@ -5148,7 +5184,7 @@ struct npc_silverpine_fenris_stalker : public ScriptedAI
     {
         switch (param)
         {
-            case ACTION_START_ANIM:
+            case ACTION_START_SCENE_FENRIS:
             {
                 if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                 {
@@ -5172,7 +5208,7 @@ struct npc_silverpine_fenris_stalker : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_MASTER_RESET:
+                case EVENT_RESET_SCENE_FENRIS:
                 {
                     Reset();
                     break;
@@ -5190,6 +5226,23 @@ private:
 };
 
 Position const CameraFrontyardPos = { 980.7f, 689.14f, 76.9f };
+
+enum FenrisKeepCamera
+{
+    SPELL_SUMMON_FENRIS_ACTORS              = 84053,
+    SPELL_GENERAL_TRIGGER_84102             = 84102,
+    SPELL_DESPAWN_ALL_SUMMONS_FENRIS        = 84066,
+
+    EVENT_MOVE_TO_START_POINT               = 1,
+    EVENT_CHANGE_TO_SEAT_2                  = 2,
+    EVENT_TRIGGER_84102                     = 3,
+    EVENT_SCENE_FINISH_FENRIS               = 4,
+
+    POINT_CAMERA_FRONTYARD                  = 1,
+
+    SEAT_FENRIS_CAMERA                      = 0,
+    SEAT_FENRIS_CAMERA_FORCE                = 1,
+};
 
 // Fenris Keep Camera - 45003
 struct npc_silverpine_fenris_camera : public ScriptedAI
@@ -5216,7 +5269,7 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
         {
             case SPELL_GENERAL_TRIGGER_84107:
             {
-                _events.ScheduleEvent(EVENT_FINISH, 2s + 500ms);
+                _events.ScheduleEvent(EVENT_SCENE_FINISH_FENRIS, 2s + 500ms);
                 break;
             }
 
@@ -5229,7 +5282,7 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
     {
         if (apply && seatId == SEAT_FENRIS_CAMERA)
         {
-            _events.ScheduleEvent(EVENT_MOVE_TO_STARTPOINT, 10ms);
+            _events.ScheduleEvent(EVENT_MOVE_TO_START_POINT, 10ms);
 
             if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                 me->CastSpell(player, SPELL_SUMMON_FENRIS_ACTORS, true);
@@ -5239,7 +5292,7 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
             passenger->SetFacingTo(0.0f);
 
         if (!apply && seatId == SEAT_FENRIS_CAMERA_FORCE)
-            _events.ScheduleEvent(EVENT_FINISH, 1s);
+            _events.ScheduleEvent(EVENT_SCENE_FINISH_FENRIS, 1s);
     }
 
     void MovementInform(uint32 type, uint32 id) override
@@ -5256,7 +5309,7 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_MOVE_TO_STARTPOINT:
+                case EVENT_MOVE_TO_START_POINT:
                 {
                     me->GetMotionMaster()->MovePoint(POINT_CAMERA_FRONTYARD, CameraFrontyardPos);
                     break;
@@ -5265,7 +5318,7 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
                 case EVENT_CHANGE_TO_SEAT_2:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                        me->CastSpell(player, SPELL_FORCE_SEAT_2, true);
+                        me->CastSpell(player, EVENT_CHANGE_TO_SEAT_2, true);
 
                     _events.ScheduleEvent(EVENT_TRIGGER_84102, 2s);
                     break;
@@ -5282,18 +5335,18 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
                     break;
                 }
 
-                case EVENT_FINISH:
+                case EVENT_SCENE_FINISH_FENRIS:
                 {
                     if (Creature* agatha = me->FindNearestCreature(NPC_AGATHA_FENRIS, 60.0f))
                         me->CastSpell(agatha, SPELL_GENERAL_TRIGGER_84079, true);
 
                     me->SetFacingTo(0.08278348f);
 
-                    _events.ScheduleEvent(EVENT_FINISH + 1, 4s);
+                    _events.ScheduleEvent(EVENT_SCENE_FINISH_FENRIS + 1, 4s);
                     break;
                 }
 
-                case EVENT_FINISH + 1:
+                case EVENT_SCENE_FINISH_FENRIS + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         me->CastSpell(player, SPELL_DESPAWN_ALL_SUMMONS_FENRIS, true);
@@ -5309,6 +5362,22 @@ struct npc_silverpine_fenris_camera : public ScriptedAI
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
+};
+
+enum DariusCrowleyFenris
+{
+    SPELL_ARMORE_CAMERA_FENRIS              = 83768,
+    SPELL_CONVERSATION_TRIGGER_84076        = 84076,
+
+    EVENT_CROWLEY_ANIMATION_FENRIS          = 1,
+
+    TALK_CROWLEY_NO_ESCAPE_0                = 0,
+    TALK_CROWLEY_NO_ESCAPE_1                = 1,
+    TALK_CROWLEY_NO_ESCAPE_2                = 2,
+    TALK_CROWLEY_NO_ESCAPE_3                = 3,
+    TALK_CROWLEY_NO_ESCAPE_4                = 4,
+    TALK_CROWLEY_NO_ESCAPE_5                = 5,
+    TALK_CROWLEY_NO_ESCAPE_6                = 6
 };
 
 // Lord Darius Crowley - 44989
@@ -5337,7 +5406,7 @@ struct npc_silverpine_crowley_fenris : public ScriptedAI
 
                     Talk(TALK_CROWLEY_NO_ESCAPE_6);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION, 2s + 500ms);
+                    _events.ScheduleEvent(EVENT_CROWLEY_ANIMATION_FENRIS, 2s + 500ms);
                 }
 
                 break;
@@ -5356,61 +5425,61 @@ struct npc_silverpine_crowley_fenris : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_ANIMATION:
+                case EVENT_CROWLEY_ANIMATION_FENRIS:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_CROWLEY_NO_ESCAPE_0, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 1, 4s + 700ms);
+                    _events.ScheduleEvent(EVENT_CROWLEY_ANIMATION_FENRIS + 1, 4s + 700ms);
                     break;
                 }
 
-                case EVENT_ANIMATION + 1:
+                case EVENT_CROWLEY_ANIMATION_FENRIS + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_CROWLEY_NO_ESCAPE_1, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 2, 4s + 700ms);
+                    _events.ScheduleEvent(EVENT_CROWLEY_ANIMATION_FENRIS + 2, 4s + 700ms);
                     break;
                 }
 
-                case EVENT_ANIMATION + 2:
+                case EVENT_CROWLEY_ANIMATION_FENRIS + 2:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_CROWLEY_NO_ESCAPE_2, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 3, 4s + 700ms);
+                    _events.ScheduleEvent(EVENT_CROWLEY_ANIMATION_FENRIS + 3, 4s + 700ms);
                     break;
                 }
 
-                case EVENT_ANIMATION + 3:
+                case EVENT_CROWLEY_ANIMATION_FENRIS + 3:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_CROWLEY_NO_ESCAPE_3, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 4, 4s + 700ms);
+                    _events.ScheduleEvent(EVENT_CROWLEY_ANIMATION_FENRIS + 4, 4s + 700ms);
                     break;
                 }
 
-                case EVENT_ANIMATION + 4:
+                case EVENT_CROWLEY_ANIMATION_FENRIS + 4:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_CROWLEY_NO_ESCAPE_4, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 5, 6s + 100ms);
+                    _events.ScheduleEvent(EVENT_CROWLEY_ANIMATION_FENRIS + 5, 6s + 100ms);
                     break;
                 }
 
-                case EVENT_ANIMATION + 5:
+                case EVENT_CROWLEY_ANIMATION_FENRIS + 5:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_CROWLEY_NO_ESCAPE_5, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 6, 9s + 500ms);
+                    _events.ScheduleEvent(EVENT_CROWLEY_ANIMATION_FENRIS + 6, 9s + 500ms);
                     break;
                 }
 
-                case EVENT_ANIMATION + 6:
+                case EVENT_CROWLEY_ANIMATION_FENRIS + 6:
                 {
                     if (Creature* henry = me->FindNearestCreature(NPC_MAGISTRATE_HENRY_MALEB, 30.0f))
                         me->CastSpell(henry, SPELL_CONVERSATION_TRIGGER_84076, true);
@@ -5452,90 +5521,29 @@ private:
     ObjectGuid _playerGUID;
 };
 
-// Phin Odelic - 44993
-struct npc_silverpine_odelic_fenris : public ScriptedAI
+enum GeneralActorFenris
 {
-    npc_silverpine_odelic_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
+    SPELL_CONVERSATION_TRIGGER_84077        = 84077,
+    SPELL_ARMORE_CAMERA_3                   = 84103,
+    SPELL_BLOOD_ODELIC                      = 84094,
+    SPELL_BLOOD_BARTOLO                     = 84095,
+    SPELL_BLOOD_DIBBS                       = 84096,
+    SPELL_BLOOD_HENRY                       = 84097,
+    SPELL_BLOOD_SMITHERS                    = 84098,
+    SPELL_BLOOD_ZWOSKI                      = 84099,
 
-    void IsSummonedBy(Unit* summoner) override
-    {
-        if (Player* player = summoner->ToPlayer())
-            _playerGUID = player->GetGUID();
+    EVENT_MAGISTRATE_ANIMATION              = 1,
+    EVENT_ACTOR_FENRIS_DRINK                = 4,
+    EVENT_ACTOR_FENRIS_MORPH                = 5,
 
-        if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
-            me->SetFacingToObject(fenrisStalker);
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
-
-    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
-    {
-        switch (spell->Id)
-        {
-            case SPELL_CONVERSATION_TRIGGER_84077:
-            {
-                _events.ScheduleEvent(EVENT_DRINKING, 1s);
-                break;
-            }
-
-            default:
-                break;
-        }
-
-        if (!_isWorgen)
-        {
-            if (me->HasAura(SPELL_BLOOD_ODELIC))
-                me->RemoveAura(SPELL_BLOOD_ODELIC);
-        }
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-
-        while (uint32 eventId = _events.ExecuteEvent())
-        {
-            switch (eventId)
-            {
-                case EVENT_DRINKING:
-                {
-                    _events.ScheduleEvent(EVENT_MORPHING, 1s + 500ms);
-                    break;
-                }
-
-                case EVENT_MORPHING:
-                {
-                    _isWorgen = true;
-
-                    DoCastSelf(SPELL_BLOOD_ODELIC);
-
-                    _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
-                    break;
-                }
-
-                case EVENT_MORPHING + 1:
-                {
-                    me->HandleEmoteCommand(EMOTE_STATE_READY_UNARMED);
-                    break;
-                }
-
-                default:
-                    break;
-            }
-        }
-    }
-
-private:
-    EventMap _events;
-    ObjectGuid _playerGUID;
-    bool _isWorgen;
+    TALK_HENRY_NO_ESCAPE_0                  = 0,
+    TALK_HENRY_NO_ESCAPE_1                  = 1
 };
 
-// Bartolo Ginsetti - 44994
-struct npc_silverpine_bartolo_fenris : public ScriptedAI
+// Phin Odelic - 44993, Bartolo Ginsetti - 44994, Loremaster Dibbs - 44995, Magistrate Henry Maleb - 44996, Caretaker Smithers - 44997, Sophia Zwoski - 45002
+struct npc_silverpine_general_actor_fenris : public ScriptedAI
 {
-    npc_silverpine_bartolo_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
+    npc_silverpine_general_actor_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
 
     void IsSummonedBy(Unit* summoner) override
     {
@@ -5553,193 +5561,20 @@ struct npc_silverpine_bartolo_fenris : public ScriptedAI
     {
         switch (spell->Id)
         {
-            case SPELL_CONVERSATION_TRIGGER_84077:
-            {
-                _events.ScheduleEvent(EVENT_DRINKING, 1s);
-                break;
-            }
-
-            default:
-                break;
-        }
-
-        if (!_isWorgen)
-        {
-            if (me->HasAura(SPELL_BLOOD_BARTOLO))
-                me->RemoveAura(SPELL_BLOOD_BARTOLO);
-        }
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-
-        while (uint32 eventId = _events.ExecuteEvent())
-        {
-            switch (eventId)
-            {
-                case EVENT_DRINKING:
-                {
-                    _events.ScheduleEvent(EVENT_MORPHING, 1s + 500ms);
-                    break;
-                }
-
-                case EVENT_MORPHING:
-                {
-                    _isWorgen = true;
-
-                    DoCastSelf(SPELL_BLOOD_BARTOLO);
-
-                    _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
-                    break;
-                }
-
-                case EVENT_MORPHING + 1:
-                {
-                    me->HandleEmoteCommand(EMOTE_STATE_READY_UNARMED);
-                    break;
-                }
-
-                default:
-                    break;
-            }
-        }
-    }
-
-private:
-    EventMap _events;
-    ObjectGuid _playerGUID;
-    bool _isWorgen;
-};
-
-// Loremaster Dibbs - 44995
-struct npc_silverpine_loremaster_fenris : public ScriptedAI
-{
-    npc_silverpine_loremaster_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
-
-    void IsSummonedBy(Unit* summoner) override
-    {
-        if (Player* player = summoner->ToPlayer())
-            _playerGUID = player->GetGUID();
-
-        if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
-            me->SetFacingToObject(fenrisStalker);
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
-
-    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
-    {
-        switch (spell->Id)
-        {
-            case SPELL_CONVERSATION_TRIGGER_84077:
-            {
-                _events.ScheduleEvent(EVENT_DRINKING, 1s);
-                break;
-            }
-
-            default:
-                break;
-        }
-
-        if (!_isWorgen)
-        {
-            if (me->HasAura(SPELL_BLOOD_DIBBS))
-                me->RemoveAura(SPELL_BLOOD_DIBBS);
-        }
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-
-        while (uint32 eventId = _events.ExecuteEvent())
-        {
-            switch (eventId)
-            {
-                case EVENT_DRINKING:
-                {
-                    _events.ScheduleEvent(EVENT_MORPHING, 1s + 500ms);
-                    break;
-                }
-
-                case EVENT_MORPHING:
-                {
-                    _isWorgen = true;
-
-                    DoCastSelf(SPELL_BLOOD_DIBBS);
-
-                    _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
-                    break;
-                }
-
-                case EVENT_MORPHING + 1:
-                {
-                    me->HandleEmoteCommand(EMOTE_STATE_READY_UNARMED);
-                    break;
-                }
-
-                default:
-                    break;
-            }
-        }
-    }
-
-private:
-    EventMap _events;
-    ObjectGuid _playerGUID;
-    bool _isWorgen;
-};
-
-// Magistrate Henry Maleb - 44996
-struct npc_silverpine_henry_fenris : public ScriptedAI
-{
-    npc_silverpine_henry_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
-
-    void IsSummonedBy(Unit* summoner) override
-    {
-        if (Player* player = summoner->ToPlayer())
-            _playerGUID = player->GetGUID();
-
-        if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
-            me->SetFacingToObject(fenrisStalker);
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
-
-    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
-    {
-        switch (spell->Id)
-        {
-            case SPELL_CONVERSATION_TRIGGER_84076:
-            {
-                if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    me->CastSpell(player, SPELL_ARMORE_CAMERA_2, true);
-                break;
-            }
-
             case SPELL_ARMORE_CAMERA_3:
             {
-                _events.ScheduleEvent(EVENT_ANIMATION, 1s + 300ms);
+                _events.ScheduleEvent(EVENT_MAGISTRATE_ANIMATION, 1s + 300ms);
                 break;
             }
 
             case SPELL_CONVERSATION_TRIGGER_84077:
             {
-                _events.ScheduleEvent(EVENT_DRINKING, 1s);
+                _events.ScheduleEvent(EVENT_ACTOR_FENRIS_DRINK, 1s);
                 break;
             }
 
             default:
                 break;
-        }
-
-        if (!_isWorgen)
-        {
-            if (me->HasAura(SPELL_BLOOD_HENRY))
-                me->RemoveAura(SPELL_BLOOD_HENRY);
         }
     }
 
@@ -5751,55 +5586,67 @@ struct npc_silverpine_henry_fenris : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_ANIMATION:
+                case EVENT_MAGISTRATE_ANIMATION:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_HENRY_NO_ESCAPE_0, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 1, 10s + 800ms);
+                    _events.ScheduleEvent(EVENT_MAGISTRATE_ANIMATION + 1, 10s + 800ms);
                     break;
                 }
 
-                case EVENT_ANIMATION + 1:
+                case EVENT_MAGISTRATE_ANIMATION + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_HENRY_NO_ESCAPE_1, player);
 
-                    _events.ScheduleEvent(EVENT_ANIMATION + 2, 2s);
+                    _events.ScheduleEvent(EVENT_MAGISTRATE_ANIMATION + 2, 2s);
                     break;
                 }
 
-                case EVENT_ANIMATION + 2:
+                case EVENT_MAGISTRATE_ANIMATION + 2:
                 {
                     DoCastSelf(SPELL_CONVERSATION_TRIGGER_84077, true);
                     break;
                 }
 
-                case EVENT_DRINKING:
+                case EVENT_ACTOR_FENRIS_DRINK:
                 {
-                    _events.ScheduleEvent(EVENT_MORPHING, 1s + 500ms);
+                    _events.ScheduleEvent(EVENT_ACTOR_FENRIS_MORPH, 1s + 500ms);
                     break;
                 }
 
-                case EVENT_MORPHING:
+                case EVENT_ACTOR_FENRIS_MORPH:
                 {
                     _isWorgen = true;
 
-                    DoCastSelf(SPELL_BLOOD_HENRY);
+                    if (me->GetEntry() == NPC_PHIN_ODELIC)
+                        DoCastSelf(SPELL_BLOOD_ODELIC);
+                    else if (me->GetEntry() == NPC_BARTOLO_GINSETTI)
+                        DoCastSelf(SPELL_BLOOD_BARTOLO);
+                    else if (me->GetEntry() == NPC_LOREMASTER_DIBBS)
+                        DoCastSelf(SPELL_BLOOD_DIBBS);
+                    else if (me->GetEntry() == NPC_MAGISTRATE_HENRY_MALEB)
+                        DoCastSelf(SPELL_BLOOD_HENRY);
+                    else if (me->GetEntry() == NPC_CARETAKER_SMITHERS)
+                        DoCastSelf(SPELL_BLOOD_SMITHERS);
+                    else if (me->GetEntry() == NPC_SOPHIA_ZWOSKI)
+                        DoCastSelf(SPELL_BLOOD_ZWOSKI);
 
-                    _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
+                    _events.ScheduleEvent(EVENT_ACTOR_FENRIS_MORPH + 1, 1s);
                     break;
                 }
 
-                case EVENT_MORPHING + 1:
+                case EVENT_ACTOR_FENRIS_MORPH + 1:
                 {
                     me->HandleEmoteCommand(EMOTE_STATE_READY_UNARMED);
 
-                    _events.ScheduleEvent(EVENT_MORPHING + 2, 2s);
+                    if (me->GetEntry() == NPC_MAGISTRATE_HENRY_MALEB)
+                        _events.ScheduleEvent(EVENT_ACTOR_FENRIS_MORPH + 2, 2s);
                     break;
                 }
 
-                case EVENT_MORPHING + 2:
+                case EVENT_ACTOR_FENRIS_MORPH + 2:
                 {
                     if (Creature* agatha = me->FindNearestCreature(NPC_AGATHA_FENRIS, 60.0f))
                         me->CastSpell(agatha, SPELL_GENERAL_TRIGGER_84107, true);
@@ -5818,243 +5665,20 @@ private:
     bool _isWorgen;
 };
 
-// Caretaker Smithers - 44997
-struct npc_silverpine_caretaker_fenris : public ScriptedAI
+enum SylvanasWindrunnerCommandAndSepulcher
 {
-    npc_silverpine_caretaker_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
+    QUEST_LORDAERON                         = 27098,
+    QUEST_TO_FORSAKEN_HIGH_COMMAND          = 27290,
 
-    void IsSummonedBy(Unit* summoner) override
-    {
-        if (Player* player = summoner->ToPlayer())
-            _playerGUID = player->GetGUID();
+    SPELL_APPLY_INVIS_ZONE_1                = 83231,
+    SPELL_APPLY_INVIS_ZONE_4                = 84183,
+    SPELL_SUMMON_SYLVANAS_AND_HORSE         = 84128,
+    SPELL_SUMMON_FORSAKEN_WARHORSE          = 84164,
+    SPELL_LORDAERON_AURA                    = 84189, // NYI, no idea what it is for
+    SPELL_SUMMON_LORDAERON_ACTORS           = 84127,
+    SPELL_FLIGHT_OF_THE_VALKYR_FORWARD      = 84695,
 
-        if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
-            me->SetFacingToObject(fenrisStalker);
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
-
-    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
-    {
-        switch (spell->Id)
-        {
-            case SPELL_CONVERSATION_TRIGGER_84077:
-            {
-                _events.ScheduleEvent(EVENT_DRINKING, 1s);
-                break;
-            }
-
-            default:
-                break;
-        }
-
-        if (!_isWorgen)
-        {
-            if (me->HasAura(SPELL_BLOOD_SMITHERS))
-                me->RemoveAura(SPELL_BLOOD_SMITHERS);
-        }
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-
-        while (uint32 eventId = _events.ExecuteEvent())
-        {
-            switch (eventId)
-            {
-                case EVENT_DRINKING:
-                {
-                    _events.ScheduleEvent(EVENT_MORPHING, 1s + 500ms);
-                    break;
-                }
-
-                case EVENT_MORPHING:
-                {
-                    _isWorgen = true;
-
-                    DoCastSelf(SPELL_BLOOD_SMITHERS);
-
-                    _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
-                    break;
-                }
-
-                case EVENT_MORPHING + 1:
-                {
-                    me->HandleEmoteCommand(EMOTE_STATE_READY_UNARMED);
-                    break;
-                }
-
-                default:
-                    break;
-            }
-        }
-    }
-
-private:
-    EventMap _events;
-    ObjectGuid _playerGUID;
-    bool _isWorgen;
-};
-
-// Sophia Zwoski - 45002
-struct npc_silverpine_sophia_fenris : public ScriptedAI
-{
-    npc_silverpine_sophia_fenris(Creature* creature) : ScriptedAI(creature), _isWorgen(false) { }
-
-    void IsSummonedBy(Unit* summoner) override
-    {
-        if (Player* player = summoner->ToPlayer())
-            _playerGUID = player->GetGUID();
-
-        if (Creature* fenrisStalker = me->FindNearestCreature(NPC_FENRIS_KEEP_STALKER, 50.0f, true))
-            me->SetFacingToObject(fenrisStalker);
-
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-        me->SetReactState(REACT_PASSIVE);
-    }
-
-    void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
-    {
-        switch (spell->Id)
-        {
-            case SPELL_CONVERSATION_TRIGGER_84077:
-            {
-                _events.ScheduleEvent(EVENT_DRINKING, 1s);
-                break;
-            }
-
-            default:
-                break;
-        }
-
-        if (!_isWorgen)
-        {
-            if (me->HasAura(SPELL_BLOOD_ZWOSKI))
-                me->RemoveAura(SPELL_BLOOD_ZWOSKI);
-        }
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-
-        while (uint32 eventId = _events.ExecuteEvent())
-        {
-            switch (eventId)
-            {
-                case EVENT_DRINKING:
-                {
-                    _events.ScheduleEvent(EVENT_MORPHING, 1s + 500ms);
-                    break;
-                }
-
-                case EVENT_MORPHING:
-                {
-                    _isWorgen = true;
-
-                    DoCastSelf(SPELL_BLOOD_ZWOSKI);
-
-                    _events.ScheduleEvent(EVENT_HOWLING, 1s + 500ms);
-                    _events.ScheduleEvent(EVENT_MORPHING + 1, 1s);
-                    break;
-                }
-
-                case EVENT_MORPHING + 1:
-                {
-                    me->HandleEmoteCommand(EMOTE_STATE_READY_UNARMED);
-                    break;
-                }
-
-                case EVENT_HOWLING:
-                {
-                    me->PlayDirectSound(SOUND_HOWLING);
-                    break;
-                }
-
-                default:
-                    break;
-            }
-        }
-    }
-
-private:
-    EventMap _events;
-    ObjectGuid _playerGUID;
-    bool _isWorgen;
-};
-
-enum LordaeronQuest
-{
-    QUEST_TO_FORSAKEN_HIGH_COMMAND      = 27290,
-
-    NPC_SYLVANAS_LORDAERON              = 45051,
-    NPC_FORSAKEN_WARHORSE_SYLVANAS      = 45057,
-    NPC_FORSAKEN_WARHORSE_PLAYER        = 45041,
-    NPC_ORC_MOVER                       = 45589,
-    NPC_ORC_DEMOLISHER_LORDAERON        = 45635,
-    NPC_DREADGUARD_LORDAREON            = 45588,
-    NPC_ARTHURA_FHC                     = 44610,
-
-    SPELL_SUMMON_LORDAERON_ACTORS       = 84127,
-    SPELL_RIDE_SYLVANAS_HORSE           = 84166,
-    SPELL_LORDAERON_AURA                = 84189, // NYI, no idea what it is for
-    SPELL_KILL_ME                       = 84180,
-    SPELL_DREADGUARD_SALUTE_PERIODIC    = 84200,
-    SPELL_DREADGUARD_SALUTE             = 84199, 
-    SPELL_LORDAERON_COMPLETE            = 84185,
-    SPELL_DESPAWN_ALL_SUMMONS_LORDAERON = 84173,
-    SPELL_FADE_TO_BLACK                 = 89092,
-    SPELL_APPLY_INVIS_ZONE_1            = 83231,
-    SPELL_APPLY_INVIS_ZONE_4            = 84183,
-    SPELL_FLIGHT_OF_THE_VALKYR          = 84695,
-
-    EVENT_CHAT_TO_PLAYER                = 400,
-    EVENT_CHECK_PLAYER_STATUS           = 501,
-    EVENT_RESET_HEARTSTRIKE             = 702,
-
-    EVENT_WARHORSE_DESPAWN              = 546,
-    EVENT_CAST_CAMERA                   = 547,
-    EVENT_RIDE_WARHORSE                 = 548,
-    EVENT_RESET_EMOTE                   = 549,
-    EVENT_FINISH_RIDE                   = 550,
-
-    TALK_SYLVANAS_LORDAERON_0           = 0,
-    TALK_SYLVANAS_LORDAERON_1           = 1,
-    TALK_SYLVANAS_LORDAERON_2           = 2,
-    TALK_SYLVANAS_LORDAERON_3           = 3,
-    TALK_SYLVANAS_LORDAERON_4           = 4,
-    TALK_SYLVANAS_LORDAERON_5           = 5,
-    TALK_SYLVANAS_LORDAERON_6           = 6,
-    TALK_SYLVANAS_LORDAERON_7           = 7,
-    TALK_SYLVANAS_LORDAERON_8           = 8,
-    TALK_SYLVANAS_LORDAERON_9           = 9,
-    TALK_SYLVANAS_LORDAERON_10          = 10,
-    TALK_SYLVANAS_LORDAERON_11          = 11,
-    TALK_SYLVANAS_LORDAERON_12          = 12,
-    TALK_SYLVANAS_LORDAERON_13          = 13,
-    TALK_SYLVANAS_LORDAERON_14          = 14,
-    TALK_SYLVANAS_LORDAERON_15          = 15,
-    TALK_SYLVANAS_LORDAERON_16          = 16,
-    TALK_SYLVANAS_LORDAERON_17          = 17,
-    TALK_SYLVANAS_LORDAERON_18          = 18,
-    TALK_SYLVANAS_LORDAERON_19          = 19,
-    TALK_SYLVANAS_LORDAERON_20          = 20,
-    TALK_SYLVANAS_LORDAERON_21          = 21,
-
-    PATH_WARHORSE_TO_SEPULCHER          = 450570,
-    PATH_ORC_LEADER1                    = 4494200,
-    PATH_ORC_LEADER2                    = 4494201,
-    PATH_ARTHURA_TO_GILNEAS             = 453180,
-
-    WAYPOINT_ARRIVED_TO_SEPULCHER       = 42,
-    WAYPOINT_JUST_TOOK_OFF              = 1,
-    WAYPOINT_ARRIVED_TO_GILNEAS         = 41,
-
-    POINT_CLOSE_TO_ZONE                 = 1,
-
-    ANIMKIT_DREADGUARD_SALUTE           = 898,
+    SEAT_WARHORSE_SYLVANAS                  = 0
 };
 
 // Lady Sylvanas Windrunner - 44365
@@ -6084,7 +5708,7 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
     {
         if (quest->GetQuestId() == QUEST_RISE_FORSAKEN)
         {
-            player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR, true); // This triggers Agatha's broadcast every 60s.
+            player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true); // This triggers Agatha's broadcast every 60s.
             player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
         }
         else if (quest->GetQuestId() == QUEST_LORDAERON)
@@ -6098,14 +5722,14 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
             player->CastSpell(player, SPELL_SUMMON_LORDAERON_ACTORS, true);
         }
         else if (quest->GetQuestId() == QUEST_TO_FORSAKEN_HIGH_COMMAND)
-            player->CastSpell(player, SPELL_FLIGHT_OF_THE_VALKYR, true);
+            player->CastSpell(player, SPELL_FLIGHT_OF_THE_VALKYR_FORWARD, true);
     }
 
     void QuestReward(Player* player, Quest const* quest, uint32 /*opt*/) override
     {
         if (quest->GetQuestId() == QUEST_NO_ESCAPE)
         {
-            player->RemoveAura(SPELL_BOND_OF_THE_VALKYR);
+            player->RemoveAura(SPELL_BOND_OF_THE_VALKYR_FENRIS);
             player->RemoveAura(SPELL_SUMMON_AGATHA);
         }
     }
@@ -6158,6 +5782,18 @@ private:
 };
 
 Position const LordaeronFinish = { 499.185f, 1549.9855f, 129.094f };
+
+enum ForsakenWarhorseSylvanas
+{
+    NPC_SYLVANAS_LORDAERON                  = 45051,
+    NPC_FORSAKEN_WARHORSE_PLAYER            = 45041,
+
+    PATH_WARHORSE_TO_SEPULCHER              = 450570,
+
+    WAYPOINT_ARRIVED_TO_SEPULCHER           = 44,
+
+    POINT_CLOSE_TO_ZONE                     = 1
+};
 
 // Forsaken Warhorse (Sylvanas) - 45057
 struct npc_silverpine_warhorse_sylvanas_lordaeron : public ScriptedAI
@@ -6213,6 +5849,48 @@ private:
     ObjectGuid _sylvanasGUID;
 };
 
+enum SylvanasWindrunnerLordaeron
+{
+    NPC_FORSAKEN_WARHORSE_SYLVANAS          = 45057,
+    NPC_WORGEN_RENEGADE                     = 44793,
+
+    SPELL_DREADGUARD_SALUTE_AURA            = 84200,
+    SPELL_KILL_ME                           = 84180,
+    SPELL_LORDAERON_COMPLETE                = 84185,
+    SPELL_DESPAWN_ALL_SUMMONS_LORDAERON     = 84173,
+    SPELL_FADE_TO_BLACK                     = 89092,
+
+    EVENT_SYLVANAS_RIDE_WARHORSE_LORDAERON  = 1,
+    EVENT_SYLVANAS_HEARTSTRIKE_COOLDOWN     = 3,
+    EVENT_SYLVANAS_TALK                     = 4,
+    EVENT_FINISH_SCENE_LORDAERON            = 26,
+
+    TALK_SYLVANAS_LORDAERON_0               = 0,
+    TALK_SYLVANAS_LORDAERON_1               = 1,
+    TALK_SYLVANAS_LORDAERON_2               = 2,
+    TALK_SYLVANAS_LORDAERON_3               = 3,
+    TALK_SYLVANAS_LORDAERON_4               = 4,
+    TALK_SYLVANAS_LORDAERON_5               = 5,
+    TALK_SYLVANAS_LORDAERON_6               = 6,
+    TALK_SYLVANAS_LORDAERON_7               = 7,
+    TALK_SYLVANAS_LORDAERON_8               = 8,
+    TALK_SYLVANAS_LORDAERON_9               = 9,
+    TALK_SYLVANAS_LORDAERON_10              = 10,
+    TALK_SYLVANAS_LORDAERON_11              = 11,
+    TALK_SYLVANAS_LORDAERON_12              = 12,
+    TALK_SYLVANAS_LORDAERON_13              = 13,
+    TALK_SYLVANAS_LORDAERON_14              = 14,
+    TALK_SYLVANAS_LORDAERON_15              = 15,
+    TALK_SYLVANAS_LORDAERON_16              = 16,
+    TALK_SYLVANAS_LORDAERON_17              = 17,
+    TALK_SYLVANAS_LORDAERON_18              = 18,
+    TALK_SYLVANAS_LORDAERON_19              = 19,
+    TALK_SYLVANAS_LORDAERON_20              = 20,
+    TALK_SYLVANAS_LORDAERON_21              = 21,
+
+    SEAT_WARHORSE_PLAYER_BOARDED            = 1
+};
+
 // Lady Sylvanas Windrunner (Lordaeron) - 45051
 struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
 {
@@ -6232,10 +5910,10 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
             if (sylvanashorse->IsAIEnabled())
                 sylvanashorse->HandleEmoteCommand(EMOTE_ONESHOT_MOUNT_SPECIAL);
 
-            _events.ScheduleEvent(EVENT_RIDE_WARHORSE, 500ms);
+            _events.ScheduleEvent(EVENT_SYLVANAS_RIDE_WARHORSE_LORDAERON, 500ms);
         }
 
-        DoCastSelf(SPELL_DREADGUARD_SALUTE_PERIODIC);
+        DoCastSelf(SPELL_DREADGUARD_SALUTE_AURA);
     }
 
     void SpellHit(Unit* caster, SpellInfo const* spell) override
@@ -6255,7 +5933,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
 
                     _heartstrikeCD = true;
 
-                    _events.ScheduleEvent(EVENT_RESET_HEARTSTRIKE, 2s);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_HEARTSTRIKE_COOLDOWN, 2s);
                 }
 
                 break;
@@ -6274,7 +5952,7 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_RIDE_WARHORSE:
+                case EVENT_SYLVANAS_RIDE_WARHORSE_LORDAERON:
                 {
                     if (Creature* playerhorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_PLAYER, 10.0f))
                     {
@@ -6287,12 +5965,12 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                         }
                     }
 
-                    _events.ScheduleEvent(EVENT_RIDE_WARHORSE + 1, 1s);
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER, 7s + 500ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_RIDE_WARHORSE_LORDAERON + 1, 1s);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK, 7s + 500ms);
                     break;
                 }
 
-                case EVENT_RIDE_WARHORSE + 1:
+                case EVENT_SYLVANAS_RIDE_WARHORSE_LORDAERON + 1:
                 {
                     if (Creature* sylvanashorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_SYLVANAS, 10.0f))
                     {
@@ -6303,205 +5981,205 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER:
+                case EVENT_SYLVANAS_TALK:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_0, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 1, 5s + 600ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 1, 5s + 600ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 1:
+                case EVENT_SYLVANAS_TALK + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_1, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 2, 5s + 600ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 2, 5s + 600ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 2:
+                case EVENT_SYLVANAS_TALK + 2:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_2, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 3, 9s + 100ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 3, 9s + 100ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 3:
+                case EVENT_SYLVANAS_TALK + 3:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_3, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 4, 5s + 600ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 4, 5s + 600ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 4:
+                case EVENT_SYLVANAS_TALK + 4:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_4, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 5, 8s + 600ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 5, 8s + 600ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 5:
+                case EVENT_SYLVANAS_TALK + 5:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_5, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 6, 9s + 200ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 6, 9s + 200ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 6:
+                case EVENT_SYLVANAS_TALK + 6:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_6, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 7, 9s + 900ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 7, 9s + 900ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 7:
+                case EVENT_SYLVANAS_TALK + 7:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_7, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 8, 10s + 900ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 8, 10s + 900ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 8:
+                case EVENT_SYLVANAS_TALK + 8:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_8, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 9, 9s + 800ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 9, 9s + 800ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 9:
+                case EVENT_SYLVANAS_TALK + 9:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_9, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 10, 6s + 100ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 10, 6s + 100ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 10:
+                case EVENT_SYLVANAS_TALK + 10:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_10, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 11, 5s + 600ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 11, 5s + 600ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 11:
+                case EVENT_SYLVANAS_TALK + 11:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_11, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 12, 9s + 600ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 12, 9s + 600ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 12:
+                case EVENT_SYLVANAS_TALK + 12:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_12, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 13, 7s + 100ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 13, 7s + 100ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 13:
+                case EVENT_SYLVANAS_TALK + 13:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_13, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 14, 11s + 300ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 14, 11s + 300ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 14:
+                case EVENT_SYLVANAS_TALK + 14:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_14, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 15, 11s + 300ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 15, 11s + 300ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 15:
+                case EVENT_SYLVANAS_TALK + 15:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_15, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 16, 9s + 600ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 16, 9s + 600ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 16:
+                case EVENT_SYLVANAS_TALK + 16:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_16, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 17, 9s + 800ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 17, 9s + 800ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 17:
+                case EVENT_SYLVANAS_TALK + 17:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_17, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 18, 5s + 800ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 18, 5s + 800ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 18:
+                case EVENT_SYLVANAS_TALK + 18:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_18, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 19, 9s + 300ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 19, 9s + 300ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 19:
+                case EVENT_SYLVANAS_TALK + 19:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_19, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 20, 12s + 500ms);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 20, 12s + 500ms);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 20:
+                case EVENT_SYLVANAS_TALK + 20:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_20, player);
 
-                    _events.ScheduleEvent(EVENT_CHAT_TO_PLAYER + 21, 7s);
+                    _events.ScheduleEvent(EVENT_SYLVANAS_TALK + 21, 7s);
                     break;
                 }
 
-                case EVENT_CHAT_TO_PLAYER + 21:
+                case EVENT_SYLVANAS_TALK + 21:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         Talk(TALK_SYLVANAS_LORDAERON_21, player);
 
-                    _events.ScheduleEvent(EVENT_FINISH_RIDE, 10s);
+                    _events.ScheduleEvent(EVENT_FINISH_SCENE_LORDAERON, 10s);
                     break;
                 }
 
-                case EVENT_FINISH_RIDE:
+                case EVENT_FINISH_SCENE_LORDAERON:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
@@ -6509,18 +6187,18 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                         me->CastSpell(player, SPELL_LORDAERON_COMPLETE, true);
                     }
 
-                    _events.ScheduleEvent(EVENT_FINISH_RIDE + 1, 100ms);
+                    _events.ScheduleEvent(EVENT_FINISH_SCENE_LORDAERON + 1, 100ms);
                     break;
                 }
 
-                case EVENT_FINISH_RIDE + 1:
+                case EVENT_FINISH_SCENE_LORDAERON + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                         player->CastSpell(player, SPELL_DESPAWN_ALL_SUMMONS_LORDAERON, true);
                     break;
                 }
 
-                case EVENT_RESET_HEARTSTRIKE:
+                case EVENT_SYLVANAS_HEARTSTRIKE_COOLDOWN:
                 {
                     _heartstrikeCD = false;
                     break;
@@ -6542,6 +6220,15 @@ private:
     bool _heartstrikeCD;
 };
 
+enum DreadguardLordaeron
+{
+    SPELL_DREADGUARD_SALUTE                 = 84199,
+
+    EVENT_RESET_ANIMKIT                     = 1,
+
+    ANIMKIT_DREADGUARD                      = 898
+};
+
 // Dreadguard - 45588
 struct npc_silverpine_dreadguard_lordaeron : public ScriptedAI
 {
@@ -6561,9 +6248,9 @@ struct npc_silverpine_dreadguard_lordaeron : public ScriptedAI
                 if (_done)
                     return;
 
-                me->SetAIAnimKitId(ANIMKIT_DREADGUARD_SALUTE);
+                me->SetAIAnimKitId(ANIMKIT_DREADGUARD);
 
-                _events.ScheduleEvent(EVENT_RESET_EMOTE, 2s + 500ms);
+                _events.ScheduleEvent(EVENT_RESET_ANIMKIT, 2s + 500ms);
 
                 _done = true;
                 break;
@@ -6582,7 +6269,7 @@ struct npc_silverpine_dreadguard_lordaeron : public ScriptedAI
         {
             switch (eventId)
             {
-                case EVENT_RESET_EMOTE:
+                case EVENT_RESET_ANIMKIT:
                 {
                     if (_done)
                         _done = false;
@@ -6704,6 +6391,16 @@ Position const DreadguardPos[27] =
     { 576.29f, 1412.34f, 95.9112f, 0.400425f }
 };
 
+enum SummonLordaeronActors
+{
+    NPC_ORC_MOVER                           = 45589,
+    NPC_ORC_DEMOLISHER_LORDAERON            = 45635,
+    NPC_DREADGUARD_LORDAREON                = 45588,
+
+    PATH_ORC_LEADER1                        = 4494200,
+    PATH_ORC_LEADER2                        = 4494201,
+};
+
 // Summon Lordaeron Actors - 84127
 class spell_silverpine_summon_lordaeron_actors : public SpellScript
 {
@@ -6714,10 +6411,10 @@ class spell_silverpine_summon_lordaeron_actors : public SpellScript
             _playerGUID = caster->GetGUID();
 
             for (auto pos : ForsakenTrooperMPos)
-                caster->SummonCreature(NPC_FORSAKEN_TROOPER1, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
+                caster->SummonCreature(NPC_FORSAKEN_TROOPER_F, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
 
             for (auto pos : ForsakenTrooperFPos)
-                caster->SummonCreature(NPC_FORSAKEN_TROOPER2, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
+                caster->SummonCreature(NPC_FORSAKEN_TROOPER_M, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
 
             for (auto pos : WorgenRenegadePos)
                 caster->SummonCreature(NPC_WORGEN_RENEGADE, pos, TEMPSUMMON_TIMED_DESPAWN, 300s, 0, _playerGUID);
@@ -6915,12 +6612,7 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_fenris_camera);
     RegisterCreatureAI(npc_silverpine_crowley_fenris);
     RegisterCreatureAI(npc_silverpine_bloodfang_fenris);
-    RegisterCreatureAI(npc_silverpine_odelic_fenris);
-    RegisterCreatureAI(npc_silverpine_bartolo_fenris);
-    RegisterCreatureAI(npc_silverpine_loremaster_fenris);
-    RegisterCreatureAI(npc_silverpine_henry_fenris);
-    RegisterCreatureAI(npc_silverpine_caretaker_fenris);
-    RegisterCreatureAI(npc_silverpine_sophia_fenris);
+    RegisterCreatureAI(npc_silverpine_general_actor_fenris);
 
     RegisterSpellScript(spell_silverpine_summon_lordaeron_actors);
     RegisterSpellScript(spell_silverpine_despawn_all_summons_lordaeron);
