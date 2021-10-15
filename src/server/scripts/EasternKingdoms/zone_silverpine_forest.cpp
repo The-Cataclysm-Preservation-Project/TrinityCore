@@ -4559,7 +4559,7 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
             _events.ScheduleEvent(EVENT_FLEE_FROM_FENRIS + 3, 100ms);
     }
 
-    void DamageTaken(Unit* attacker, uint32& damage) override
+    void DamageTaken(Unit* attacker, uint32& /*damage*/) override
     {
         if (attacker->GetGUID() != _targetGUID)
         {
