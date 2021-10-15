@@ -7,7 +7,7 @@ INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 (1515, 26964);
 
  -- Horde Hauler
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_hauler'  WHERE `entry` = 44731;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_horde_hauler'  WHERE `entry` = 44731;
 
 DELETE FROM `spell_script_names` WHERE `spell_id` = 84238 AND `ScriptName` = 'spell_silverpine_magical_chains_hauler';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES 
@@ -35,7 +35,7 @@ INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`,
 DELETE FROM `creature_text` WHERE `CreatureID` = 44734;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44734, 0, 0, 'This is one way trip, kid, and you definitely don\'t want to be comin\' back on the other wagon.', 12, 0, 100, 1, 0, 0, 0, 44790, 0, ''),
-(44734, 1, 0, 'ALL ABOARD! Next stop: The Sepulcher.\r\n', 14, 0, 100, 1, 0, 0, 0, 44796, 2, ''),
+(44734, 1, 0, 'ALL ABOARD! Next stop: The Sepulcher.', 14, 0, 100, 1, 0, 0, 0, 44796, 2, ''),
 (44734, 2, 0, 'ALL ABOARD! Last stop: The Forsaken Front!', 14, 0, 100, 1, 0, 0, 0, 44797, 2, ''),
 (44734, 3, 0, 'Final stop, the Forsaken Front! EVERYBODY OUT!', 14, 0, 100, 1, 0, 0, 0, 44788, 2, '');
 
@@ -162,7 +162,7 @@ INSERT INTO `waypoint_data_addon` (`PathID`, `PointID`, `SplinePointIndex`, `Pos
 (447310, 12, 10, 1272.27, 1095.4, 52.44983);
 
  -- Forsaken Trooper
-UPDATE creature_template SET `AIName` = 'SmartAI' WHERE `entry` IN (44732, 44733);
+UPDATE `creature_template` SET `AIName` = 'SmartAI' WHERE `entry` IN (44732, 44733);
 
 DELETE FROM `waypoint_data` WHERE `id` = 447320;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
@@ -202,7 +202,7 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (@ENTRY, 0, 0, 0, 40, 0, 100, 0, 1, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "On wapoint 1 of any path reached - Self: Despawn instantly");
 
  -- Horde Coffin Hauler
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_horde_coffin_hauler'  WHERE `entry` = 44764;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_horde_coffin_hauler'  WHERE `entry` = 44764;
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+104;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
@@ -312,7 +312,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (447640, 68, 1557.53, 571.729, 42.92298, 0, 10.4569, 0, 0, 1, 0, 100, 0);
 
  -- Worgen Renegade
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_worgen_renegade'  WHERE `entry` = 44793;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_worgen_renegade'  WHERE `entry` = 44793;
 
 UPDATE `creature` SET `MovementType`= 1, `spawndist`= 5 WHERE `id` = 44793;
 
@@ -350,6 +350,10 @@ UPDATE `creature` SET `MovementType` = 0, `dynamicflags` = 32, `unit_flags` = 76
 DELETE FROM `creature_addon` WHERE `guid` = 321853;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321853, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, '');
+
+DELETE FROM `creature_loot_template` WHERE `Entry` = 1797 AND `Item` = 60793;
+INSERT INTO `creature_loot_template` (`Entry`, `Item`, `Reference`, `Chance`, `QuestRequired`, `IsCurrency`, `LootMode`, `GroupId`, `MinCount`, `MaxCount`, `Comment`) VALUES 
+(1797, 60793, 0, 33.323, 1, 0, 1, 0, 1, 1, NULL);
  
  -- Rabid Dog
 UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1766;
@@ -361,6 +365,10 @@ DELETE FROM `creature_addon` WHERE `guid` IN (321854, 321855);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (321854, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, ''),
 (321855, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, '');
+
+DELETE FROM `creature_loot_template` WHERE `Entry` = 1766 AND `Item` = 60793;
+INSERT INTO `creature_loot_template` (`Entry`, `Item`, `Reference`, `Chance`, `QuestRequired`, `IsCurrency`, `LootMode`, `GroupId`, `MinCount`, `MaxCount`, `Comment`) VALUES 
+(1766, 60793, 0, 33.323, 1, 0, 1, 0, 1, 1, NULL);
 
  -- Bolgaff
 UPDATE `creature_template_addon` SET `mount` = 27660 WHERE `entry` = 47003;
@@ -774,7 +782,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (3221320, 13, 1348.21000, 715.925, 35.11083, 0, 2.509363, 0, 1, 1, 0, 100, 0);
 
  -- Forsaken Trooper (44792)
-UPDATE creature_template SET `spell1` = 19983, `spell2` = 8078, `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44791;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44791;
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44792;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
@@ -1241,7 +1249,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (3990020, 20, 1355.2781, 1042.5553, 52.781837, 0, 2.50065, 0, 1, 0, 0, 100, 0);
 
  -- Bat Handler Maggotbreath
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_bat_handler_maggotbreath'  WHERE `entry` = 44825;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_bat_handler_maggotbreath'  WHERE `entry` = 44825;
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+3;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1262,7 +1270,7 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44825, 0, 0, 'You better bring that bat back in one piece, $n!', 12, 0, 100, 25, 0, 0, 0, 44906, 0, '');
  
  -- Deathstalker Commander Belmont
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_deathstalker' WHERE `entry` = 44789;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_deathstalker' WHERE `entry` = 44789;
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+4;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1437,7 +1445,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (322163, 0, 0, 0, 50397184, 0, 0, 0, 0, 0, 3, '83988');
 
  -- Lady Sylvanas Windrunner
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_sylvanas_fhc' WHERE `entry` = 44365;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_sylvanas_fhc' WHERE `entry` = 44365;
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44365;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
@@ -1491,7 +1499,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 (@CGUID+30, 44825, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
 
  -- Forsaken Bat
-UPDATE creature_template SET `VehicleId` = 1051, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
+UPDATE `creature_template` SET `VehicleId` = 1051, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
 
 DELETE FROM `creature_text` WHERE `CreatureID`=44821 AND `ID`=0 AND `GroupID` BETWEEN 0 AND 1;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
@@ -1588,8 +1596,8 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (@CGUID+101, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, '');
 
  -- Fallen Human
-UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44593;
-UPDATE creature_template SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44592;
+UPDATE `creature_template` SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44593;
+UPDATE `creature_template` SET `unit_flags` = 768, `dynamicflags` = 32, `ScriptName` = 'npc_silverpine_fallen_human'  WHERE `entry` = 44592;
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+39 AND @CGUID+68;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1642,7 +1650,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (445921, 4, 1334.64, 1014.69, 54.5999, 0, 0, 0, 1, 0, 0, 100, 0);
 
  -- Grand Executor Mortuus
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_grand_executor_mortuus'  WHERE `entry` = 44615;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_grand_executor_mortuus'  WHERE `entry` = 44615;
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+69;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1707,7 +1715,7 @@ INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES
 (239, 169, 'Silverpine Forest - The Ivar Patch - Base');
  
  -- Deathstalker
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_deathstalker' WHERE `entry` = 44790;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_deathstalker' WHERE `entry` = 44790;
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+71 AND @CGUID+74;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1724,10 +1732,12 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (@CGUID+74, 0, 0, 0, 8, 0, 0, 0, 0, 0, 3, '83231');
 
  -- Abandoned Outhouse
- UPDATE `gameobject_template` SET `ScriptName` = 'go_silverpine_abandoned_outhouse' WHERE `entry` = 205143;
+UPDATE `gameobject_template` SET `ScriptName` = 'go_silverpine_abandoned_outhouse' WHERE `entry` = 205143;
+ 
+UPDATE `spell_target_position` SET `Orientation` = 2.737571 WHERE `ID` = 83751;
 
  -- Deathstalker Rane Yorick (44882)
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_deathstalker_rane_yorick' WHERE `entry` = 44882;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_deathstalker_rane_yorick' WHERE `entry` = 44882;
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44882;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
@@ -1763,7 +1773,7 @@ INSERT INTO `summon_properties_parameters` (`RecID`, `ParamType`) VALUES
 (3024, 1);
 
  -- Armoire (44893)
-UPDATE creature_template SET `unit_flags` = 33554440, `VehicleId` = 1055, `ScriptName` = 'npc_silverpine_armoire' WHERE `entry` = 44893;
+UPDATE `creature_template` SET `unit_flags` = 33554440, `VehicleId` = 1055, `ScriptName` = 'npc_silverpine_armoire' WHERE `entry` = 44893;
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83763 AND `SourceId`=0 AND `ElseGroup`=1 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44883 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
@@ -1778,6 +1788,8 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 (26, 169, 239, 0, 0, 29, 0, 44893, 5, 0, 1, 0, 0, '', 'The Ivar Patch - Remove phase 169 - Hide in Armoire on player');
 
  -- Armoire (44894)
+UPDATE `creature_template` SET `npcflag` = 16777216 WHERE `entry` = 44894;
+
 DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` = 44894 AND `spell_id` = 83756;
 INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `cast_flags`, `user_type`) VALUES 
 (44894, 83756, 1, 0);
@@ -1787,7 +1799,7 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 (18, 44894, 83756, 0, 0, 47, 0, 27045, 8, 0, 0, 0, 0, '', 'Allow spellclick if quest 27045 is active');
 
  -- Lord Darius Crowley (44883)
-UPDATE creature_template SET `unit_flags` = 2, `unit_flags2` = 16384, `ScriptName` = 'npc_silverpine_lord_darius_crowley_exhanguinate' WHERE `entry` = 44883;
+UPDATE `creature_template` SET `unit_flags` = 2, `unit_flags2` = 16384, `ScriptName` = 'npc_silverpine_lord_darius_crowley_exsanguinate' WHERE `entry` = 44883;
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44883;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
@@ -1810,7 +1822,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448831, 1, 1305.58, 1206.46, 58.5122, 0, 2.4830027, 0, 0, 0, 0, 0, 0);
 
  -- Packleader Ivar Bloodfang (44884)
-UPDATE creature_template SET `unit_flags` = 2, `unit_flags2` = 16384, `VehicleId` = 1059, `ScriptName` = 'npc_silverpine_packleader_ivar_bloodfang_exhanguinate' WHERE `entry` = 44884;
+UPDATE `creature_template` SET `unit_flags` = 2, `unit_flags2` = 16384, `VehicleId` = 1059, `ScriptName` = 'npc_silverpine_packleader_ivar_bloodfang_exsanguinate' WHERE `entry` = 44884;
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44884;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
@@ -1829,6 +1841,10 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83781 AND `ScriptName` = 'spell_gen_reverse_cast_ride_vehicle';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83781, 'spell_gen_reverse_cast_ride_vehicle');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83781 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44882 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 83781, 0, 0, 31, 0, 3, 44882, 0, 0, 0, 0, '', 'Reverse Cast Ride Vehicle - Target Deathstalker Rane Yorick');
 
 DELETE FROM `spell_script_names` WHERE `spell_id` = 80743 AND `ScriptName` = 'spell_silverpine_eject_passenger_1';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
@@ -1866,10 +1882,15 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448844, 1, 1299.0449, 1209.605, 58.760803, 0, 7.878883, 0, 1, 0, 0, 0, 0),
 (448844, 2, 1297.27, 1212.28, 58.5105, 0, 7.878883, 0, 0, 0, 0, 0, 0);
 
- -- Detect: Quest Invis Zone 1
-DELETE FROM `spell_area` WHERE `spell`=83232 AND `area`=239 AND `quest_start`=27045 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+ -- Deathstalker Rane Yorick (44848)
+UPDATE `creature_template_addon` SET `auras` = '83738' WHERE `entry` = 44899;
+
+UPDATE `creature` SET `zoneId` = 130, `areaId` = 239, `position_x` = 1295.518, `position_y` = 1206.649, `position_z` = 58.50133, `orientation` = 0.023232 WHERE `id` = 44899;
+
+ -- Detect: Quest Invis Zone 2
+DELETE FROM `spell_area` WHERE `spell`=83739 AND `area`=239 AND `quest_start`=27045 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83232, 239, 27045, 0, 0, 0, 2, 3, 66, 1);
+(83739, 239, 27045, 0, 0, 0, 2, 3, 66, 0);
 
  --
  -- Forsaken Rear Guard
@@ -1886,8 +1907,8 @@ INSERT INTO `areatrigger_scripts` (`entry`, `ScriptName`) VALUES
 (6222, 'at_silverpine_forsaken_rear_guard');
 
  -- Commander Hickley
-UPDATE gossip_menu_option SET `OptionNpcflag` = '65536', `OptionType` = '8' WHERE `MenuId` = 12025 AND `OptionIndex` = 0;
-UPDATE gossip_menu_option SET `OptionNpcflag` = '128', `OptionType` = '3' WHERE `MenuId` = 12025 AND `OptionIndex` = 1;
+UPDATE `gossip_menu_option` SET `OptionNpcflag` = '65536', `OptionType` = '8' WHERE `MenuId` = 12025 AND `OptionIndex` = 0;
+UPDATE `gossip_menu_option` SET `OptionNpcflag` = '128', `OptionType` = '3' WHERE `MenuId` = 12025 AND `OptionIndex` = 1;
 
  -- Extracted from https://cata-twinhead.twinstar.cz/?npc=45496, a Cataclysm database on version 15595
 DELETE FROM `npc_vendor` WHERE `entry` = 45496;
@@ -1959,7 +1980,7 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (45497, 4, 0, '"Shalty." That\'s my name! Your name should be "I can\'t hold onto petsh." I can\'t believe anyone would trusht you with a beasht.', 14, 1, 100, 5, 0, 0, 0, 45629, 0, 'Gorgar 40');
 
  -- "Salty" Rocka
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_salty_rocka'  WHERE `entry` = 45498;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_salty_rocka'  WHERE `entry` = 45498;
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 45498;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
@@ -1984,7 +2005,7 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (45497, 4, 0, '"Shalty." That\'s my name! Your name should be "I can\'t hold onto petsh." I can\'t believe anyone would trusht you with a beasht.', 14, 1, 100, 5, 0, 0, 0, 45629, 0, 'Gorgar 40');
 
  -- Admiral Hatchet 
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_admiral_hatchet' WHERE `entry` = 44916;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_admiral_hatchet' WHERE `entry` = 44916;
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=11901;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
@@ -2006,17 +2027,17 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44917, 1, 0, '<hic!> Well... Let\'s see... By my count, nobody. The whole crew\'s drunk out of their gourds, admiral... \'cept the sea pups... <hic!>', 12, 0, 100, 0, 0, 0, 0, 45021, 0, 'Warlord Torok to Player');
 
  -- Apothecary Wormcrud
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_apothecary_wormcrud'  WHERE `entry` = 44912;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_apothecary_wormcrud'  WHERE `entry` = 44912;
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44912;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
 (44912, 0, 0, 'Touch my chicken and I will kill you in your sleep. Am I understood?', 12, 1, 100, 1, 0, 0, 0, 45069, 0, '');
 
  -- Orc Crate
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_crate' WHERE `entry` = 44915;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_orc_crate' WHERE `entry` = 44915;
 
  -- Orc Sea Dog (44942)
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_orc_sea_dog' WHERE `entry` = 44942;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_orc_sea_dog' WHERE `entry` = 44942;
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44942;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES 
@@ -2048,10 +2069,6 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 DELETE FROM `creature` WHERE `guid` = 321872;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
 (321872, 44913, 0, 130, 5386, 1, 0, 1, 169, 0, -1, 0, 0, 1045.19, 1567.43, 28.1601, 1.40073, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 0);
-
-DELETE FROM `creature` WHERE `guid` = @CGUID+105;
-INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+105, 44913, 0, 130, 5386, 1, 0, 1, 169, 0, -1, 0, 0, 1084.8, 1598.59, 27.769434, 1.57079, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 0);
 
 DELETE FROM `creature_addon` WHERE `guid` IN (321878, 321870, 321934, 321874, 321924, 321911, 321916, 321863, 321869, 321916, 321933);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -2124,7 +2141,7 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (@GUID, 0, 0, 0, 1, 0, 100, 0, 5000, 15000, 35000, 50000, 11, 83885, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 35 - 50 seconds (5 - 15s initially) (OOC) - Self: Cast spell Sick (83885) on Self");
 
  -- Forest Ettin
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_forest_ettin'  WHERE `entry` = 44367;
+UPDATE `creature_template` SET `AIName` = '', `ScriptName` = 'npc_silverpine_forest_ettin'  WHERE `entry` = 44367;
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+6;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
@@ -2202,12 +2219,16 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (3214740, 8, 818.707, 1677.33, 25.49682, 0, 3.9702425, 0, 1, 1, 0, 100, 0),
 (3214740, 9, 790.498, 1643.38, 28.69943, 0, 3.9702425, 0, 1, 1, 0, 100, 0);
 
+DELETE FROM `spell_script_names` WHERE `spell_id` = 83904 AND `ScriptName` = 'spell_gen_reverse_cast_ride_vehicle';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(83904, 'spell_gen_reverse_cast_ride_vehicle');
+
  --
  -- North Tide's Beachhead
  --
  
   -- Orc Sea Pup
-UPDATE creature_template SET `unit_flags` = 33288, `VehicleId` = 1060, `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
+UPDATE `creature_template` SET `unit_flags` = 33288, `VehicleId` = 1060, `ScriptName` = 'npc_silverpine_orc_sea_pup' WHERE `entry` = 44914;
 
 DELETE FROM `conditions` WHERE `SourceEntry`= 83838 AND `SourceTypeOrReferenceId`= 13;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
@@ -2240,7 +2261,7 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83840, 'spell_silverpine_despawn_all_summons_rear_guard');
 
  -- Orc Crate
-UPDATE creature_template SET `npcflag` = 16777216 WHERE `entry` = 44915;
+UPDATE `creature_template` SET `npcflag` = 16777216 WHERE `entry` = 44915;
 
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83838 AND `ScriptName` = 'spell_silverpine_pick_up_orc_crate';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
@@ -2302,7 +2323,7 @@ INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_
 (@ENTRY, 0, 0, 0, 8, 0, 100, 0, 83860, 0, 0, 0, 11, 83859, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "On spell Toss Torch (83860) hit - Self: Cast spell North Tide's Fire (83859) on random 1 Self");
 
  -- Mutant Bush Chicken
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_mutant_bush_chicken'  WHERE `entry` = 44935;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_mutant_bush_chicken'  WHERE `entry` = 44935;
 
 DELETE FROM `conditions` WHERE `SourceEntry`= 83902 AND `SourceTypeOrReferenceId`= 13;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
@@ -2313,14 +2334,14 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
  --
  
  -- Skitterweb Matriarch
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_skitterweb_matriarch', `AIName` = '', `flags_extra` = 512 WHERE `entry` = 44906;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_skitterweb_matriarch', `AIName` = '', `flags_extra` = 512 WHERE `entry` = 44906;
 
 DELETE FROM `conditions` WHERE `SourceEntry`= 83827 AND `SourceTypeOrReferenceId`= 13;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ScriptName`, `Comment`) VALUES
 (13, 1, 83827, 0, 0, 31, 0, 3, 44908, 0, 0, 0, '', 'Skitterweb Web - Target Skitterweb Stalker');
  
  -- Webbed Victim
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_webbed_victim_skitterweb' WHERE `entry` = 44941;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_webbed_victim_skitterweb' WHERE `entry` = 44941;
 
 DELETE FROM `creature` WHERE `guid` IN (@CGUID+82, @CGUID+83, @CGUID+84, @CGUID+85, @CGUID+86, @CGUID+87, @CGUID+88, @CGUID+89, @CGUID+90);
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
@@ -2370,25 +2391,29 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 (26, 266, 235, 0, 0, 47, 0, 27097, 64, 0, 0, 0, 0, '', 'Fenris Keep - Add phase 266 - 27097 rewarded');
 
   -- Vile Fin Oracle
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1908;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1908;
 
 UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1908;
 
  -- Vile Fin Tidehunter
-UPDATE creature_template SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1768;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1768;
 
 UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1768;
  
  -- Agatha (44951)
-DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44951;
-INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
-(44951, 2, 0, 1, 0, 0, NULL);
+UPDATE `creature_template` SET `unit_class` = 2, `VehicleId` = 1109, `HoverHeight` = 2.20000004768371582, `ScriptName` = 'npc_silverpine_agatha_fenris' WHERE `entry` = 44951;
 
 DELETE FROM `creature_template_addon` WHERE `entry` = 44951;
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
 (44951, 0, 0, 0, 50331648, 1, 0, 0, 0, 0, 3, '85451');
 
-UPDATE `creature_template` SET `unit_class`= 2, `VehicleId`= 1109, `HoverHeight`= 2.4, `ScriptName`= 'npc_silverpine_agatha_fenris' WHERE `entry` = 44951;
+DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44951;
+INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
+(44951, 2, 0, 1, 0, 0, NULL);
+
+DELETE FROM `summon_properties_parameters` WHERE `RecID` = 3030;
+INSERT INTO `summon_properties_parameters` (`RecID`, `ParamType`) VALUES 
+(3030, 1);
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44951;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
@@ -2898,6 +2923,10 @@ INSERT INTO `areatrigger_scripts` (`entry`, `ScriptName`) VALUES
  -- Fenris Keep Stalker
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_fenris_stalker' WHERE `entry` = 45032;
 
+DELETE FROM `creature` WHERE `guid` = @CGUID+103;
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
+(@CGUID+103, 45032, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 978.801, 689.085, 74.8985, 0.021992, 300, 0, 0, 42, 0, 0, 0, 0, 0, NULL, 0);
+
 UPDATE `creature` SET `PhaseId` = 266 WHERE `id` = 45032;
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84114 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44951 AND `ConditionValue3`=0;
@@ -3133,12 +3162,12 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (4494201, 7, 865.078, 1363.33, 54.5691, 0, 0, 0, 1, 0, 0, 100, 0),
 (4494201, 8, 821.376, 1363.54, 56.3932, 0, 0, 0, 1, 0, 0, 100, 0);
 
- -- Dreadguard (45588)
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_dreadguard_lordaeron' WHERE `entry` = 45588;
+ -- Dreadguard (44911)
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_dreadguard_lordaeron' WHERE `entry` = 44911;
 
-DELETE FROM `creature_template_addon` WHERE `entry` = 45588;
+DELETE FROM `creature_template_addon` WHERE `entry` = 44911;
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(45588, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, '');
+(44911, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, '18950');
 
 DELETE FROM `spell_script_names` WHERE `spell_id` = 84127 AND `ScriptName` = 'spell_silverpine_summon_lordaeron_actors';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES 
@@ -3179,7 +3208,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (@CGUID+75, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, '84183');
 
  -- Arthura
-UPDATE creature_template SET `unit_flags2` = 2107392, `VehicleId` = 1109  WHERE `entry` = 44610;
+UPDATE `creature_template` SET `unit_flags2` = 2107392, `VehicleId` = 1109  WHERE `entry` = 44610;
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+76;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
@@ -3199,7 +3228,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 (@CGUID+77, 0, 0, 0, 50331648, 1, 0, 0, 0, 0, 3, '84183');
 
  -- Daschla
-UPDATE creature_template SET `unit_flags2` = 2099200, `HoverHeight` = 2.8 WHERE `entry` = 44609;
+UPDATE `creature_template` SET `unit_flags2` = 2099200, `HoverHeight` = 2.8 WHERE `entry` = 44609;
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+78;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
@@ -3462,67 +3491,70 @@ INSERT INTO `quest_offer_reward` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, 
 
  
  -- Take to the Skies
-UPDATE quest_template_addon SET `NextQuestID` = 26964 WHERE `ID` = 25012;
+UPDATE `quest_template_addon` SET `NextQuestID` = 26964 WHERE `ID` = 25012;
 
  -- Warchief's Command: Silverpine Forest!
-UPDATE quest_template_addon SET `PrevQuestID` = 25012, `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 26964;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 25012, `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 26964;
  -- Warchief's Command: Silverpine Forest!
-UPDATE quest_template_addon SET `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 28568;
+UPDATE `quest_template_addon` SET `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 28568;
 
  -- The Warchief Cometh
-UPDATE quest_template_addon SET `NextQuestID` = 26989 WHERE `ID` = 26965;
+UPDATE `quest_template_addon` SET `NextQuestID` = 26989 WHERE `ID` = 26965;
 
  -- The Gilneas Liberation Front
-UPDATE quest_template_addon SET `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26989;
+UPDATE `quest_template_addon` SET `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26989;
 
  -- Agony Abounds
-UPDATE quest_template_addon SET `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26992;
+UPDATE `quest_template_addon` SET `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26992;
 
  -- Guts and Gore
-UPDATE quest_template_addon SET `NextQuestID` = 26998 WHERE `ID` = 26995;
+UPDATE `quest_template_addon` SET `NextQuestID` = 26998 WHERE `ID` = 26995;
 
  -- Iterating Upon Success
-UPDATE quest_template_addon SET `PrevQuestID` = 26995, `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26998;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 26995, `NextQuestID` = 27039, `ExclusiveGroup` = -26989 WHERE `ID` = 26998;
 
  -- Dangerous Intentions
-UPDATE quest_template_addon SET `NextQuestID` = 27045 WHERE `ID` = 27039;
+UPDATE `quest_template_addon` SET `NextQuestID` = 27045 WHERE `ID` = 27039;
 
  -- Waiting to Exsanguinate
-UPDATE quest_template_addon SET `PrevQuestID` = 27039, `NextQuestID` = 27056 WHERE `ID` = 27045;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27039, `NextQuestID` = 27056 WHERE `ID` = 27045;
  
  -- Belmont's Report
-UPDATE quest_template_addon SET `PrevQuestID` = 27045, `NextQuestID` = 27065 WHERE `ID` = 27056;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27045, `NextQuestID` = 27065 WHERE `ID` = 27056;
  
  -- The Warchief's Fleet
-UPDATE quest_template_addon SET `PrevQuestID` = 27056, `NextQuestID` = 27069 WHERE `ID` = 27065;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27056, `NextQuestID` = 27069 WHERE `ID` = 27065;
 
  -- Steel Thunder
-UPDATE quest_template_addon SET `PrevQuestID` = 27065, `NextQuestID` = 27094, `ExclusiveGroup` = -27069 WHERE `ID` = 27069;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27065, `NextQuestID` = 27093, `ExclusiveGroup` = -27069 WHERE `ID` = 27069;
 
  -- Give 'em Hell!
-UPDATE quest_template_addon SET `PrevQuestID` = 27065, `NextQuestID` = 27094, `ExclusiveGroup` = -27069 WHERE `ID` = 27073;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27065, `NextQuestID` = 27095, `ExclusiveGroup` = -27069 WHERE `ID` = 27073;
 
- -- Lost in the Darkness
-UPDATE quest_template_addon SET `NextQuestID` = 27094 WHERE `ID` = 27093;
+ -- Skitterweb Menace
+UPDATE `quest_template_addon` SET `NextQuestID` = 27094 WHERE `ID` = 27095;
 
  -- Deeper into Darkness
-UPDATE quest_template_addon SET `PrevQuestID` = 27093, `NextQuestID` = 27096, `ExclusiveGroup` = -27094 WHERE `ID` = 27094;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27095, `NextQuestID` = 27096, `ExclusiveGroup` = -27094 WHERE `ID` = 27094;
+
+ -- Lost in the Darkness
+UPDATE `quest_template_addon` SET `PrevQuestID` = 0, `NextQuestID` = 27096, `ExclusiveGroup` = -27094 WHERE `ID` = 27093;
 
  -- Playing Dirty
-UPDATE quest_template_addon SET `PrevQuestID` = 27065, `NextQuestID` = 27088 WHERE `ID` = 27082;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27065, `NextQuestID` = 27088 WHERE `ID` = 27082;
 
  -- It's Only Poisonous if You Ingest It
-UPDATE quest_template_addon SET `PrevQuestID` = 27082, `NextQuestID` = 27096, `ExclusiveGroup` = -27094 WHERE `ID` = 27088;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27082, `NextQuestID` = 27096, `ExclusiveGroup` = -27094 WHERE `ID` = 27088;
 
  -- Orcs are in Order
-UPDATE quest_template_addon SET `PrevQuestID` = 0, `NextQuestID` = 27097 WHERE `ID` = 27096;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 0, `NextQuestID` = 27097 WHERE `ID` = 27096;
 
  -- Rise, Forsaken
-UPDATE quest_template_addon SET `PrevQuestID` = 27096, `NextQuestID` = 27099 WHERE `ID` = 27097;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27096, `NextQuestID` = 27099 WHERE `ID` = 27097;
 
  -- No Escape
-UPDATE quest_template_addon SET `PrevQuestID` = 27097, `NextQuestID` = 27098 WHERE `ID` = 27099;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27097, `NextQuestID` = 27098 WHERE `ID` = 27099;
 
  -- Lordaeron
-UPDATE quest_template_addon SET `PrevQuestID` = 27099, `NextQuestID` = 27180 WHERE `ID` = 27098;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 27099, `NextQuestID` = 27180 WHERE `ID` = 27098;
 
