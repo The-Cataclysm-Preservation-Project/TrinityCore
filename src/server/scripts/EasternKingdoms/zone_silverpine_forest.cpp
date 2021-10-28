@@ -40,7 +40,7 @@
 #include "Unit.h"
 #include "Vehicle.h"
 
-enum SilverpinePhases
+enum SilverpineForestPhases
 {
     PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION            = 264, 
     PHASE_WAITING_TO_EXSANGUINATE                       = 265,
@@ -49,28 +49,20 @@ enum SilverpinePhases
     PHASE_THE_WATERS_RUN_RED                            = 273, 
     PHASE_GILNEAS_ACT_I                                 = 274, // PhaseGroup 520 (Phases 274 and 275)
     PHASE_GILNEAS_ACT_II                                = 275, // PhaseGroup 520 (Phases 274 and 275)
-    PHASE_GILNEAS_ACT_III                               = 276,
+    PHASE_GILNEAS_ACT_III                               = 276, 
     PHASE_THE_FORSAKEN_FRONT_I                          = 277, 
     PHASE_THE_FORSAKEN_FRONT_II                         = 278, 
-    PHASE_AMBER_MILL_I                                  = 279,  // PhaseGroup 523 (Phases 169 and 279)
-    PHASE_AMBER_MILL_II                                 = 280,  // PhaseGroup 522 (Phases 280 and 281)
-    PHASE_AMBER_MILL_III                                = 281,  // PhaseGroup 522 (Phases 280 and 281)
+    PHASE_AMBER_MILL_I                                  = 279, // PhaseGroup 523 (Phases 169 and 279)
+    PHASE_AMBER_MILL_II                                 = 280, // PhaseGroup 522 (Phases 280 and 281)
+    PHASE_AMBER_MILL_III                                = 281, // PhaseGroup 522 (Phases 280 and 281)
     PHASE_THE_FORSAKEN_FRONT_III                        = 284, 
     PHASE_THE_FORSAKEN_FRONT_IV                         = 289  
 };
 
 enum SilverpineForest
 {
-    QUEST_STEEL_THUNDER                     = 27069,
-    QUEST_RISE_FORSAKEN                     = 27097,
-    QUEST_NO_ESCAPE                         = 27099,
     QUEST_SILVERPINE_COMMAND_1              = 26964,
     QUEST_SILVERPINE_COMMAND_2              = 28568,
-
-    SPELL_SUMMON_SEA_PUP                    = 83839,
-    SPELL_SUMMON_AGATHA                     = 83982,
-    SPELL_BOND_OF_THE_VALKYR_FENRIS         = 83979,
-    SPELL_DETECT_QUEST_INVIS_ZONE_1         = 83232,
 
     ZONE_SILVERPINE                         = 130,
 
@@ -82,59 +74,6 @@ class playerScript_silverpine_zone : public PlayerScript
 {
 public:
     playerScript_silverpine_zone() : PlayerScript("playerScript_silverpine_zone") { }
-
-    void OnLogin(Player* player, bool /*firstLogin*/) override
-    {
-        // HACK FIX: we need this to make sure the player summons the NPC after logging in. Since the aura is based on spell_area, adding the aura again won't summon the NPCs
-        // because the player still has the aura on log off (this kind of behaviour should be implemented at some point, simply adding the aura as not kept after logging off won't make it work).
-        if (player->GetZoneId() == ZONE_SILVERPINE)
-        {
-            if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
-            {
-                if (player->HasAura(SPELL_SUMMON_SEA_PUP))
-                {
-                    player->RemoveAura(SPELL_SUMMON_SEA_PUP);
-
-                    player->CastSpell(player, SPELL_SUMMON_SEA_PUP, true);
-                }
-                else
-                    player->CastSpell(player, SPELL_SUMMON_SEA_PUP, true);
-            }
-
-            if (player->GetQuestStatus(QUEST_RISE_FORSAKEN) == QUEST_STATUS_INCOMPLETE)
-            {
-                if (player->HasAura(SPELL_SUMMON_AGATHA))
-                {
-                    player->RemoveAura(SPELL_SUMMON_AGATHA);
-
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-                else
-                {
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-
-            }
-
-            if (player->GetQuestStatus(QUEST_NO_ESCAPE) == QUEST_STATUS_INCOMPLETE)
-            {
-                if (player->HasAura(SPELL_SUMMON_AGATHA))
-                {
-                    player->RemoveAura(SPELL_SUMMON_AGATHA);
-
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-                else
-                {
-                    player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true);
-                    player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-                }
-            }
-        }
-    }
 
     void OnUpdateZone(Player* player, uint32 /*newZone*/, uint32 newArea) override
     {
@@ -205,17 +144,7 @@ struct npc_silverpine_horde_hauler : public ScriptedAI
         and it is only accessible for one player no matter their phase. Once a player gets in,
         the vehicle becomes unaccesible for the rest of the players in any phase and the mounted player
         will not be seen by players in a different phase, though the vehicle is seen by any player.
-
-        There's no existing PhaseGroup that shares all of these phases, so we're just gonna set it
-        visible for the affected phases. They can't be added on JustAppeared() because it has accessories
-        and they only inherit these phases if set on Initialize().
         */
-
-        me->GetPhaseShift().AddPhase(PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_NO_ESCAPE, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_I, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_II, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_III, PhaseFlags::None, 0);
     }
 
     void JustAppeared() override
@@ -458,17 +387,7 @@ struct npc_silverpine_horde_coffin_hauler : public ScriptedAI
         and it is only accessible for one player no matter their phase. Once a player gets in,
         the vehicle becomes unaccesible for the rest of the players in any phase and the mounted player
         will not be seen by players in a different phase, though the vehicle is seen by any player.
-
-        There's no existing PhaseGroup that shares all of these phases, so we're just gonna set it
-        visible for the affected phases. They can't be added on JustAppeared() because it has accessories
-        and they only inherit these phases if set on Initialize().
         */
-
-        me->GetPhaseShift().AddPhase(PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_NO_ESCAPE, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_I, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_II, PhaseFlags::None, 0);
-        me->GetPhaseShift().AddPhase(PHASE_GILNEAS_ACT_III, PhaseFlags::None, 0);
     }
 
     void JustAppeared() override
@@ -789,6 +708,7 @@ enum QuestTheWarchiefCometh
     TALK_GARROSH_COMETH_10                  = 10,
     TALK_CROMUSH_COMETH_0                   = 0,
     TALK_CROMUSH_COMETH_1                   = 1,
+    TALK_MORTUUS_COMETH_0                   = 0,
 
     MOVE_CROMUSH_TO_SYLVANAS                = 5405701,
     MOVE_CROMUSH_TO_HOME                    = 5405702,
@@ -1352,31 +1272,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
 
                 case EVENT_SCENE_TALK_COMMETH + 26:
                 {
-                    Talk(TALK_SYLVANAS_COMETH_0);
-
-                    _events.ScheduleEvent(EVENT_SCENE_TALK_COMMETH + 27, 3s);
-                    break;
-                }
-
-                case EVENT_SCENE_TALK_COMMETH + 27:
-                {
-                    std::list<Creature*> maleforsaken;
-                    std::list<Creature*> femaleforsaken;
-                    GetCreatureListWithEntryInGrid(maleforsaken, me, NPC_MALE_FALLEN_HUMAN, 100.0f);
-                    GetCreatureListWithEntryInGrid(femaleforsaken, me, NPC_FEMALE_FALLEN_HUMAN, 100.0f);
-
-                    for (std::list<Creature*>::const_iterator itr = maleforsaken.begin(); itr != maleforsaken.end(); ++itr)
-                    {
-                        if ((*itr)->IsAIEnabled())
-                            (*itr)->AI()->DoAction(ACTION_UNDEAD_START_WALKING);
-                    }
-
-                    for (std::list<Creature*>::const_iterator itr = femaleforsaken.begin(); itr != femaleforsaken.end(); ++itr)
-                    {
-                        if ((*itr)->IsAIEnabled())
-                            (*itr)->AI()->DoAction(ACTION_UNDEAD_START_WALKING);
-                    }
-
+                    Talk(TALK_MORTUUS_COMETH_0);
                     break;
                 }
 
@@ -1517,9 +1413,6 @@ class spell_silverpine_raise_forsaken_83173_aura : public AuraScript
                 {
                     fallenHuman->SetAIAnimKitId(ANIMKIT_FALLEN_HUMAN);
 
-                    fallenHuman->SetDisableGravity(true);
-                    fallenHuman->SetCanFly(true);
-
                     fallenHuman->GetMotionMaster()->MovePoint(POINT_BEING_RISEN, fallenHuman->GetPositionX(), fallenHuman->GetPositionY(), fallenHuman->GetPositionZ() + frand(3.5f, 5.5f), false, 1.5f);
                 }
             }
@@ -1534,15 +1427,11 @@ class spell_silverpine_raise_forsaken_83173_aura : public AuraScript
             {
                 if (fallenHuman->IsAIEnabled())
                 {
-                    fallenHuman->SetDisableGravity(false);
-                    fallenHuman->SetCanFly(false);
-
-                    // The sniff doesn't really tell whether they fall or just move back to home position
                     fallenHuman->GetMotionMaster()->MoveFall();
 
                     fallenHuman->SetAIAnimKitId(ANIMKIT_RESET);
 
-                    fallenHuman->AddAura(SPELL_INVISIBLE, fallenHuman);
+                    fallenHuman->CastSpell(fallenHuman, SPELL_INVISIBLE, true);
                 }
             }
         }
@@ -1638,12 +1527,11 @@ enum FallenHuman
 // Fallen Human - 44592, 44593
 struct npc_silverpine_fallen_human : public ScriptedAI
 {
-    npc_silverpine_fallen_human(Creature* creature) : ScriptedAI(creature), _transformDone(false), _pathChosen(false) {}
+    npc_silverpine_fallen_human(Creature* creature) : ScriptedAI(creature), _transformDone(false) {}
 
     void Reset() override
     {
         _transformDone = false;
-        _pathChosen = false;
 
         _events.Reset();
 
@@ -1654,31 +1542,6 @@ struct npc_silverpine_fallen_human : public ScriptedAI
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_STAND_STATE_DEAD);
         me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
         me->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
-    }
-
-    void DoAction(int32 param) override
-    {
-        switch (param)
-        {
-            case EVENT_MOVE:
-            {
-                if (_pathChosen)
-                    return;
-
-                if (urand(0, 1) == 0)
-                    me->GetMotionMaster()->MovePath(PATH_FALLEN_HUMAN_1, false);
-                else
-                    me->GetMotionMaster()->MovePath(PATH_FALLEN_HUMAN_2, false);
-
-                me->DespawnOrUnsummon(35s);
-
-                _pathChosen = true;
-                break;
-            }
-
-            default:
-                break;
-        }
     }
 
     void UpdateAI(uint32 diff) override
@@ -1722,6 +1585,8 @@ struct npc_silverpine_fallen_human : public ScriptedAI
                 case EVENT_EMOTE:
                 {
                     me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
+
+                    me->DespawnOrUnsummon(35s);
                     break;
                 }
 
@@ -1734,7 +1599,6 @@ struct npc_silverpine_fallen_human : public ScriptedAI
 private:
     EventMap _events;
     bool _transformDone;
-    bool _pathChosen;
 };
 
 enum BatHandlerMaggotbreath
@@ -2075,7 +1939,7 @@ enum DeathstalkerRaneYorick
     NPC_PACKLEADER_IVAR_BLOODFANG           = 44884,
 
     SPELL_STEALTH                           = 34189,
-    SPELL_PERMANENT_FEIGN_DEATH_RANE        = 29266,
+    SPELL_PERMANENT_FEIGN_DEATH             = 29266,
     SPELL_HIDDEN_IN_ARMOIRE                 = 83788,
 
     EVENT_START_QUEST_EXSANGUINATE          = 1,
@@ -2276,7 +2140,7 @@ struct npc_silverpine_deathstalker_rane_yorick : public ScriptedAI
                 {
                     me->SetDisableGravity(false);
 
-                    DoCastSelf(SPELL_PERMANENT_FEIGN_DEATH_RANE);
+                    DoCastSelf(SPELL_PERMANENT_FEIGN_DEATH);
 
                     me->DespawnOrUnsummon(15s);
                     break;
@@ -3403,11 +3267,13 @@ private:
 
 enum HatchetRearGuard
 {
+    QUEST_STEEL_THUNDER                     = 27069,
     QUEST_LOST_IN_THE_DARKNESS              = 27093,
 
     NPC_ORC_SEA_DOG                         = 44942,
     NPC_WARLORD_TOROK                       = 44917,
 
+    SPELL_SUMMON_ORC_SEA_PUP                = 83839,
     SPELL_SEA_PUP_TRIGGER                   = 83865,
 
     EVENT_HATCHET_CHECK_CONVERSATION        = 1,
@@ -3437,10 +3303,10 @@ struct npc_silverpine_admiral_hatchet : public ScriptedAI
     {
         if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
         {
-            if (player->HasAura(SPELL_SUMMON_SEA_PUP))
-                player->RemoveAura(SPELL_SUMMON_SEA_PUP);
+            if (player->HasAura(SPELL_SUMMON_ORC_SEA_PUP))
+                player->RemoveAura(SPELL_SUMMON_ORC_SEA_PUP);
 
-            player->CastSpell(player, SPELL_SUMMON_SEA_PUP);
+            player->CastSpell(player, SPELL_SUMMON_ORC_SEA_PUP);
 
             CloseGossipMenuFor(player);
 
@@ -3592,7 +3458,15 @@ enum OrcSeaPupRearGuard
 // Orc Sea Pup - 44914
 struct npc_silverpine_orc_sea_pup : public VehicleAI
 {
-    npc_silverpine_orc_sea_pup(Creature* creature) : VehicleAI(creature), _isJustSummoned(true) { }
+    npc_silverpine_orc_sea_pup(Creature* creature) : VehicleAI(creature), _isJustSummoned(true), _isJustTriggered(false)
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        _playerGUID = me->GetOwnerOrCreatorGUID();
+    }
 
     void JustAppeared() override
     {
@@ -3603,11 +3477,9 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
     {
         if (Player* player = summoner->ToPlayer())
         {
-            _playerGUID = player->GetGUID();
-
             me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
 
-            me->GetMotionMaster()->MoveFollow(player, 3.0f, (float)M_PI / 2.0f, true, true, false);
+            me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, true, true, false);
 
             if (player->GetQuestStatus(QUEST_STEEL_THUNDER) == QUEST_STATUS_INCOMPLETE)
             {
@@ -3644,6 +3516,8 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
         {
             case SPELL_SEA_PUP_TRIGGER:
             {
+                _isJustTriggered = true;
+
                 _events.CancelEvent(EVENT_ORC_PUP_TALK);
 
                 if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
@@ -3660,6 +3534,12 @@ struct npc_silverpine_orc_sea_pup : public VehicleAI
 
     void UpdateAI(uint32 diff) override
     {
+        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+        {
+            if (!_isJustTriggered && !player->HasAura(SPELL_SUMMON_ORC_SEA_PUP))
+                me->DespawnOrUnsummon();
+        }
+
         _events.Update(diff);
 
         while (uint32 eventId = _events.ExecuteEvent())
@@ -3712,6 +3592,7 @@ private:
     EventMap _events;
     ObjectGuid _playerGUID;
     bool _isJustSummoned;
+    bool _isJustTriggered;
 };
 
 // Despawn All Summons - 83840
@@ -4208,7 +4089,15 @@ enum WebbebOrcSeaDog
 // Orc Sea Dog - 44942
 struct npc_silverpine_orc_sea_dog : public ScriptedAI
 {
-    npc_silverpine_orc_sea_dog(Creature* creature) : ScriptedAI(creature) { }
+    npc_silverpine_orc_sea_dog(Creature* creature) : ScriptedAI(creature)
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        me->SetReactState(REACT_ASSIST);
+    }
 
     void JustAppeared() override
     {
@@ -4223,7 +4112,7 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
         {
             _playerGUID = player->GetGUID();
 
-            me->GetMotionMaster()->MoveFollow(player, 4.0f, frand(1.57f, 4.71f), true, true, false);
+            me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, frand(1.57f, 4.71f), true, true, false);
 
             _events.ScheduleEvent(EVENT_WEBBEB_ORC_CHECK_PLAYER, 1s);
             _events.ScheduleEvent(EVENT_WEBBEB_ORC_TALK, 1s + 500ms);
@@ -4232,8 +4121,6 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
 
     void Reset() override
     {
-        me->SetReactState(REACT_ASSIST);
-
         _events.CancelEvent(EVENT_SINISTER_STRIKE);
     }
 
@@ -4265,7 +4152,8 @@ struct npc_silverpine_orc_sea_dog : public ScriptedAI
 
                 case EVENT_WEBBEB_ORC_TALK:
                 {
-                    Talk(TALK_WEBBEB_ORC_FREED);
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_WEBBEB_ORC_FREED, player);
                     break;
                 }
 
@@ -4431,12 +4319,41 @@ private:
     std::vector<Creature*> _stalkerList;
 };
 
+enum BondoftheValkyr
+{
+    SPELL_SUMMON_AGATHA_FENRIS              = 83982,
+};
+
+// Bond of the Val'kyr - 83979
+class spell_silverpine_bond_of_the_valkyr : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo(
+            {
+                SPELL_SUMMON_AGATHA_FENRIS
+            });
+    }
+
+    void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
+            caster->CastSpell(caster, SPELL_SUMMON_AGATHA_FENRIS, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply.Register(&spell_silverpine_bond_of_the_valkyr::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 Position const AgathaBackFrontyardPos = { 982.57f, 671.04f, 77.298f };
 
 enum AgathaFenris
 {
     NPC_AGATHA_FENRIS                       = 44951,
 
+    SPELL_BOND_OF_THE_VALKYR                = 83979,
     SPELL_AGATHA_BROADCAST                  = 83978,
     SPELL_DOOMHOWL                          = 84012,
     SPELL_UNHOLY_DARKNESS                   = 84013,
@@ -4470,18 +4387,26 @@ enum AgathaFenris
 // Agatha - 44951
 struct npc_silverpine_agatha_fenris : public ScriptedAI
 {
-    npc_silverpine_agatha_fenris(Creature* creature) : ScriptedAI(creature), _healCD(false), _sceneStarted(false) { }
+    npc_silverpine_agatha_fenris(Creature* creature) : ScriptedAI(creature), _healCD(false), _sceneStarted(false)
+    {
+        Initialize();
+    }
 
-    void JustAppeared() override
+    void Initialize()
     {
         me->SetReactState(REACT_ASSIST);
 
+        _playerGUID = me->GetOwnerOrCreatorGUID();
+    }
+
+    void JustAppeared() override
+    {
         me->GetMotionMaster()->Clear();
 
         if (me->GetOwner()->GetGuardianPet())
-            me->GetMotionMaster()->MoveFollow(me->GetOwner(), 4.0f, (float)M_PI * 1.5f, false, true, false);
+            me->GetMotionMaster()->MoveFollow(me->GetOwner(), DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI * 1.5f, false, true, false);
         else
-            me->GetMotionMaster()->MoveFollow(me->GetOwner(), 4.0f, (float)M_PI / 2.0f, false, true, false);
+            me->GetMotionMaster()->MoveFollow(me->GetOwner(), DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
     }
 
     void IsSummonedBy(Unit* summoner) override
@@ -4505,9 +4430,9 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
         if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
         {
             if (player->GetGuardianPet())
-                me->GetMotionMaster()->MoveFollow(player, 4.0f, (float)M_PI * 1.5f, false, true, false);
+                me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI * 1.5f, false, true, false);
             else
-                me->GetMotionMaster()->MoveFollow(player, 4.0f, (float)M_PI / 2.0f, false, true, false);
+                me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
         }
     }
 
@@ -4584,6 +4509,12 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
 
     void UpdateAI(uint32 diff) override
     {
+        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+        {
+            if (!player->HasAura(SPELL_BOND_OF_THE_VALKYR))
+                me->DespawnOrUnsummon();
+        }
+
         _events.Update(diff);
 
         while (uint32 eventId = _events.ExecuteEvent())
@@ -4693,9 +4624,9 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                         me->GetMotionMaster()->Clear();
 
                         if (player->GetGuardianPet())
-                            me->GetMotionMaster()->MoveFollow(player, 4.0f, (float)M_PI * 1.5f, false, true, false);
+                            me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI * 1.5f, false, true, false);
                         else
-                            me->GetMotionMaster()->MoveFollow(player, 4.0f, (float)M_PI / 2.0f, false, true, false);
+                            me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
 
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
                         me->SetReactState(REACT_ASSIST);
@@ -4724,9 +4655,6 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
         me->GetMotionMaster()->MovePoint(POINT_AGATHA_BACK_FRONTYARD, AgathaBackFrontyardPos);
 
         Talk(TALK_AGATHA_PRE_EVENT);
-
-        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-            player->RemoveAura(SPELL_BOND_OF_THE_VALKYR_FENRIS);
     }
 
 private:
@@ -4859,6 +4787,8 @@ class spell_silverpine_forsaken_trooper_masterscript_fenris : public SpellScript
 
 enum HillsbradRefugee
 {
+    QUEST_RISE_FORSAKEN                     = 27097,
+
     SPELL_TROOPER_MASTERSCRIPT_FENRIS       = 83997,
     SPELL_NOTIFY_AGATHA_FENRIS              = 83990,
     SPELL_LORDAERON_MIGHT                   = 87104,
@@ -5147,6 +5077,8 @@ class spell_silverpine_undying_frenzy : public AuraScript
 
 enum AtNoEscape
 {
+    QUEST_NO_ESCAPE                         = 27099,
+
     NPC_FENRIS_KEEP_STALKER                 = 45032
 };
 
@@ -5881,12 +5813,7 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
 
     void QuestAccept(Player* player, const Quest* quest) override
     {
-        if (quest->GetQuestId() == QUEST_RISE_FORSAKEN)
-        {
-            player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR_FENRIS, true); // This triggers Agatha's broadcast every 60s.
-            player->CastSpell(player, SPELL_SUMMON_AGATHA, true);
-        }
-        else if (quest->GetQuestId() == QUEST_LORDAERON)
+        if (quest->GetQuestId() == QUEST_LORDAERON)
         {
             Position pos = player->GetPosition();
 
@@ -5898,15 +5825,6 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
         }
         else if (quest->GetQuestId() == QUEST_TO_FORSAKEN_HIGH_COMMAND)
             player->CastSpell(player, SPELL_FLIGHT_OF_THE_VALKYR_FORWARD, true);
-    }
-
-    void QuestReward(Player* player, Quest const* quest, uint32 /*opt*/) override
-    {
-        if (quest->GetQuestId() == QUEST_NO_ESCAPE)
-        {
-            player->RemoveAura(SPELL_BOND_OF_THE_VALKYR_FENRIS);
-            player->RemoveAura(SPELL_SUMMON_AGATHA);
-        }
     }
 
     void UpdateAI(uint32 diff) override
@@ -6730,16 +6648,19 @@ void AddSC_silverpine_forest()
 {
     new playerScript_silverpine_zone();
 
+    /* Vehicles */
+
     RegisterCreatureAI(npc_silverpine_horde_hauler);
     RegisterSpellScript(spell_silverpine_magical_chains_hauler);
     RegisterSpellScript(spell_silverpine_eject_passengers_3_8);
     RegisterCreatureAI(npc_silverpine_horde_coffin_hauler);
     RegisterSpellScript(spell_silverpine_magical_chains_coffin);
 
+    /* Forsaken High Command */
+
     RegisterCreatureAI(npc_silverpine_worgen_renegade);
     RegisterCreatureAI(npc_silverpine_forsaken_trooper);
     RegisterSpellScript(spell_silverpine_flurry_of_claws);
-
     RegisterCreatureAI(npc_silverpine_grand_executor_mortuus);
     RegisterCreatureAI(npc_silverpine_fallen_human);
     RegisterSpellScript(spell_silverpine_forsaken_trooper_masterscript_high_command);
@@ -6748,7 +6669,6 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_forsaken_bat);
     RegisterSpellScript(spell_silverpine_go_home);
     RegisterCreatureAI(npc_silverpine_vilefine_murlocks);
-
     RegisterCreatureAI(npc_silverpine_deathstalker);
     RegisterGameObjectAI(go_silverpine_abandoned_outhouse);
     RegisterCreatureAI(npc_silverpine_deathstalker_rane_yorick);
@@ -6756,6 +6676,8 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_lord_darius_crowley_exsanguinate);
     RegisterCreatureAI(npc_silverpine_packleader_ivar_bloodfang_exsanguinate);
     RegisterSpellScript(spell_silverpine_eject_passenger_1);
+
+    /* Forsaken Rear Guard */
 
     new at_silverpine_forsaken_rear_guard();
     RegisterCreatureAI(npc_silverpine_salty_rocka);
@@ -6772,6 +6694,9 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_orc_sea_dog);
     RegisterCreatureAI(npc_silverpine_skitterweb_matriarch);
 
+    /* Fenris Isle */
+
+    RegisterSpellScript(spell_silverpine_bond_of_the_valkyr);
     RegisterCreatureAI(npc_silverpine_sylvanas_fhc);
     RegisterCreatureAI(npc_silverpine_agatha_fenris);
     RegisterSpellScript(spell_silverpine_notify_agatha); 
@@ -6779,7 +6704,6 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_forsaken_trooper_male_fenris);
     RegisterCreatureAI(npc_silverpine_forsaken_trooper_female_fenris);
     RegisterSpellScript(spell_silverpine_forsaken_trooper_masterscript_fenris);
-
     RegisterCreatureAI(npc_silverpine_worgen_sentry);
     RegisterSpellScript(spell_silverpine_undying_frenzy);
     new at_silverpine_no_escape();
@@ -6790,6 +6714,8 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_crowley_fenris);
     RegisterCreatureAI(npc_silverpine_bloodfang_fenris);
     RegisterCreatureAI(npc_silverpine_general_actor_fenris);
+
+    /* Lordaeron Quest */
 
     RegisterSpellScript(spell_silverpine_summon_lordaeron_actors);
     RegisterSpellScript(spell_silverpine_despawn_all_summons_lordaeron);
