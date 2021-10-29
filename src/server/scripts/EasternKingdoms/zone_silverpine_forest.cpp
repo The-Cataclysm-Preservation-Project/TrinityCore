@@ -84,7 +84,7 @@ public:
                 if (player->GetQuestStatus(QUEST_SILVERPINE_COMMAND_1) == QUEST_STATUS_NONE && player->GetQuestStatus(QUEST_SILVERPINE_COMMAND_2) == QUEST_STATUS_NONE)
                 {
                     if (const Quest* WarchiefCommandSilverpineForest = sObjectMgr->GetQuestTemplate(QUEST_SILVERPINE_COMMAND_2))
-                        player->AddQuest(WarchiefCommandSilverpineForest, nullptr);
+                        player->AddQuestAndCheckCompletion(WarchiefCommandSilverpineForest, nullptr);
                 }
             }
         }

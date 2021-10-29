@@ -3535,9 +3535,10 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 UPDATE `quest_template_addon` SET `NextQuestID` = 26964 WHERE `ID` = 25012;
 
  -- Warchief's Command: Silverpine Forest!
-UPDATE `quest_template_addon` SET `PrevQuestID` = 25012, `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 26964;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 25012, `NextQuestID` = 26965 WHERE `ID` = 26964;
  -- Warchief's Command: Silverpine Forest!
-UPDATE `quest_template_addon` SET `NextQuestID` = 26965, `ExclusiveGroup` = 26964 WHERE `ID` = 28568;
+UPDATE `quest_template` SET `QuestType` = 2 WHERE `ID` = 28568;
+UPDATE `quest_template_addon` SET `NextQuestID` = 26965, `BreadcrumbForQuestId` = 26964 WHERE `ID` = 28568;
 
  -- The Warchief Cometh
 UPDATE `quest_template_addon` SET `NextQuestID` = 26989 WHERE `ID` = 26965;
