@@ -3258,7 +3258,7 @@ UPDATE `creature_template` SET `unit_flags2` = 2107392, `VehicleId` = 1109  WHER
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+76;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+76, 44610, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 500.034, 1571.656, 132.694, 4.856725, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+76, 44610, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 499.993011474609375, 1570.6300048828125, 131.7693328857421875, 4.815308570861816406, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+76;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3267,7 +3267,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
  -- Agatha
 DELETE FROM `creature` WHERE `guid`= @CGUID+77;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+77, 44608, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.193, 1574.03, 132.09833, 4.2635178, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+77, 44608, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.1929931640625, 1574.030029296875, 132.09832763671875, 4.26351785659790039, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+77;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3278,7 +3278,7 @@ UPDATE `creature_template` SET `unit_flags2` = 2099200, `HoverHeight` = 2.8 WHER
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+78;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+78, 44609, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.571, 1567.66, 132.69432, 3.7040863, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+78, 44609, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.571014404296875, 1567.6600341796875, 132.6943206787109375, 3.7040863037109375, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+78;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3600,7 +3600,70 @@ UPDATE `quest_template_addon` SET `PrevQuestID` = 27097, `NextQuestID` = 27098 W
  -- Lordaeron
 UPDATE `quest_template_addon` SET `PrevQuestID` = 27099, `NextQuestID` = 27180 WHERE `ID` = 27098;
 
-DELETE FROM `quest_offer_reward` WHERE `ID` = 28568;
-INSERT INTO `quest_offer_reward` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `RewardText`, `VerifiedBuild`) VALUES 
-(28568, 5, 21, 0, 0, 0, 0, 0, 0, 'Most excellent! A new recruit has arrived. There is much to do... much to do I say.', 15595);
- 
+DELETE FROM `quest_details` WHERE `ID` IN (27098 /*27098*/, 27099 /*27099*/, 27097 /*27097*/, 27096 /*27096*/, 27094 /*27094*/, 27088 /*27088*/, 27093 /*27093*/, 27095 /*27095*/, 27082 /*27082*/, 27073 /*27073*/, 27069 /*27069*/, 27065 /*27065*/, 27056 /*27056*/, 27045 /*27045*/, 27039 /*27039*/, 26998 /*26998*/, 26995 /*26995*/, 26992 /*26992*/, 26989 /*26989*/, 26965 /*26965*/);
+INSERT INTO `quest_details` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `VerifiedBuild`) VALUES
+(27098, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27098
+(27099, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27099
+(27097, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27097
+(27096, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27096
+(27094, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27094
+(27088, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27088
+(27093, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27093
+(27095, 15, 1, 5, 0, 0, 0, 0, 0, 15595), -- 27095
+(27082, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27082
+(27073, 5, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27073
+(27069, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27069
+(27065, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27065
+(27056, 1, 1, 0, 0, 0, 0, 0, 0, 15595), -- 27056
+(27045, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27045
+(27039, 6, 1, 0, 0, 0, 0, 0, 0, 15595), -- 27039
+(26998, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 26998
+(26995, 5, 1, 1, 0, 0, 0, 0, 0, 15595), -- 26995
+(26992, 6, 1, 1, 0, 0, 0, 0, 0, 15595), -- 26992
+(26989, 1, 5, 1, 397, 0, 0, 0, 0, 15595), -- 26989
+(26965, 1, 1, 66, 0, 0, 0, 0, 0, 15595); -- 26965
+
+DELETE FROM `quest_request_items` WHERE `ID` IN (27093 /*27093*/, 26998 /*26998*/, 26965 /*26965*/, 26995 /*26995*/, 27088 /*27088*/, 27056 /*27056*/, 26992 /*26992*/, 26989 /*26989*/, 27082 /*27082*/, 27045 /*27045*/, 27073 /*27073*/, 27069 /*27069*/, 27099 /*27099*/, 27097 /*27097*/, 27096 /*27096*/, 27095 /*27095*/, 27094 /*27094*/);
+INSERT INTO `quest_request_items` (`ID`, `EmoteOnComplete`, `EmoteOnIncomplete`, `CompletionText`, `VerifiedBuild`) VALUES
+(27093, 0, 0, 'Thankfully we\'re almost out of ale.', 15595), -- 27093
+(26998, 0, 6, 'Have you exterminated the Vile Fin murlocs of the Dawning Isles?', 15595), -- 26998
+(26965, 0, 5, 'Stand at attention, $nnub!', 15595), -- 26965
+(26995, 1, 1, 'Remember, I can only use clean beast guts for the new strain of blight we\'re developing.', 15595), -- 26995
+(27088, 0, 6, 'Have you dealt with the ettin?', 15595), -- 27088
+(27056, 25, 0, 'Kneel before your queen, $n.', 15595), -- 27056
+(26992, 6, 6, 'Have you collected the ferocious doomweed I requested?', 15595), -- 26992
+(26989, 0, 6, 'What have you to report, $nnub?', 15595), -- 26989
+(27082, 5, 5, 'We are Forsaken! This is how we do it, $c.', 15595), -- 27082
+(27045, 0, 6, 'News from Yorick?', 15595), -- 27045
+(27073, 0, 15, 'Give \'em hell, $r!', 15595), -- 27073
+(27069, 0, 0, 'The pups might be the only orcs not drunk at this base.', 15595), -- 27069
+(27099, 0, 6, 'What have you to report?', 15595), -- 27099
+(27097, 0, 0, 'Victory!', 15595), -- 27097
+(27096, 6, 0, 'And the orcs?', 15595), -- 27096
+(27095, 0, 0, 'The matriarch must be found!', 15595), -- 27095
+(27094, 0, 6, 'You killed the Skitterweb matriarch?', 15595); -- 27094
+
+DELETE FROM `quest_offer_reward` WHERE `ID` IN (28568 /*28568*/, 27099 /*27099*/, 27097 /*27097*/, 27096 /*27096*/, 27088 /*27088*/, 27094 /*27094*/, 27093 /*27093*/, 27095 /*27095*/, 27082 /*27082*/, 27073 /*27073*/, 27069 /*27069*/, 28966 /*28966*/, 27065 /*27065*/, 27056 /*27056*/, 27045 /*27045*/, 27039 /*27039*/, 26998 /*26998*/, 26995 /*26995*/, 26992 /*26992*/, 26989 /*26989*/, 26965 /*26965*/, 27098 /*27098*/);
+INSERT INTO `quest_offer_reward` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `RewardText`, `VerifiedBuild`) VALUES
+(28568, 5, 21, 0, 0, 0, 0, 0, 0, 'Most excellent! A new recruit has arrived. There is much to do... much to do I say.', 15595), -- 28568
+(27099, 1, 1, 25, 6, 0, 0, 0, 0, 'It would seem that Crowley is more formidable than I anticipated. Still, he is a man - flesh and bone - full of secrets. Secrets that I know all about...$B$BYou have served me well, $n. I could use someone of your ability at the Sepulcher. I have a plan to deal with Crowley and his insurgents once and for all. Will you help?', 15595), -- 27099
+(27097, 1, 0, 0, 0, 0, 0, 0, 0, 'I see everything, $n. Through Agatha all is known to me.', 15595), -- 27097
+(27096, 0, 0, 0, 0, 0, 0, 0, 0, '<Sylvanas raises an eyebrow.>$B$BSo the orcs are in order?$B$B<Sylvanas reads the commendation letter.>$B$BRecovered their supplies? Killed a dozen worgen? Toppled an ettin? Freed their soldiers and destroyed the Skitterweb matriarch?$B$BI say this rarely, $n, but I am impressed. Perhaps your ability matches your aspirations. We shall see, for now you will be tested!', 15595), -- 27096
+(27088, 11, 25, 0, 0, 0, 0, 0, 0, '<Apothecary Wormcrud laughs maniacally.>$B$BWas there ever any doubt? An ettin is no match for science!', 15595), -- 27088
+(27094, 5, 1, 66, 0, 0, 0, 0, 0, 'You rescued our orcs and killed the Skitterweb matriarch? We owe you a great debt of gratitude. You\'ve saved us all from certain execution, $n. I\'m sure we can rouse these drunken idiots now.', 15595), -- 27094
+(27093, 0, 0, 0, 0, 0, 0, 0, 0, 'Lok\'tar, $n! Once the ale wears off my orcs will be ready!', 15595), -- 27093
+(27095, 0, 0, 0, 0, 0, 0, 0, 0, 'The root of this evil must be found and destroyed! The Skitterweb matriarch must be nearby. No doubt hiding in the nearby cave!', 15595), -- 27095
+(27082, 5, 1, 0, 0, 0, 0, 0, 0, 'Excellent! Now to prepare the \"meal.\"', 15595), -- 27082
+(27073, 25, 1, 11, 0, 0, 0, 0, 0, 'Looks as if you really gave those worgen a beating and, in the process, lifted the \"shame haze\" they cast over us. Perhaps the sea dogs will quit drinkin\' now.$B$BWho am I kidding?$B$BHah!', 15595), -- 27073
+(27069, 0, 0, 0, 0, 0, 0, 0, 0, 'Within these crates are held STEEL THUNDER! With our weaponry returned we might have a chance to redeem ourselves.', 15595), -- 27069
+(28966, 0, 0, 0, 0, 0, 0, 0, 0, 'Candy buckets like this are located in inns throughout the realms. Go ahead... take some!', 15595), -- 28966
+(27065, 0, 0, 0, 0, 0, 0, 0, 0, 'This fiasco may go down as one of the biggest embarrassments in the history of naval warfare. How did this happen? Drunk happened. That\'s how.', 15595), -- 27065
+(27056, 1, 1, 274, 5, 0, 0, 0, 0, 'Crowley... A gnat. An insect, waiting to be crushed beneath my boot heel.$B$BSo he thinks to rouse the feral worgen of Silverpine? We shall show him and his allies the might of the Forsaken!$B$BBut first we must clean up the mess made by the Warchief\'s fleet. Without their aid we may lose this war.', 15595), -- 27056
+(27045, 5, 1, 0, 0, 0, 0, 0, 0, 'Alas, poor Yorick! I knew her, $n. An assassin of infinite courage...$B$BNow, tell me what\'s going on? What did you and Yorick discover?', 15595), -- 27045
+(27039, 0, 0, 0, 0, 0, 0, 0, 0, 'Belmont gets a little nervous and sends some newbie to look for me? Listen, I\'ve been staking out the old Ivar cottage from inside this outhouse for three days. Your presence threatens the whole damn operation!$B$BThere\'s no time to explain. We have to act now or this mission will be compromised.', 15595), -- 27039
+(26998, 5, 1, 273, 0, 0, 0, 0, 0, 'Potent enough to exterminate a thousand murlocs! I think I\'ll put that on the label. You\'ve done well, $n, and great work around here gets rewarded.', 15595), -- 26998
+(26995, 4, 1, 0, 0, 0, 0, 0, 0, 'Excellent! With these guts and the ferocious doomweed we\'ll be able to test out our new strain of blight. Now to select a suitable target...', 15595), -- 26995
+(26992, 5, 1, 273, 0, 0, 0, 0, 0, 'Agony abounds, friend! The land itself threatens to devour us, and yet we persist. I wonder why that is? With this doomweed and the guts and gore that T\'Veen needs, we might have something suitable to send to the Forsaken front.', 15595), -- 26992
+(26989, 1, 5, 21, 21, 0, 0, 0, 0, '$nnub has returned! And in one piece!$B$BDefender of Silverpine! Redeemer of the Horde! $nnub, your bravery must be rewarded!', 15595), -- 26989
+(26965, 274, 1, 273, 0, 0, 0, 0, 0, 'Well that was unexpected. I am not one to doubt our Warchief, but...$B$BNevermind! We have work to do. I\'m sure the Dark Lady and the Warchief will get this all worked out.', 15595), -- 26965
+(27098, 25, 6, 5, 0, 0, 0, 0, 0, 'Do you now understand the importance of our mission here? Crowley and his Alliance dogs must be stopped!', 15595); -- 27098

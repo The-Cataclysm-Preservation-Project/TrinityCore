@@ -421,6 +421,9 @@ struct npc_silverpine_horde_coffin_hauler : public ScriptedAI
                     me->GetMotionMaster()->MovePath(PATH_FROM_SOUTH_TO_NORTH, false);
                     break;
                 }
+
+                default:
+                    break;
             }
         }
     }
@@ -1040,7 +1043,7 @@ struct npc_silverpine_grand_executor_mortuus : public ScriptedAI
                             agatha->GetMotionMaster()->MovePoint(POINT_AGATHA_PRE_RISE_2, AgathaRisingPos, false, 1.271437f);
                     }
 
-                    _events.ScheduleEvent(EVENT_AGATHA_RAISE_FORSAKEN + 2, 5s);
+                    _events.ScheduleEvent(EVENT_AGATHA_RAISE_FORSAKEN + 2, 6s);
                     break;
                 }
 
@@ -5836,6 +5839,17 @@ private:
     EventMap _events;
 };
 
+Position const LordaeronCancelScenePos = { 498.54f, 1560.2840f, 128.2032f, 1.100281f };
+
+enum ForsakenWarhorsePlayer
+{
+    SPELL_LORDAERON_COMPLETE                = 84185,
+    SPELL_DESPAWN_ALL_SUMMONS_LORDAERON     = 84173,
+    SPELL_FADE_TO_BLACK                     = 89092,
+
+    EVENT_ACTIVATE_SKIP                     = 1
+};
+
 // Forsaken Warhorse (Player) - 45041
 struct npc_silverpine_warhorse_player_lordaeron : public ScriptedAI
 {
@@ -5856,17 +5870,49 @@ struct npc_silverpine_warhorse_player_lordaeron : public ScriptedAI
 
     void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
     {
-        if (apply && passenger->GetTypeId() == TYPEID_PLAYER)
+        if (passenger->GetTypeId() == TYPEID_PLAYER)
         {
-            me->HandleEmoteCommand(EMOTE_ONESHOT_MOUNT_SPECIAL);
+            if (apply)
+            {
+                me->HandleEmoteCommand(EMOTE_ONESHOT_MOUNT_SPECIAL);
 
-            me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+                me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+            }
+            else
+            {
+                if (passenger->ToPlayer()->GetQuestStatus(QUEST_LORDAERON) == QUEST_STATUS_INCOMPLETE)
+                {
+                    passenger->CastSpell(passenger, SPELL_FADE_TO_BLACK, true);
+                    me->CastSpell(passenger, SPELL_LORDAERON_COMPLETE, true);
+
+                    _events.ScheduleEvent(EVENT_ACTIVATE_SKIP, 100ms);
+                }
+            }
         }
     }
 
     void UpdateAI(uint32 diff) override
     {
         _events.Update(diff);
+
+        while (uint32 eventId = _events.ExecuteEvent())
+        {
+            switch (eventId)
+            {
+                case EVENT_ACTIVATE_SKIP:
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        player->NearTeleportTo(LordaeronCancelScenePos, false);
+                        player->CastSpell(player, SPELL_DESPAWN_ALL_SUMMONS_LORDAERON, true);
+                    }
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        }
     }
 
 private:
@@ -5948,9 +5994,6 @@ enum SylvanasWindrunnerLordaeron
 
     SPELL_DREADGUARD_SALUTE_AURA            = 84200,
     SPELL_KILL_ME                           = 84180,
-    SPELL_LORDAERON_COMPLETE                = 84185,
-    SPELL_DESPAWN_ALL_SUMMONS_LORDAERON     = 84173,
-    SPELL_FADE_TO_BLACK                     = 89092,
 
     EVENT_SYLVANAS_RIDE_WARHORSE_LORDAERON  = 1,
     EVENT_SYLVANAS_HEARTSTRIKE_COOLDOWN     = 3,
@@ -6286,7 +6329,10 @@ struct npc_silverpine_sylvanas_lordaeron : public ScriptedAI
                 case EVENT_FINISH_SCENE_LORDAERON + 1:
                 {
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
+                        player->NearTeleportTo(LordaeronCancelScenePos, false);
                         player->CastSpell(player, SPELL_DESPAWN_ALL_SUMMONS_LORDAERON, true);
+                    }
                     break;
                 }
 
