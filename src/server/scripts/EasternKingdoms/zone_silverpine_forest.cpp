@@ -5784,7 +5784,7 @@ enum SylvanasWindrunnerCommandAndSepulcher
     SPELL_APPLY_INVIS_ZONE_4                = 84183,
     SPELL_SUMMON_SYLVANAS_AND_HORSE         = 84128,
     SPELL_SUMMON_FORSAKEN_WARHORSE          = 84164,
-    SPELL_LORDAERON_AURA                    = 84189, // NYI, no idea what it is for
+    SPELL_LORDAERON_AURA                    = 84189, // NYI, after researching thoroughly, nothing seems to point what this SPELL_AURA_DUMMY should do. Maybe it is what forces the player to cast the rest of the spells.
     SPELL_SUMMON_LORDAERON_ACTORS           = 84127,
     SPELL_FLIGHT_OF_THE_VALKYR_FORWARD      = 84695,
 

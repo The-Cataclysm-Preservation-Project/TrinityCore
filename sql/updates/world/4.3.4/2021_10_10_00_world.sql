@@ -3097,10 +3097,12 @@ DELETE FROM `phase_area` WHERE `AreaId`=228 AND `PhaseId`=267;
 INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
 (228, 267, 'The Sepulcher during 27098');
 
-
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=27099 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 2);
+
+ -- Summon Sylvanas + Horse
+UPDATE `spell_target_position` SET `Orientation` = 3.73064 WHERE `ID` = 84128 AND `EffectIndex` BETWEEN 0 AND 1;
 
  -- Forsaken Warhorse (45041)
 UPDATE `creature_template` SET `VehicleId` = 1076, `ScriptName` = 'npc_silverpine_warhorse_player_lordaeron' WHERE `entry` = 45041;
