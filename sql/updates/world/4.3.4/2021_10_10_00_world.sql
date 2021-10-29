@@ -39,9 +39,9 @@ INSERT INTO `vehicle_template_accessory` (`entry`, `accessory_entry`, `seat_id`,
 DELETE FROM `creature_text` WHERE `CreatureID` = 44734;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44734, 0, 0, 'This is one way trip, kid, and you definitely don\'t want to be comin\' back on the other wagon.', 12, 0, 100, 1, 0, 0, 0, 44790, 0, ''),
-(44734, 1, 0, 'ALL ABOARD! Next stop: The Sepulcher.', 14, 0, 100, 1, 0, 0, 0, 44796, 2, ''),
-(44734, 2, 0, 'ALL ABOARD! Last stop: The Forsaken Front!', 14, 0, 100, 1, 0, 0, 0, 44797, 2, ''),
-(44734, 3, 0, 'Final stop, the Forsaken Front! EVERYBODY OUT!', 14, 0, 100, 1, 0, 0, 0, 44788, 2, '');
+(44734, 1, 0, 'ALL ABOARD! Next stop: The Sepulcher.', 14, 0, 100, 1, 0, 0, 0, 44796, 1, ''),
+(44734, 2, 0, 'ALL ABOARD! Last stop: The Forsaken Front!', 14, 0, 100, 1, 0, 0, 0, 44797, 1, ''),
+(44734, 3, 0, 'Final stop, the Forsaken Front! EVERYBODY OUT!', 14, 0, 100, 1, 0, 0, 0, 44788, 1, '');
 
 DELETE FROM `vehicle_seat_addon` WHERE `SeatEntry` IN (8394, 8395, 8396, 8397);
 INSERT INTO `vehicle_seat_addon` (`SeatEntry`, `SeatOffsetX`, `SeatOffsetY`, `SeatOffsetZ`, `SeatOffsetO`, `ExitParamX`, `ExitParamY`, `ExitParamZ`, `ExitParamO`, `ExitParamValue`) VALUES 
