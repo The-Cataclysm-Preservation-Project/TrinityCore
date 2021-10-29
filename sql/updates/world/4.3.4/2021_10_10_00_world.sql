@@ -1904,6 +1904,50 @@ INSERT INTO `areatrigger_scripts` (`entry`, `ScriptName`) VALUES
 UPDATE `gossip_menu_option` SET `OptionNpcflag` = '65536', `OptionType` = '8' WHERE `MenuId` = 12025 AND `OptionIndex` = 0;
 UPDATE `gossip_menu_option` SET `OptionNpcflag` = '128', `OptionType` = '3' WHERE `MenuId` = 12025 AND `OptionIndex` = 1;
 
+DELETE FROM `gossip_menu_option` WHERE `MenuId`= 12025 AND `OptionIndex` = 2;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES 
+(12025, 2, 0, 'Trick or Treat!', 10693, 1, 1, 15595);
+
+DELETE FROM `gossip_menu_option_locale` WHERE `MenuID` = 12025;
+INSERT INTO `gossip_menu_option_locale` (`MenuID`, `OptionID`, `Locale`, `OptionText`, `BoxText`) VALUES 
+(12025, 0, 'koKR', '이 여관을 귀환 장소로 사용합니다.', NULL),
+(12025, 0, 'frFR', 'Faites de cette auberge votre foyer.', NULL),
+(12025, 0, 'deDE', 'Ich möchte dieses Gasthaus zu meinem Heimatort machen.', NULL),
+(12025, 0, 'zhCN', '将这座旅店设为你的家。', NULL),
+(12025, 0, 'zhTW', '將這座旅店設為你的家。', NULL),
+(12025, 0, 'esES', 'Fija tu hogar en esta taberna.', NULL),
+(12025, 0, 'esMX', 'Fija tu hogar en esta taberna.', NULL),
+(12025, 0, 'ruRU', 'Я хочу остановиться здесь.', NULL),
+(12025, 0, 'ptBR', 'Faça desta estalagem seu lar.', NULL),
+(12025, 0, 'itIT', 'Rendi questo luogo la mia dimora.', NULL),
+(12025, 1, 'koKR', '물건을 보고 싶습니다.', NULL),
+(12025, 1, 'frFR', 'Je voudrais regarder vos articles.', NULL),
+(12025, 1, 'deDE', 'Ich sehe mich nur mal um.', NULL),
+(12025, 1, 'zhCN', '我想要看看你卖的货物。', NULL),
+(12025, 1, 'zhTW', '我想要看看你賣的貨物。', NULL),
+(12025, 1, 'esES', 'Quiero ver tus mercancías.', NULL),
+(12025, 1, 'esMX', 'Quiero ver tus mercancías.', NULL),
+(12025, 1, 'ruRU', 'Я хочу посмотреть на ваши товары.', NULL),
+(12025, 1, 'ptBR', 'Deixe-me dar uma olhada nas suas mercadorias.', NULL),
+(12025, 1, 'itIT', 'Fammi vedere la tua merce.', NULL),
+(12025, 2, 'koKR', '사탕 하나 주면 안 잡아먹지!', NULL),
+(12025, 2, 'frFR', 'Des bonbons ou des blagues!', NULL),
+(12025, 2, 'deDE', 'Süßes oder Saures!', NULL),
+(12025, 2, 'zhCN', '没有糖果就捣乱！', NULL),
+(12025, 2, 'zhTW', '不給糖就搗蛋!', NULL),
+(12025, 2, 'esES', '¡Truco o trato!', NULL),
+(12025, 2, 'esMX', '¡Truco o trato!', NULL),
+(12025, 2, 'ruRU', 'Конфета или жизнь!', NULL),
+(12025, 2, 'ptBR', 'Doçura ou travessura!', NULL),
+(12025, 2, 'itIT', 'Dolcetto o scherzetto!', NULL);
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=12025 AND `SourceEntry`=2 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=12 AND `ConditionTarget`=0 AND `ConditionValue1`=12 AND `ConditionValue2`=0 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(15, 12025, 2, 0, 0, 12, 0, 12, 0, 0, 0, 0, 0, '', 'Only show gossip if Hallow\'s End (holiday) is active');
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=12025 AND `SourceEntry`=2 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=1 AND `ConditionTarget`=0 AND `ConditionValue1`=24755 AND `ConditionValue2`=0 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(15, 12025, 2, 0, 0, 1, 0, 24755, 0, 0, 1, 0, 0, '', 'Show gossip option if player doesn\'t have Tricked or Treated');
+
  -- Extracted from https://cata-twinhead.twinstar.cz/?npc=45496, a Cataclysm database on version 15595
 DELETE FROM `npc_vendor` WHERE `entry` = 45496;
 INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `type`, `PlayerConditionID`, `VerifiedBuild`) VALUES 
@@ -1923,7 +1967,9 @@ SET @ENTRY := 45496;
 DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 0;
 UPDATE `creature_template` SET `AIName` = "SmartAI", `ScriptName` = "" WHERE `entry` = @ENTRY;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
-(@ENTRY, 0, 0, 0, 1, 0, 100, 0, 1000, 2000, 65000, 75000, 80, 32192200, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 65 - 75 seconds (1 - 2s initially) (OOC) - Self: Start timed action list id #32192200 (update out of combat)");
+(@ENTRY, 0, 0, 0, 1, 0, 100, 0, 1000, 2000, 65000, 75000, 80, 32192200, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Every 65 - 75 seconds (1 - 2s initially) (OOC) - Self: Start timed action list id #32192200 (update out of combat)"),
+(@ENTRY, 0, 0, 1, 62, 0, 100, 0, 12025, 2, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 2 from menu 12025 selected - Gossip player: Close gossip'),
+(@ENTRY, 0, 1, 2, 61, 0, 100, 0, 0, 0, 0, 0, 85, 24751, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 2 from menu 12025 selected - Gossip player: Cast spell Trick or Treat (24751) on self');
 
 SET @ENTRY := 32192200;
 DELETE FROM `smart_scripts` WHERE `entryOrGuid` = @ENTRY AND `source_type` = 9;
@@ -3528,6 +3574,100 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=14 AND `SourceGroup`=4608 AND `SourceEntry`=5720 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=15 AND `ConditionTarget`=0 AND `ConditionValue1`=1279 AND `ConditionValue2`=0 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
 (14, 4608, 5720, 0, 0, 15, 0, 1279, 0, 0, 0, 0, 0, '', 'Show gossip text if player is not a Warlock');
+
+ -- Innkeeper Bates
+UPDATE `creature_template` SET `AIName` = 'SmartAI', `ScriptName` = '' WHERE `entry` = 6739;
+
+UPDATE `conditions` SET `Comment` = 'Only show gossip if Hallow\'s End (holiday) is active' WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = 348 AND `SourceEntry` = 2 AND `ConditionTypeOrReference` = 12;
+UPDATE `conditions` SET `Comment` = 'Show gossip option if player doesn\'t have Tricked or Treated' WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = 348 AND `SourceEntry` = 2 AND `ConditionTypeOrReference` = 1;
+
+DELETE FROM `gossip_menu_option_locale` WHERE `MenuID` = 348;
+INSERT INTO `gossip_menu_option_locale` (`MenuID`, `OptionID`, `Locale`, `OptionText`, `BoxText`) VALUES 
+(348, 0, 'koKR', '이 여관을 귀환 장소로 사용합니다.', NULL),
+(348, 0, 'frFR', 'Faites de cette auberge votre foyer.', NULL),
+(348, 0, 'deDE', 'Ich möchte dieses Gasthaus zu meinem Heimatort machen.', NULL),
+(348, 0, 'zhCN', '将这座旅店设为你的家。', NULL),
+(348, 0, 'zhTW', '將這座旅店設為你的家。', NULL),
+(348, 0, 'esES', 'Fija tu hogar en esta taberna.', NULL),
+(348, 0, 'esMX', 'Fija tu hogar en esta taberna.', NULL),
+(348, 0, 'ruRU', 'Я хочу остановиться здесь.', NULL),
+(348, 0, 'ptBR', 'Faça desta estalagem seu lar.', NULL),
+(348, 0, 'itIT', 'Rendi questo luogo la mia dimora.', NULL),
+(348, 1, 'koKR', '물건을 보고 싶습니다.', NULL),
+(348, 1, 'frFR', 'Je voudrais regarder vos articles.', NULL),
+(348, 1, 'deDE', 'Ich sehe mich nur mal um.', NULL),
+(348, 1, 'zhCN', '我想要看看你卖的货物。', NULL),
+(348, 1, 'zhTW', '我想要看看你賣的貨物。', NULL),
+(348, 1, 'esES', 'Quiero ver tus mercancías.', NULL),
+(348, 1, 'esMX', 'Quiero ver tus mercancías.', NULL),
+(348, 1, 'ruRU', 'Я хочу посмотреть на ваши товары.', NULL),
+(348, 1, 'ptBR', 'Deixe-me dar uma olhada nas suas mercadorias.', NULL),
+(348, 1, 'itIT', 'Fammi vedere la tua merce.', NULL),
+(348, 2, 'koKR', '사탕 하나 주면 안 잡아먹지!', NULL),
+(348, 2, 'frFR', 'Des bonbons ou des blagues!', NULL),
+(348, 2, 'deDE', 'Süßes oder Saures!', NULL),
+(348, 2, 'zhCN', '没有糖果就捣乱！', NULL),
+(348, 2, 'zhTW', '不給糖就搗蛋!', NULL),
+(348, 2, 'esES', '¡Truco o trato!', NULL),
+(348, 2, 'esMX', '¡Truco o trato!', NULL),
+(348, 2, 'ruRU', 'Конфета или жизнь!', NULL),
+(348, 2, 'ptBR', 'Doçura ou travessura!', NULL),
+(348, 2, 'itIT', 'Dolcetto o scherzetto!', NULL);
+
+DELETE FROM `smart_scripts` WHERE `source_type` = 0 AND `entryOrGuid` = 6739;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(6739, 0, 0, 1, 62, 0, 100, 0, 348, 2, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 2 from menu 348 selected - Gossip player: Close gossip'),
+(6739, 0, 1, 0, 61, 0, 100, 0, 0, 0, 0, 0, 85, 24751, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 2 from menu 348 selected - Gossip player: Cast spell Trick or Treat (24751) on self');
+
+ -- Innkeeper Renee
+UPDATE `creature_template` SET `AIName` = 'SmartAI', `ScriptName` = '' WHERE `entry` = 5688;
+
+DELETE FROM `gossip_menu_option` WHERE `MenuId`=1296 AND `OptionIndex`=3;
+INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES 
+(1296, 3, 0, 'Trick or Treat!', 10693, 1, 1, 15595);
+
+DELETE FROM `gossip_menu_option_action` WHERE `MenuId` = 1296 AND `OptionIndex` = 3;
+
+DELETE FROM `gossip_menu_option_locale` WHERE `MenuID` = 348;
+INSERT INTO `gossip_menu_option_locale` (`MenuID`, `OptionID`, `Locale`, `OptionText`, `BoxText`) VALUES 
+(1296, 1, 'koKR', '이 여관을 귀환 장소로 사용합니다.', NULL),
+(1296, 1, 'frFR', 'Faites de cette auberge votre foyer.', NULL),
+(1296, 1, 'deDE', 'Ich möchte dieses Gasthaus zu meinem Heimatort machen.', NULL),
+(1296, 1, 'zhCN', '将这座旅店设为你的家。', NULL),
+(1296, 1, 'zhTW', '將這座旅店設為你的家。', NULL),
+(1296, 1, 'esES', 'Fija tu hogar en esta taberna.', NULL),
+(1296, 1, 'esMX', 'Fija tu hogar en esta taberna.', NULL),
+(1296, 1, 'ruRU', 'Я хочу остановиться здесь.', NULL),
+(1296, 1, 'ptBR', 'Faça desta estalagem seu lar.', NULL),
+(1296, 1, 'itIT', 'Rendi questo luogo la mia dimora.', NULL),
+(1296, 2, 'koKR', '물건을 보고 싶습니다.', NULL),
+(1296, 2, 'frFR', 'Je voudrais regarder vos articles.', NULL),
+(1296, 2, 'deDE', 'Ich sehe mich nur mal um.', NULL),
+(1296, 2, 'zhCN', '我想要看看你卖的货物。', NULL),
+(1296, 2, 'zhTW', '我想要看看你賣的貨物。', NULL),
+(1296, 2, 'esES', 'Quiero ver tus mercancías.', NULL),
+(1296, 2, 'esMX', 'Quiero ver tus mercancías.', NULL),
+(1296, 2, 'ruRU', 'Я хочу посмотреть на ваши товары.', NULL),
+(1296, 2, 'ptBR', 'Deixe-me dar uma olhada nas suas mercadorias.', NULL),
+(1296, 2, 'itIT', 'Fammi vedere la tua merce.', NULL),
+(1296, 3, 'koKR', '사탕 하나 주면 안 잡아먹지!', NULL),
+(1296, 3, 'frFR', 'Des bonbons ou des blagues!', NULL),
+(1296, 3, 'deDE', 'Süßes oder Saures!', NULL),
+(1296, 3, 'zhCN', '没有糖果就捣乱！', NULL),
+(1296, 3, 'zhTW', '不給糖就搗蛋!', NULL),
+(1296, 3, 'esES', '¡Truco o trato!', NULL),
+(1296, 3, 'esMX', '¡Truco o trato!', NULL),
+(1296, 3, 'ruRU', 'Конфета или жизнь!', NULL),
+(1296, 3, 'ptBR', 'Doçura ou travessura!', NULL),
+(1296, 3, 'itIT', 'Dolcetto o scherzetto!', NULL);
+
+UPDATE `conditions` SET `SourceEntry` = 3, `Comment` = 'Only show gossip if Hallow\'s End (holiday) is active' WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = 1296 AND `SourceEntry` = 0 AND `ConditionTypeOrReference` = 12;
+UPDATE `conditions` SET `SourceEntry` = 3, `Comment` = 'Show gossip option if player doesn\'t have Tricked or Treated' WHERE `SourceTypeOrReferenceId` = 15 AND `SourceGroup` = 1296 AND `SourceEntry` = 0 AND `ConditionTypeOrReference` = 1;
+
+DELETE FROM `smart_scripts` WHERE `source_type` = 0 AND `entryOrGuid` = 5688;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(5688, 0, 0, 1, 62, 0, 100, 0, 1296, 3, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 3 from menu 1296 selected - Gossip player: Close gossip'),
+(5688, 0, 1, 0, 61, 0, 100, 0, 0, 0, 0, 0, 85, 24751, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 3 from menu 1296 selected - Gossip player: Cast spell Trick or Treat (24751) on self');
 
  --
  -- Quests
