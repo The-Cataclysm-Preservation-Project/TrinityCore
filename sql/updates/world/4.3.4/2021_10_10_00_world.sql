@@ -3628,7 +3628,7 @@ INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `Option
 
 DELETE FROM `gossip_menu_option_action` WHERE `MenuId` = 1296 AND `OptionIndex` = 3;
 
-DELETE FROM `gossip_menu_option_locale` WHERE `MenuID` = 348;
+DELETE FROM `gossip_menu_option_locale` WHERE `MenuID` = 1296;
 INSERT INTO `gossip_menu_option_locale` (`MenuID`, `OptionID`, `Locale`, `OptionText`, `BoxText`) VALUES 
 (1296, 1, 'koKR', '이 여관을 귀환 장소로 사용합니다.', NULL),
 (1296, 1, 'frFR', 'Faites de cette auberge votre foyer.', NULL),
@@ -3679,7 +3679,6 @@ UPDATE `quest_template_addon` SET `NextQuestID` = 26964 WHERE `ID` = 25012;
  -- Warchief's Command: Silverpine Forest!
 UPDATE `quest_template_addon` SET `PrevQuestID` = 25012, `NextQuestID` = 26965 WHERE `ID` = 26964;
  -- Warchief's Command: Silverpine Forest!
-UPDATE `quest_template` SET `QuestType` = 2 WHERE `ID` = 28568;
 UPDATE `quest_template_addon` SET `NextQuestID` = 26965, `BreadcrumbForQuestId` = 26964 WHERE `ID` = 28568;
 
  -- The Warchief Cometh
