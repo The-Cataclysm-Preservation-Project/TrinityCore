@@ -786,7 +786,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (3221320, 13, 1348.21000, 715.925, 35.11083, NULL, 2.509363, 0, 1, 1, 0, 0, 0);
 
  -- Forsaken Trooper (44792)
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44791;
+UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_forsaken_trooper'  WHERE `entry` = 44792;
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44792;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
@@ -1036,6 +1036,8 @@ INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`,
  --
  
  -- Garrosh Hellscream
+UPDATE `broadcast_text` SET `Text` = 'Remember, Sylvanas, eventually we all have to stand before our maker and face judgment. Your day may come sooner than others...' WHERE `ID` = 44721;
+
 DELETE FROM `creature_text` WHERE `CreatureID` = 44629;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44629, 0, 0, 'This better be important, Sylvanas. You know how I detest this place and its foul stench. Why have you called for me?', 12, 0, 100, 0, 0, 20496, 0, 44699, 0, 'VO_QE_Garrosh_SPEvent01'),
@@ -1047,7 +1049,7 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44629, 6, 0, 'Watch your clever mouth, bitch.', 12, 0, 100, 397, 0, 20502, 0, 44719, 0, 'VO_QE_Garrosh_SPEvent07'),
 (44629, 7, 0, 'Cromush, you stay behind and make sure the Banshee Queen is well "guarded." I will be expecting a full report when next we meet.', 12, 0, 100, 0, 0, 20503, 0, 44720, 0, 'VO_QE_Garrosh_SPEvent08'),
 (44629, 8, 0, 'Remember, Sylvanas, eventually we all have to stand before our maker and face judgment. Your day may come sooner than others...', 12, 0, 100, 0, 0, 20504, 0, 44721, 0, 'VO_QE_Garrosh_SPEvent09');
- 
+
 DELETE FROM `waypoint_data` WHERE `id` = 446290;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
 (446290, 0, 1377.69, 1048.67, 53.4456, NULL, 2.51503, 0, 1, 0, 0, 0, 0),
@@ -1111,11 +1113,15 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spe
  -- Detect: Quest Invis Zone 3
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=26964 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83989, 5369, 26964, 27097, 0, 0, 2, 3, 74, 1);
+(83989, 5369, 26964, 27097, 0, 0, 2, 3, 66, 1);
 
 DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=28568 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83989, 5369, 28568, 27097, 0, 0, 2, 3, 74, 1);
+(83989, 5369, 28568, 27097, 0, 0, 2, 3, 66, 1);
+
+DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=27099 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 1);
 
  -- Dark Ranger
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44632;
@@ -1253,26 +1259,34 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (3990020, 20, 1355.2781, 1042.5553, 52.781837, NULL, 2.50065, 0, 1, 0, 0, 0, 0);
 
  -- Bat Handler Maggotbreath
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_bat_handler_maggotbreath'  WHERE `entry` = 44825;
+UPDATE `creature_template` SET `AIName` = 'SmartAI', `ScriptName` = '' WHERE `entry` = 44825;
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+3;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
 (@CGUID+3, 44825, 0, 0, 0, 1, 0, 1, 264, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
 
-DELETE FROM `gossip_menu_option` WHERE `MenuId`= 6944 AND `OptionIndex`=1;
+DELETE FROM `gossip_menu_option` WHERE `MenuId`= 6944 AND `OptionIndex` = 1;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES
 (6944, 1, 2, 'I need to take a bat to the Dawning Isles.', 0, 1, 1, 15595);
-
-UPDATE `gossip_menu_option` SET `OptionNpcflag`= 2 WHERE `MenuId` = 11901;
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=6944 AND `SourceEntry`=1 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=26998 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
 (15, 6944, 1, 0, 0, 47, 0, 26998, 8, 0, 0, 0, 0, '', 'Bat Handler Maggotbreath - Show gossip if quest 26998 is active');
 
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId` = 22 AND `SourceEntry` = 44825 AND `SourceId` = 0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `Comment`) VALUES
+(22, 1, 44825, 0, 0, 9, 0, 26998, 0, 0, 0, 'Action invoker has quest Iterating Upon Success (26998) active');
+
 DELETE FROM `creature_text` WHERE `CreatureID` = 44825;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44825, 0, 0, 'You better bring that bat back in one piece, $n!', 12, 0, 100, 25, 0, 0, 0, 44906, 0, '');
  
+DELETE FROM `smart_scripts` WHERE `source_type` = 0 AND `entryOrGuid` = 44825;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(44825, 0, 0, 1, 62, 0, 100, 0, 6944, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 1 from menu 6944 selected - Self: Talk 0 to invoker'),
+(44825, 0, 1, 2, 61, 0, 100, 0, 0, 0, 0, 0, 134, 83584, 2, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 1 from menu 6944 selected - Gossip player: Cast spell Summon Forsaken Bat (83584) with flags triggered on Gossip player'),
+(44825, 0, 2, 0, 61, 0, 100, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 1 from menu 6944 selected - Gossip player: Close gossip');
+
  -- Deathstalker Commander Belmont
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_deathstalker' WHERE `entry` = 44789;
 
@@ -1306,6 +1320,20 @@ DELETE FROM `creature_queststarter` WHERE `id` = 44784 AND `quest` IN (26995, 26
 INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
 (44784, 26995),
 (44784, 26998);
+
+ -- Apothecary Chase
+DELETE FROM `creature` WHERE `guid` = @CGUID+106;
+INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
+(@CGUID+106, 45489, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1413.72, 1104.02, 60.561733, 2.757620096206665039, 120, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0);
+
+DELETE FROM `creature_addon` WHERE `guid`= @CGUID+106;
+INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
+(@CGUID+106, 0, 0, 0, 0, 4097, 133, 0, 0, 0, 0, '');
+
+  -- Extracted from https://cata-twinhead.twinstar.cz/?npc=45489, a Cataclysm database on version 15595
+DELETE FROM `npc_vendor` WHERE `entry` = 45489;
+INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `type`, `PlayerConditionID`, `VerifiedBuild`) VALUES 
+(45489, 1, 3371, 0, 0, 0, 1, 0, 15595);
 
  -- Dark Ranger
 DELETE FROM `creature` WHERE `guid`= @CGUID+8;
@@ -1505,6 +1533,10 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
  -- Forsaken Bat
 UPDATE `creature_template` SET `VehicleId` = 1051, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
 
+DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44821;
+INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
+(44821, 1, 0, 1, 0, 0, NULL);
+
 DELETE FROM `creature_text` WHERE `CreatureID`=44821 AND `ID`=0 AND `GroupID` BETWEEN 0 AND 1;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44821, 0, 0, 'Eliminate all murlocs by using the Blight Concoction!$B$B|r|TInterface\\\\Icons\\\\INV_ALCHEMY_POTION_05.BLP:24|t', 42, 1, 100, 0, 0, 0, 0, 44902, 0, 'Forsaken Bat to Player'),
@@ -1560,7 +1592,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448211, 30, 1167.09, 438.865, 58.4857, NULL, 17.982668, 0, 1, 1, 0, 0, 0),
 (448211, 31, 1197.37, 451.757, 64.569, NULL, 17.982668, 0, 0, 1, 0, 0, 0);
 
-DELETE FROM `waypoint_data` WHERE `id`=448212;
+DELETE FROM `waypoint_data` WHERE `id` = 448212;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES
 (448212, 0, 931.068, 352.101, 81.027, NULL, 35.78791, 0, 1, 1, 0, 0, 0),
 (448212, 1, 952.535, 571.493, 108.303, NULL, 35.78791, 0, 1, 1, 0, 0, 0),
@@ -1610,13 +1642,13 @@ INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Fligh
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+39 AND @CGUID+68;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+39, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.57, 1036.9, 50.998, 0.20944, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+40, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.08, 1034.98, 50.8489, 0.890118, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+41, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1375.2, 1038.58, 51.2451, 4.55531, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+42, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.14, 1036.35, 50.9217, 5.53269, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+43, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1370.66, 1030.82, 51.134, 0.890118, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+44, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.35, 1031.58, 50.6189, 0.959931, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+45, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+39, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.57, 1036.9, 50.998, 0.20944, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+40, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.08, 1034.98, 50.8489, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+41, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1375.2, 1038.58, 51.2451, 4.55531, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+42, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.14, 1036.35, 50.9217, 5.53269, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+43, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1370.66, 1030.82, 51.134, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+44, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.35, 1031.58, 50.6189, 0.959931, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+45, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
 (@CGUID+46, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1370.66, 1030.82, 51.0504, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+47, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.08, 1034.98, 50.7657, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+48, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1374.14, 1036.35, 50.8385, 5.53269, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
@@ -1624,14 +1656,14 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 (@CGUID+50, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.57, 1036.9, 50.9154, 0.20944, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+51, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+52, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1373.35, 1031.58, 50.5358, 0.959931, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+53, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.71, 1040.19, 51.0212, 5.58505, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+54, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1367.33, 1035.38, 51.304, 0.890118, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+55, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.98, 1041.06, 51.381, 0.226893, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+56, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.58, 1038.07, 50.9666, 0.890118, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+57, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.65, 1033.67, 50.9668, 0.698132, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+58, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.43, 1034.25, 50.7297, 3.06611, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+59, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.36, 1033.41, 50.5956, 0.607811, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+60, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.17, 1028.72, 50.9252, 1.03193, 42, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+53, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.71, 1040.19, 51.0212, 5.58505, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+54, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1367.33, 1035.38, 51.304, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+55, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.98, 1041.06, 51.381, 0.226893, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+56, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.58, 1038.07, 50.9666, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+57, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.65, 1033.67, 50.9668, 0.698132, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+58, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.43, 1034.25, 50.7297, 3.06611, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+59, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.36, 1033.41, 50.5956, 0.607811, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
+(@CGUID+60, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.17, 1028.72, 50.9252, 1.03193, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
 (@CGUID+61, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.98, 1041.06, 51.2977, 0.226893, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+62, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.71, 1040.19, 50.9381, 5.58505, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
 (@CGUID+63, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.58, 1038.07, 50.883, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
@@ -1670,7 +1702,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+70;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+70, 0, 0, 0, 0, 4097, 133, 0, 0, 0, 0, NULL);
+(@CGUID+70, 0, 0, 0, 0, 4097, 133, 0, 0, 0, 0, '');
 
 DELETE FROM `creature_template_addon` WHERE `entry` IN (44608, 44609, 44610, 44615, 44592, 44593, 44825, 44821, 44882, 44893, 44894, 44884, 44883, 44632, 44764, 44731);
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
@@ -2414,8 +2446,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 (@CGUID+90, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1417.66, 1941.61, 9.8029, 0.46687, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0);
 
  -- Skitterweb Lurker
-UPDATE `creature` SET `MovementType`= 1 WHERE `id` = 1781;
-UPDATE `creature` SET `spawndist`= 10 WHERE `id` = 1781;
+UPDATE `creature` SET `spawndist`= 10, `MovementType`= 1 WHERE `id` = 1781;
 
  --
  -- Fenris Isle
@@ -2449,46 +2480,39 @@ INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry
 (26, 266, 235, 0, 0, 47, 0, 27097, 64, 0, 0, 0, 0, '', 'Fenris Keep - Add phase 266 - 27097 rewarded');
 
   -- Vile Fin Oracle
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1908;
+DELETE FROM `creature_template_movement` WHERE `CreatureId` = 1908;
+INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
+(1908, 1, 1, 0, 0, 2, NULL);
 
-UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1908;
+UPDATE `creature` SET `MovementType` = 1, `spawndist` = 10 WHERE `id` = 1908;
 
  -- Vile Fin Tidehunter
-UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_vilefine_murlocks'  WHERE `entry` = 1768;
+DELETE FROM `creature_template_movement` WHERE `CreatureId` = 1768;
+INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
+(1768, 1, 1, 0, 0, 2, NULL);
 
-UPDATE `creature` SET `MovementType`= 1, `spawndist`= 10 WHERE `id` = 1768;
+UPDATE `creature` SET `MovementType` = 1, `spawndist` = 10 WHERE `id` = 1768;
+
+ -- Despawn All Summons
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84011 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=0 AND `ConditionTarget`=0 AND `ConditionValue1`=0 AND `ConditionValue2`=0 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 84011, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 'Despawn All Summons - Target caster');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=84011 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44951 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 1, 84011, 0, 0, 31, 0, 3, 44951, 0, 0, 0, 0, '', 'Despawn All Summons - Target Agatha');
 
  -- Bond of the Val'kyr
-DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=5369 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83979, 5369, 27097, 27098, 0, 0, 2, 3, 74, 1);
-
-DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=130 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83979, 130, 27097, 27098, 0, 0, 2, 3, 74, 1);
-
-DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=927 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83979, 927, 27097, 27098, 0, 0, 2, 3, 74, 1);
-
-DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=1338 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83979, 1338, 27097, 27098, 0, 0, 2, 3, 74, 1);
-
-DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=172 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83979, 172, 27097, 27098, 0, 0, 2, 3, 74, 1);
-
-DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=235 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83979, 235, 27097, 27098, 0, 0, 2, 3, 74, 1);
-
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83979 AND `ScriptName` = 'spell_silverpine_bond_of_the_valkyr';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83979, 'spell_silverpine_bond_of_the_valkyr');
- 
+
+DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=5369 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83979, 5369, 27097, 27099, 0, 0, 2, 3, 74, 11);
+
  -- Agatha (44951)
-UPDATE `creature_template` SET `unit_class` = 2, `VehicleId` = 1109, `HoverHeight` = 2.20000004768371582, `ScriptName` = 'npc_silverpine_agatha_fenris' WHERE `entry` = 44951;
+UPDATE `creature_template` SET `unit_class` = 2, unit_flags = 8, `VehicleId` = 1109, `HoverHeight` = 2.20000004768371582, `ScriptName` = 'npc_silverpine_agatha_fenris' WHERE `entry` = 44951;
 
 DELETE FROM `creature_template_addon` WHERE `entry` = 44951;
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 

@@ -1589,7 +1589,7 @@ struct npc_silverpine_fallen_human : public ScriptedAI
                 {
                     me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
 
-                    me->DespawnOrUnsummon(35s);
+                    me->DespawnOrUnsummon(80s);
                     break;
                 }
 
@@ -1604,52 +1604,10 @@ private:
     bool _transformDone;
 };
 
-enum BatHandlerMaggotbreath
+enum ForsakenBat
 {
     QUEST_ITERATING_UPON_SUCCESS            = 26998,
 
-    SPELL_SUMMON_BAT                        = 83584,
-
-    ACTION_OPTION_ID                        = 1,
-
-    TALK_MAGGOTBREATH                       = 0
-};
-
-// Bat Handler Maggotbreath - 44825
-struct npc_silverpine_bat_handler_maggotbreath : public ScriptedAI
-{
-    npc_silverpine_bat_handler_maggotbreath(Creature* creature) : ScriptedAI(creature) { }
-
-    bool GossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
-    {
-        switch (gossipListId)
-        {
-            case ACTION_OPTION_ID:
-            {
-                if (player->GetQuestStatus(QUEST_ITERATING_UPON_SUCCESS) == QUEST_STATUS_INCOMPLETE)
-                {
-                    player->CastSpell(player, SPELL_SUMMON_BAT);
-
-                    me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-
-                    Talk(TALK_MAGGOTBREATH);
-
-                    CloseGossipMenuFor(player);
-                }
-
-                break;
-            }
-
-            default:
-                break;
-        }
-
-        return false;
-    }
-};
-
-enum ForsakenBat
-{
     NPC_VILE_FIN_ORACLE                     = 1908,
     NPC_BAT_HANDLER_MAGGOTBREATH            = 44825,
     NPC_FORSAKEN_BAT                        = 44821,
@@ -1711,9 +1669,6 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                 if (player->GetQuestStatus(QUEST_ITERATING_UPON_SUCCESS) == QUEST_STATUS_INCOMPLETE)
                 {
                     player->KilledMonsterCredit(NPC_BAT_HANDLER_MAGGOTBREATH);
-
-                    me->SetCanFly(true);
-                    me->SetDisableGravity(true);
 
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
@@ -1786,6 +1741,8 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                     {
                         _goingHome = true;
+
+                        me->PauseMovement();
 
                         me->GetMotionMaster()->Clear();
 
@@ -1865,31 +1822,6 @@ class spell_silverpine_go_home : public SpellScript
     {
         OnEffectHitTarget.Register(&spell_silverpine_go_home::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
-};
-
-// Vile Fin Tidehunter - 1768, Vile Fin Oracle - 1908
-struct npc_silverpine_vilefine_murlocks : public ScriptedAI
-{
-    npc_silverpine_vilefine_murlocks(Creature* creature) : ScriptedAI(creature)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        if (!me->IsInCombat())
-            me->SetSpeed(UnitMoveType::MOVE_WALK, 7.4f);
-        else
-            me->SetSpeed(UnitMoveType::MOVE_WALK, 1.4f);
-    }
-
-    void UpdateAI(uint32 diff) override
-    {
-        _events.Update(diff);
-    }
-
-private:
-    EventMap _events;
 };
 
 // Deathstalker - 44789, 44790
@@ -4324,7 +4256,7 @@ private:
 
 enum BondoftheValkyr
 {
-    SPELL_SUMMON_AGATHA_FENRIS              = 83982,
+    SPELL_SUMMON_AGATHA_FENRIS              = 83982
 };
 
 // Bond of the Val'kyr - 83979
@@ -4332,10 +4264,7 @@ class spell_silverpine_bond_of_the_valkyr : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        return ValidateSpellInfo(
-            {
-                SPELL_SUMMON_AGATHA_FENRIS
-            });
+        return ValidateSpellInfo ({ SPELL_SUMMON_AGATHA_FENRIS });
     }
 
     void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
@@ -4344,9 +4273,16 @@ class spell_silverpine_bond_of_the_valkyr : public AuraScript
             caster->CastSpell(caster, SPELL_SUMMON_AGATHA_FENRIS, true);
     }
 
+    void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
+            caster->RemoveAura(SPELL_SUMMON_AGATHA_FENRIS);
+    }
+
     void Register() override
     {
         AfterEffectApply.Register(&spell_silverpine_bond_of_the_valkyr::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove.Register(&spell_silverpine_bond_of_the_valkyr::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -4357,6 +4293,8 @@ enum AgathaFenris
     NPC_AGATHA_FENRIS                       = 44951,
 
     SPELL_BOND_OF_THE_VALKYR                = 83979,
+    SPELL_DESPAWN_ALL_SUMMONS_AGATHA        = 84011,
+    SPELL_MARK_MASTER_AS_DESUMMONED         = 80929,
     SPELL_AGATHA_BROADCAST                  = 83978,
     SPELL_DOOMHOWL                          = 84012,
     SPELL_UNHOLY_DARKNESS                   = 84013,
@@ -4404,39 +4342,13 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
 
     void JustAppeared() override
     {
-        me->GetMotionMaster()->Clear();
-
-        if (me->GetOwner()->GetGuardianPet())
-            me->GetMotionMaster()->MoveFollow(me->GetOwner(), DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI * 1.5f, false, true, false);
-        else
-            me->GetMotionMaster()->MoveFollow(me->GetOwner(), DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
-    }
-
-    void IsSummonedBy(Unit* summoner) override
-    {
-        _playerGUID = summoner->GetGUID();
-
         me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
 
         _events.ScheduleEvent(EVENT_AGATHA_CHECK_PLAYER, 1s);
-    }
-
-    void Reset() override
-    {
-        _events.CancelEvent(EVENT_UNHOLY_SMITE);
-        _events.CancelEvent(EVENT_DOOMHOWL);
-
-        _targetGUID.Clear();
 
         me->GetMotionMaster()->Clear();
 
-        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-        {
-            if (player->GetGuardianPet())
-                me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI * 1.5f, false, true, false);
-            else
-                me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
-        }
+        me->GetMotionMaster()->MoveFollow(me->GetOwner(), DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
     }
 
     void SpellHit(Unit* /*caster*/, SpellInfo const* spell) override
@@ -4453,7 +4365,7 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
             case SPELL_GENERAL_TRIGGER_84114:
             {
                 if (!_sceneStarted)
-                    SetForQuest27099();
+                    SetEventNoEscape();
                 break;
             }
 
@@ -4476,6 +4388,18 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                 break;
             }
 
+            case SPELL_DESPAWN_ALL_SUMMONS_AGATHA:
+            {
+                DoCastSelf(SPELL_MARK_MASTER_AS_DESUMMONED);
+                break;
+            }
+
+            case SPELL_MARK_MASTER_AS_DESUMMONED:
+            {
+                me->DespawnOrUnsummon();
+                break;
+            }
+
             default:
                 break;
         }
@@ -4487,34 +4411,41 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
             _events.ScheduleEvent(EVENT_FLEE_FROM_FENRIS + 3, 100ms);
     }
 
-    void DamageTaken(Unit* attacker, uint32& /*damage*/) override
+    void Reset() override
     {
-        if (attacker->GetGUID() != _targetGUID)
-        {
-            if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-            {
-                if (Unit* unit = player->GetVictim())
-                {
-                    if (unit->GetGUID() != _targetGUID)
-                        JustEnteredCombat(unit);
-                }
-            }
-        }
+        _events.CancelEvent(EVENT_UNHOLY_SMITE);
+        _events.CancelEvent(EVENT_DOOMHOWL);
+
+        me->GetMotionMaster()->Clear();
+
+        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+            me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
     }
 
-    void JustEngagedWith(Unit* who) override
+    void JustEngagedWith(Unit* /*who*/) override
     {
-        _targetGUID = who->GetGUID();
-
         _events.ScheduleEvent(EVENT_UNHOLY_SMITE, 500ms);
         _events.ScheduleEvent(EVENT_DOOMHOWL, 2s, 3s);
     }
 
     void UpdateAI(uint32 diff) override
     {
+        if (!me->GetOwner())
+        {
+            if (Player* player = me->SelectNearestPlayer(5.0f))
+            {
+                if (player->HasAura(SPELL_BOND_OF_THE_VALKYR))
+                    player->RemoveAura(SPELL_BOND_OF_THE_VALKYR);
+
+                player->CastSpell(player, SPELL_BOND_OF_THE_VALKYR, true);
+
+                me->DespawnOrUnsummon();
+            }
+        }
+
         if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
         {
-            if (!player->HasAura(SPELL_BOND_OF_THE_VALKYR))
+            if (!player->HasAura(SPELL_SUMMON_AGATHA_FENRIS) || !player->IsInWorld())
                 me->DespawnOrUnsummon();
         }
 
@@ -4537,21 +4468,6 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                                 _healCD = true;
 
                                 _events.ScheduleEvent(EVENT_UNHOLY_DARKNESS_COOLDOWN, 8s);
-                            }
-
-                            if (Unit* unit = player->GetVictim())
-                            {
-                                if (unit->GetGUID() != _targetGUID)
-                                    JustEnteredCombat(unit);
-                            }
-
-                            else if (player->IsInCombat())
-                            {
-                                if (Unit* unit = player->GetSelectedUnit())
-                                {
-                                    if (unit->GetGUID() != _targetGUID)
-                                        JustEnteredCombat(unit);
-                                }
                             }
                         }
                     }
@@ -4621,15 +4537,9 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
 
                         _sceneStarted = false;
 
-                        me->SetDisableGravity(false);
-                        me->SetCanFly(false);
-
                         me->GetMotionMaster()->Clear();
 
-                        if (player->GetGuardianPet())
-                            me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI * 1.5f, false, true, false);
-                        else
-                            me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
+                        me->GetMotionMaster()->MoveFollow(player, DEFAULT_FOLLOW_DISTANCE_PET, (float)M_PI / 2.0f, false, true, false);
 
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
                         me->SetReactState(REACT_ASSIST);
@@ -4646,7 +4556,7 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 
-    void SetForQuest27099()
+    void SetEventNoEscape()
     {
         _sceneStarted = true;
 
@@ -4657,13 +4567,13 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
 
         me->GetMotionMaster()->MovePoint(POINT_AGATHA_BACK_FRONTYARD, AgathaBackFrontyardPos);
 
-        Talk(TALK_AGATHA_PRE_EVENT);
+        if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+            Talk(TALK_AGATHA_PRE_EVENT, player);
     }
 
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
-    ObjectGuid _targetGUID;
     bool _healCD;
     bool _sceneStarted;
 };
@@ -4690,7 +4600,7 @@ class spell_silverpine_notify_agatha : public SpellScript
                 if (agatha->GetOwner() == target)
                 {
                     if (agatha->IsAIEnabled())
-                        agatha->CastSpell(caster, SPELL_RISE_FORSAKEN_FENRIS, false);
+                        agatha->CastSpell(caster, SPELL_RISE_FORSAKEN_FENRIS, true);
 
                     if (Player* player = ObjectAccessor::GetPlayer(*target, _ownerGUID))
                     {
@@ -6711,10 +6621,8 @@ void AddSC_silverpine_forest()
     RegisterCreatureAI(npc_silverpine_fallen_human);
     RegisterSpellScript(spell_silverpine_forsaken_trooper_masterscript_high_command);
     RegisterSpellAndAuraScriptPair(spell_silverpine_raise_forsaken_83173, spell_silverpine_raise_forsaken_83173_aura);
-    RegisterCreatureAI(npc_silverpine_bat_handler_maggotbreath);
     RegisterCreatureAI(npc_silverpine_forsaken_bat);
     RegisterSpellScript(spell_silverpine_go_home);
-    RegisterCreatureAI(npc_silverpine_vilefine_murlocks);
     RegisterCreatureAI(npc_silverpine_deathstalker);
     RegisterGameObjectAI(go_silverpine_abandoned_outhouse);
     RegisterCreatureAI(npc_silverpine_deathstalker_rane_yorick);
