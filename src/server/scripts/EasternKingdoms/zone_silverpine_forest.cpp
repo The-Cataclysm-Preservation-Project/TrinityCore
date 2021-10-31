@@ -4192,8 +4192,6 @@ struct npc_silverpine_skitterweb_matriarch : public ScriptedAI
 
                     me->SetAIAnimKitId(ANIMKIT_MATRIARCH_INTERACT);
 
-                    me->UpdateMovementFlags();
-
                     me->SetHomePosition(me->GetPosition());
 
                     _events.ScheduleEvent(EVENT_MATRIARCH_AGGRO + 2, 1s);
