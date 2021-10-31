@@ -1531,13 +1531,13 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 (@CGUID+30, 44825, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
 
  -- Forsaken Bat
-UPDATE `creature_template` SET `VehicleId` = 1051, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
+UPDATE `creature_template` SET `VehicleId` = 1051, spell1 = 83573, spell2 = 83594, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
 
 DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44821;
 INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
 (44821, 1, 0, 1, 0, 0, NULL);
 
-DELETE FROM `creature_text` WHERE `CreatureID`=44821 AND `ID`=0 AND `GroupID` BETWEEN 0 AND 1;
+DELETE FROM `creature_text` WHERE `CreatureID` = 44821;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44821, 0, 0, 'Eliminate all murlocs by using the Blight Concoction!$B$B|r|TInterface\\\\Icons\\\\INV_ALCHEMY_POTION_05.BLP:24|t', 42, 1, 100, 0, 0, 0, 0, 44902, 0, 'Forsaken Bat to Player'),
 (44821, 1, 0, 'Returning to Forsaken High Command!$B$B|r|TInterface\\\\Icons\\\\ACHIEVEMENT_ZONE_SILVERPINE_01.BLP:24|t', 42, 1, 100, 0, 0, 0, 0, 44903, 0, 'Forsaken Bat to Player');
@@ -2511,6 +2511,26 @@ DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=5369 AND `quest_start`=2
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (83979, 5369, 27097, 27099, 0, 0, 2, 3, 74, 11);
 
+DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=130 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83979, 130, 27097, 27099, 0, 0, 2, 3, 74, 11);
+
+DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=927 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83979, 927, 27097, 27099, 0, 0, 2, 3, 74, 11);
+
+DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=1338 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83979, 1338, 27097, 27099, 0, 0, 2, 3, 74, 11);
+
+DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=172 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83979, 172, 27097, 27099, 0, 0, 2, 3, 74, 11);
+
+DELETE FROM `spell_area` WHERE `spell`=83979 AND `area`=235 AND `quest_start`=27097 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(83979, 235, 27097, 27099, 0, 0, 2, 3, 74, 11);
+
  -- Agatha (44951)
 UPDATE `creature_template` SET `unit_class` = 2, unit_flags = 8, `VehicleId` = 1109, `HoverHeight` = 2.20000004768371582, `ScriptName` = 'npc_silverpine_agatha_fenris' WHERE `entry` = 44951;
 
@@ -2520,7 +2540,7 @@ INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplineP
 
 DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44951;
 INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
-(44951, 2, 0, 1, 0, 0, NULL);
+(44951, 2, 1, 1, 0, 0, NULL);
 
 DELETE FROM `summon_properties_parameters` WHERE `RecID` = 3030;
 INSERT INTO `summon_properties_parameters` (`RecID`, `ParamType`) VALUES 
@@ -2541,8 +2561,8 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (44951, 1, 1, 'Rise and destroy our enemies!', 14, 0, 100, 0, 0, 0, 0, 45115, 0, ''),
 (44951, 1, 2, 'Rise, $n! Become Forsaken!', 14, 0, 100, 0, 0, 0, 0, 45091, 0, ''),
 (44951, 2, 0, 'This way, $n. We will take them by surprise.', 12, 0, 100, 1, 0, 0, 0, 45193, 0, ''),
-(44951, 3, 0, 'Run...', 12, 0, 100, 1, 0, 0, 0, 45184, 0, ''),
-(44951, 4, 0, 'RUN!', 12, 0, 100, 1, 0, 0, 0, 45185, 0, '');
+(44951, 3, 0, 'Run...', 12, 0, 100, 457, 0, 0, 0, 45184, 0, ''),
+(44951, 4, 0, 'RUN!', 12, 0, 100, 457, 0, 0, 0, 45185, 0, '');
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=1 AND `SourceEntry`=83978 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=3 AND `ConditionValue2`=44951 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
@@ -2558,48 +2578,25 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 
 DELETE FROM `waypoint_data` WHERE `id` = 449510;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
-(449510, 0, 978.136, 701, 74.8986, 1.46946, 12, 0, 1, 1, 0, 0, 0),
-(449510, 1, 980.094, 707.503, 74.8986, 0.53484, 12, 0, 1, 1, 0, 0, 0),
-(449510, 2, 983.234, 707.653, 74.7912, 0.047892, 12, 0, 1, 1, 0, 0, 0),
-(449510, 3, 993.042, 708.16, 69.7968, 0.051819, 12, 0, 1, 1, 0, 0, 0),
-(449510, 4, 996.834, 706.651, 69.7968, 5.90304, 12, 0, 1, 1, 0, 0, 0),
-(449510, 5, 1000.6, 683.266, 69.7968, 5.55354, 12, 0, 1, 1, 0, 0, 0),
-(449510, 6, 1008.98, 683.597, 64.9641, 0.051824, 12, 0, 0, 1, 0, 0, 0),
-(449510, 7, 1011.67, 683.756, 64.9038, 0.201049, 12, 0, 0, 1, 0, 0, 0),
-(449510, 8, 1013.71, 686.315, 64.9038, 0.93147, 12, 0, 0, 1, 0, 0, 0),
-(449510, 9, 1012.84, 692.094, 60.9752, 1.7208, 12, 0, 0, 1, 0, 0, 0),
-(449510, 10, 1009.93, 696.019, 60.9752, 2.24701, 12, 0, 1, 1, 0, 0, 0),
-(449510, 11, 999.307, 695.548, 60.9752, 3.162, 12, 0, 1, 1, 0, 0, 0),
-(449510, 12, 995.605, 697.996, 60.9752, 2.55725, 12, 0, 1, 1, 0, 0, 0),
-(449510, 13, 996.038, 708.152, 60.9752, 1.74436, 12, 0, 1, 1, 0, 0, 0),
-(449510, 14, 991.277, 712.116, 60.9752, 2.44729, 12, 0, 1, 1, 0, 0, 0),
-(449510, 15, 987.566, 711.066, 60.9752, 3.41726, 12, 0, 1, 1, 0, 0, 0),
-(449510, 16, 983.57, 705.475, 60.9752, 4.12019, 12, 0, 1, 1, 0, 0, 0),
-(449510, 17, 983.716, 694.273, 59.4842, 4.70138, 12, 0, 1, 1, 0, 0, 0),
-(449510, 18, 978.321, 688.576, 59.4586, 3.93955, 12, 0, 1, 1, 0, 0, 0),
-(449510, 19, 972.144, 689.149, 59.7365, 3.18618, 12, 0, 1, 1, 0, 0, 0),
-(449510, 20, 947.125, 688.808, 64.7365, 3.11942, 12, 0, 1, 1, 0, 0, 0),
-(449510, 21, 940.742, 692.673, 72.2835, 2.58535, 12, 0, 1, 1, 0, 0, 0),
-(449510, 22, 942.05, 710.145, 78.3052, 1.41118, 12, 0, 1, 1, 0, 0, 0),
-(449510, 23, 962.522, 728.552, 86.2838, 0.70432, 12, 0, 1, 1, 0, 0, 0),
-(449510, 24, 1005.04, 732.69, 89.2657, 6.10786, 12, 0, 1, 1, 0, 0, 0),
-(449510, 25, 1011.23, 727.585, 95.5486, 5.59342, 12, 0, 1, 1, 0, 0, 0),
-(449510, 26, 1027.92, 725.552, 95.6229, 6.1864, 12, 0, 1, 1, 0, 0, 0),
-(449510, 27, 1034.91, 726.766, 95.5736, 6.15105, 12, 0, 1, 1, 0, 0, 0),
-(449510, 28, 1045.77, 725.625, 95.0414, 6.17854, 12, 0, 1, 1, 0, 0, 0),
-(449510, 29, 1075.92, 722.255, 95.5728, 6.16676, 12, 0, 1, 1, 0, 0, 0),
-(449510, 30, 1093.56, 720.191, 95.5834, 6.16676, 12, 0, 1, 1, 0, 0, 0),
-(449510, 31, 1117.21, 719.628, 95.318, 0.068142, 12, 0, 1, 1, 0, 0, 0),
-(449510, 32, 1192.31, 909.552, 95.9755, 1.22661, 12, 0, 1, 1, 0, 0, 0),
-(449510, 33, 1204.63, 938.817, 95.4178, 1.1677, 12, 0, 1, 1, 0, 0, 0),
-(449510, 34, 1222.83, 979.271, 95.9874, 1.12843, 12, 0, 1, 1, 0, 0, 0),
-(449510, 35, 1229.7, 991.419, 86.0195, 1.06167, 12, 0, 1, 1, 0, 0, 0),
-(449510, 36, 1252.7, 1031.86, 86.2167, 1.05382, 12, 0, 1, 1, 0, 0, 0),
-(449510, 37, 1265.05, 1043.25, 86.6448, 0.712169, 12, 0, 1, 1, 0, 0, 0),
-(449510, 38, 1275.69, 1048.93, 72.4272, 0.331248, 12, 0, 1, 1, 0, 0, 0),
-(449510, 39, 1311.69, 1060.33, 68.5986, 0.327321, 12, 0, 1, 1, 0, 0, 0),
-(449510, 40, 1367.73, 1050.51, 60.2519, 6.10393, 12, 0, 1, 1, 0, 0, 0),
-(449510, 41, 1379.51, 1044.31, 54.0962, 5.7937, 12, 0, 1, 1, 0, 0, 0);
+(449510, 1, 978.75, 682.571, 74.9817, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 2, 979.691, 672.536, 74.9817, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 3, 984.573, 670.793, 75.4262, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 4, 997.752, 671.819, 69.7039, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 5, 998.248, 683.655, 70.2039, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 6, 1012.42, 684.455, 65.1761, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 7, 1011.69, 695.212, 60.9817, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 8, 996.165, 694.927, 60.9817, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 9, 995.677, 709.804, 60.9817, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 10, 982.948, 711.526, 60.9817, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 11, 983.938, 689.569, 60.2873, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 12, 961.075, 688.958, 60.2873, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 13, 933.366, 687.901, 70.0651, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 14, 871.441, 700.913, 91.8428, NULL, 7.7937083, 0, 1, 1, 0, 0, 0),
+(449510, 15, 843.257, 730.168, 99.0837, NULL, 15.880999, 0, 1, 1, 0, 0, 0),
+(449510, 16, 891.191, 859.995, 99.0837, NULL, 15.880999, 0, 1, 1, 0, 0, 0),
+(449510, 17, 1167.72, 992.175, 99.0837, NULL, 15.880999, 0, 1, 1, 0, 0, 0),
+(449510, 18, 1343, 1029.57, 62.7226, NULL, 15.880999, 0, 1, 1, 0, 0, 0),
+(449510, 19, 1367.74, 1034.35, 54.1671, NULL, 15.880999, 0, 0, 1, 0, 0, 0);
 
  -- Hillsbrad Refugee (44954, 44966)
 UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' WHERE `entry` IN (44954, 44966);
@@ -3167,10 +3164,6 @@ DELETE FROM `phase_area` WHERE `AreaId`=228 AND `PhaseId`=267;
 INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES 
 (228, 267, 'The Sepulcher during 27098');
 
-DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=27099 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
-INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
-(83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 2);
-
  -- Summon Sylvanas + Horse
 UPDATE `spell_target_position` SET `Orientation` = 3.73064 WHERE `ID` = 84128 AND `EffectIndex` BETWEEN 0 AND 1;
 
@@ -3692,6 +3685,18 @@ DELETE FROM `smart_scripts` WHERE `source_type` = 0 AND `entryOrGuid` = 5688;
 INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
 (5688, 0, 0, 1, 62, 0, 100, 0, 1296, 3, 0, 0, 72, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 3 from menu 1296 selected - Gossip player: Close gossip'),
 (5688, 0, 1, 0, 61, 0, 100, 0, 0, 0, 0, 0, 85, 24751, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On gossip action 3 from menu 1296 selected - Gossip player: Cast spell Trick or Treat (24751) on self');
+
+ -- Apple Bob
+SET @ENTRY := 180523;
+DELETE FROM `smart_scripts` WHERE `source_type` = 1 AND `entryOrGuid` = @ENTRY;
+UPDATE `gameobject_template` SET `AIName` = 'SmartGameObjectAI' WHERE `entry` = @ENTRY;
+INSERT INTO `smart_scripts` (`entryorguid`, `source_type`, `id`, `link`, `event_type`, `event_phase_mask`, `event_chance`, `event_flags`, `event_param1`, `event_param2`, `event_param3`, `event_param4`, `action_type`, `action_param1`, `action_param2`, `action_param3`, `action_param4`, `action_param5`, `action_param6`, `target_type`, `target_param1`, `target_param2`, `target_param3`, `target_x`, `target_y`, `target_z`, `target_o`, `comment`) VALUES
+(@ENTRY, 1, 0, 0, 8, 0, 100, 0, 99926, 0, 0, 0, 134, 101507, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 'On spell Bobbing for Apples (99926) hit - Caster: Cast spell  Apple Bob - Create Apples (101507) on Caster');
+
+ -- Bobbing for Apples
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceGroup`=2 AND `SourceEntry`=99926 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=31 AND `ConditionTarget`=0 AND `ConditionValue1`=5 AND `ConditionValue2`=180523 AND `ConditionValue3`=0;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES 
+(13, 2, 99926, 0, 0, 31, 0, 5, 180523, 0, 0, 0, 0, '', 'Bobbing for Apples - Target Apple Bob');
 
  --
  -- Quests

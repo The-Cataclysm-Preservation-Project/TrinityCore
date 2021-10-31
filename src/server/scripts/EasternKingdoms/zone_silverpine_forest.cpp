@@ -1638,15 +1638,7 @@ enum ForsakenBat
 // Forsaken Bat - 44821
 struct npc_silverpine_forsaken_bat : public VehicleAI
 {
-    npc_silverpine_forsaken_bat(Creature* creature) : VehicleAI(creature), _goingIsland(true), _goingHome(false)
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        SetupActionBar();
-    }
+    npc_silverpine_forsaken_bat(Creature* creature) : VehicleAI(creature), _goingIsland(true), _goingHome(false) { }
 
     void IsSummonedBy(Unit* who) override
     {
@@ -1785,12 +1777,6 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                     break;
             }
         }
-    }
-
-    void SetupActionBar()
-    {
-        me->m_spells[0] = SPELL_BLIGHT_CONCOCTION;
-        me->m_spells[1] = SPELL_GO_HOME;
     }
 
 private:
@@ -4320,7 +4306,7 @@ enum AgathaFenris
 
     PATH_AGATHA_TO_FORSAKEN                 = 449510,
 
-    WAYPOINT_ARRIVED_TO_FORSAKEN            = 41,
+    WAYPOINT_ARRIVED_TO_FORSAKEN            = 19,
 
     POINT_AGATHA_BACK_FRONTYARD             = 1
 };
@@ -4357,8 +4343,11 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
         {
             case SPELL_AGATHA_BROADCAST:
             {
-                if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    Talk(TALK_AGATHA_BROADCAST, player);
+                if (!_sceneStarted)
+                {
+                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                        Talk(TALK_AGATHA_BROADCAST, player);
+                }
                 break;
             }
 
@@ -4504,7 +4493,7 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                     {
                         me->SetFacingTo(3.159046f);
 
-                        Talk(TALK_AGATHA_POST_EVENT1);
+                        Talk(TALK_AGATHA_POST_EVENT1, player);
                     }
 
                     break;
@@ -4516,7 +4505,7 @@ struct npc_silverpine_agatha_fenris : public ScriptedAI
                     {
                         me->CastSpell(player, SPELL_RIDE_REVERSE_CAST_RIDE_VEHICLE, true);
 
-                        Talk(TALK_AGATHA_POST_EVENT2);
+                        Talk(TALK_AGATHA_POST_EVENT2, player);
 
                         player->KilledMonsterCredit(NPC_AGATHA_FENRIS);
 
