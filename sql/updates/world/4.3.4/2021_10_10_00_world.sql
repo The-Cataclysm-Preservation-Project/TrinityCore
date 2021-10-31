@@ -1123,6 +1123,11 @@ DELETE FROM `spell_area` WHERE `spell`=83989 AND `area`=5369 AND `quest_start`=2
 INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
 (83989, 5369, 27099, 27098, 0, 0, 2, 3, 64, 1);
 
+ -- Detect: Quest Invis Zone 20 (Ambermill Shield)
+DELETE FROM `spell_area` WHERE `spell`=85406 AND `area`=130 AND `quest_start`=0 AND `aura_spell`=0 AND `racemask`=0 AND `gender`=2;
+INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spell`, `racemask`, `gender`, `flags`, `quest_start_status`, `quest_end_status`) VALUES 
+(85406, 130, 0, 27518, 0, 0, 2, 3, 0, 11);
+
  -- Dark Ranger
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44632;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
