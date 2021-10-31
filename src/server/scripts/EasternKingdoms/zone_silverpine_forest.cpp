@@ -1638,7 +1638,15 @@ enum ForsakenBat
 // Forsaken Bat - 44821
 struct npc_silverpine_forsaken_bat : public VehicleAI
 {
-    npc_silverpine_forsaken_bat(Creature* creature) : VehicleAI(creature), _goingIsland(true), _goingHome(false) { }
+    npc_silverpine_forsaken_bat(Creature* creature) : VehicleAI(creature)
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        SetupInitialActionBar();
+    }
 
     void IsSummonedBy(Unit* who) override
     {
@@ -1680,12 +1688,16 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
             {
                 if (waypointId == WAYPOINT_ARRIVED_ON_ISLE)
                 {
-                    _goingIsland = false;
-
                     me->GetMotionMaster()->MovePath(PATH_BAT_CIRCLE, false);
 
+                    SetupCircularActionBar();
+
                     if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
+                    {
                         Talk(TALK_BAT_ARRIVED_TO_ISLE, player);
+
+                        player->VehicleSpellInitialize();
+                    }
                 }
 
                 break;
@@ -1728,20 +1740,19 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
         {
             case ACTION_GO_HOME:
             {
-                if (!_goingHome && !_goingIsland)
+                if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
                 {
-                    if (Player* player = ObjectAccessor::GetPlayer(*me, _playerGUID))
-                    {
-                        _goingHome = true;
+                    me->PauseMovement();
 
-                        me->PauseMovement();
+                    me->GetMotionMaster()->Clear();
 
-                        me->GetMotionMaster()->Clear();
+                    me->GetMotionMaster()->MovePath(PATH_BAT_HOME, false);
 
-                        me->GetMotionMaster()->MovePath(PATH_BAT_HOME, false);
+                    SetupFinishActionBar();
 
-                        Talk(TALK_BAT_GOING_HOME, player);
-                    }
+                    player->VehicleSpellInitialize();
+
+                    Talk(TALK_BAT_GOING_HOME, player);
                 }
 
                 break;
@@ -1777,6 +1788,24 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
                     break;
             }
         }
+    }
+
+    void SetupInitialActionBar()
+    {
+        me->m_spells[0] = SPELL_BLIGHT_CONCOCTION;
+        me->m_spells[1] = 0;
+    }
+
+    void SetupCircularActionBar()
+    {
+        me->m_spells[0] = SPELL_BLIGHT_CONCOCTION;
+        me->m_spells[1] = SPELL_GO_HOME;
+    }
+
+    void SetupFinishActionBar()
+    {
+        me->m_spells[0] = 0;
+        me->m_spells[1] = 0;
     }
 
 private:

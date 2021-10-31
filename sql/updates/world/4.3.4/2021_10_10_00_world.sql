@@ -1536,7 +1536,7 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `p
 (@CGUID+30, 44825, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
 
  -- Forsaken Bat
-UPDATE `creature_template` SET `VehicleId` = 1051, spell1 = 83573, spell2 = 83594, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
+UPDATE `creature_template` SET `VehicleId` = 1051, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
 
 DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44821;
 INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
@@ -1606,6 +1606,9 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
 (448212, 4, 1234.44, 880.16, 97.9414, NULL, 35.78791, 0, 1, 1, 0, 0, 0),
 (448212, 5, 1345.66, 970.281, 75.1914, NULL, 35.78791, 0, 1, 1, 0, 0, 0),
 (448212, 6, 1415.9, 1018.08, 55.3025, NULL, 35.78791, 0, 0, 1, 0, 0, 0);
+
+ -- Lake Frenzy
+ UPDATE `creature` SET `MovementType` = 1, `spawndist` = 10 WHERE `id` = 6033;
 
  -- Dark Ranger
 DELETE FROM `creature` WHERE `guid` IN (@CGUID+31, @CGUID+32, @CGUID+33, @CGUID+34, @CGUID+35, @CGUID+36, @CGUID+37, @CGUID+38, @CGUID+99, @CGUID+100, @CGUID+101);
@@ -2545,7 +2548,7 @@ INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplineP
 
 DELETE FROM `creature_template_movement` WHERE `CreatureId` = 44951;
 INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Flight`, `Rooted`, `Random`, `InteractionPauseTimer`) VALUES 
-(44951, 2, 1, 1, 0, 0, NULL);
+(44951, 0, 1, 1, 0, 0, NULL);
 
 DELETE FROM `summon_properties_parameters` WHERE `RecID` = 3030;
 INSERT INTO `summon_properties_parameters` (`RecID`, `ParamType`) VALUES 
