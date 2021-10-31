@@ -1811,8 +1811,6 @@ struct npc_silverpine_forsaken_bat : public VehicleAI
 private:
     EventMap _events;
     ObjectGuid _playerGUID;
-    bool _goingIsland;
-    bool _goingHome;
 };
 
 // Go Home - 83594
