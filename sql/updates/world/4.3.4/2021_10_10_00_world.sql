@@ -210,7 +210,7 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_horde_coffin_haule
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+104;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+104, 44764, 0, 130, 5387, 1, 1, 1, 169, 0, -1, 0, 0, -117.411, 1230.56, 55.5076, 5.51349, 5, 0, 0, 484, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+104, 44764, 0, 130, 5387, 1, 1, 1, 169, 0, -1, 0, 0, -117.411, 1230.56, 55.5076, 5.51349, 5, 0, 0, 484, 0, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `spell_script_names` WHERE `spell_id` = 86802 AND `ScriptName` = 'spell_silverpine_magical_chains_coffin';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES 
@@ -720,10 +720,10 @@ UPDATE `creature` SET `equipment_id` = 2, `MovementType` = 1, `spawndist` = 5 WH
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44791;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
-(44791, 1, 1481, 0, 0, 0),
-(44791, 2, 11121, 9661, 0, 0),
-(44791, 3, 15273, 0, 0, 0),
-(44791, 4, 36502, 0, 0, 0);
+(44791, 1, 1481, 0, 0, 40725),
+(44791, 2, 11121, 9661, 0, 40725),
+(44791, 3, 15273, 0, 0, 40725),
+(44791, 4, 36502, 0, 0, 40725);
 
 DELETE FROM `creature_text` WHERE `CreatureID`= 44791;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
@@ -790,10 +790,10 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_forsaken_trooper' 
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44792;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
-(44792, 1, 1481, 0, 0, 0),
-(44792, 2, 11121, 9661, 0, 0),
-(44792, 3, 15273, 0, 0, 0),
-(44792, 4, 36502, 0, 0, 0);
+(44792, 1, 1481, 0, 0, 40725),
+(44792, 2, 11121, 9661, 0, 40725),
+(44792, 3, 15273, 0, 0, 40725),
+(44792, 4, 36502, 0, 0, 40725);
 
 UPDATE `creature` SET `equipment_id` = 3 WHERE `guid` = 322141;
 UPDATE `creature` SET `equipment_id` = 4 WHERE `guid` = 322135;
@@ -855,7 +855,7 @@ UPDATE `creature` SET `position_x`= 1384.912, `position_y`= 775.5963, `position_
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+102;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+102, 44911, 0, 130, 130, 1, 0, 1, 169, 0, -1, 0, 0, 1492.83, 637.973, 46.429, 5.14269, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 0);
+(@CGUID+102, 44911, 0, 130, 130, 1, 0, 1, 169, 0, -1, 0, 0, 1492.83, 637.973, 46.429, 5.14269, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = 322155;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1136,13 +1136,13 @@ DELETE FROM `creature` WHERE `guid` IN (321304, 320990, 321294, 320952, 321013, 
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID AND @CGUID+1;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1360.47, 1063.27, 52.9999, 3.92421, 300, 0, 0, 1, 0, 2, 0, 0, 0, '', 0),
-(@CGUID+1, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1435.85, 1068.76, 60.4794, 5.5292, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 0);
+(@CGUID, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1360.47, 1063.27, 52.9999, 3.92421, 300, 0, 0, 1, 0, 2, 0, 0, 0, '', 40725),
+(@CGUID+1, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1435.85, 1068.76, 60.4794, 5.5292, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` BETWEEN @CGUID AND @CGUID+1;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID, 3990000, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL),
-(@CGUID+1, 3990010, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
+(@CGUID, 3990000, 0, 0, 0, 2, 0, 0, 0, 0, 0, ''),
+(@CGUID+1, 3990010, 0, 0, 0, 2, 0, 0, 0, 0, 0, '');
 
 DELETE FROM `waypoint_data` WHERE `id`= 3990000;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `velocity`, `delay`, `smoothTransition`, `move_type`, `action`, `action_chance`, `wpguid`) VALUES 
@@ -1232,7 +1232,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
  -- High Warlord Cromush
 DELETE FROM `creature` WHERE `guid` = @CGUID+2;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+2, 44640, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1357.21, 1046.36, 52.7554, 4.46892, 300, 0, 0, 387450, 0, 2, 0, 0, 0, '', 0);
+(@CGUID+2, 44640, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1357.21, 1046.36, 52.7554, 4.46892, 300, 0, 0, 387450, 0, 2, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+2;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
@@ -1266,11 +1266,11 @@ UPDATE `creature_template` SET `AIName` = 'SmartAI', `ScriptName` = '' WHERE `en
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+3;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+3, 44825, 0, 0, 0, 1, 0, 1, 264, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+3, 44825, 0, 0, 0, 1, 0, 1, 264, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `gossip_menu_option` WHERE `MenuId`= 6944 AND `OptionIndex` = 1;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES
-(6944, 1, 2, 'I need to take a bat to the Dawning Isles.', 0, 1, 1, 15595);
+(6944, 1, 2, 'I need to take a bat to the Dawning Isles.', 0, 1, 1, 40725);
 
 DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=15 AND `SourceGroup`=6944 AND `SourceEntry`=1 AND `SourceId`=0 AND `ElseGroup`=0 AND `ConditionTypeOrReference`=47 AND `ConditionTarget`=0 AND `ConditionValue1`=26998 AND `ConditionValue2`=8 AND `ConditionValue3`=0;
 INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
@@ -1341,25 +1341,25 @@ INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `Exte
  -- Dark Ranger
 DELETE FROM `creature` WHERE `guid`= @CGUID+8;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+8, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1360.47, 1063.27, 52.9999, 3.92421, 300, 0, 0, 1, 0, 2, 0, 0, 0, '', 0);
+(@CGUID+8, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1360.47, 1063.27, 52.9999, 3.92421, 300, 0, 0, 1, 0, 2, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+9;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+9, 44632, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1435.85, 1068.76, 60.4794, 5.5292, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 0);
+(@CGUID+9, 44632, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1435.85, 1068.76, 60.4794, 5.5292, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` IN (@CGUID+8, @CGUID+9);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+8, 3990000, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL),
-(@CGUID+9, 3990010, 0, 0, 0, 2, 0, 0, 0, 0, 0, NULL);
+(@CGUID+8, 3990000, 0, 0, 0, 2, 0, 0, 0, 0, 0, ''),
+(@CGUID+9, 3990010, 0, 0, 0, 2, 0, 0, 0, 0, 0, '');
 
  -- Apothecary Witherbloom
 DELETE FROM `creature` WHERE `guid`= @CGUID+10;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+10, 44778, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1409.33, 1065.86, 60.5617, 0.226893, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 0);
+(@CGUID+10, 44778, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1409.33, 1065.86, 60.5617, 0.226893, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+10;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+10, 0, 0, 0, 0, 1, 133, 0, 0, 0, 0, NULL);
+(@CGUID+10, 0, 0, 0, 0, 1, 133, 0, 0, 0, 0, '');
 
 DELETE FROM `creature_questender` WHERE `id` = 44778 AND `quest` = 26992;
 INSERT INTO `creature_questender` (`id`, `quest`) VALUES
@@ -1372,36 +1372,36 @@ INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
  -- Apothecary Initiate
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+11 AND @CGUID+23;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+11, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1426.3, 1085.29, 60.4768, 0.715472, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 0),
-(@CGUID+12, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1427.61, 1083.78, 60.4768, 0.715472, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 0),
-(@CGUID+13, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1428.92, 1082.27, 60.4768, 0.715472, 300, 0, 0, 166, 356, 0, 0, 0, 0, NULL, 0),
-(@CGUID+14, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1443.61, 1079.14, 60.4768, 0.687984, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 0),
-(@CGUID+15, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1423.87, 1085.03, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 0),
-(@CGUID+16, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1426.82, 1081.64, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 0),
-(@CGUID+17, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1421.24, 1065.4, 60.4784, 5.10886, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 0),
-(@CGUID+18, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1423.28, 1082.67, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 0),
-(@CGUID+19, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1424.59, 1081.16, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 0),
-(@CGUID+20, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1425.9, 1079.65, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 0),
-(@CGUID+21, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1425.38, 1083.3, 60.4768, 0.715472, 300, 0, 0, 208, 410, 0, 0, 0, 0, NULL, 0),
-(@CGUID+22, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1428.33, 1079.9, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 0),
-(@CGUID+23, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1410.63, 1102.33, 60.5617, 1.50098, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 0);
+(@CGUID+11, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1426.3, 1085.29, 60.4768, 0.715472, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+12, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1427.61, 1083.78, 60.4768, 0.715472, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+13, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1428.92, 1082.27, 60.4768, 0.715472, 300, 0, 0, 166, 356, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+14, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1443.61, 1079.14, 60.4768, 0.687984, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+15, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1423.87, 1085.03, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+16, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1426.82, 1081.64, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+17, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1421.24, 1065.4, 60.4784, 5.10886, 300, 0, 0, 186, 382, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+18, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1423.28, 1082.67, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+19, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1424.59, 1081.16, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+20, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1425.9, 1079.65, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+21, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1425.38, 1083.3, 60.4768, 0.715472, 300, 0, 0, 208, 410, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+22, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1428.33, 1079.9, 60.4768, 0.715472, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+23, 44786, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1410.63, 1102.33, 60.5617, 1.50098, 300, 0, 0, 148, 330, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+14;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+14, 0, 0, 0, 0, 1, 69, 0, 0, 0, 0, NULL);
+(@CGUID+14, 0, 0, 0, 0, 1, 69, 0, 0, 0, 0, '');
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+17;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+17, 0, 0, 0, 0, 1, 69, 0, 0, 0, 0, NULL);
+(@CGUID+17, 0, 0, 0, 0, 1, 69, 0, 0, 0, 0, '');
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+23;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
-(@CGUID+23, 0, 0, 0, 0, 1, 69, 0, 0, 0, 0, NULL);
+(@CGUID+23, 0, 0, 0, 0, 1, 69, 0, 0, 0, 0, '');
 
  -- Apothecary Marry
 DELETE FROM `creature` WHERE `guid`= @CGUID+24;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+24, 45490, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1422.57, 1097.31, 60.5617, 4.4855, 300, 0, 0, 230, 498, 0, 0, 0, 0, NULL, 0);
+(@CGUID+24, 45490, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1422.57, 1097.31, 60.5617, 4.4855, 300, 0, 0, 230, 498, 0, 0, 0, 0, NULL, 40725);
 
  -- Extracted from https://cata-twinhead.twinstar.cz/?npc=45490, a Cataclysm database on version 15595
 DELETE FROM `npc_vendor` WHERE `entry`= 45490;
@@ -1430,12 +1430,12 @@ INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `Exte
  -- Forsaken Apothecary
 DELETE FROM `creature` WHERE `guid` = @CGUID+25;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+25, 46483, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1367.75, 995.832, 51.5314, 5.34071, 300, 0, 0, 208, 410, 0, 0, 0, 0, NULL, 0);
+(@CGUID+25, 46483, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1367.75, 995.832, 51.5314, 5.34071, 300, 0, 0, 208, 410, 0, 0, 0, 0, NULL, 40725);
 
  -- Arthura
 DELETE FROM `creature` WHERE `guid` = @CGUID+26;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+26, 44610, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1360.81, 1030.57, 55.874, 0.645772, 300, 0, 0, 30, 6520, 0, 16777218, 0, 0, NULL, 0);
+(@CGUID+26, 44610, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1360.81, 1030.57, 55.874, 0.645772, 300, 0, 0, 30, 6520, 0, 16777218, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+26;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1443,7 +1443,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+97;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+97, 44610, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1360.81, 1030.57, 55.874, 0.645772, 300, 0, 0, 30, 6520, 0, 16777218, 0, 0, NULL, 0);
+(@CGUID+97, 44610, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1360.81, 1030.57, 55.874, 0.645772, 300, 0, 0, 30, 6520, 0, 16777218, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+97;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1452,7 +1452,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
  -- Daschla
 DELETE FROM `creature` WHERE `guid` = @CGUID+27;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+27, 44609, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1365.73, 1024.98, 56.0244, 1.02974, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+27, 44609, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1365.73, 1024.98, 56.0244, 1.02974, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+27;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1460,7 +1460,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+98;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+98, 44609, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1365.73, 1024.98, 56.0244, 1.02974, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+98, 44609, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1365.73, 1024.98, 56.0244, 1.02974, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+98;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1469,7 +1469,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
  -- Agatha
 DELETE FROM `creature` WHERE `guid` = @CGUID+28;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+28, 44608, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1364.02, 1028.54, 55.9914, 0.855211, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+28, 44608, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1364.02, 1028.54, 55.9914, 0.855211, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+28;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1484,11 +1484,11 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_sylvanas_fhc' WHER
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44365;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES
-(44365, 1, 2179, 0, 42775, 15595);
+(44365, 1, 2179, 0, 42775, 40725);
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+7;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+7, 44365, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 0);
+(@CGUID+7, 44365, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+7;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1496,7 +1496,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+29;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+29, 44365, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 0);
+(@CGUID+29, 44365, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1382.11, 1040.91, 54.3174, 3.73064, 300, 0, 0, 34356800, 94700, 0, 0, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+29;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1531,7 +1531,7 @@ INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
  -- Bat Handler Maggotbreath
 DELETE FROM `creature` WHERE `guid` = @CGUID+30;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+30, 44825, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+30, 44825, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1423.08, 1016.46, 52.544, 2.90902, 300, 0, 0, 77490, 0, 0, 0, 0, 0, NULL, 40725);
 
  -- Forsaken Bat
 UPDATE `creature_template` SET `VehicleId` = 1051, `ScriptName` = 'npc_silverpine_forsaken_bat'  WHERE `entry` = 44821;
@@ -1611,17 +1611,17 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
  -- Dark Ranger
 DELETE FROM `creature` WHERE `guid` IN (@CGUID+31, @CGUID+32, @CGUID+33, @CGUID+34, @CGUID+35, @CGUID+36, @CGUID+37, @CGUID+38, @CGUID+99, @CGUID+100, @CGUID+101);
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+31, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1341.66, 1020.96, 54.3438, 0.488692, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+32, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1337.14, 1018.39, 54.7498, 3.59538, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+33, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1345.66, 1010.64, 54.3924, 0.349066, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+34, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1341.2, 1009.05, 54.6825, 3.19395, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+35, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1367.17, 1082.13, 52.508, 4.97419, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+36, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1429.77, 1021.99, 52.3983, 3.34491, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+37, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1400.45, 1003, 52.9364, 2.26499, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+38, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1389.62, 1047.75, 52.9542, 3.90648, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+99, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1429.77, 1021.99, 52.3983, 3.34491, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+100, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1400.45, 1003, 52.9364, 2.26499, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+101, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1389.62, 1047.75, 52.9542, 3.90648, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+31, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1341.66, 1020.96, 54.3438, 0.488692, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+32, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1337.14, 1018.39, 54.7498, 3.59538, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+33, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1345.66, 1010.64, 54.3924, 0.349066, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+34, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1341.2, 1009.05, 54.6825, 3.19395, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+35, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1367.17, 1082.13, 52.508, 4.97419, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+36, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1429.77, 1021.99, 52.3983, 3.34491, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+37, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1400.45, 1003, 52.9364, 2.26499, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+38, 44632, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 1, 1389.62, 1047.75, 52.9542, 3.90648, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+99, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1429.77, 1021.99, 52.3983, 3.34491, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+100, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1400.45, 1003, 52.9364, 2.26499, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+101, 44632, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1389.62, 1047.75, 52.9542, 3.90648, 300, 0, 0, 1398, 0, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` IN (@CGUID+31, @CGUID+32, @CGUID+33, @CGUID+34, @CGUID+35, @CGUID+36, @CGUID+37, @CGUID+38, @CGUID+99, @CGUID+100, @CGUID+101);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1648,43 +1648,43 @@ INSERT INTO `creature_template_movement` (`CreatureId`, `Ground`, `Swim`, `Fligh
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+39 AND @CGUID+68;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+39, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.57, 1036.9, 50.998, 0.20944, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+40, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.08, 1034.98, 50.8489, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+41, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1375.2, 1038.58, 51.2451, 4.55531, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+42, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.14, 1036.35, 50.9217, 5.53269, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+43, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1370.66, 1030.82, 51.134, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+44, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.35, 1031.58, 50.6189, 0.959931, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+45, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+46, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1370.66, 1030.82, 51.0504, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+47, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.08, 1034.98, 50.7657, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+48, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1374.14, 1036.35, 50.8385, 5.53269, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+49, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1375.2, 1038.58, 51.2451, 4.55531, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+50, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.57, 1036.9, 50.9154, 0.20944, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+51, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+52, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1373.35, 1031.58, 50.5358, 0.959931, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+53, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.71, 1040.19, 51.0212, 5.58505, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+54, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1367.33, 1035.38, 51.304, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+55, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.98, 1041.06, 51.381, 0.226893, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+56, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.58, 1038.07, 50.9666, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+57, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.65, 1033.67, 50.9668, 0.698132, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+58, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.43, 1034.25, 50.7297, 3.06611, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+59, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.36, 1033.41, 50.5956, 0.607811, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+60, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.17, 1028.72, 50.9252, 1.03193, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 0),
-(@CGUID+61, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.98, 1041.06, 51.2977, 0.226893, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+62, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.71, 1040.19, 50.9381, 5.58505, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+63, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.58, 1038.07, 50.883, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+64, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1367.33, 1035.38, 51.2203, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+65, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.65, 1033.67, 50.8834, 0.698132, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+66, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1374.17, 1028.72, 50.9252, 1.03193, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+67, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1376.43, 1034.25, 50.7297, 3.06611, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+68, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1373.36, 1033.41, 50.5956, 0.607811, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+39, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.57, 1036.9, 50.998, 0.20944, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+40, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.08, 1034.98, 50.8489, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+41, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1375.2, 1038.58, 51.2451, 4.55531, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+42, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.14, 1036.35, 50.9217, 5.53269, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+43, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1370.66, 1030.82, 51.134, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+44, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.35, 1031.58, 50.6189, 0.959931, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+45, 44593, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+46, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1370.66, 1030.82, 51.0504, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+47, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.08, 1034.98, 50.7657, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+48, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1374.14, 1036.35, 50.8385, 5.53269, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+49, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1375.2, 1038.58, 51.2451, 4.55531, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+50, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.57, 1036.9, 50.9154, 0.20944, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+51, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1376.98, 1030.98, 51.1026, 6.07026, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+52, 44593, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1373.35, 1031.58, 50.5358, 0.959931, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+53, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.71, 1040.19, 51.0212, 5.58505, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+54, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1367.33, 1035.38, 51.304, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+55, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.98, 1041.06, 51.381, 0.226893, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+56, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1372.58, 1038.07, 50.9666, 0.890118, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+57, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1369.65, 1033.67, 50.9668, 0.698132, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+58, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1376.43, 1034.25, 50.7297, 3.06611, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+59, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1373.36, 1033.41, 50.5956, 0.607811, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+60, 44592, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1374.17, 1028.72, 50.9252, 1.03193, 1, 0, 0, 273, 0, 0, 0, 775, 0, NULL, 40725),
+(@CGUID+61, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.98, 1041.06, 51.2977, 0.226893, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+62, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.71, 1040.19, 50.9381, 5.58505, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+63, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1372.58, 1038.07, 50.883, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+64, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1367.33, 1035.38, 51.2203, 0.890118, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+65, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1369.65, 1033.67, 50.8834, 0.698132, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+66, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1374.17, 1028.72, 50.9252, 1.03193, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+67, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1376.43, 1034.25, 50.7297, 3.06611, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+68, 44592, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 0, 1373.36, 1033.41, 50.5956, 0.607811, 300, 0, 0, 273, 0, 0, 0, 0, 0, NULL, 40725);
 
  -- Grand Executor Mortuus
 UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_grand_executor_mortuus'  WHERE `entry` = 44615;
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+69;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+69, 44615, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1383, 1038.63, 54.4005, 3.90954, 300, 0, 0, 387450, 66810, 0, 0, 0, 0, NULL, 0);
+(@CGUID+69, 44615, 0, 130, 5369, 1, 0, 1, 264, 0, -1, 0, 0, 1383, 1038.63, 54.4005, 3.90954, 300, 0, 0, 387450, 66810, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_text` WHERE `CreatureID` = 44615;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
@@ -1704,7 +1704,7 @@ INSERT INTO `creature_queststarter` (`id`, `quest`) VALUES
  -- Apothecary Harrington
 DELETE FROM `creature` WHERE `guid` = @CGUID+70;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+70, 45491, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1445.27, 1072.9, 60.5436, 1.20428, 300, 0, 0, 230, 498, 0, 0, 0, 0, NULL, 0);
+(@CGUID+70, 45491, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1445.27, 1072.9, 60.5436, 1.20428, 300, 0, 0, 230, 498, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+70;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1749,10 +1749,10 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_deathstalker' WHER
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+71 AND @CGUID+74;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+71, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1412.63, 1011.4, 52.9539, 5.77704, 300, 0, 0, 156, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+72, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1415.05, 1008.17, 52.7525, 1.6009, 300, 0, 0, 176, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+73, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1415.5, 1012.99, 52.8803, 4.46804, 300, 0, 0, 198, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+74, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1417.19, 1009.78, 52.7009, 2.26893, 300, 0, 0, 156, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+71, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1412.63, 1011.4, 52.9539, 5.77704, 300, 0, 0, 156, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+72, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1415.05, 1008.17, 52.7525, 1.6009, 300, 0, 0, 176, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+73, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1415.5, 1012.99, 52.8803, 4.46804, 300, 0, 0, 198, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+74, 44790, 0, 130, 5369, 1, 0, 1, 169, 0, -1, 0, 1, 1417.19, 1009.78, 52.7009, 2.26893, 300, 0, 0, 156, 0, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` BETWEEN @CGUID+71 AND @CGUID+74;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -1944,7 +1944,7 @@ UPDATE `gossip_menu_option` SET `OptionNpcflag` = '128', `OptionType` = '3' WHER
 
 DELETE FROM `gossip_menu_option` WHERE `MenuId`= 12025 AND `OptionIndex` = 2;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES 
-(12025, 2, 0, 'Trick or Treat!', 10693, 1, 1, 15595);
+(12025, 2, 0, 'Trick or Treat!', 10693, 1, 1, 40725);
 
 DELETE FROM `gossip_menu_option_locale` WHERE `MenuID` = 12025;
 INSERT INTO `gossip_menu_option_locale` (`MenuID`, `OptionID`, `Locale`, `OptionText`, `BoxText`) VALUES 
@@ -2146,7 +2146,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
  -- Orc Sea Dog (44913)
 DELETE FROM `creature` WHERE `guid` = 321872;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(321872, 44913, 0, 130, 5386, 1, 0, 1, 169, 0, -1, 0, 0, 1045.19, 1567.43, 28.1601, 1.40073, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 0);
+(321872, 44913, 0, 130, 5386, 1, 0, 1, 169, 0, -1, 0, 0, 1045.19, 1567.43, 28.1601, 1.40073, 300, 0, 0, 1, 0, 0, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` IN (321878, 321870, 321934, 321874, 321924, 321911, 321916, 321863, 321869, 321916, 321933);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -2223,7 +2223,7 @@ UPDATE `creature_template` SET `AIName` = '', `ScriptName` = 'npc_silverpine_for
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+6;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+6, 44367, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 859.461, 1608.500, 30.4501, 1.533, 300, 0, 0, 819, 0, 2, 16777216, 0, 0, NULL, 0);
+(@CGUID+6, 44367, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 859.461, 1608.500, 30.4501, 1.533, 300, 0, 0, 819, 0, 2, 16777216, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+6;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES
@@ -2441,15 +2441,15 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_webbed_victim_skit
 
 DELETE FROM `creature` WHERE `guid` IN (@CGUID+82, @CGUID+83, @CGUID+84, @CGUID+85, @CGUID+86, @CGUID+87, @CGUID+88, @CGUID+89, @CGUID+90);
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+82, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1285.29, 1866.04, 24.8907, 2.51675, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+83, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1252.66, 1857.56, 14.3729, 3.42388, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+84, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1260.92, 1848.44, 16.6487, 4.18964, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+85, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1280.06, 1818.83, 20.8724, 3.49063, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+86, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1372.55, 1954.99, 13.8267, 1.93161, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+87, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1379.09, 1977.50, 14.1315, 4.51165, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+88, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1398.48, 1972.15, 18.3701, 2.79556, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+89, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1422.53, 1930.36, 9.9526, 1.84131, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+90, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1417.66, 1941.61, 9.8029, 0.46687, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+82, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1285.29, 1866.04, 24.8907, 2.51675, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+83, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1252.66, 1857.56, 14.3729, 3.42388, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+84, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1260.92, 1848.44, 16.6487, 4.18964, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+85, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1280.06, 1818.83, 20.8724, 3.49063, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+86, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1372.55, 1954.99, 13.8267, 1.93161, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+87, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1379.09, 1977.50, 14.1315, 4.51165, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+88, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1398.48, 1972.15, 18.3701, 2.79556, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+89, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1422.53, 1930.36, 9.9526, 1.84131, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+90, 44941, 0, 130, 226, 1, 0, 1, 169, 0, -1, 0, 0, 1417.66, 1941.61, 9.8029, 0.46687, 300, 0, 0, 2, 0, 0, 0, 0, 0, NULL, 40725);
 
  -- Skitterweb Lurker
 UPDATE `creature` SET `spawndist`= 10, `MovementType`= 1 WHERE `id` = 1781;
@@ -2609,27 +2609,27 @@ UPDATE `creature_template` SET `ScriptName`= 'npc_silverpine_hillsbrad_refugee' 
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44954;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES 
-(44954, 1, 3346, 0, 0, 18019),
-(44954, 2, 1906, 0, 0, 18019),
-(44954, 3, 25587, 13604, 0, 18019),
-(44954, 4, 3367, 0, 0, 18019),
-(44954, 6, 2714, 0, 0, 18019),
-(44954, 7, 2704, 0, 0, 18019),
-(44954, 8, 2715, 0, 0, 18019);
+(44954, 1, 3346, 0, 0, 40725),
+(44954, 2, 1906, 0, 0, 40725),
+(44954, 3, 25587, 13604, 0, 40725),
+(44954, 4, 3367, 0, 0, 40725),
+(44954, 6, 2714, 0, 0, 40725),
+(44954, 7, 2704, 0, 0, 40725),
+(44954, 8, 2715, 0, 0, 40725);
 
 DELETE FROM `creature_equip_template` WHERE `CreatureID` = 44966;
 INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`, `ItemID3`, `VerifiedBuild`) VALUES 
-(44966, 1, 2714, 0, 0, 18019),
-(44966, 2, 3367, 0, 0, 18019),
-(44966, 3, 2704, 0, 0, 18019),
-(44966, 4, 3351, 0, 0, 18019),
-(44966, 6, 25587, 13604, 0, 18019),
-(44966, 7, 3346, 0, 0, 18019),
-(44966, 8, 1906, 0, 0, 18019);
+(44966, 1, 2714, 0, 0, 40725),
+(44966, 2, 3367, 0, 0, 40725),
+(44966, 3, 2704, 0, 0, 40725),
+(44966, 4, 3351, 0, 0, 40725),
+(44966, 6, 25587, 13604, 0, 40725),
+(44966, 7, 3346, 0, 0, 40725),
+(44966, 8, 1906, 0, 0, 40725);
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+91;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+91, 44954, 0, 130, 172, 1, 0, 1, 169, 0, -1, 0, 6, 948.477, 634.106, 53.43565, 5.66271, 300, 0, 0, 494, 0, 2, 0, 0, 0, NULL, 0);
+(@CGUID+91, 44954, 0, 130, 172, 1, 0, 1, 169, 0, -1, 0, 6, 948.477, 634.106, 53.43565, 5.66271, 300, 0, 0, 494, 0, 2, 0, 0, 0, NULL, 40725);
 
 UPDATE `creature` SET `MovementType` = 1, `spawndist` = 3 WHERE `guid` IN (321951, 321953, 321550, 321551, 321549, 321766, 321771, 321765, 321773, 321827, 321828, 321829, 321952, 321824);
 
@@ -2996,11 +2996,11 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_worgen_sentry', `A
 
 DELETE FROM `creature` WHERE `guid` IN (@CGUID+92, @CGUID+93, @CGUID+94, @CGUID+95, @CGUID+96);
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+92, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 985.293, 689.312, 59.4764, 3.19127, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+93, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 979.146, 666.453, 60.9757, 6.27395, 300, 0, 0, 683, 0, 2, 0, 0, 0, NULL, 0),
-(@CGUID+94, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 999.823, 712.408, 60.9755, 3.14414, 300, 0, 0, 683, 0, 2, 0, 0, 0, NULL, 0),
-(@CGUID+95, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 1011.31, 695.133, 60.9755, 3.15591, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 0),
-(@CGUID+96, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 996.279, 690.808, 69.7955, 0.163545, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+92, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 985.293, 689.312, 59.4764, 3.19127, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+93, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 979.146, 666.453, 60.9757, 6.27395, 300, 0, 0, 683, 0, 2, 0, 0, 0, NULL, 40725),
+(@CGUID+94, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 999.823, 712.408, 60.9755, 3.14414, 300, 0, 0, 683, 0, 2, 0, 0, 0, NULL, 40725),
+(@CGUID+95, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 1011.31, 695.133, 60.9755, 3.15591, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 40725),
+(@CGUID+96, 44987, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 996.279, 690.808, 69.7955, 0.163545, 300, 0, 0, 683, 0, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` IN (@CGUID+92, @CGUID+93, @CGUID+94, @CGUID+95, @CGUID+96);
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3039,7 +3039,7 @@ UPDATE `creature_template` SET `ScriptName` = 'npc_silverpine_fenris_stalker' WH
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+103;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+103, 45032, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 978.801, 689.085, 74.8985, 0.021992, 300, 0, 0, 42, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+103, 45032, 0, 130, 235, 1, 0, 1, 266, 0, -1, 0, 0, 978.801, 689.085, 74.8985, 0.021992, 300, 0, 0, 42, 0, 0, 0, 0, 0, NULL, 40725);
 
 UPDATE `creature` SET `PhaseId` = 266 WHERE `id` = 45032;
 
@@ -3309,7 +3309,7 @@ INSERT INTO `spell_area` (`spell`, `area`, `quest_start`, `quest_end`, `aura_spe
  -- Forsaken Warhorse (ported from MoP)
 DELETE FROM `creature_template` WHERE `entry`= 73595;
 INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, `KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `femaleName`, `subname`, `IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `exp_unk`, `faction`, `npcflag`, `speed_walk`, `speed_run`, `scale`, `rank`, `dmgschool`, `BaseAttackTime`, `RangeAttackTime`, `BaseVariance`, `RangeVariance`, `unit_class`, `unit_flags`, `unit_flags2`, `dynamicflags`, `family`, `trainer_type`, `trainer_class`, `trainer_race`, `type`, `type_flags`, `type_flags2`, `lootid`, `pickpocketloot`, `skinloot`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `spell1`, `spell2`, `spell3`, `spell4`, `spell5`, `spell6`, `spell7`, `spell8`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, `AIName`, `MovementType`, `HoverHeight`, `HealthModifier`, `HealthModifierExtra`, `ManaModifier`, `ManaModifierExtra`, `ArmorModifier`, `DamageModifier`, `ExperienceModifier`, `RacialLeader`, `movementId`, `RegenHealth`, `mechanic_immune_mask`, `spell_school_immune_mask`, `flags_extra`, `ScriptName`, `VerifiedBuild`) VALUES 
-(73595, 0, 0, 0, 0, 0, 29257, 0, 0, 0, 'Forsaken Warhorse', '', 'Lady Sylvanas Windrunner\'s Pet', NULL, 0, 85, 85, 0, 0, 118, 0, 1, 1.14286, 1, 0, 0, 2000, 2000, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1077, 0, 0, '', 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 17614);
+(73595, 0, 0, 0, 0, 0, 29257, 0, 0, 0, 'Forsaken Warhorse', '', 'Lady Sylvanas Windrunner\'s Pet', NULL, 0, 85, 85, 0, 0, 118, 0, 1, 1.14286, 1, 0, 0, 2000, 2000, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1077, 0, 0, '', 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_template_addon` WHERE `entry`= 73595;
 INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3318,7 +3318,7 @@ INSERT INTO `creature_template_addon` (`entry`, `waypointPathId`, `cyclicSplineP
  -- Lady Sylvanas Windrunner
 DELETE FROM `creature` WHERE `guid`= @CGUID+75;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+75, 44365, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 1, 500.622, 1564.54, 128.34532, 4.2935099, 300, 0, 0, 34356800, 94700, 0, 2, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 0);
+(@CGUID+75, 44365, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 1, 500.622, 1564.54, 128.34532, 4.2935099, 300, 0, 0, 34356800, 94700, 0, 2, 134251328, 0, 'npc_silverpine_sylvanas_fhc', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+75;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3329,7 +3329,7 @@ UPDATE `creature_template` SET `unit_flags2` = 2107392, `VehicleId` = 1109  WHER
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+76;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+76, 44610, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 499.993011474609375, 1570.6300048828125, 131.7693328857421875, 4.815308570861816406, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+76, 44610, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 499.993011474609375, 1570.6300048828125, 131.7693328857421875, 4.815308570861816406, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+76;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3338,7 +3338,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
  -- Agatha
 DELETE FROM `creature` WHERE `guid`= @CGUID+77;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+77, 44608, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.1929931640625, 1574.030029296875, 132.09832763671875, 4.26351785659790039, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+77, 44608, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.1929931640625, 1574.030029296875, 132.09832763671875, 4.26351785659790039, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+77;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3349,7 +3349,7 @@ UPDATE `creature_template` SET `unit_flags2` = 2099200, `HoverHeight` = 2.8 WHER
 
 DELETE FROM `creature` WHERE `guid`= @CGUID+78;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+78, 44609, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.571014404296875, 1567.6600341796875, 132.6943206787109375, 3.7040863037109375, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 0);
+(@CGUID+78, 44609, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 0, 505.571014404296875, 1567.6600341796875, 132.6943206787109375, 3.7040863037109375, 300, 0, 0, 9030, 6520, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid`= @CGUID+78;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3362,7 +3362,7 @@ INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`,
 
 DELETE FROM `creature` WHERE `guid` = @CGUID+79;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+79, 44640, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 1, 549.267, 1572.28, 131.53, 0.161007, 300, 0, 0, 387450, 0, 2, 0, 0, 0, NULL, 0);
+(@CGUID+79, 44640, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 1, 549.267, 1572.28, 131.53, 0.161007, 300, 0, 0, 387450, 0, 2, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+79;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3383,7 +3383,7 @@ INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `positio
  -- Admiral Hatchet
 DELETE FROM `creature` WHERE `guid` = @CGUID+80;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+80, 44916, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 1, 492.516, 1527.46, 130.503, 5.52134, 300, 0, 0, 1640, 0, 0, 2, 0, 0, NULL, 0);
+(@CGUID+80, 44916, 0, 130, 228, 1, 0, 1, 169, 0, -1, 0, 1, 492.516, 1527.46, 130.503, 5.52134, 300, 0, 0, 1640, 0, 0, 2, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+80;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3392,7 +3392,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
  -- Warlord Torok
 DELETE FROM `creature` WHERE `guid` = @CGUID+81;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES 
-(@CGUID+81, 44917, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 0, 494.368, 1529.64, 130.002, 5.41923, 300, 0, 0, 1500, 0, 0, 0, 0, 0, NULL, 0);
+(@CGUID+81, 44917, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 0, 494.368, 1529.64, 130.002, 5.41923, 300, 0, 0, 1500, 0, 0, 0, 0, 0, NULL, 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+81;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -3647,7 +3647,7 @@ UPDATE `creature_template` SET `AIName` = 'SmartAI', `ScriptName` = '' WHERE `en
 
 DELETE FROM `gossip_menu_option` WHERE `MenuId`=1296 AND `OptionIndex`=3;
 INSERT INTO `gossip_menu_option` (`MenuId`, `OptionIndex`, `OptionIcon`, `OptionText`, `OptionBroadcastTextId`, `OptionType`, `OptionNpcflag`, `VerifiedBuild`) VALUES 
-(1296, 3, 0, 'Trick or Treat!', 10693, 1, 1, 15595);
+(1296, 3, 0, 'Trick or Treat!', 10693, 1, 1, 40725);
 
 DELETE FROM `gossip_menu_option_action` WHERE `MenuId` = 1296 AND `OptionIndex` = 3;
 
@@ -3778,68 +3778,68 @@ UPDATE `quest_template_addon` SET `PrevQuestID` = 27099, `NextQuestID` = 27180 W
 
 DELETE FROM `quest_details` WHERE `ID` IN (27098 /*27098*/, 27099 /*27099*/, 27097 /*27097*/, 27096 /*27096*/, 27094 /*27094*/, 27088 /*27088*/, 27093 /*27093*/, 27095 /*27095*/, 27082 /*27082*/, 27073 /*27073*/, 27069 /*27069*/, 27065 /*27065*/, 27056 /*27056*/, 27045 /*27045*/, 27039 /*27039*/, 26998 /*26998*/, 26995 /*26995*/, 26992 /*26992*/, 26989 /*26989*/, 26965 /*26965*/);
 INSERT INTO `quest_details` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `VerifiedBuild`) VALUES
-(27098, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27098
-(27099, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27099
-(27097, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27097
-(27096, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27096
-(27094, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27094
-(27088, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27088
-(27093, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27093
-(27095, 15, 1, 5, 0, 0, 0, 0, 0, 15595), -- 27095
-(27082, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27082
-(27073, 5, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27073
-(27069, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27069
-(27065, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 27065
-(27056, 1, 1, 0, 0, 0, 0, 0, 0, 15595), -- 27056
-(27045, 0, 0, 0, 0, 0, 0, 0, 0, 15595), -- 27045
-(27039, 6, 1, 0, 0, 0, 0, 0, 0, 15595), -- 27039
-(26998, 1, 1, 1, 0, 0, 0, 0, 0, 15595), -- 26998
-(26995, 5, 1, 1, 0, 0, 0, 0, 0, 15595), -- 26995
-(26992, 6, 1, 1, 0, 0, 0, 0, 0, 15595), -- 26992
-(26989, 1, 5, 1, 397, 0, 0, 0, 0, 15595), -- 26989
-(26965, 1, 1, 66, 0, 0, 0, 0, 0, 15595); -- 26965
+(27098, 0, 0, 0, 0, 0, 0, 0, 0, 40725), -- 27098
+(27099, 0, 0, 0, 0, 0, 0, 0, 0, 40725), -- 27099
+(27097, 1, 1, 1, 0, 0, 0, 0, 0, 40725), -- 27097
+(27096, 0, 0, 0, 0, 0, 0, 0, 0, 40725), -- 27096
+(27094, 0, 0, 0, 0, 0, 0, 0, 0, 40725), -- 27094
+(27088, 1, 1, 1, 0, 0, 0, 0, 0, 40725), -- 27088
+(27093, 0, 0, 0, 0, 0, 0, 0, 0, 40725), -- 27093
+(27095, 15, 1, 5, 0, 0, 0, 0, 0, 40725), -- 27095
+(27082, 1, 1, 1, 0, 0, 0, 0, 0, 40725), -- 27082
+(27073, 5, 1, 1, 0, 0, 0, 0, 0, 40725), -- 27073
+(27069, 0, 0, 0, 0, 0, 0, 0, 0, 40725), -- 27069
+(27065, 1, 1, 1, 0, 0, 0, 0, 0, 40725), -- 27065
+(27056, 1, 1, 0, 0, 0, 0, 0, 0, 40725), -- 27056
+(27045, 0, 0, 0, 0, 0, 0, 0, 0, 40725), -- 27045
+(27039, 6, 1, 0, 0, 0, 0, 0, 0, 40725), -- 27039
+(26998, 1, 1, 1, 0, 0, 0, 0, 0, 40725), -- 26998
+(26995, 5, 1, 1, 0, 0, 0, 0, 0, 40725), -- 26995
+(26992, 6, 1, 1, 0, 0, 0, 0, 0, 40725), -- 26992
+(26989, 1, 5, 1, 397, 0, 0, 0, 0, 40725), -- 26989
+(26965, 1, 1, 66, 0, 0, 0, 0, 0, 40725); -- 26965
 
 DELETE FROM `quest_request_items` WHERE `ID` IN (27093 /*27093*/, 26998 /*26998*/, 26965 /*26965*/, 26995 /*26995*/, 27088 /*27088*/, 27056 /*27056*/, 26992 /*26992*/, 26989 /*26989*/, 27082 /*27082*/, 27045 /*27045*/, 27073 /*27073*/, 27069 /*27069*/, 27099 /*27099*/, 27097 /*27097*/, 27096 /*27096*/, 27095 /*27095*/, 27094 /*27094*/);
 INSERT INTO `quest_request_items` (`ID`, `EmoteOnComplete`, `EmoteOnIncomplete`, `CompletionText`, `VerifiedBuild`) VALUES
-(27093, 0, 0, 'Thankfully we\'re almost out of ale.', 15595), -- 27093
-(26998, 0, 6, 'Have you exterminated the Vile Fin murlocs of the Dawning Isles?', 15595), -- 26998
-(26965, 0, 5, 'Stand at attention, $nnub!', 15595), -- 26965
-(26995, 1, 1, 'Remember, I can only use clean beast guts for the new strain of blight we\'re developing.', 15595), -- 26995
-(27088, 0, 6, 'Have you dealt with the ettin?', 15595), -- 27088
-(27056, 25, 0, 'Kneel before your queen, $n.', 15595), -- 27056
-(26992, 6, 6, 'Have you collected the ferocious doomweed I requested?', 15595), -- 26992
-(26989, 0, 6, 'What have you to report, $nnub?', 15595), -- 26989
-(27082, 5, 5, 'We are Forsaken! This is how we do it, $c.', 15595), -- 27082
-(27045, 0, 6, 'News from Yorick?', 15595), -- 27045
-(27073, 0, 15, 'Give \'em hell, $r!', 15595), -- 27073
-(27069, 0, 0, 'The pups might be the only orcs not drunk at this base.', 15595), -- 27069
-(27099, 0, 6, 'What have you to report?', 15595), -- 27099
-(27097, 0, 0, 'Victory!', 15595), -- 27097
-(27096, 6, 0, 'And the orcs?', 15595), -- 27096
-(27095, 0, 0, 'The matriarch must be found!', 15595), -- 27095
-(27094, 0, 6, 'You killed the Skitterweb matriarch?', 15595); -- 27094
+(27093, 0, 0, 'Thankfully we\'re almost out of ale.', 40725), -- 27093
+(26998, 0, 6, 'Have you exterminated the Vile Fin murlocs of the Dawning Isles?', 40725), -- 26998
+(26965, 0, 5, 'Stand at attention, $nnub!', 40725), -- 26965
+(26995, 1, 1, 'Remember, I can only use clean beast guts for the new strain of blight we\'re developing.', 40725), -- 26995
+(27088, 0, 6, 'Have you dealt with the ettin?', 40725), -- 27088
+(27056, 25, 0, 'Kneel before your queen, $n.', 40725), -- 27056
+(26992, 6, 6, 'Have you collected the ferocious doomweed I requested?', 40725), -- 26992
+(26989, 0, 6, 'What have you to report, $nnub?', 40725), -- 26989
+(27082, 5, 5, 'We are Forsaken! This is how we do it, $c.', 40725), -- 27082
+(27045, 0, 6, 'News from Yorick?', 40725), -- 27045
+(27073, 0, 15, 'Give \'em hell, $r!', 40725), -- 27073
+(27069, 0, 0, 'The pups might be the only orcs not drunk at this base.', 40725), -- 27069
+(27099, 0, 6, 'What have you to report?', 40725), -- 27099
+(27097, 0, 0, 'Victory!', 40725), -- 27097
+(27096, 6, 0, 'And the orcs?', 40725), -- 27096
+(27095, 0, 0, 'The matriarch must be found!', 40725), -- 27095
+(27094, 0, 6, 'You killed the Skitterweb matriarch?', 40725); -- 27094
 
 DELETE FROM `quest_offer_reward` WHERE `ID` IN (28568 /*28568*/, 27099 /*27099*/, 27097 /*27097*/, 27096 /*27096*/, 27088 /*27088*/, 27094 /*27094*/, 27093 /*27093*/, 27095 /*27095*/, 27082 /*27082*/, 27073 /*27073*/, 27069 /*27069*/, 28966 /*28966*/, 27065 /*27065*/, 27056 /*27056*/, 27045 /*27045*/, 27039 /*27039*/, 26998 /*26998*/, 26995 /*26995*/, 26992 /*26992*/, 26989 /*26989*/, 26965 /*26965*/, 27098 /*27098*/);
 INSERT INTO `quest_offer_reward` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `RewardText`, `VerifiedBuild`) VALUES
-(28568, 5, 21, 0, 0, 0, 0, 0, 0, 'Most excellent! A new recruit has arrived. There is much to do... much to do I say.', 15595), -- 28568
-(27099, 1, 1, 25, 6, 0, 0, 0, 0, 'It would seem that Crowley is more formidable than I anticipated. Still, he is a man - flesh and bone - full of secrets. Secrets that I know all about...$B$BYou have served me well, $n. I could use someone of your ability at the Sepulcher. I have a plan to deal with Crowley and his insurgents once and for all. Will you help?', 15595), -- 27099
-(27097, 1, 0, 0, 0, 0, 0, 0, 0, 'I see everything, $n. Through Agatha all is known to me.', 15595), -- 27097
-(27096, 0, 0, 0, 0, 0, 0, 0, 0, '<Sylvanas raises an eyebrow.>$B$BSo the orcs are in order?$B$B<Sylvanas reads the commendation letter.>$B$BRecovered their supplies? Killed a dozen worgen? Toppled an ettin? Freed their soldiers and destroyed the Skitterweb matriarch?$B$BI say this rarely, $n, but I am impressed. Perhaps your ability matches your aspirations. We shall see, for now you will be tested!', 15595), -- 27096
-(27088, 11, 25, 0, 0, 0, 0, 0, 0, '<Apothecary Wormcrud laughs maniacally.>$B$BWas there ever any doubt? An ettin is no match for science!', 15595), -- 27088
-(27094, 5, 1, 66, 0, 0, 0, 0, 0, 'You rescued our orcs and killed the Skitterweb matriarch? We owe you a great debt of gratitude. You\'ve saved us all from certain execution, $n. I\'m sure we can rouse these drunken idiots now.', 15595), -- 27094
-(27093, 0, 0, 0, 0, 0, 0, 0, 0, 'Lok\'tar, $n! Once the ale wears off my orcs will be ready!', 15595), -- 27093
-(27095, 0, 0, 0, 0, 0, 0, 0, 0, 'The root of this evil must be found and destroyed! The Skitterweb matriarch must be nearby. No doubt hiding in the nearby cave!', 15595), -- 27095
-(27082, 5, 1, 0, 0, 0, 0, 0, 0, 'Excellent! Now to prepare the \"meal.\"', 15595), -- 27082
-(27073, 25, 1, 11, 0, 0, 0, 0, 0, 'Looks as if you really gave those worgen a beating and, in the process, lifted the \"shame haze\" they cast over us. Perhaps the sea dogs will quit drinkin\' now.$B$BWho am I kidding?$B$BHah!', 15595), -- 27073
-(27069, 0, 0, 0, 0, 0, 0, 0, 0, 'Within these crates are held STEEL THUNDER! With our weaponry returned we might have a chance to redeem ourselves.', 15595), -- 27069
-(28966, 0, 0, 0, 0, 0, 0, 0, 0, 'Candy buckets like this are located in inns throughout the realms. Go ahead... take some!', 15595), -- 28966
-(27065, 0, 0, 0, 0, 0, 0, 0, 0, 'This fiasco may go down as one of the biggest embarrassments in the history of naval warfare. How did this happen? Drunk happened. That\'s how.', 15595), -- 27065
-(27056, 1, 1, 274, 5, 0, 0, 0, 0, 'Crowley... A gnat. An insect, waiting to be crushed beneath my boot heel.$B$BSo he thinks to rouse the feral worgen of Silverpine? We shall show him and his allies the might of the Forsaken!$B$BBut first we must clean up the mess made by the Warchief\'s fleet. Without their aid we may lose this war.', 15595), -- 27056
-(27045, 5, 1, 0, 0, 0, 0, 0, 0, 'Alas, poor Yorick! I knew her, $n. An assassin of infinite courage...$B$BNow, tell me what\'s going on? What did you and Yorick discover?', 15595), -- 27045
-(27039, 0, 0, 0, 0, 0, 0, 0, 0, 'Belmont gets a little nervous and sends some newbie to look for me? Listen, I\'ve been staking out the old Ivar cottage from inside this outhouse for three days. Your presence threatens the whole damn operation!$B$BThere\'s no time to explain. We have to act now or this mission will be compromised.', 15595), -- 27039
-(26998, 5, 1, 273, 0, 0, 0, 0, 0, 'Potent enough to exterminate a thousand murlocs! I think I\'ll put that on the label. You\'ve done well, $n, and great work around here gets rewarded.', 15595), -- 26998
-(26995, 4, 1, 0, 0, 0, 0, 0, 0, 'Excellent! With these guts and the ferocious doomweed we\'ll be able to test out our new strain of blight. Now to select a suitable target...', 15595), -- 26995
-(26992, 5, 1, 273, 0, 0, 0, 0, 0, 'Agony abounds, friend! The land itself threatens to devour us, and yet we persist. I wonder why that is? With this doomweed and the guts and gore that T\'Veen needs, we might have something suitable to send to the Forsaken front.', 15595), -- 26992
-(26989, 1, 5, 21, 21, 0, 0, 0, 0, '$nnub has returned! And in one piece!$B$BDefender of Silverpine! Redeemer of the Horde! $nnub, your bravery must be rewarded!', 15595), -- 26989
-(26965, 274, 1, 273, 0, 0, 0, 0, 0, 'Well that was unexpected. I am not one to doubt our Warchief, but...$B$BNevermind! We have work to do. I\'m sure the Dark Lady and the Warchief will get this all worked out.', 15595), -- 26965
-(27098, 25, 6, 5, 0, 0, 0, 0, 0, 'Do you now understand the importance of our mission here? Crowley and his Alliance dogs must be stopped!', 15595); -- 27098
+(28568, 5, 21, 0, 0, 0, 0, 0, 0, 'Most excellent! A new recruit has arrived. There is much to do... much to do I say.', 40725), -- 28568
+(27099, 1, 1, 25, 6, 0, 0, 0, 0, 'It would seem that Crowley is more formidable than I anticipated. Still, he is a man - flesh and bone - full of secrets. Secrets that I know all about...$B$BYou have served me well, $n. I could use someone of your ability at the Sepulcher. I have a plan to deal with Crowley and his insurgents once and for all. Will you help?', 40725), -- 27099
+(27097, 1, 0, 0, 0, 0, 0, 0, 0, 'I see everything, $n. Through Agatha all is known to me.', 40725), -- 27097
+(27096, 0, 0, 0, 0, 0, 0, 0, 0, '<Sylvanas raises an eyebrow.>$B$BSo the orcs are in order?$B$B<Sylvanas reads the commendation letter.>$B$BRecovered their supplies? Killed a dozen worgen? Toppled an ettin? Freed their soldiers and destroyed the Skitterweb matriarch?$B$BI say this rarely, $n, but I am impressed. Perhaps your ability matches your aspirations. We shall see, for now you will be tested!', 40725), -- 27096
+(27088, 11, 25, 0, 0, 0, 0, 0, 0, '<Apothecary Wormcrud laughs maniacally.>$B$BWas there ever any doubt? An ettin is no match for science!', 40725), -- 27088
+(27094, 5, 1, 66, 0, 0, 0, 0, 0, 'You rescued our orcs and killed the Skitterweb matriarch? We owe you a great debt of gratitude. You\'ve saved us all from certain execution, $n. I\'m sure we can rouse these drunken idiots now.', 40725), -- 27094
+(27093, 0, 0, 0, 0, 0, 0, 0, 0, 'Lok\'tar, $n! Once the ale wears off my orcs will be ready!', 40725), -- 27093
+(27095, 0, 0, 0, 0, 0, 0, 0, 0, 'The root of this evil must be found and destroyed! The Skitterweb matriarch must be nearby. No doubt hiding in the nearby cave!', 40725), -- 27095
+(27082, 5, 1, 0, 0, 0, 0, 0, 0, 'Excellent! Now to prepare the \"meal.\"', 40725), -- 27082
+(27073, 25, 1, 11, 0, 0, 0, 0, 0, 'Looks as if you really gave those worgen a beating and, in the process, lifted the \"shame haze\" they cast over us. Perhaps the sea dogs will quit drinkin\' now.$B$BWho am I kidding?$B$BHah!', 40725), -- 27073
+(27069, 0, 0, 0, 0, 0, 0, 0, 0, 'Within these crates are held STEEL THUNDER! With our weaponry returned we might have a chance to redeem ourselves.', 40725), -- 27069
+(28966, 0, 0, 0, 0, 0, 0, 0, 0, 'Candy buckets like this are located in inns throughout the realms. Go ahead... take some!', 40725), -- 28966
+(27065, 0, 0, 0, 0, 0, 0, 0, 0, 'This fiasco may go down as one of the biggest embarrassments in the history of naval warfare. How did this happen? Drunk happened. That\'s how.', 40725), -- 27065
+(27056, 1, 1, 274, 5, 0, 0, 0, 0, 'Crowley... A gnat. An insect, waiting to be crushed beneath my boot heel.$B$BSo he thinks to rouse the feral worgen of Silverpine? We shall show him and his allies the might of the Forsaken!$B$BBut first we must clean up the mess made by the Warchief\'s fleet. Without their aid we may lose this war.', 40725), -- 27056
+(27045, 5, 1, 0, 0, 0, 0, 0, 0, 'Alas, poor Yorick! I knew her, $n. An assassin of infinite courage...$B$BNow, tell me what\'s going on? What did you and Yorick discover?', 40725), -- 27045
+(27039, 0, 0, 0, 0, 0, 0, 0, 0, 'Belmont gets a little nervous and sends some newbie to look for me? Listen, I\'ve been staking out the old Ivar cottage from inside this outhouse for three days. Your presence threatens the whole damn operation!$B$BThere\'s no time to explain. We have to act now or this mission will be compromised.', 40725), -- 27039
+(26998, 5, 1, 273, 0, 0, 0, 0, 0, 'Potent enough to exterminate a thousand murlocs! I think I\'ll put that on the label. You\'ve done well, $n, and great work around here gets rewarded.', 40725), -- 26998
+(26995, 4, 1, 0, 0, 0, 0, 0, 0, 'Excellent! With these guts and the ferocious doomweed we\'ll be able to test out our new strain of blight. Now to select a suitable target...', 40725), -- 26995
+(26992, 5, 1, 273, 0, 0, 0, 0, 0, 'Agony abounds, friend! The land itself threatens to devour us, and yet we persist. I wonder why that is? With this doomweed and the guts and gore that T\'Veen needs, we might have something suitable to send to the Forsaken front.', 40725), -- 26992
+(26989, 1, 5, 21, 21, 0, 0, 0, 0, '$nnub has returned! And in one piece!$B$BDefender of Silverpine! Redeemer of the Horde! $nnub, your bravery must be rewarded!', 40725), -- 26989
+(26965, 274, 1, 273, 0, 0, 0, 0, 0, 'Well that was unexpected. I am not one to doubt our Warchief, but...$B$BNevermind! We have work to do. I\'m sure the Dark Lady and the Warchief will get this all worked out.', 40725), -- 26965
+(27098, 25, 6, 5, 0, 0, 0, 0, 0, 'Do you now understand the importance of our mission here? Crowley and his Alliance dogs must be stopped!', 40725); -- 27098
