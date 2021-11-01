@@ -5876,15 +5876,14 @@ struct npc_silverpine_warhorse_sylvanas_lordaeron : public ScriptedAI
     {
         if (Player* player = who->ToPlayer())
         {
+            _playerGUID = player->GetGUID();
+
             if (Creature* sylvanas = me->FindNearestCreature(NPC_SYLVANAS_LORDAERON, 10.0f))
                 _sylvanasGUID = sylvanas->GetGUID();
-
-                _playerGUID = player->GetGUID();
 
             if (Creature* playerhorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_PLAYER, 10.0f))
                 _playerHorseGUID = playerhorse->GetGUID();
         }
-
 
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
         me->SetReactState(REACT_PASSIVE);
