@@ -5722,36 +5722,45 @@ struct npc_silverpine_sylvanas_fhc : public ScriptedAI
 
     void JustAppeared() override
     {
-        if (me->GetPhaseShift().HasPhase(DEFAULT_PHASE) || me->GetPhaseShift().HasPhase(PHASE_FORSAKEN_HIGH_COMMAND_INTRODUCTION))
+        if (Creature* warhorse = me->SummonCreature(NPC_FORSAKEN_WARHORSE_UNPHASED, me->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN))
         {
-            if (Creature* warhorse = me->SummonCreature(NPC_FORSAKEN_WARHORSE_UNPHASED, me->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN))
-            {
-                if (me->HasAura(SPELL_APPLY_INVIS_ZONE_1))
-                    warhorse->CastSpell(warhorse, SPELL_APPLY_INVIS_ZONE_1, true);
-                else if (me->HasAura(SPELL_APPLY_INVIS_ZONE_4))
-                    warhorse->CastSpell(warhorse, SPELL_APPLY_INVIS_ZONE_4, true);
+            if (me->HasAura(SPELL_APPLY_INVIS_ZONE_1))
+                warhorse->CastSpell(warhorse, SPELL_APPLY_INVIS_ZONE_1, true);
+            else if (me->HasAura(SPELL_APPLY_INVIS_ZONE_4))
+                warhorse->CastSpell(warhorse, SPELL_APPLY_INVIS_ZONE_4, true);
 
-                me->EnterVehicle(warhorse, SEAT_WARHORSE_SYLVANAS);
+            me->EnterVehicle(warhorse, SEAT_WARHORSE_SYLVANAS);
 
-                warhorse->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-            }
+            warhorse->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         }
     }
 
     void QuestAccept(Player* player, const Quest* quest) override
     {
-        if (quest->GetQuestId() == QUEST_LORDAERON)
+        switch (quest->GetQuestId())
         {
-            Position pos = player->GetPosition();
+            case QUEST_LORDAERON:
+            {
+                Position pos = player->GetPosition();
 
-            player->CastSpell(player, SPELL_SUMMON_SYLVANAS_AND_HORSE, true);
-            player->CastSpell(player, SPELL_SUMMON_FORSAKEN_WARHORSE, true);
-            player->NearTeleportTo(pos, false);
-            player->CastSpell(player, SPELL_LORDAERON_AURA, true);
-            player->CastSpell(player, SPELL_SUMMON_LORDAERON_ACTORS, true);
+                player->CastSpell(player, SPELL_SUMMON_SYLVANAS_AND_HORSE, true);
+                player->CastSpell(player, SPELL_SUMMON_FORSAKEN_WARHORSE, true);
+                player->NearTeleportTo(pos, false);
+                player->CastSpell(player, SPELL_LORDAERON_AURA, true);
+                player->CastSpell(player, SPELL_SUMMON_LORDAERON_ACTORS, true);
+
+                break;
+            }
+
+            case QUEST_TO_FORSAKEN_HIGH_COMMAND:
+            {
+                player->CastSpell(player, SPELL_FLIGHT_OF_THE_VALKYR_FORWARD, true);
+                break;
+            }
+
+            default:
+                break;
         }
-        else if (quest->GetQuestId() == QUEST_TO_FORSAKEN_HIGH_COMMAND)
-            player->CastSpell(player, SPELL_FLIGHT_OF_THE_VALKYR_FORWARD, true);
     }
 
     void UpdateAI(uint32 diff) override
@@ -5870,7 +5879,6 @@ struct npc_silverpine_warhorse_sylvanas_lordaeron : public ScriptedAI
             if (Creature* sylvanas = me->FindNearestCreature(NPC_SYLVANAS_LORDAERON, 10.0f))
                 _sylvanasGUID = sylvanas->GetGUID();
 
-            if (Player* player = who->ToPlayer())
                 _playerGUID = player->GetGUID();
 
             if (Creature* playerhorse = me->FindNearestCreature(NPC_FORSAKEN_WARHORSE_PLAYER, 10.0f))

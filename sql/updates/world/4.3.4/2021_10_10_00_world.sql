@@ -1036,8 +1036,6 @@ INSERT INTO `creature_formations` (`LeaderGUID`, `MemberGUID`, `FollowDistance`,
  --
  
  -- Garrosh Hellscream
-UPDATE `broadcast_text` SET `Text` = 'Remember, Sylvanas, eventually we all have to stand before our maker and face judgment. Your day may come sooner than others...' WHERE `ID` = 44721;
-
 DELETE FROM `creature_text` WHERE `CreatureID` = 44629;
 INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Language`, `Probability`, `Emote`, `Duration`, `Sound`, `SoundType`, `BroadcastTextId`, `TextRange`, `comment`) VALUES
 (44629, 0, 0, 'This better be important, Sylvanas. You know how I detest this place and its foul stench. Why have you called for me?', 12, 0, 100, 0, 0, 20496, 0, 44699, 0, 'VO_QE_Garrosh_SPEvent01'),
