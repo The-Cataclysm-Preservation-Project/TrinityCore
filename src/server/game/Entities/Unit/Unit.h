@@ -1818,6 +1818,8 @@ class TC_GAME_API Unit : public WorldObject
         // Movement info
         Movement::MoveSpline * movespline;
 
+        uint8 m_forced_speed_changes[MAX_MOVE_TYPE];
+
         // Part of Evade mechanics
         time_t GetLastDamagedTime() const { return _lastDamagedTime; }
         void UpdateLastDamagedTime(SpellInfo const* spellProto);
