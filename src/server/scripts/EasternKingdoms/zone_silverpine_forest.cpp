@@ -118,10 +118,10 @@ enum HordeHauler
     PATH_TROOPER_4                          = 447323,
     PATH_TROOPER_5                          = 447324,
 
-    WAYPOINT_ON_FORSAKEN_HIGH               = 10,
-    WAYPOINT_ON_SEPULCHER                   = 34,
-    WAYPOINT_ON_FORSAKEN_FRONT              = 69,
-    WAYPOINT_ON_DESPAWN_POINT_SOUTH         = 72,
+    WAYPOINT_ON_FORSAKEN_HIGH               = 11,
+    WAYPOINT_ON_SEPULCHER                   = 35,
+    WAYPOINT_ON_FORSAKEN_FRONT              = 60,
+    WAYPOINT_ON_DESPAWN_POINT_SOUTH         = 63,
     WAYPOINT_ON_TROOPER_DESPAWN             = 1,
 
     SEAT_HAULER_PLAYER                      = 2
