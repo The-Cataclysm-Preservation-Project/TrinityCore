@@ -63,14 +63,10 @@ enum SilverpineForest
 {
     QUEST_SILVERPINE_COMMAND_1              = 26964,
     QUEST_SILVERPINE_COMMAND_2              = 28568,
-    QUEST_TRANSDIMENSIONAL_WARFARE_1        = 27512,
-    QUEST_TRANSDIMENSIONAL_WARFARE_2        = 27513,
-    QUEST_TRANSDIMENSIONAL_WARFARE_3        = 27518,
 
     ZONE_SILVERPINE                         = 130,
 
-    AREA_FORSAKEN_HIGH_COMMAND              = 5369,
-    AREA_AMBERMILL                          = 233
+    AREA_FORSAKEN_HIGH_COMMAND              = 5369
 };
 
 // Silverpine Forest - 130
@@ -89,27 +85,6 @@ public:
                 {
                     if (const Quest* WarchiefCommandSilverpineForest = sObjectMgr->GetQuestTemplate(QUEST_SILVERPINE_COMMAND_2))
                         player->AddQuestAndCheckCompletion(WarchiefCommandSilverpineForest, nullptr);
-                }
-            }
-        }
-
-        if (newArea == AREA_AMBERMILL)
-        {
-            if (player->GetQuestStatus(QUEST_TRANSDIMENSIONAL_WARFARE_1) == QUEST_STATUS_REWARDED)
-            {
-                if (player->GetQuestStatus(QUEST_TRANSDIMENSIONAL_WARFARE_2) == QUEST_STATUS_NONE)
-                {
-                    if (const Quest* TransdimensionalWarfare2 = sObjectMgr->GetQuestTemplate(QUEST_TRANSDIMENSIONAL_WARFARE_2))
-                        player->AddQuestAndCheckCompletion(TransdimensionalWarfare2, nullptr);
-                }
-
-                if (player->GetQuestStatus(QUEST_TRANSDIMENSIONAL_WARFARE_2) == QUEST_STATUS_REWARDED)
-                {
-                    if (player->GetQuestStatus(QUEST_TRANSDIMENSIONAL_WARFARE_3) == QUEST_STATUS_NONE)
-                    {
-                        if (const Quest* TransdimensionalWarfare3 = sObjectMgr->GetQuestTemplate(QUEST_TRANSDIMENSIONAL_WARFARE_3))
-                            player->AddQuestAndCheckCompletion(TransdimensionalWarfare3, nullptr);
-                    }
                 }
             }
         }
