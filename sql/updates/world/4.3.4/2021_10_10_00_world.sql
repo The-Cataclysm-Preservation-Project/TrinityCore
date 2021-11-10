@@ -1088,6 +1088,7 @@ INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `ItemID2`,
 
  -- Duplicated entries (due to sniff issues back in the day)
 DELETE FROM `creature` WHERE `guid` IN (321304, 320990, 321294, 320952, 321013, 321012, 321010, 321254, 322179, 322236, 322237, 322239, 322240, 322241, 322238, 322242, 322243, 322244, 322245, 322246, 325728, 326091, 326733, 326732, 326737, 326734, 326736, 326735, 320991, 321253, 321746, 322266, 325730, 321297, 321298, 321299, 326093, 326094, 326095, 326735, 326736, 320953, 321296, 326090, 346560, 321295, 326092, 321256, 321258, 321259, 321747, 321749, 321750, 322277, 322280, 322281, 325731, 325733, 325734, 344733, 321011, 321014, 321257, 321260, 321748, 321751, 322278, 322279, 325732, 325735, 321009, 321255, 321745, 322276, 325729);
+DELETE FROM `spawn_group` WHERE `spawnId` = 321304;
 
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID AND @CGUID+1;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
@@ -1310,7 +1311,7 @@ INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `m
  -- Apothecary Witherbloom
 DELETE FROM `creature` WHERE `guid`= @CGUID+10;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnMask`, `phaseUseFlags`, `phaseMask`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES
-(@CGUID+10, 44778, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1409.33, 1065.86, 60.5617, 0.226893, 300, 0, 0, 1398, 0, 2, 0, 0, 0, '', 40725);
+(@CGUID+10, 44778, 0, 0, 0, 1, 0, 1, 169, 0, -1, 0, 1, 1409.33, 1065.86, 60.5617, 0.226893, 300, 0, 0, 1398, 0, 0, 0, 0, 0, '', 40725);
 
 DELETE FROM `creature_addon` WHERE `guid` = @CGUID+10;
 INSERT INTO `creature_addon` (`guid`, `waypointPathId`, `cyclicSplinePathId`, `mount`, `bytes1`, `bytes2`, `emote`, `aiAnimKit`, `movementAnimKit`, `meleeAnimKit`, `visibilityDistanceType`, `auras`) VALUES 
@@ -2315,8 +2316,6 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83840, 'spell_silverpine_despawn_all_summons_rear_guard');
 
  -- Orc Crate
-UPDATE `creature_template` SET `npcflag` = 16777216 WHERE `entry` = 44915;
-
 DELETE FROM `spell_script_names` WHERE `spell_id` = 83838 AND `ScriptName` = 'spell_silverpine_pick_up_orc_crate';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (83838, 'spell_silverpine_pick_up_orc_crate');
