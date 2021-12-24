@@ -32,7 +32,7 @@ enum BattlefieldTypes
 enum BattlefieldIDs
 {
     BATTLEFIELD_BATTLEID_WG                      = 1,       // Wintergrasp battle
-    BATTLEFIELD_BATTLEID_TB                      = 21       // Tol Barad
+    BATTLEFIELD_BATTLEID_TB                      = 2        // Tol Barad
 };
 
 enum BattlefieldState : int8

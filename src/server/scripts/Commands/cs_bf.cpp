@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: bf_commandscript
-%Complete: 100
-Comment: All bf related commands
-Category: commandscripts
-EndScriptData */
+ /* ScriptData
+ Name: bf_commandscript
+ %Complete: 100
+ Comment: All bf related commands
+ Category: commandscripts
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "BattlefieldMgr.h"
@@ -65,8 +65,21 @@ public:
 
         bf->StartBattle();
 
-        if (battleid == 1)
-            handler->SendGlobalGMSysMessage("Wintergrasp (Command start used)");
+        switch (battleid)
+        {
+            case 1:
+                handler->SendGlobalGMSysMessage("Wintergrasp (Command start used)");
+                break;
+            case 2:
+                handler->SendGlobalGMSysMessage("Tol'Barad (Command start used)");
+                break;
+        }
+
+        //if (battleid == 1)
+        //    handler->SendGlobalGMSysMessage("Wintergrasp (Command start used)");
+        //
+        //if (battleid == 2)
+        //    handler->SendGlobalGMSysMessage("Tol'Barad (Command start used)");
 
         return true;
     }
@@ -87,8 +100,21 @@ public:
 
         bf->EndBattle(true);
 
-        if (battleid == 1)
-            handler->SendGlobalGMSysMessage("Wintergrasp (Command stop used)");
+        switch (battleid)
+        {
+            case 1:
+                handler->SendGlobalGMSysMessage("Wintergrasp (Command stop used)");
+                break;
+            case 2:
+                handler->SendGlobalGMSysMessage("Tol'Barad (Command stop used)");
+                break;
+        }
+
+        //if (battleid == 1)
+        //    handler->SendGlobalGMSysMessage("Wintergrasp (Command stop used)");
+        //
+        //if (battleid == 2)
+        //    handler->SendGlobalGMSysMessage("Tol'Barad (Command stop used)");
 
         return true;
     }
@@ -110,14 +136,42 @@ public:
         if (bf->IsEnabled())
         {
             bf->ToggleBattlefield(false);
-            if (battleid == 1)
+
+            switch (battleid)
+            {
+            case 1:
                 handler->SendGlobalGMSysMessage("Wintergrasp is disabled");
+                break;
+            case 2:
+                handler->SendGlobalGMSysMessage("Tol'Barad is disabled");
+                break;
+            }
+
+            //if (battleid == 1)
+            //    handler->SendGlobalGMSysMessage("Wintergrasp is disabled");
+            //
+            //if (battleid == 2)
+            //    handler->SendGlobalGMSysMessage("Tol'Barad is disabled");
         }
         else
         {
             bf->ToggleBattlefield(true);
-            if (battleid == 1)
+
+            switch (battleid)
+            {
+            case 1:
                 handler->SendGlobalGMSysMessage("Wintergrasp is enabled");
+                break;
+            case 2:
+                handler->SendGlobalGMSysMessage("Tol'Barad is enabled");
+                break;
+            }
+
+            //if (battleid == 1)
+            //    handler->SendGlobalGMSysMessage("Wintergrasp is enabled");
+            //
+            //if (battleid == 2)
+            //    handler->SendGlobalGMSysMessage("Tol'Barad is enabled");
         }
 
         return true;
@@ -138,8 +192,22 @@ public:
             return false;
 
         bf->EndBattle(false);
-        if (battleid == 1)
+
+        switch (battleid)
+        {
+        case 1:
             handler->SendGlobalGMSysMessage("Wintergrasp (Command switch used)");
+            break;
+        case 2:
+            handler->SendGlobalGMSysMessage("Tol'Barad (Command switch used)");
+            break;
+        }
+
+        //if (battleid == 1)
+        //    handler->SendGlobalGMSysMessage("Wintergrasp (Command switch used)");
+        //
+        //if (battleid == 2)
+        //    handler->SendGlobalGMSysMessage("Tol'Barad (Command switch used)");
 
         return true;
     }
@@ -166,8 +234,22 @@ public:
 
         bf->SetTimer(time * IN_MILLISECONDS);
         bf->SendInitWorldStatesToAll();
-        if (battleid == 1)
+
+        switch (battleid)
+        {
+        case 1:
             handler->SendGlobalGMSysMessage("Wintergrasp (Command timer used)");
+            break;
+        case 2:
+            handler->SendGlobalGMSysMessage("Tol'Barad (Command timer used)");
+            break;
+        }
+
+        //if (battleid == 1)
+        //    handler->SendGlobalGMSysMessage("Wintergrasp (Command timer used)");
+        //
+        //if (battleid == 2)
+        //    handler->SendGlobalGMSysMessage("Tol'Barad (Command timer used)");
 
         return true;
     }
