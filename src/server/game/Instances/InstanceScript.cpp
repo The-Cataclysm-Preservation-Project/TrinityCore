@@ -376,7 +376,7 @@ bool InstanceScript::SetBossState(uint32 id, EncounterState state)
                 {
                     case IN_PROGRESS:
                         InitializeCombatResurrections();
-                        SendEncounterUnit(ENCOUNTER_FRAME_SET_COMBAT_RES_LIMIT);
+                        SendEncounterUnit(ENCOUNTER_FRAME_SET_COMBAT_RES_LIMIT, nullptr, GetCombatResurrectionCharges());
                         break;
                     case FAIL:
                     case DONE:

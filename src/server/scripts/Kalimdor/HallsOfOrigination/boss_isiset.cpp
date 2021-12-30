@@ -152,7 +152,6 @@ public:
             if (IsHeroic())
                 DoCastSelf(SPELL_CALL_OF_SKY);
             RescheduleEvents();
-            instance->SendEncounterUnit(ENCOUNTER_FRAME_SET_COMBAT_RES_LIMIT, 0);
         }
 
         void DamageTaken(Unit* /*attacker*/, uint32 &damage) override
@@ -191,7 +190,6 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            //instance->SendEncounterUnit(ENCOUNTER_FRAME_SET_COMBAT_RES_LIMIT, ?me?, 1); //from sniff, not sure what it does
             instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me, 0);
             _JustDied();
             Talk(SAY_DEATH);
