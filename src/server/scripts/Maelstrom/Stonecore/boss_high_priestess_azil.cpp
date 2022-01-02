@@ -198,9 +198,9 @@ class boss_high_priestess_azil : public CreatureScript
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, !apply);
             }
 
-            void OnSpellCastFinished(SpellInfo const* spell, SpellFinishReason /*reason*/) override
+            void OnSpellCastFinished(SpellInfo const* spell, SpellFinishReason reason) override
             {
-                if (spell->Id == SPELL_FORCE_GRIP)
+                if (spell->Id == SPELL_FORCE_GRIP && reason != SPELL_FINISHED_SUCCESSFUL_CAST)
                 {
                     MakeInterruptable(false);
                     SetVehicleId(VEHICLE_ID_DEFAULT);
