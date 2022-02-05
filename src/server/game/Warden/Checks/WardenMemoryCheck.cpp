@@ -33,7 +33,8 @@ WardenMemoryCheck::WardenMemoryCheck(Field* fields) : WardenCheck(Type::Memory, 
 
     if (_length != _result.size())
     {
-        TC_LOG_DEBUG("sql.sql", "Warden memory check #%lu has mismatched expected data size (%u) and size (%u).", _result.size(), _length);
+        TC_LOG_DEBUG("sql.sql", "Warden memory check #%lu has mismatched expected data size (%lu) and size (%u).",
+            GetID(), _result.size(), _length);
         _length = _result.size();
     }
 }

@@ -37,7 +37,7 @@ WardenPageCheck::WardenPageCheck(Type checkType, Field* fields) : WardenCheck(ch
 
     if (_expectedData.size() != _length)
     {
-        TC_LOG_DEBUG("sql.sql", "Warden driver check #%lu has mismatched data length (%u) and length value (%u).",
+        TC_LOG_DEBUG("sql.sql", "Warden driver check #%u has mismatched data length (%lu) and length value (%u).",
             GetID(), _expectedData.size(), _length);
 
         _length = _expectedData.size();

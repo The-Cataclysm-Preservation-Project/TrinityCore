@@ -53,7 +53,7 @@ WardenCheckResult WardenTimingCheck::ProcessResponse(ByteBuffer& packet) const
     return HandleExtendedResponse(checkFailed, newClientTicks);
 }
 
-WardenCheckResult WardenTimingCheck::HandleExtendedResponse(bool checkFailed, uint32 clientTicks) const
+WardenCheckResult WardenTimingCheck::HandleExtendedResponse(bool checkFailed, uint32 /* clientTicks */) const
 {
     return WardenCheck::HandleResponse(checkFailed);
 }
