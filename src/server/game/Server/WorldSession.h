@@ -698,7 +698,6 @@ class TC_GAME_API WorldSession
         void HandleMoveSetCanFlyAckOpcode(WorldPacket& recvData);
         void HandleMoveSetCanTransitionBetweenSwinAndFlyAck(WorldPacket& recvData);
         void HandleMoveGravityDisableAck(WorldPacket& recvData);
-        void HandleMoveGravityEnableAck(WorldPacket& recvData);
         void HandleSetCollisionHeightAck(WorldPacket& recvData);
 
         void HandleMountSpecialAnimOpcode(WorldPacket& recvdata);

@@ -1,35 +1,3 @@
-DROP TABLE IF EXISTS warden_keys;
-CREATE TABLE `warden_keys`  (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `platform` varchar(5) NOT NULL,
-  `seed` text NOT NULL,
-  `clientKey` text NOT NULL,
-  `serverKey` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `warden_keys` (`platform`, `seed`, `clientKey`, `serverKey`) VALUES
-("Win", "a390327515cec0bccb05618a2515d5a4", "6a1dd39730f319b0db64acd61ee96582", "128552d30cbbef058689a0e95c47cf52"),
-("Win", "429059729f025d5f58725d39dbced1c5", "88066191bddbed717f7af58791528f08", "4f853408d8b6ce60e564cda6f089acbd"),
-("Win", "189ebdcb9fde1a653cc0b27e5a4a46c5", "8c865d8c6180be9998313e3b8ea8af91", "80b24dceedbd6cb655a7c46905ceb034"),
-("Win", "526e3538c2b2278cdfc019b320bb5471", "cdb5354a058de1f9c3d3a7f84aed91b9", "bb35ff3d5b341240415a62fae539bbef"),
-("Win", "d0bfc32958ab623c168bbbaa93f2bce2", "35a68ad73d8aaf624698faf41f0fa473", "6397b6f72b544da284f8af0c8792f458"),
-("Win", "bb18331d142164476cd835bab9b3623e", "075d383002d210b1dc41be75c07badab", "c13f5edc9cecb99fceecbe1e980f220e"),
-("Win", "26f48d7896a294024a49235c3be40303", "dd0b3168a9b8753f1306bf855b5b1435", "cd51e950500d1252514cc2a06ef4e41e"),
-("Win", "88eab2f08256db13862f5afa9ac8b3ae", "55d3fc60073a5765da10012e0cae0f44", "caf8b97b15958cda46c3ae1212747674"),
-("Win", "2587f842eef8bc57a78ee6e002e36edb", "79412cab73fe8684e551e72a9bf47c38", "83d2a6f45d21c523c8f36060b06a10d7"),
-("Win", "4f1dfb8d9a501e75c138bb8f42d3c71b", "330aaf0959829d398382f1f6fd50e1b9", "a3497d405cee3eb0dd9417346e35238b"),
-("Win", "ff4af1e0eda051b903c520ec9b4fe1f5", "b53d4d93db413c9badef1a80facb5703", "d26f2495eeb3bba3a8a51a4760b20fb3"),
-("Win", "093f3def01d311ca72cd534a97a5bf14", "b89c7279082e455deb34b2ab1200a068", "e0c3a667f6931d9252f9536f0068e02a"),
-("Win", "ec6617dd1ea1af97c8d90a92888d84d9", "e327e12075c29c5e9a238688b3592c7d", "183dccbc9c0a91105959337f85549951"),
-("Win", "d29b3b29768657967341a7b8bb8dbd92", "285598f344d7d9a45b883b789017973f", "06fa5715be206a92ca26380ec4dae26e"),
-("Win", "ffba1fac21e7f840637dc9c89aa0b427", "261d5878a4983ab95dad71c7ca09adb5", "ae03e30e9bf22fd6459769917072fd37"),
-("Win", "27cadad8809ad40b83ce345b03ba75b8", "113a1d9a77a187d471c6488cf3d1365a", "b7020e133e9282c31ed560b22be54880"),
-("Win", "8b8f354fc20334e807f51e361b53f658", "b250eecb81563956dc8d9c8f0099977a", "7af5f1d27d7735c7c457d6e9fe47a06f"),
-("Win", "4a70366f01cebe9833c4597970945f5b", "2c62b68a07bc1db4294b34c4ca633f3d", "f6032d87150b0293cc9176df6fe7e394"),
-("Win", "51812b5bddf1f513bcc305591bf0f44a", "e556e838c247be7a7966c2aa02ce7c29", "ef05975f488e9f7836eae445274ed355"),
-("Win", "04fab25fdfdeca051510621a8db38c30", "31f4664ee82efe11fcaf01cf34811098", "23eca60ac69e1caeae6d85ac25669be4");
-
 DROP TABLE IF EXISTS warden_checks;
 CREATE TABLE `warden_checks`  (
   `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
