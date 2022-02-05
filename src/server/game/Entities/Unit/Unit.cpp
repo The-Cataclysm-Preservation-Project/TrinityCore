@@ -369,9 +369,6 @@ Unit::Unit(bool isWorldObject) :
     for (uint8 i = 0; i < MAX_MOVE_TYPE; ++i)
         m_speed_rate[i] = 1.0f;
 
-    for (uint8 i = 0; i < MAX_MOVE_TYPE; ++i)
-        m_forced_speed_changes[i] = 0;
-
     m_charmInfo = nullptr;
     _gameClientMovingMe = nullptr;
 
@@ -9088,9 +9085,15 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
     float newSpeedFlat = rate * (IsControlledByPlayer() ? playerBaseMoveSpeed[mtype] : baseMoveSpeed[mtype]);
     if (IsMovedByClient() && IsInWorld())
     {
-        // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
-        // and do it only for real sent packets and use run for run/mounted as client expected
-        ++m_forced_speed_changes[mtype];
+        MovementPacketSender::SendSpeedChangeToMover(this, mtype, newSpeedFlat);
+        SetSpeedRateReal(mtype, rate);
+    }
+    else if (IsMovedByClient() && !IsInWorld()) // (1)
+        SetSpeedRateReal(mtype, rate);
+    else // <=> if(!IsMovedByPlayer())
+    {
+        SetSpeedRateReal(mtype, rate);
+        MovementPacketSender::SendSpeedChangeToAll(this, mtype, newSpeedFlat);
     }
 
     // explaination of (1):
@@ -9107,7 +9110,8 @@ void Unit::SetSpeedRateReal(UnitMoveType mtype, float rate)
         if (Pet* pet = ToPlayer()->GetPet())
             pet->SetSpeedRate(mtype, rate);
 
-    Movement::PacketSender(IsMovedByClient() ? GetGameClientMovingMe()->GetBasePlayer() : this, moveTypeToOpcode[mtype][0], moveTypeToOpcode[mtype][1], NULL_OPCODE, &extra).Send();
+    m_speed_rate[mtype] = rate;
+    PropagateSpeedChange();
 }
 
 void Unit::FollowTarget(Unit* target)
