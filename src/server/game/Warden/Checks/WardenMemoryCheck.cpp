@@ -94,7 +94,7 @@ WardenCheckResult WardenMemoryCheck::ProcessResponse(ByteBuffer& packet) const
     return HandleExtendedResponse(checkFailed, clientResponse);
 }
 
-WardenCheckResult WardenMemoryCheck::HandleExtendedResponse(bool checkFailed, std::vector<uint8> const& clientResponse) const
+WardenCheckResult WardenMemoryCheck::HandleExtendedResponse(bool checkFailed, std::vector<uint8> const& /* clientResponse */) const
 {
     return WardenCheck::HandleResponse(checkFailed);
 }
