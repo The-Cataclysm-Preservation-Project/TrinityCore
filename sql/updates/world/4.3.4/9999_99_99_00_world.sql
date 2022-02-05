@@ -12,7 +12,7 @@ CREATE TABLE `warden_checks`  (
   `comment` text DEFAULT NULL,
   `VerifiedBuild` SMALLINT(5) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `warden_checks`(`VerifiedBuild`, `type`, `flags`, `enabled`, `data0`, `data1`, `address`, `length`, `result`, `comment`) VALUES
 -- All scanned offsets by retail as of 4.3.4.15595

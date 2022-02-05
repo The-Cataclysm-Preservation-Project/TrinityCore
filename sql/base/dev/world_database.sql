@@ -3851,7 +3851,7 @@ CREATE TABLE `warden_checks` (
   `comment` text DEFAULT NULL,
   `VerifiedBuild` SMALLINT(5) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3868,7 +3868,7 @@ CREATE TABLE `warden_keys`  (
   `clientKey` text NOT NULL,
   `serverKey` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3886,7 +3886,7 @@ CREATE TABLE `warden_modules`  (
   `checks` VARCHAR(50) NOT NULL,
   `comment` VARCHAR(255),
   PRIMARY KEY (`id`)
-);
+)  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
