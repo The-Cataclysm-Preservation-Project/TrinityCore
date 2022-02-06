@@ -51,14 +51,14 @@ bool IsValidCheckSum(uint32 checksum, const uint8* data, const uint16 length)
 }
 
 Warden::Warden(WardenPlatform platform) : _session(nullptr),
-_module(nullptr),
-_platform(platform),
-_inputCrypto(16),
-_outputCrypto(16),
-_checkTimer(10000/*10 sec*/),
-_clientResponseTimer(0),
-_previousTimestamp(0),
-_initialized(false)
+    _module(nullptr),
+    _platform(platform),
+    _inputCrypto(16),
+    _outputCrypto(16),
+    _checkTimer(10000/*10 sec*/),
+    _clientResponseTimer(0),
+    _previousTimestamp(0),
+    _initialized(false)
 {
     _modules = sWardenMgr->FindModules(_platform);
     _moduleWeights.resize(_modules.size(), 1.0);

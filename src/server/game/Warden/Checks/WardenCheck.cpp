@@ -116,7 +116,7 @@ uint64 WardenCheck::ReadPackedValue(ByteBuffer& buffer)
     uint8 defaultValue = (bytesMask & 1) ? 0xFF : 0x00;
 
     uint64 value = 0;
-    uint8* valueBytes = reinterpret_cast<uint8(&)[8]>(value);
+    uint8* valueBytes = reinterpret_cast<uint8*>(&value);
 
     buffer >> valueBytes[0];
     for (size_t i = 1; i < sizeof(uint64_t); ++i)
