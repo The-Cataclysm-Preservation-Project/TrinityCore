@@ -317,3 +317,9 @@ WorldPacket const* WorldPackets::Character::PlayedTime::Write()
 
     return &_worldPacket;
 }
+
+void WorldPackets::Character::LoadingScreenNotify::Read()
+{
+    _worldPacket >> MapID;
+    Showing = _worldPacket.ReadBit();
+}
