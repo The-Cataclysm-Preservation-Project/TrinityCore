@@ -44,12 +44,18 @@
         return false;
     if (a->HasUnitState(UNIT_STATE_IN_FLIGHT) || b->HasUnitState(UNIT_STATE_IN_FLIGHT))
         return false;
+    // ... both units must not be ignoring combat
+    if (a->IsIgnoringCombat() || b->IsIgnoringCombat())
+        return false;
     if (a->IsFriendlyTo(b) || b->IsFriendlyTo(a))
         return false;
     Player const* playerA = a->GetCharmerOrOwnerPlayerOrPlayerItself();
     Player const* playerB = b->GetCharmerOrOwnerPlayerOrPlayerItself();
     // ...neither of the two units must be (owned by) a player with .gm on
     if ((playerA && playerA->IsGameMaster()) || (playerB && playerB->IsGameMaster()))
+        return false;
+    // fixes an issue where players with .gm on will get disconnected when trying to attack npc of opposite faction
+    if ((playerA && playerA->GetFaction() == FACTION_FRIENDLY) || (playerB && playerB->GetFaction() == FACTION_FRIENDLY))
         return false;
     return true;
 }

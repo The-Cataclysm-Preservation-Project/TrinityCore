@@ -4101,7 +4101,7 @@ void Spell::finish(bool ok, bool sendChannelUpdate /* = false */)
             }
         }
 
-        if (!found && !m_spellInfo->HasAttribute(SPELL_ATTR2_NOT_RESET_AUTO_ACTIONS))
+        if (!found && !m_spellInfo->HasAttribute(SPELL_ATTR2_NOT_RESET_AUTO_ACTIONS) && !m_caster->HasUnitState(UNIT_STATE_CHARGING))
         {
             m_caster->resetAttackTimer(BASE_ATTACK);
             if (m_caster->haveOffhandWeapon())

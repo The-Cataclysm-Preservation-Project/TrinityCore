@@ -4338,8 +4338,12 @@ void Spell::EffectCharge(SpellEffIndex effIndex)
     else if (effectHandleMode == SPELL_EFFECT_HANDLE_HIT_TARGET)
     {
         // not all charge effects used in negative spells
-        if (!m_spellInfo->IsPositive() && m_caster->GetTypeId() == TYPEID_PLAYER)
-            m_caster->Attack(unitTarget, true);
+        if (Player* playerCaster = m_caster->ToPlayer()) {
+            // Check for selected unit in order to auto attack the right target after using focus charge/intercept macro: /cast [target=focus, exists] Intercept
+            if (!m_spellInfo->IsPositive() && (playerCaster->GetSelectedUnit() == unitTarget || !playerCaster->HasUnitState(UNIT_STATE_MELEE_ATTACKING))) {
+                m_caster->Attack(unitTarget, true);
+            }
+        }
 
         if (int32 spellId = GetSpellInfo()->Effects[effIndex].TriggerSpell)
             m_caster->CastSpell(unitTarget, spellId, CastSpellExtraArgs(TRIGGERED_FULL_MASK).SetOriginalCaster(m_originalCasterGUID));

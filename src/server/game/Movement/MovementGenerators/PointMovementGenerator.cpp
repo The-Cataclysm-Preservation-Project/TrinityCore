@@ -98,6 +98,9 @@ void PointMovementGenerator<T>::DoFinalize(T* owner)
 {
     owner->ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
 
+    if (owner->HasUnitState(UNIT_STATE_CHARGING))
+        owner->ClearUnitState(UNIT_STATE_CHARGING);
+
     if (owner->movespline->Finalized())
         MovementInform(owner);
 }
