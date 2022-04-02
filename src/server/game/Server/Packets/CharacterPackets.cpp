@@ -63,12 +63,6 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     if (atLoginFlags & AT_LOGIN_RENAME)
         Flags |= CHARACTER_FLAG_RENAME;
 
-    if (playerFlags & PLAYER_FLAGS_HIDE_HELM)
-        Flags |= CHARACTER_FLAG_HIDE_HELM;
-
-    if (playerFlags & PLAYER_FLAGS_HIDE_CLOAK)
-        Flags |= CHARACTER_FLAG_HIDE_CLOAK;
-
     if (fields[23].GetUInt32())
         Flags |= CHARACTER_FLAG_LOCKED_BY_BILLING;
 
