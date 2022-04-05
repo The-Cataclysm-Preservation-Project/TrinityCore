@@ -75,6 +75,28 @@ inline float GetChaseRange(Unit const* owner, Unit const* target)
     return hitboxSum;
 }
 
+static bool isNextStepValid(PathGenerator path, Unit const* owner) {
+    
+    if (!owner->CanFly()) {
+
+        float prevStepZ = 0;
+        for (auto& step : path.GetPath()) {
+
+            if (prevStepZ == 0) {
+                prevStepZ = step.z;
+            }
+
+            if (step.z - prevStepZ > 5.0f) {
+                return false;
+            }
+            else {
+                prevStepZ = step.z;
+            }
+        }
+    }
+    return true;
+}
+
 ChaseMovementGenerator::ChaseMovementGenerator(Unit* target, float range, Optional<ChaseAngle> angle) : AbstractPursuer(PursuingType::Chase, ASSERT_NOTNULL(target)), _range(range), _angle(angle) { }
 ChaseMovementGenerator::~ChaseMovementGenerator() = default;
 
@@ -241,7 +263,7 @@ void ChaseMovementGenerator::LaunchMovement(Unit* owner, float chaseRange, bool 
 
     PathGenerator path(owner);
     bool success = path.CalculatePath(dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ(), owner->CanFly());
-    if (!success || (path.GetPathType() & (PATHFIND_NOPATH /*| PATHFIND_INCOMPLETE*/)))
+    if (!success || (path.GetPathType() & (PATHFIND_NOPATH /*| PATHFIND_INCOMPLETE*/)) || !isNextStepValid(path, owner))
     {
         if (creature)
             creature->SetCannotReachTarget(true);
