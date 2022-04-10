@@ -5944,6 +5944,11 @@ void SpellMgr::LoadSpellInfoCorrections()
         spellInfo->AttributesEx |= SPELL_ATTR1_FINISHING_MOVE_DURATION;
     });
 
+    // Shadowmeld
+    ApplySpellFix({ 58984 }, [](SpellInfo* spellInfo) {
+        spellInfo->Attributes |= SPELL_ATTR0_DISABLED_WHILE_ACTIVE;
+    });
+
     for (uint32 i = 0; i < GetSpellInfoStoreSize(); ++i)
     {
         SpellInfo* spellInfo = mSpellInfoMap[i];

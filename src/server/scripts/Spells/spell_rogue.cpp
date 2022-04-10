@@ -76,7 +76,8 @@ enum RogueSpells
     SPELL_ROGUE_SERRATED_BLADES_R1                  = 14171,
     SPELL_ROGUE_RUPTURE                             = 1943,
     SPELL_ROGUE_HONOR_AMONG_THIEVES_TRIGGERED       = 51699,
-    SPELL_ROGUE_BLACKJACK_R1                        = 79123
+    SPELL_ROGUE_BLACKJACK_R1                        = 79123,
+    SPELL_RACIAL_ELUSIVENESS                        = 21009
 };
 
 enum RogueSpellIcons
@@ -847,7 +848,8 @@ class spell_rog_stealth : public SpellScriptLoader
                         SPELL_ROGUE_MASTER_OF_SUBTLETY_PERIODIC,
                         SPELL_ROGUE_OVERKILL_TALENT,
                         SPELL_ROGUE_OVERKILL_POWER_REGEN,
-                        SPELL_ROGUE_OVERKILL_PERIODIC
+                        SPELL_ROGUE_OVERKILL_PERIODIC,
+                        SPELL_RACIAL_ELUSIVENESS
                     });
             }
 
@@ -880,10 +882,26 @@ class spell_rog_stealth : public SpellScriptLoader
                     target->CastSpell(target, SPELL_ROGUE_OVERKILL_PERIODIC, true);
             }
 
+            void HandleSpeedIncrease(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) {
+
+                Unit* caster = GetCaster();
+
+                // Elusiveness (Racial)
+                if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
+
+                    float basepoints0 = static_cast<float>(aurEff->GetAmount());
+                    float defaultRunSpeed = caster->GetSpeed(MOVE_RUN);
+                    float runSpeed = defaultRunSpeed * (basepoints0 / 100);
+                    caster->SetSpeed(MOVE_RUN, defaultRunSpeed + runSpeed);
+                }
+            }
+
             void Register() override
             {
                 AfterEffectApply.Register(&spell_rog_stealth_AuraScript::HandleEffectApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
                 AfterEffectRemove.Register(&spell_rog_stealth_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+
+                AfterEffectApply.Register(&spell_rog_stealth_AuraScript::HandleSpeedIncrease, EFFECT_2, SPELL_AURA_MOD_SPEED_ALWAYS, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
             }
         };
 

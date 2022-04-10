@@ -5447,6 +5447,49 @@ class spell_gen_face_rage : public AuraScript
     }
 };
 
+enum Shadowmeld {
+
+    SPELL_RACIAL_ELUSIVENESS = 21009
+};
+
+// 58984 Shadowmeld (Racial)
+class spell_gen_shadowmeld : public AuraScript {
+
+    bool Validate(SpellInfo const* /*spell*/) override
+    {
+        return ValidateSpellInfo({ SPELL_RACIAL_ELUSIVENESS });
+    }
+
+    void OnApply(AuraEffect const* /*effect*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* caster = GetCaster();
+
+        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
+
+            int32 basepoints0 = aurEff->GetAmount();
+            StealthType type = StealthType(aurEff->GetMiscValue());
+            caster->m_stealth.AddValue(type, basepoints0);
+        }
+    }
+
+    void OnRemove(AuraEffect const* /*effect*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* caster = GetCaster();
+
+        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
+
+            int32 basepoints0 = aurEff->GetAmount();
+            StealthType type = StealthType(aurEff->GetMiscValue());
+            caster->m_stealth.AddValue(type, -basepoints0);
+        }
+    }
+
+    void Register() override {
+        OnEffectApply.Register(&spell_gen_shadowmeld::OnApply, EFFECT_2, SPELL_AURA_MOD_STEALTH, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove.Register(&spell_gen_shadowmeld::OnRemove, EFFECT_2, SPELL_AURA_MOD_STEALTH, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     new spell_gen_absorb0_hitlimit1();
@@ -5583,4 +5626,5 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_wounded);
     RegisterSpellScript(spell_gen_rocket_barrage);
     RegisterSpellScript(spell_gen_face_rage);
+    RegisterSpellScript(spell_gen_shadowmeld);
 }
