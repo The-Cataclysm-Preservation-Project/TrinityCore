@@ -889,7 +889,7 @@ class spell_rog_stealth : public SpellScriptLoader
                 // Elusiveness (Racial)
                 if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
 
-                    amount = aurEff->GetAmount();
+                    amount += aurEff->GetAmount();
                 }
             }
 

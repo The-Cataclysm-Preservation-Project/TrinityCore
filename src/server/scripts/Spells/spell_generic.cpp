@@ -5466,9 +5466,7 @@ class spell_gen_shadowmeld : public AuraScript {
 
         if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
 
-            int32 bp = GetSpellInfo()->Effects[EFFECT_2].BasePoints;
-            int32 stealthLevel = aurEff->GetAmount();
-            amount = bp+stealthLevel;
+            amount += aurEff->GetAmount();
         }
     }
 
