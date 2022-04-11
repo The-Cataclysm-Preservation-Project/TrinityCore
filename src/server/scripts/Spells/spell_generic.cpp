@@ -5460,33 +5460,20 @@ class spell_gen_shadowmeld : public AuraScript {
         return ValidateSpellInfo({ SPELL_RACIAL_ELUSIVENESS });
     }
 
-    void OnApply(AuraEffect const* /*effect*/, AuraEffectHandleModes /*mode*/)
-    {
+    void HandleStealthLevel(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/) {
+
         Unit* caster = GetCaster();
 
         if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
 
-            int32 basepoints0 = aurEff->GetAmount();
-            StealthType type = StealthType(aurEff->GetMiscValue());
-            caster->m_stealth.AddValue(type, basepoints0);
-        }
-    }
-
-    void OnRemove(AuraEffect const* /*effect*/, AuraEffectHandleModes /*mode*/)
-    {
-        Unit* caster = GetCaster();
-
-        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
-
-            int32 basepoints0 = aurEff->GetAmount();
-            StealthType type = StealthType(aurEff->GetMiscValue());
-            caster->m_stealth.AddValue(type, -basepoints0);
+            int32 bp = GetSpellInfo()->Effects[EFFECT_2].BasePoints;
+            int32 stealthLevel = aurEff->GetAmount();
+            amount = bp+stealthLevel;
         }
     }
 
     void Register() override {
-        OnEffectApply.Register(&spell_gen_shadowmeld::OnApply, EFFECT_2, SPELL_AURA_MOD_STEALTH, AURA_EFFECT_HANDLE_REAL);
-        OnEffectRemove.Register(&spell_gen_shadowmeld::OnRemove, EFFECT_2, SPELL_AURA_MOD_STEALTH, AURA_EFFECT_HANDLE_REAL);
+        DoEffectCalcAmount.Register(&spell_gen_shadowmeld::HandleStealthLevel, EFFECT_2, SPELL_AURA_MOD_STEALTH);
     }
 };
 

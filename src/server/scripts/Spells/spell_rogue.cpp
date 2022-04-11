@@ -882,17 +882,14 @@ class spell_rog_stealth : public SpellScriptLoader
                     target->CastSpell(target, SPELL_ROGUE_OVERKILL_PERIODIC, true);
             }
 
-            void HandleSpeedIncrease(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) {
+            void HandleSpeedIncrease(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/) {
 
                 Unit* caster = GetCaster();
 
                 // Elusiveness (Racial)
                 if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
 
-                    float basepoints0 = static_cast<float>(aurEff->GetAmount());
-                    float defaultRunSpeed = caster->GetSpeed(MOVE_RUN);
-                    float runSpeed = defaultRunSpeed * (basepoints0 / 100);
-                    caster->SetSpeed(MOVE_RUN, defaultRunSpeed + runSpeed);
+                    amount = aurEff->GetAmount();
                 }
             }
 
@@ -900,8 +897,7 @@ class spell_rog_stealth : public SpellScriptLoader
             {
                 AfterEffectApply.Register(&spell_rog_stealth_AuraScript::HandleEffectApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
                 AfterEffectRemove.Register(&spell_rog_stealth_AuraScript::HandleEffectRemove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-
-                AfterEffectApply.Register(&spell_rog_stealth_AuraScript::HandleSpeedIncrease, EFFECT_2, SPELL_AURA_MOD_SPEED_ALWAYS, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                DoEffectCalcAmount.Register(&spell_rog_stealth_AuraScript::HandleSpeedIncrease, EFFECT_2, SPELL_AURA_MOD_SPEED_ALWAYS);
             }
         };
 
