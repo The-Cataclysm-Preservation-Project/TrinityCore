@@ -2578,7 +2578,7 @@ void SpellInfo::_LoadSpellDiminishInfo()
             case SPELLFAMILY_DRUID:
             {
                 // Pounce
-                if (SpellFamilyFlags[0] & 0x20000)
+                if ((SpellFamilyFlags[0] & 0x20000) && Id != 9007)
                     return DIMINISHING_OPENING_STUN;
                 // Cyclone
                 else if (SpellFamilyFlags[1] & 0x20)
