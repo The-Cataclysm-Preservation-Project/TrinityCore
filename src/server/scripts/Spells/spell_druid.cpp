@@ -1991,8 +1991,7 @@ class spell_dru_pounce : public SpellScript
 {
     SpellCastResult CheckCast()
     {
-        Unit* caster = GetCaster();
-        if (caster->HasAura(SPELL_RACIAL_SHADOWMELD))
+        if (GetCaster()->HasAura(SPELL_RACIAL_SHADOWMELD))
             return SPELL_FAILED_TARGET_AURASTATE;
 
         return SPELL_CAST_OK;
@@ -2009,8 +2008,7 @@ class spell_dru_ravage : public SpellScript
 {
     SpellCastResult CheckCast()
     {
-        Unit* caster = GetCaster();
-        if (caster->HasAura(SPELL_RACIAL_SHADOWMELD))
+        if (GetCaster()->HasAura(SPELL_RACIAL_SHADOWMELD))
             return SPELL_FAILED_TARGET_AURASTATE;
 
         return SPELL_CAST_OK;
