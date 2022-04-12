@@ -882,15 +882,11 @@ class spell_rog_stealth : public SpellScriptLoader
                     target->CastSpell(target, SPELL_ROGUE_OVERKILL_PERIODIC, true);
             }
 
-            void HandleSpeedIncrease(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/) {
-
-                Unit* caster = GetCaster();
-
+            void HandleSpeedIncrease(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+            {
                 // Elusiveness (Racial)
-                if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0)) {
-
+                if (AuraEffect const* aurEff = GetUnitOwner()->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0))
                     amount += aurEff->GetAmount();
-                }
             }
 
             void Register() override
