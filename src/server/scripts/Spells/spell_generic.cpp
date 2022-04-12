@@ -5447,13 +5447,14 @@ class spell_gen_face_rage : public AuraScript
     }
 };
 
-enum Shadowmeld {
-
+enum Shadowmeld
+{
     SPELL_RACIAL_ELUSIVENESS = 21009
 };
 
 // 58984 Shadowmeld (Racial)
-class spell_gen_shadowmeld : public AuraScript {
+class spell_gen_shadowmeld : public AuraScript
+{
 
     bool Validate(SpellInfo const* /*spell*/) override
     {
@@ -5462,10 +5463,7 @@ class spell_gen_shadowmeld : public AuraScript {
 
     void HandleStealthLevel(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
     {
-
-        Unit* caster = GetCaster();
-
-        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0))
+        if (AuraEffect const* aurEff = GetUnitOwner()->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0))
             amount += aurEff->GetAmount();
     }
 
