@@ -5455,12 +5455,11 @@ enum Shadowmeld
 // 58984 Shadowmeld (Racial)
 class spell_gen_shadowmeld : public AuraScript
 {
-
     bool Validate(SpellInfo const* /*spell*/) override
     {
         return ValidateSpellInfo({ SPELL_RACIAL_ELUSIVENESS });
     }
-
+    
     void HandleStealthLevel(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
     {
         if (AuraEffect const* aurEff = GetUnitOwner()->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0))
