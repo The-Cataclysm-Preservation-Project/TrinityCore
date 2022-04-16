@@ -66,6 +66,11 @@ void Totem::InitStats(uint32 duration)
 
         // set display id depending on caster's race
         SetDisplayId(GetOwner()->GetModelForTotem(PlayerTotemType(m_Properties->ID)));
+
+        SetOwnerGUID(GetOwner()->GetGUID());
+        m_ControlledByPlayer = true;
+        SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+        SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, GetOwner()->GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG));
     }
 
     Minion::InitStats(duration);

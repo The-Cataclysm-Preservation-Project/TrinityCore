@@ -216,6 +216,19 @@ void TempSummon::InitStats(uint32 duration)
 
         if (owner->IsTotem())
             owner->m_Controlled.insert(this);
+
+            // Store the totem elementals in totem owner's controlled list as well to trigger aggro mechanics
+            if (Unit* totemOwner = owner->GetOwner())
+            {
+                totemOwner->m_Controlled.insert(this);
+
+                if (totemOwner->IsPlayer())
+                {
+                    m_ControlledByPlayer = true;
+                    SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
+                    SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, totemOwner->GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG));
+                }
+            }
     }
 
     // If property has a faction defined, use it.
@@ -283,13 +296,23 @@ void TempSummon::RemoveFromWorld()
     if (!IsInWorld())
         return;
 
-    if (m_Properties)
-    {
-        int32 slot = m_Properties->Slot;
-        if (slot > 0)
-            if (Unit* owner = GetSummoner())
+    Unit* owner = GetSummoner();
+
+    if (owner) {
+        if (m_Properties)
+        {
+            int32 slot = m_Properties->Slot;
+            if (slot > 0)
                 if (owner->m_SummonSlot[slot] == GetGUID())
                     owner->m_SummonSlot[slot].Clear();
+        }
+
+        if (owner->IsTotem())
+        {
+            if (Unit* totemOwner = owner->GetOwner())
+                if (totemOwner->m_Controlled.find(this) != totemOwner->m_Controlled.end())
+                    totemOwner->m_Controlled.erase(this);
+        }
     }
 
     //if (GetOwnerGUID())
@@ -316,11 +339,6 @@ void Minion::InitStats(uint32 duration)
     else if (!IsPet() && !IsHunterPet())
     {
         GetOwner()->m_Controlled.insert(this);
-
-        // Store the totem elementals in players controlled list as well to trigger aggro mechanics
-        if (GetOwner()->IsTotem())
-            if (Unit* totemOwner = GetOwner()->GetOwner())
-                totemOwner->m_Controlled.insert(this);
     }
 
     if (m_Properties && m_Properties->Slot == SUMMON_SLOT_MINIPET)
@@ -346,11 +364,6 @@ void Minion::RemoveFromWorld()
             owner->m_Controlled.erase(this);
         else
             TC_LOG_FATAL("entities.unit", "Minion::RemoveFromWorld: Owner %s tried to remove a non-existing controlled unit %s from controlled unit set.", owner->GetGUID().ToString().c_str(), GetGUID().ToString().c_str());
-
-        if (owner->IsTotem())
-            if (Unit* totemOwner = owner->GetOwner())
-                if (totemOwner->m_Controlled.find(this) != totemOwner->m_Controlled.end())
-                    totemOwner->m_Controlled.erase(this);
     }
 
     TempSummon::RemoveFromWorld();
