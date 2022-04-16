@@ -215,6 +215,7 @@ void TempSummon::InitStats(uint32 duration)
         }
 
         if (owner->IsTotem())
+        {
             owner->m_Controlled.insert(this);
 
             // Store the totem elementals in totem owner's controlled list as well to trigger aggro mechanics
@@ -229,6 +230,7 @@ void TempSummon::InitStats(uint32 duration)
                     SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, totemOwner->GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG));
                 }
             }
+        }
     }
 
     // If property has a faction defined, use it.
