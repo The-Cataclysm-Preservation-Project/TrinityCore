@@ -27,7 +27,7 @@
 #include "Map.h"
 #include "ObjectMgr.h"
 #include "PhasingHandler.h"
-#include "Pet.h"
+#include "NewPet.h"
 #include "Player.h"
 #include "ReputationMgr.h"
 #include "ScriptMgr.h"
@@ -522,8 +522,8 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
         case CONDITION_PET_TYPE:
         {
             if (Player* player = object->ToPlayer())
-                if (Pet* pet = player->GetPet())
-                    condMeets = (((1 << pet->getPetType()) & ConditionValue1) != 0);
+                if (NewPet* pet = player->GetActivelyControlledSummon())
+                    condMeets = pet->IsHunterPet();
             break;
         }
         case CONDITION_TAXI:
@@ -2491,11 +2491,6 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
             break;
         }
         case CONDITION_PET_TYPE:
-            if (cond->ConditionValue1 >= (1 << MAX_PET_TYPE))
-            {
-                TC_LOG_ERROR("sql.sql", "%s has non-existing pet type %u, skipped.", cond->ToString(true).c_str(), cond->ConditionValue1);
-                return false;
-            }
             break;
         case CONDITION_IN_WATER:
         case CONDITION_CHARMED:

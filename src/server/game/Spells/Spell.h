@@ -417,6 +417,7 @@ class TC_GAME_API Spell
         void EffectResurrectWithAura(SpellEffIndex effIndex);
         void EffectCreateAreaTrigger(SpellEffIndex effIndex);
         void EffectUpdatePlayerPhase(SpellEffIndex effIndex);
+        void EffectAllowControlPet(SpellEffIndex effIndex);
         void EffectUpdateZoneAurasAndPhases(SpellEffIndex effIndex);
 
         typedef std::unordered_set<Aura*> UsedSpellMods;

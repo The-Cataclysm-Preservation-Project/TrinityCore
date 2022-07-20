@@ -85,6 +85,7 @@ enum ShamanSpells
     SPELL_SHAMAN_RIPTIDE                        = 61295,
     SPELL_SHAMAN_SATED                          = 57724,
     SPELL_SHAMAN_SEARING_FLAMES_DAMAGE          = 77661,
+    SPELL_SHAMAN_SPIRIT_HUNT_HEAL               = 58879,
     SPELL_SHAMAN_STORM_EARTH_AND_FIRE           = 51483,
     SPELL_SHAMAN_TELLURIC_CURRENTS              = 82987,
     SPELL_SHAMAN_TOTEM_EARTHBIND_EARTHGRAB      = 64695,
@@ -1013,9 +1014,9 @@ class spell_sha_totemic_mastery : public AuraScript
     void HandleDummy(AuraEffect const* /*aurEff*/)
     {
         Unit* target = GetTarget();
-        for (uint8 i = SUMMON_SLOT_TOTEM_FIRE; i < MAX_TOTEM_SLOT; ++i)
-            if (!target->m_SummonSlot[i])
-                return;
+        //for (uint8 i = SUMMON_SLOT_TOTEM_FIRE; i < MAX_TOTEM_SLOT; ++i)
+        //    if (!target->m_SummonSlot[i])
+        //        return;
 
         target->CastSpell(target, SPELL_SHAMAN_TOTEMIC_MASTERY, true);
         PreventDefaultAction();
@@ -1775,6 +1776,34 @@ class spell_sha_clearcasting : public AuraScript
     }
 };
 
+// 58877 - Spirit Hunt
+class spell_sha_spirit_hunt : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_SHAMAN_SPIRIT_HUNT_HEAL });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetDamageInfo();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        int32 bp = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
+        if (Unit* summoner = GetTarget()->GetSummoner())
+            GetTarget()->CastSpell(summoner, SPELL_SHAMAN_SPIRIT_HUNT_HEAL, CastSpellExtraArgs(aurEff).AddSpellBP0(bp));
+    }
+
+    void Register() override
+    {
+        DoCheckProc.Register(&spell_sha_spirit_hunt::CheckProc);
+        OnEffectProc.Register(&spell_sha_spirit_hunt::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 void AddSC_shaman_spell_scripts()
 {
     RegisterSpellScript(spell_sha_ancestral_awakening);
@@ -1820,6 +1849,7 @@ void AddSC_shaman_spell_scripts()
     RegisterSpellScript(spell_sha_resurgence);
     RegisterSpellScript(spell_sha_rolling_thunder);
     RegisterSpellScript(spell_sha_searing_bolt);
+    RegisterSpellScript(spell_sha_spirit_hunt);
     RegisterSpellScript(spell_sha_static_shock);
     RegisterSpellScript(spell_sha_telluric_currents);
     RegisterSpellScript(spell_sha_thunderstorm);

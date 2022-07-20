@@ -88,7 +88,6 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recvData)
     }
 
     //this is spirit release confirm?
-    GetPlayer()->RemovePet(nullptr, PET_SAVE_DISMISS, true);
     GetPlayer()->BuildPlayerRepop();
     GetPlayer()->RepopAtGraveyard();
 }

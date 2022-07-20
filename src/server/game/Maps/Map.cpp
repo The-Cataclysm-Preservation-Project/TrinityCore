@@ -40,6 +40,7 @@
 #include "ObjectMgr.h"
 #include "OutdoorPvPMgr.h"
 #include "Pet.h"
+#include "NewPet.h"
 #include "PoolMgr.h"
 #include "PhasingHandler.h"
 #include "ScriptMgr.h"
@@ -1147,16 +1148,7 @@ void Map::MoveAllCreaturesInMoveList()
                 #ifdef TRINITY_DEBUG
                     TC_LOG_DEBUG("maps", "Creature (GUID: %u Entry: %u) cannot be move to unloaded respawn grid.", c->GetGUID().GetCounter(), c->GetEntry());
                 #endif
-                //AddObjectToRemoveList(Pet*) should only be called in Pet::Remove
-                //This may happen when a player just logs in and a pet moves to a nearby unloaded cell
-                //To avoid this, we can load nearby cells when player log in
-                //But this check is always needed to ensure safety
-                /// @todo pets will disappear if this is outside CreatureRespawnRelocation
-                //need to check why pet is frequently relocated to an unloaded cell
-                if (c->IsPet())
-                    ((Pet*)c)->Remove(PET_SAVE_DISMISS, true);
-                else
-                    AddObjectToRemoveList(c);
+                AddObjectToRemoveList(c);
             }
         }
     }
@@ -3186,11 +3178,6 @@ GameObject* Map::GetGameObjectBySpawnId(ObjectGuid::LowType spawnId) const
 GameObject* Map::GetGameObject(ObjectGuid const& guid)
 {
     return _objectsStore.Find<GameObject>(guid);
-}
-
-Pet* Map::GetPet(ObjectGuid const& guid)
-{
-    return _objectsStore.Find<Pet>(guid);
 }
 
 Transport* Map::GetTransport(ObjectGuid const& guid)

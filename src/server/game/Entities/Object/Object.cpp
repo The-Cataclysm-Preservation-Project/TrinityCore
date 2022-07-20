@@ -46,6 +46,9 @@
 #include "SpellDefines.h"
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
+#include "NewTemporarySummon.h"
+#include "NewGuardian.h"
+#include "NewPet.h"
 #include "Totem.h"
 #include "Transport.h"
 #include "Unit.h"
@@ -2122,6 +2125,126 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonCreatur
     return summon;
 }
 
+NewTemporarySummon* Map::SummonCreatureNew(uint32 entry, Position const& pos, SummonCreatureExtraArgs const& summonArgs /*= { }*/)
+{
+    bool totemSummon = [summonArgs]()
+    {
+        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(summonArgs.SummonSpellId);
+        if (!spellInfo || !spellInfo->SpellTotemsId)
+            return false;
+
+        for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
+        {
+            TotemCategoryTypes type = static_cast<TotemCategoryTypes>(spellInfo->TotemCategory[i]);
+            switch (type)
+            {
+                case TotemCategoryTypes::EarthTotem:
+                case TotemCategoryTypes::AirTotem:
+                case TotemCategoryTypes::FireTotem:
+                case TotemCategoryTypes::WaterTotem:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        return false;
+    }();
+
+    NewTemporarySummon* summon = nullptr;
+    if (summonArgs.SummonProperties)
+    {
+        switch (SummonPropertiesControl(summonArgs.SummonProperties->Control))
+        {
+            case SummonPropertiesControl::None:
+                summon = new NewTemporarySummon(summonArgs.SummonProperties, summonArgs.Summoner, false, totemSummon);
+                break;
+            case SummonPropertiesControl::Guardian:
+                summon = new NewGuardian(summonArgs.SummonProperties, summonArgs.Summoner, false, totemSummon);
+                break;
+            case SummonPropertiesControl::Pet:
+                summon = new NewPet(summonArgs.SummonProperties, summonArgs.Summoner, false, false, entry, 0);
+                break;
+            default:
+                break;
+        }
+    }
+    else
+        summon = new NewTemporarySummon(summonArgs.SummonProperties, summonArgs.Summoner, false, totemSummon);
+
+    if (!summon)
+        return nullptr;
+
+    // Create creature entity
+    if (!summon->Create(GenerateLowGuid<HighGuid::Unit>(), this, entry, pos, nullptr, summonArgs.VehicleRecID, true))
+    {
+        delete summon;
+        return nullptr;
+    }
+
+    // Inherit summoner's Phaseshift
+    bool ignorePhaseShift = false;
+    if (summonArgs.SummonProperties && summonArgs.SummonProperties->GetFlags().HasFlag(SummonPropertiesFlags::IgnoreSummonerPhase)
+        && SummonPropertiesControl(summonArgs.SummonProperties->Control) == SummonPropertiesControl::None)
+        ignorePhaseShift = true;
+
+    if (!ignorePhaseShift && summonArgs.Summoner)
+        PhasingHandler::InheritPhaseShift(summon, summonArgs.Summoner);
+
+    TransportBase* transport = summonArgs.Summoner ? summonArgs.Summoner->GetTransport() : nullptr;
+    if (transport)
+    {
+        float x, y, z, o;
+        pos.GetPosition(x, y, z, o);
+        transport->CalculatePassengerOffset(x, y, z, &o);
+        summon->m_movementInfo.transport.pos.Relocate(x, y, z, o);
+
+        // This object must be added to transport before adding to map for the client to properly display it
+        transport->AddPassenger(summon);
+    }
+
+    // Initialize tempsummon fields
+    summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, summonArgs.SummonSpellId);
+    summon->SetHomePosition(pos);
+    summon->SetPrivateObjectOwner(summonArgs.PrivateObjectOwner);
+
+    if (summonArgs.SummonDuration >= 0)
+        summon->SetSummonDuration(Milliseconds(summonArgs.SummonDuration));
+    else
+        summon->SetPermanentSummon(true);
+
+    if (!summon->HandlePreSummonActions(summonArgs.Summoner, summonArgs.CreatureLevel, summonArgs.MaxSummons))
+    {
+        delete summon;
+        return nullptr;
+    }
+
+    // Handle health argument
+    if (summonArgs.SummonHealth > 0)
+    {
+        summon->SetMaxHealth(summonArgs.SummonHealth);
+        summon->SetHealth(summonArgs.SummonHealth);
+    }
+
+    if (!AddToMap(summon->ToCreature()))
+    {
+        // Returning false will cause the object to be deleted - remove from transport
+        if (transport)
+            transport->RemovePassenger(summon);
+
+        delete summon;
+        return nullptr;
+    }
+
+    summon->HandlePostSummonActions();
+
+    // call MoveInLineOfSight for nearby creatures
+    Trinity::AIRelocationNotifier notifier(*summon);
+    Cell::VisitAllObjects(summon, notifier, GetVisibilityRange());
+
+    return summon;
+}
+
 /**
 * Summons group of creatures.
 *
@@ -3073,8 +3196,12 @@ bool WorldObject::IsValidAttackTarget(WorldObject const* target, SpellInfo const
     if (IsFriendlyTo(target) || target->IsFriendlyTo(this))
         return false;
 
-    Player const* playerAffectingAttacker = unit && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) ? GetAffectingPlayer() : go ? GetAffectingPlayer() : nullptr;
+    Player const* playerAffectingAttacker = (unit && unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED)) || go ? GetAffectingPlayer() : nullptr;
     Player const* playerAffectingTarget = unitTarget && unitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) ? unitTarget->GetAffectingPlayer() : nullptr;
+
+    // Pets of mounted players are immune to NPCs
+    if (!playerAffectingAttacker && unitTarget && unitTarget->IsPet() && playerAffectingTarget && playerAffectingTarget->IsMounted())
+        return false;
 
     // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
     if ((playerAffectingAttacker && !playerAffectingTarget) || (!playerAffectingAttacker && playerAffectingTarget))
@@ -3578,7 +3705,7 @@ void WorldObject::DestroyForNearbyPlayers()
             continue;
 
         if (GetTypeId() == TYPEID_UNIT)
-            DestroyForPlayer(player, ToUnit()->IsDuringRemoveFromWorld() && ToCreature()->isDead()); // at remove from world (destroy) show kill animation
+            DestroyForPlayer(player, ToUnit()->IsDuringRemoveFromWorld() && !ToCreature()->IsAlive()); // at remove from world (destroy) show kill animation
         else
             DestroyForPlayer(player);
 

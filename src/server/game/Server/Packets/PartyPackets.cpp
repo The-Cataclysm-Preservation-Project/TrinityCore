@@ -44,10 +44,12 @@ void WorldPackets::Party::PartyMemberState::Initialize(Player const* player)
         if (player->GetPowerType() != POWER_MANA)
             ChangeMask |= GROUP_UPDATE_FLAG_POWER_TYPE;
 
+        /*
         if (player->GetPet())
             ChangeMask |= GROUP_UPDATE_FLAG_PET_GUID | GROUP_UPDATE_FLAG_PET_NAME | GROUP_UPDATE_FLAG_PET_MODEL_ID
             | GROUP_UPDATE_FLAG_PET_CUR_HP | GROUP_UPDATE_FLAG_PET_MAX_HP | GROUP_UPDATE_FLAG_PET_POWER_TYPE | GROUP_UPDATE_FLAG_PET_CUR_POWER
             | GROUP_UPDATE_FLAG_PET_MAX_POWER;
+        */
 
         if (player->GetVehicle())
             ChangeMask |= GROUP_UPDATE_FLAG_VEHICLE_SEAT;
@@ -144,6 +146,7 @@ void WorldPackets::Party::PartyMemberState::Initialize(Player const* player)
     PhasingHandler::FillPartyMemberPhase(&MemberStats.Phases, player->GetPhaseShift());
 
     // Pet
+    /*
     if (player->GetPet())
     {
         ::Pet* pet = player->GetPet();
@@ -190,6 +193,7 @@ void WorldPackets::Party::PartyMemberState::Initialize(Player const* player)
             MemberStats.PetStats->Auras.push_back(aura);
         }
     }
+    */
 }
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::PartyMemberPhaseStates const& phases)

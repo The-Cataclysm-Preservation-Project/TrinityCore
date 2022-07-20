@@ -7390,7 +7390,7 @@ void ObjectMgr::LoadPetNumber()
 {
     uint32 oldMSTime = getMSTime();
 
-    QueryResult result = CharacterDatabase.Query("SELECT MAX(id) FROM character_pet");
+    QueryResult result = CharacterDatabase.Query("SELECT MAX(PetNumber) FROM character_pet");
     if (result)
     {
         Field* fields = result->Fetch();

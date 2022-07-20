@@ -29,7 +29,7 @@ class DynamicObject;
 class GameObject;
 class Map;
 class Object;
-class Pet;
+class NewPet;
 class Player;
 class Transport;
 class MapTransport;
@@ -68,7 +68,6 @@ namespace ObjectAccessor
     TC_GAME_API AreaTrigger* GetAreaTrigger(WorldObject const& u, ObjectGuid const& guid);
     TC_GAME_API Unit* GetUnit(WorldObject const&, ObjectGuid const& guid);
     TC_GAME_API Creature* GetCreature(WorldObject const& u, ObjectGuid const& guid);
-    TC_GAME_API Pet* GetPet(WorldObject const&, ObjectGuid const& guid);
     TC_GAME_API Player* GetPlayer(Map const*, ObjectGuid const& guid);
     TC_GAME_API Player* GetPlayer(WorldObject const&, ObjectGuid const& guid);
     TC_GAME_API Creature* GetCreatureOrPetOrVehicle(WorldObject const&, ObjectGuid const&);

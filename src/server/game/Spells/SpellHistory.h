@@ -34,6 +34,11 @@ struct SpellCategoryEntry;
 
 namespace WorldPackets
 {
+    namespace Pet
+    {
+        class PetSpellsMessage;
+    }
+
     namespace Spells
     {
         struct SpellHistoryEntry;
@@ -81,9 +86,11 @@ public:
     void HandleCooldowns(SpellInfo const* spellInfo, uint32 itemID, Spell* spell = nullptr);
     bool IsReady(SpellInfo const* spellInfo, uint32 itemId = 0, bool ignoreCategoryCooldown = false) const;
     template<class OwnerType>
-    void WritePacket(WorldPacket& packet) const;
+    void WritePacket(WorldPacket& data) const; 
+    void WritePetSpellHistory(WorldPackets::Pet::PetSpellsMessage& petSpellsMessage) const;
     template<class OwnerType>
     void WriteSpellHistoryEntries(std::vector<WorldPackets::Spells::SpellHistoryEntry>& spellHistoryEntries) const;
+    void StoreSpellHistoryEntries(std::vector<CooldownEntry>& cooldowns) const;
 
     // Cooldowns
     static Clock::duration const InfinityCooldownDelay;  // used for set "infinity cooldowns" for spells and check

@@ -28,8 +28,8 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     //    SELECT characters.guid, characters.name, characters.race, characters.class, characters.gender, characters.skin, characters.face, characters.hairStyle,
     //    8                     9                       10                11               12              13                     14                     15
     //    characters.hairColor, characters.facialStyle, characters.level, characters.zone, characters.map, characters.position_x, characters.position_y, characters.position_z,
-    //    16                    17                      18                   19                   20                     21                   22
-    //    guild_member.guildid, characters.playerFlags, characters.at_login, character_pet.entry, character_pet.modelid, character_pet.level, characters.data,
+    //    16                    17                      18                   19                        20                            21                       22
+    //    guild_member.guildid, characters.playerFlags, characters.at_login, character_pet.CreatureId, character_pet.TamedCreatureId character_pet.DisplayId, characters.data,
     //    23                     24               25
     //    character_banned.guid, characters.slot, character_declinedname.genitive
 
@@ -87,10 +87,13 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     // show pet at selection character in character list only for non-ghost character
     if (!(playerFlags & PLAYER_FLAGS_GHOST) && (ClassID == CLASS_WARLOCK || ClassID == CLASS_HUNTER || ClassID == CLASS_DEATH_KNIGHT))
     {
-        if (CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(fields[19].GetUInt32()))
+        uint32 creatureId = fields[19].GetUInt32();
+        uint32 tamedCreatureId = fields[20].GetUInt32();
+
+        if (CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(creatureId != 0 ? creatureId : tamedCreatureId))
         {
-            PetCreatureDisplayID = fields[20].GetUInt32();
-            PetExperienceLevel = fields[21].GetUInt16();
+            PetCreatureDisplayID = fields[21].GetUInt32();
+            PetExperienceLevel = ExperienceLevel;
             PetCreatureFamilyID = creatureInfo->family;
         }
     }

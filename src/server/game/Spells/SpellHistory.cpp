@@ -22,6 +22,7 @@
 #include "ObjectMgr.h"
 #include "Opcodes.h"
 #include "Pet.h"
+#include "PetPackets.h"
 #include "Player.h"
 #include "Spell.h"
 #include "SpellInfo.h"
@@ -58,37 +59,6 @@ struct SpellHistory::PersistenceHelper<Player>
     {
         stmt->setUInt32(index++, cooldown.first);
         stmt->setUInt32(index++, cooldown.second.ItemId);
-        stmt->setUInt32(index++, uint32(Clock::to_time_t(cooldown.second.CooldownEnd)));
-        stmt->setUInt32(index++, cooldown.second.CategoryId);
-        stmt->setUInt32(index++, uint32(Clock::to_time_t(cooldown.second.CategoryEnd)));
-    }
-};
-
-template<>
-struct SpellHistory::PersistenceHelper<Pet>
-{
-    static CharacterDatabaseStatements const CooldownsDeleteStatement = CHAR_DEL_PET_SPELL_COOLDOWNS;
-    static CharacterDatabaseStatements const CooldownsInsertStatement = CHAR_INS_PET_SPELL_COOLDOWN;
-
-    static void SetIdentifier(PreparedStatementBase* stmt, uint8 index, Unit* owner) { stmt->setUInt32(index, owner->GetCharmInfo()->GetPetNumber()); }
-
-    static bool ReadCooldown(Field* fields, uint32* spellId, CooldownEntry* cooldownEntry)
-    {
-        *spellId = fields[0].GetUInt32();
-        if (!sSpellMgr->GetSpellInfo(*spellId))
-            return false;
-
-        cooldownEntry->SpellId = *spellId;
-        cooldownEntry->CooldownEnd = Clock::from_time_t(time_t(fields[1].GetUInt32()));
-        cooldownEntry->ItemId = 0;
-        cooldownEntry->CategoryId = fields[2].GetUInt32();
-        cooldownEntry->CategoryEnd = Clock::from_time_t(time_t(fields[3].GetUInt32()));
-        return true;
-    }
-
-    static void WriteCooldown(PreparedStatementBase* stmt, uint8& index, CooldownStorageType::value_type const& cooldown)
-    {
-        stmt->setUInt32(index++, cooldown.first);
         stmt->setUInt32(index++, uint32(Clock::to_time_t(cooldown.second.CooldownEnd)));
         stmt->setUInt32(index++, cooldown.second.CategoryId);
         stmt->setUInt32(index++, uint32(Clock::to_time_t(cooldown.second.CategoryEnd)));
@@ -238,6 +208,35 @@ void SpellHistory::WritePacket<Pet>(WorldPacket& packet) const
     }
 }
 
+void SpellHistory::WritePetSpellHistory(WorldPackets::Pet::PetSpellsMessage& petSpellsMessage) const
+{
+    Clock::time_point now = GameTime::GetGameTimeSystemPoint();
+
+    petSpellsMessage.Cooldowns.reserve(_spellCooldowns.size());
+    for (auto const& p : _spellCooldowns)
+    {
+        WorldPackets::Pet::PetSpellCooldown petSpellCooldown;
+        petSpellCooldown.SpellID = p.first;
+        petSpellCooldown.Category = p.second.CategoryId;
+
+        if (!p.second.OnHold)
+        {
+            Milliseconds cooldownDuration = std::chrono::duration_cast<Milliseconds>(p.second.CooldownEnd - now);
+            if (cooldownDuration.count() <= 0)
+                continue;
+
+            petSpellCooldown.Duration = uint32(cooldownDuration.count());
+            Milliseconds categoryDuration = std::chrono::duration_cast<Milliseconds>(p.second.CategoryEnd - now);
+            if (categoryDuration.count() > 0)
+                petSpellCooldown.CategoryDuration = uint32(categoryDuration.count());
+        }
+        else
+            petSpellCooldown.CategoryDuration = 0x80000000;
+
+        petSpellsMessage.Cooldowns.push_back(petSpellCooldown);
+    }
+}
+
 template<>
 void SpellHistory::WriteSpellHistoryEntries<Player>(std::vector<WorldPackets::Spells::SpellHistoryEntry>& spellHistoryEntries) const
 {
@@ -269,6 +268,15 @@ void SpellHistory::WriteSpellHistoryEntries<Player>(std::vector<WorldPackets::Sp
         else
             historyEntry.RecoveryTime = cooldownDuration.count();           // cooldown
     }
+}
+
+void SpellHistory::StoreSpellHistoryEntries(std::vector<CooldownEntry>& cooldowns) const
+{
+    cooldowns.clear();
+
+    for (auto const& p : _spellCooldowns)
+        if (!p.second.OnHold)
+            cooldowns.emplace_back(p.second);
 }
 
 void SpellHistory::StartCooldown(SpellInfo const* spellInfo, uint32 itemId, Spell* spell /*= nullptr*/, bool onHold /*= false*/)
@@ -780,6 +788,4 @@ void SpellHistory::RestoreCooldownStateAfterDuel()
 }
 
 template void SpellHistory::LoadFromDB<Player>(PreparedQueryResult cooldownsResult);
-template void SpellHistory::LoadFromDB<Pet>(PreparedQueryResult cooldownsResult);
 template void SpellHistory::SaveToDB<Player>(CharacterDatabaseTransaction& trans);
-template void SpellHistory::SaveToDB<Pet>(CharacterDatabaseTransaction& trans);

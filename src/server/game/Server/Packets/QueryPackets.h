@@ -188,6 +188,20 @@ namespace WorldPackets
             uint8 Result = 0; // 0 - full packet, != 0 - only guid
             PlayerGuidLookupData Data;
         };
+
+        class QueryPetNameResponse final : public ServerPacket
+        {
+        public:
+            QueryPetNameResponse() : ServerPacket(SMSG_PET_NAME_QUERY_RESPONSE) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 PetID = 0;
+            uint32 Timestamp = 0;
+            bool HasDeclined = false;
+            DeclinedName DeclinedNames;
+            std::string Name;
+        };
     }
 }
 

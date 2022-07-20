@@ -18,6 +18,7 @@
 #include "PetAI.h"
 #include "AIException.h"
 #include "Creature.h"
+#include "CharmInfo.h"
 #include "Errors.h"
 #include "Group.h"
 #include "Log.h"
@@ -33,12 +34,8 @@
 
 int32 PetAI::Permissible(Creature const* creature)
 {
-    if (creature->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
-    {
-        if (reinterpret_cast<Guardian const*>(creature)->GetOwner()->GetTypeId() == TYPEID_PLAYER)
-            return PERMIT_BASE_PROACTIVE;
-        return PERMIT_BASE_REACTIVE;
-    }
+    if (creature->IsPet())
+        return PERMIT_BASE_PROACTIVE;
 
     return PERMIT_BASE_NO;
 }
@@ -440,13 +437,13 @@ void PetAI::HandleReturnMovement()
         if (!me->GetCharmInfo()->IsAtStay() && !me->GetCharmInfo()->IsReturning())
         {
             // Return to previous position where stay was clicked
-            float x, y, z;
+            Position stayPosition;
 
-            me->GetCharmInfo()->GetStayPosition(x, y, z);
+            me->GetCharmInfo()->GetStayPosition(stayPosition);
             ClearCharmInfoFlags();
             me->GetCharmInfo()->SetIsReturning(true);
             me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MovePoint(me->GetGUID().GetCounter(), x, y, z);
+            me->GetMotionMaster()->MovePoint(me->GetGUID().GetCounter(), stayPosition);
         }
     }
     if (me->GetCharmInfo()->HasCommandState(COMMAND_FOLLOW))

@@ -126,11 +126,6 @@ enum PaladinSpellIcons
     PALADIN_ICON_ID_GUARDED_BY_THE_LIGHT         = 3026
 };
 
-enum PaladinCreatures
-{
-    NPC_PALADIN_CONSECRATION                     = 43499
-};
-
 class spell_pal_ardent_defender : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override
@@ -1428,9 +1423,9 @@ class spell_pal_ancient_healer : public AuraScript
         int32 bp1 = CalculatePct(heal->GetEffectiveHeal(), 10);
 
 
-        for (Unit* guardian : GetTarget()->m_Controlled)
-            if (guardian->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SPELL_PALADIN_GUARDIAN_OF_ANCIENT_KINGS_HOLY)
-                guardian->CastSpell(heal->GetTarget(), SPELL_PALADIN_LIGHT_OF_THE_ANCIENT_KINGS, CastSpellExtraArgs(aurEff).AddSpellBP0(bp0).AddSpellMod(SPELLVALUE_BASE_POINT1, bp1));
+        //for (Unit* guardian : GetTarget()->m_Controlled)
+        //    if (guardian->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SPELL_PALADIN_GUARDIAN_OF_ANCIENT_KINGS_HOLY)
+        //        guardian->CastSpell(heal->GetTarget(), SPELL_PALADIN_LIGHT_OF_THE_ANCIENT_KINGS, CastSpellExtraArgs(aurEff).AddSpellBP0(bp0).AddSpellMod(SPELLVALUE_BASE_POINT1, bp1));
 
         _procCount++;
     }

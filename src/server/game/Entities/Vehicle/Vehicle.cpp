@@ -17,6 +17,7 @@
 
 #include "Vehicle.h"
 #include "Battleground.h"
+#include "CharmInfo.h"
 #include "Common.h"
 #include "CreatureAI.h"
 #include "DBCStores.h"
@@ -922,8 +923,8 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
         player->StopCastingCharm();
         player->StopCastingBindSight();
         player->SendOnCancelExpectedVehicleRideAura();
-        if (!veSeat->HasFlag(VEHICLE_SEAT_FLAG_B_KEEP_PET))
-            player->UnsummonPetTemporaryIfAny();
+        //if (!veSeat->HasFlag(VEHICLE_SEAT_FLAG_B_KEEP_PET))
+        //    player->UnsummonPetTemporaryIfAny();
     }
 
     if (veSeat->HasFlag(VEHICLE_SEAT_FLAG_DISABLE_GRAVITY) || Target->GetBase()->CanFly())

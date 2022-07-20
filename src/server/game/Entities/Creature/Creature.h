@@ -159,6 +159,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         void DisableLoot(bool disable) { _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_NO_LOOT, !disable); }
         bool IsLootDisabled() const { return _staticFlags.HasFlag(CREATURE_STATIC_FLAG_NO_LOOT); }
+        void SetDespawnInstantlyAfterDeath(bool apply) { _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_DESPAWN_INSTANTLY, apply); }
 
         bool HasSpell(uint32 spellID) const override;
 

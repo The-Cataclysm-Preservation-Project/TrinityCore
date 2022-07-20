@@ -177,18 +177,12 @@ struct boss_blackheart_the_inciter_mc_dummy : public NullCreatureAI
                     {
                         me->GetThreatManager().AddThreat(trigger, 0.0f);
                         trigger->GetThreatManager().AddThreat(who, 0.0f);
-                        for (Unit* other : trigger->m_Controlled)
-                        {
-                            me->GetThreatManager().AddThreat(other, 0.0f);
-                            other->GetThreatManager().AddThreat(who, 0.0f);
-                        }
                     }
     }
     void UpdateAI(uint32 /*diff*/) override
     {
-        if (me->m_Controlled.empty())
-            me->DespawnOrUnsummon();
     }
+
     PlayerAI* GetAIForCharmedPlayer(Player* player) override
     {
         return new BlackheartCharmedPlayerAI(player);

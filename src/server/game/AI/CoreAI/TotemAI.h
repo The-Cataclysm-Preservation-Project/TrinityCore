@@ -23,20 +23,27 @@
 #include "Timer.h"
 
 class Creature;
+class SpellInfo;
 class Totem;
 
 class TC_GAME_API TotemAI : public NullCreatureAI
 {
     public:
+        explicit TotemAI(Creature* creature);
 
-        explicit TotemAI(Creature* c);
-
-        void AttackStart(Unit* victim) override;
-
+        void AttackStart(Unit* /*victim*/) override {}
+        void JustAppeared() override;
         void UpdateAI(uint32 diff) override;
+
+        virtual Unit* SelectTotemTarget();
+
         static int32 Permissible(Creature const* creature);
 
+    protected:
+        SpellInfo const* _spellInfo;
+        float _spellRange;
     private:
         ObjectGuid _victimGUID;
+        uint32 _targetSearchTimer;
 };
 #endif

@@ -827,7 +827,7 @@ class spell_mage_permafrost : public AuraScript
 
     bool DoCheck(ProcEventInfo& eventInfo)
     {
-        return GetTarget()->GetGuardianPet() && eventInfo.GetDamageInfo()->GetDamage() && eventInfo.GetProcTarget();
+        return false;
     }
 
     void HandleEffectProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
@@ -967,7 +967,7 @@ class spell_mage_ring_of_frost : public AuraScript
     void Apply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         std::list<Creature*> MinionList;
-        GetTarget()->GetAllMinionsByEntry(MinionList, GetSpellInfo()->Effects[EFFECT_0].MiscValue);
+        //GetTarget()->GetAllMinionsByEntry(MinionList, GetSpellInfo()->Effects[EFFECT_0].MiscValue);
 
         // Get the last summoned RoF, save it and despawn older ones
         for (std::list<Creature*>::iterator itr = MinionList.begin(); itr != MinionList.end(); itr++)

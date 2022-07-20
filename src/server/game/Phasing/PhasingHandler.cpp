@@ -52,6 +52,7 @@ inline PhaseFlags GetPhaseFlags(uint32 phaseId)
 template<typename Func>
 inline void ForAllControlled(Unit* unit, Func&& func)
 {
+    /*
     for (Unit* controlled : unit->m_Controlled)
         if (controlled->GetTypeId() != TYPEID_PLAYER)
             func(controlled);
@@ -60,6 +61,7 @@ inline void ForAllControlled(Unit* unit, Func&& func)
         if (!unit->m_SummonSlot[i].IsEmpty())
             if (Creature* summon = ObjectAccessor::GetCreature(*unit, unit->m_SummonSlot[i]))
                 func(summon);
+    */
 }
 }
 
