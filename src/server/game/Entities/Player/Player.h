@@ -48,6 +48,7 @@ struct ItemSetEffect;
 struct ItemTemplate;
 struct Loot;
 struct Mail;
+struct PlayerPetData;
 struct ScalingStatDistributionEntry;
 struct ScalingStatValuesEntry;
 struct TrainerSpell;
@@ -471,7 +472,8 @@ enum PlayerFieldByteFlags
 {
     PLAYER_FIELD_BYTE_TRACK_STEALTHED   = 0x00000002,
     PLAYER_FIELD_BYTE_RELEASE_TIMER     = 0x00000008,       // Display time till auto release spirit
-    PLAYER_FIELD_BYTE_NO_RELEASE_WINDOW = 0x00000010        // Display no "release spirit" window at all
+    PLAYER_FIELD_BYTE_NO_RELEASE_WINDOW = 0x00000010,       // Display no "release spirit" window at all
+    PLAYER_FIELD_BYTE_HIDE_PET_BAR      = 0x00000020        // Hides the control bar of pets
 };
 
 // used in PLAYER_FIELD_BYTES2 values
@@ -798,8 +800,12 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_CURRENCY                = 34,
     PLAYER_LOGIN_QUERY_LOAD_CUF_PROFILES            = 35,
     PLAYER_LOGIN_QUERY_LOAD_CORPSE_LOCATION         = 36,
-    PLAYER_LOGIN_QUERY_LOAD_ALL_PETS                = 37,
-    PLAYER_LOGIN_QUERY_LOAD_LFG_REWARD_STATUS       = 38,
+    PLAYER_LOGIN_QUERY_LOAD_PETS                    = 37,
+    PLAYER_LOGIN_QUERY_LOAD_PET_COOLDOWNS           = 38,
+    PLAYER_LOGIN_QUERY_LOAD_PET_AURAS               = 39,
+    PLAYER_LOGIN_QUERY_LOAD_PET_DECLINED_NAMES      = 40,
+    PLAYER_LOGIN_QUERY_LOAD_PET_SPELL_STATES        = 41,
+    PLAYER_LOGIN_QUERY_LOAD_LFG_REWARD_STATUS       = 42,
     MAX_PLAYER_LOGIN_QUERY
 };
 
@@ -890,26 +896,7 @@ enum PlayerLogXPReason : uint8
     LOG_XP_REASON_NO_KILL = 1
 };
 
-struct PlayerPetData
-{
-    uint32 PetId;
-    uint32 CreatureId;
-    uint64 Owner;
-    uint32 DisplayId;
-    uint32 Petlevel;
-    uint32 PetExp;
-    ReactStates Reactstate;
-    uint8 Slot;
-    std::string Name;
-    bool Renamed;
-    bool Active;
-    uint32 SavedHealth;
-    uint32 SavedMana;
-    std::string Actionbar;
-    uint32 Timediff;
-    uint32 SummonSpellId;
-    PetType Type;
-};
+using PlayerPetDataMap = std::unordered_map<PlayerPetDataKey, std::unique_ptr<PlayerPetData>>;
 
 class Player;
 
@@ -1124,14 +1111,11 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32 GetXPRestBonus(uint32 xp);
         uint32 GetInnTriggerId() const { return inn_triggerId; }
 
-        Pet* GetPet() const;
-        Pet* SummonPet(uint32 entry, float x, float y, float z, float ang, PetType petType, uint32 despwtime);
-        void RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent = false);
-
         // pet auras
         std::unordered_set<PetAura const*> m_petAuras;
         void AddPetAura(PetAura const* petSpell);
         void RemovePetAura(PetAura const* petSpell);
+        Pet* GetPet() { return nullptr; }
 
         /// Handles said message in regular chat based on declared language and in config pre-defined Range.
         void Say(std::string const& text, Language language, WorldObject const* = nullptr) override;
@@ -1303,12 +1287,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void RemoveItemDurations(Item* item);
         void SendItemDurations();
         void LoadCorpse(PreparedQueryResult result);
-        void LoadPet();
-        void LoadPetsFromDB(PreparedQueryResult result);
 
         bool AddItem(uint32 itemId, uint32 count);
-
-        uint32 m_stableSlots;
 
         /*********************************************************/
         /***                    GOSSIP SYSTEM                  ***/
@@ -1502,7 +1482,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         void SetBindPoint(ObjectGuid guid) const;
         void SendTalentWipeConfirm(ObjectGuid guid) const;
-        void ResetPetTalents();
         void RegenerateAll(uint32 diff);
         void RegenerateHealth() override;
         void setWeaponChangeTimer(uint32 time) { m_weaponChangeTimer = time;}
@@ -1556,9 +1535,9 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void AddMItem(Item* it);
         bool RemoveMItem(uint32 id);
 
+    public:
         void SendOnCancelExpectedVehicleRideAura() const;
-        bool CanControlPet(uint32 spellId = 0) const;
-        void PetSpellInitialize();
+
         void CharmSpellInitialize();
         void PossessSpellInitialize();
         void VehicleSpellInitialize();
@@ -2212,13 +2191,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool HasValidLFGLeavePoint(uint32 mapid);
         void SetLFGLeavePoint();
 
-        // Temporarily removed pet cache
-        uint32 GetTemporaryUnsummonedPetNumber() const { return m_temporaryUnsummonedPetNumber; }
-        void SetTemporaryUnsummonedPetNumber(uint32 petnumber) { m_temporaryUnsummonedPetNumber = petnumber; }
-        void UnsummonPetTemporaryIfAny();
-        void ResummonPetTemporaryUnSummonedIfAny();
-        bool IsPetNeedBeTemporaryUnsummoned() const;
-
         void SendCinematicStart(uint32 cinematicId);
         void SendMovieStart(uint32 movieId);
 
@@ -2252,10 +2224,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool CheckInstanceValidity(bool /*isLogin*/);
         bool CheckInstanceCount(uint32 instanceId) const;
         void AddInstanceEnterTime(uint32 instanceId, time_t enterTime);
-
-        // last used pet number (for BG's)
-        uint32 GetLastPetNumber() const { return m_lastpetnumber; }
-        void SetLastPetNumber(uint32 petnumber) { m_lastpetnumber = petnumber; }
 
         /*********************************************************/
         /***                   GROUP SYSTEM                    ***/
@@ -2378,14 +2346,36 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         VoidStorageItem* GetVoidStorageItem(uint64 id, uint8& slot) const;
 
         // Pets
-        PlayerPetData* GetPlayerPetDataById(uint32 petId);
-        PlayerPetData* GetPlayerPetDataBySlot(uint8 slot);
-        PlayerPetData* GetPlayerPetDataByCreatureId(uint32 creatureId);
-        PlayerPetData* GetPlayerPetDataCurrent();
-        Optional<uint8> GetFirstUnusedActivePetSlot();
-        Optional<uint8> GetFirstUnusedPetSlot();
-        void DeleteFromPlayerPetDataStore(uint32 petNumber);
-        void AddToPlayerPetDataStore(PlayerPetData* playerPetData);
+        // Sends the pet spells message packet to the player, containing all action bar and spell information about the pet
+        void SendPetSpellsMessage(NewPet* pet, bool remove = false);
+        // Enables pet controls for classes who have to learn their control pet spell first
+        void SetCanControlClassPets();
+        // Returns true when the player is allowed to perform pet actions with their pet
+        bool CanControlClassPets() const;
+        // Returns the PlayerPetData of a pet by slot and creatureId. Hunter pets are stored under creatureId = 0, everything else has a valid creatureId.
+        PlayerPetData* GetPlayerPetData(uint8 slot, uint32 creatureId) const;
+        // Returns the PlayerPetData of a pet by pet number. This operation is rather expensive so please consider using Player::GetPlayerPetData(uint8 slot, uint32 creatureId) if possible.
+        PlayerPetData* GetPlayerPetDataByPetNumber(uint32 petNumber);
+        // Creates a new PlayerPetData entry for the given creatureId and slot.
+        PlayerPetData* CreatePlayerPetData(uint8 slot, uint32 creatureId, Optional<uint32> tamedCreatureId = {});
+        // Returns a available active Hunter Pet slot if there is any. Used for taming and creating new pets. If checkForUnlocked is set to true, empty slots will skipped when the slot is not unlocked via Call Pet spell.
+        Optional<uint8> GetUnusedActivePetSlot(bool checkForUnlocked = true);
+        // Returns a reference to the entire player pet data map which holds data for all pets the player has
+        PlayerPetDataMap const& GetPlayerPetDataMap() const { return _playerPetDataMap; }
+        // Unsummons the currently active pet and removes the player pet data from its container. The database data will be erased on the next save cycle.
+        void AbandonPet();
+        // Sets the pet data key for the class pet that will be un- and resummoned by several actions
+        void SetActiveClassPetDataKey(Optional<PlayerPetDataKey> const& key) { _activeClassPetDataKey = key; }
+        // Summons the temporarily dismissed pet at the player's location
+        void ResummonActiveClassPet();
+        // Dismisses the the the class pet temporarily. The pet will be kept as active and will be re-summoned under certain conditions
+        void TemporarilyDismissActiveClassPet();
+        // Moves the data of a pet to another slot and swaps it if another pet occupies this slot. This method is ony meant to be used by stabe master mechanics for Hunter pets.
+        void SetPetSlot(uint32 petNumber, uint8 destSlot);
+        // Returns a reference to the class pet player pet data key
+        Optional<PlayerPetDataKey> const& GetActiveClassPetDataKey() const { return _activeClassPetDataKey; }
+    private:
+        Optional<PlayerPetDataKey> _activeClassPetDataKey;
 
     protected:
         // Gamemaster whisper whitelist
@@ -2475,6 +2465,11 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void _LoadCurrency(PreparedQueryResult result);
         void _LoadCUFProfiles(PreparedQueryResult result);
         void _LoadLFGRewardStatus(PreparedQueryResult result);
+        void _LoadPets(PreparedQueryResult result);
+        void _LoadPetCooldowns(PreparedQueryResult result);
+        void _LoadPetAuras(PreparedQueryResult result);
+        void _LoadPetDeclinedNames(PreparedQueryResult result);
+        void _LoadPetSpellStates(PreparedQueryResult result);
 
         /*********************************************************/
         /***                   SAVE SYSTEM                     ***/
@@ -2501,6 +2496,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void _SaveCurrency(CharacterDatabaseTransaction& trans);
         void _SaveCUFProfiles(CharacterDatabaseTransaction& trans);
         void _SaveLFGRewardStatus(CharacterDatabaseTransaction& trans);
+        void _SavePets(CharacterDatabaseTransaction& trans);
 
         /*********************************************************/
         /***              ENVIRONMENTAL SYSTEM                 ***/
@@ -2647,9 +2643,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint64 m_auraRaidUpdateMask;
         bool m_bPassOnGroupLoot;
 
-        // last used pet number (for BG's)
-        uint32 m_lastpetnumber;
-
         // Player summoning
         time_t m_summon_expire;
         WorldLocation m_summon_location;
@@ -2729,10 +2722,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool m_bCanDelayTeleport;
         bool m_bHasDelayedTeleport;
 
-        // Temporary removed pet cache
-        uint32 m_temporaryUnsummonedPetNumber;
-        uint32 m_oldpetspell;
-
         std::unique_ptr<AchievementMgr<Player>> m_achievementMgr;
         std::unique_ptr<ReputationMgr> m_reputationMgr;
 
@@ -2755,10 +2744,12 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         std::unique_ptr<Archaeology> _archaeology;
 
-        std::vector<PlayerPetData*> PlayerPetDataStore;
+        PlayerPetDataMap _playerPetDataMap;
+        std::unordered_set<uint32> _deletedPlayerPetDataSet;
 
-        TimeTrackerSmall m_petScalingSynchTimer;
         TimeTrackerSmall m_groupUpdateTimer;
+
+        bool _canControlClassPets;
 };
 
 TC_GAME_API void AddItemsSetItem(Player* player, Item* item);

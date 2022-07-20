@@ -21,31 +21,20 @@
 #include "PetDefines.h"
 #include "TemporarySummon.h"
 
-enum StableResultCode
-{
-    STABLE_ERR_MONEY        = 0x01,                         // "you don't have enough money"
-    STABLE_ERR_INVALID_SLOT = 0x03,                         // "That slot is locked"
-    STABLE_SUCCESS_STABLE   = 0x08,                         // stable success
-    STABLE_SUCCESS_UNSTABLE = 0x09,                         // unstable/swap success
-    STABLE_SUCCESS_BUY_SLOT = 0x0A,                         // buy slot success
-    STABLE_ERR_EXOTIC       = 0x0B,                         // "you are unable to control exotic creatures"
-    STABLE_ERR_STABLE       = 0x0C                          // "Internal pet error"
-};
-
 enum PetStableInfo
 {
     PET_STABLE_ACTIVE   = 1,
     PET_STABLE_INACTIVE = 2
 };
 
-struct PetSpell
+struct PetSpellOld
 {
     ActiveStates active;
     PetSpellState state;
     PetSpellType type;
 };
 
-typedef std::unordered_map<uint32, PetSpell> PetSpellMap;
+typedef std::unordered_map<uint32, PetSpellOld> PetSpellMapOld;
 typedef std::vector<uint32> AutoSpellList;
 typedef std::vector<uint32> PetScalingAuraList;
 
@@ -77,8 +66,6 @@ class TC_GAME_API Pet : public Guardian
         bool CreateBaseAtTamed(CreatureTemplate const* cinfo, Map* map);
         bool LoadPetData(Player* owner, uint32 petentry = 0, uint32 petnumber = 0, bool current = false);
         bool IsLoading() const override { return m_loading;}
-        void SavePetToDB(PetSaveMode mode);
-        void Remove(PetSaveMode mode, bool returnreagent = false);
         static void DeleteFromDB(ObjectGuid::LowType guidlow);
 
         void setDeathState(DeathState s) override;                   // overwrite virtual Creature::setDeathState and Unit::setDeathState
@@ -137,7 +124,7 @@ class TC_GAME_API Pet : public Guardian
         void CleanupActionBar();
         std::string GenerateActionBarData() const;
 
-        PetSpellMap         m_spells;
+        PetSpellMapOld      m_spells;
         AutoSpellList       m_autospells;
         PetScalingAuraList  m_petScalingAuras;
 

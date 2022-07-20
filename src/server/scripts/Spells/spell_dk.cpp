@@ -420,16 +420,6 @@ class spell_dk_death_pact : public SpellScript
 {
     SpellCastResult CheckCast()
     {
-        // Check if we have valid targets, otherwise skip spell casting here
-        if (Player* player = GetCaster()->ToPlayer())
-            for (Unit::ControlList::const_iterator itr = player->m_Controlled.begin(); itr != player->m_Controlled.end(); ++itr)
-                if (Creature* undeadPet = (*itr)->ToCreature())
-                    if (undeadPet->IsAlive() &&
-                        undeadPet->GetOwnerOrCreatorGUID() == player->GetGUID() &&
-                        undeadPet->GetCreatureType() == CREATURE_TYPE_UNDEAD &&
-                        undeadPet->IsWithinDist(player, 100.0f, false))
-                        return SPELL_CAST_OK;
-
         return SPELL_FAILED_NO_PET;
     }
 
@@ -1789,7 +1779,7 @@ class spell_dk_dancing_rune_weapon : public AuraScript
     {
         PreventDefaultAction();
         std::list<Creature*> runeWeapon;
-        GetTarget()->GetAllMinionsByEntry(runeWeapon, GetSpellInfo()->Effects[EFFECT_0].MiscValue);
+        //GetTarget()->GetAllMinionsByEntry(runeWeapon, GetSpellInfo()->Effects[EFFECT_0].MiscValue);
         if (runeWeapon.empty())
             return;
 

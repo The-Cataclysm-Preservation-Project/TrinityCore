@@ -24,7 +24,7 @@
 #include "MapManager.h"
 #include "MotionMaster.h"
 #include "ObjectMgr.h"
-#include "Pet.h"
+#include "NewPet.h"
 #include "Transport.h"
 #include "WaypointManager.h"
 #include "World.h"
@@ -298,10 +298,8 @@ void Map::ScriptsProcess()
                     break;
                 case HighGuid::Unit:
                 case HighGuid::Vehicle:
-                    source = GetCreature(step.sourceGUID);
-                    break;
                 case HighGuid::Pet:
-                    source = GetPet(step.sourceGUID);
+                    source = GetCreature(step.sourceGUID);
                     break;
                 case HighGuid::Player:
                     source = GetPlayer(step.sourceGUID);
@@ -330,10 +328,8 @@ void Map::ScriptsProcess()
             {
                 case HighGuid::Unit:
                 case HighGuid::Vehicle:
-                    target = GetCreature(step.targetGUID);
-                    break;
                 case HighGuid::Pet:
-                    target = GetPet(step.targetGUID);
+                    target = GetCreature(step.targetGUID);
                     break;
                 case HighGuid::Player:                       // empty GUID case also
                     target = GetPlayer(step.targetGUID);

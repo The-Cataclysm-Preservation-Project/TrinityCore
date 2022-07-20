@@ -210,7 +210,7 @@ void WorldSession::HandleMoveWorldportAck()
         GetPlayer()->UpdatePvP(false, false);
 
     // resummon pet
-    GetPlayer()->ResummonPetTemporaryUnSummonedIfAny();
+    GetPlayer()->ResummonActiveClassPet();
 
     //lets process all delayed operations on successful teleport
     GetPlayer()->ProcessDelayedOperations();
@@ -274,7 +274,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
     }
 
     // resummon pet
-    GetPlayer()->ResummonPetTemporaryUnSummonedIfAny();
+    GetPlayer()->ResummonActiveClassPet();
 
     //lets process all delayed operations on successful teleport
     GetPlayer()->ProcessDelayedOperations();
@@ -379,6 +379,9 @@ void WorldSession::HandleMovementOpcode(uint16 opcode, MovementInfo& movementInf
     // interrupt parachutes upon falling or landing in water
     if (opcode == MSG_MOVE_FALL_LAND || opcode == MSG_MOVE_START_SWIM || opcode == CMSG_MOVE_SET_CAN_FLY)
         mover->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::LandingOrFlight); // Parachutes
+
+    if (opcode == CMSG_MOVE_SET_CAN_FLY && plrMover)
+        plrMover->TemporarilyDismissActiveClassPet();
 
     /* process position-change */
     int64 movementTime = (int64)movementInfo.time + _timeSyncClockDelta;

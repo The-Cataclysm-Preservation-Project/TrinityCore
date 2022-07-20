@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "CharmInfo.h"
 #include "CombatAI.h"
 #include "CreatureAIImpl.h"
 #include "GameObject.h"
@@ -951,8 +952,6 @@ public:
                         //      and dig into the ground.
                         creature->DespawnOrUnsummon();
 
-                        if (player->GetQuestStatus(12698) == QUEST_STATUS_COMPLETE)
-                            owner->RemoveAllMinionsByEntry(NPC_GHOSTS);
                     }
                 }
             }
@@ -980,7 +979,6 @@ struct npc_scarlet_ghoul : public ScriptedAI
     void FindMinions(Unit* owner)
     {
         std::list<Creature*> MinionList;
-        owner->GetAllMinionsByEntry(MinionList, NPC_GHOULS);
 
         if (!MinionList.empty())
         {

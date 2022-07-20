@@ -41,6 +41,7 @@
 #include "Opcodes.h"
 #include "PathGenerator.h"
 #include "Pet.h"
+#include "NewPet.h"
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "SharedDefines.h"
@@ -1687,12 +1688,12 @@ void Spell::SelectImplicitCasterObjectTargets(SpellEffIndex effIndex, SpellImpli
             break;
         case TARGET_UNIT_PET:
             if (Unit* unitCaster = m_caster->ToUnit())
-                target = unitCaster->GetGuardianPet();
+                target = unitCaster->GetActivelyControlledSummon();
             break;
         case TARGET_UNIT_SUMMONER:
             if (Unit* unitCaster = m_caster->ToUnit())
                 if (unitCaster->IsSummon())
-                    target = unitCaster->ToTempSummon()->GetSummoner();
+                    target = unitCaster->GetSummoner();
             break;
         case TARGET_UNIT_VEHICLE:
             if (Unit* unitCaster = m_caster->ToUnit())
@@ -3555,12 +3556,14 @@ void Spell::_cast(bool skipCheck)
         // As of 3.0.2 pets begin attacking their owner's target immediately
         // Let any pets know we've attacked something. Check DmgClass for harmful spells only
         // This prevents spells such as Hunter's Mark from triggering pet attack
-        if (this->GetSpellInfo()->DmgClass != SPELL_DAMAGE_CLASS_NONE)
+        if (GetSpellInfo()->DmgClass != SPELL_DAMAGE_CLASS_NONE)
+        {
             if (Unit* unitTarget = m_targets.GetUnitTarget())
-                for (Unit* controlled : playerCaster->m_Controlled)
-                    if (Creature* cControlled = controlled->ToCreature())
-                        if (CreatureAI* controlledAI = cControlled->AI())
-                            controlledAI->OwnerAttacked(unitTarget);
+                for (ObjectGuid const& summonGuid : playerCaster->GetSummonGUIDs())
+                    if (NewTemporarySummon* summon = playerCaster->GetSummonByGUID(summonGuid))
+                        if (CreatureAI* ai =summon->AI())
+                            ai->OwnerAttacked(unitTarget);
+        }
     }
 
     SetExecutedCurrently(true);
@@ -3663,10 +3666,10 @@ void Spell::_cast(bool skipCheck)
         return;
     }
 
-    if (Unit* unitCaster = m_caster->ToUnit())
-        if (m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST))
-            if (Creature* pet = ObjectAccessor::GetCreature(*m_caster, unitCaster->GetPetGUID()))
-                pet->DespawnOrUnsummon();
+    if (m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST))
+        if (Unit* unitCaster = m_caster->ToUnit())
+            if (NewPet* pet = unitCaster->GetActivelyControlledSummon())
+                pet->Unsummon();
 
     PrepareTriggersExecutedOnHit();
 
@@ -5876,14 +5879,14 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
     if (Unit* unitCaster = m_caster->ToUnit())
     {
         if (m_spellInfo->HasAttribute(SPELL_ATTR2_NO_ACTIVE_PETS))
-            if (!unitCaster->GetPetGUID().IsEmpty())
+            if (!unitCaster->GetSummonGUID().IsEmpty())
                 return SPELL_FAILED_ALREADY_HAVE_PET;
 
         for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
             if (m_spellInfo->Effects[j].TargetA.GetTarget() == TARGET_UNIT_PET)
             {
-                if (!unitCaster->GetGuardianPet())
+                if (!unitCaster->GetActivelyControlledSummon())
                 {
                     if (m_triggeredByAuraSpell)              // not report pet not existence for triggered spells
                         return SPELL_FAILED_DONT_REPORT;
@@ -5892,6 +5895,63 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 }
                 break;
             }
+        }
+    }
+
+    // check pet taming eligibility
+    if (m_spellInfo->HasAttribute(SPELL_ATTR2_SPECIAL_TAMING_FLAG))
+    {
+        Player* player = m_caster->ToPlayer();
+        if (!player)
+            return SPELL_FAILED_DONT_REPORT;
+
+        if (player->GetSummonGUID())
+        {
+            player->SendTamePetFailure(PET_TAME_FAILURE_ACTIVE_SUMMON);
+            return SPELL_FAILED_DONT_REPORT;
+        }
+
+        Optional<uint8> slot = player->GetUnusedActivePetSlot(false);
+        if (!slot.has_value())
+        {
+            player->SendTamePetFailure(PET_TAME_FAILURE_TOO_MANY_PETS);
+            return SPELL_FAILED_DONT_REPORT;
+        }
+
+        slot = player->GetUnusedActivePetSlot(true);
+        if (!slot.has_value())
+        {
+            player->SendTamePetFailure(PET_TAME_FAILURE_SLOT_LOCKED);
+            return SPELL_FAILED_DONT_REPORT;
+        }
+
+        Unit* unit = m_targets.GetUnitTarget();
+        if (!unit || !unit->IsCreature())
+            return SPELL_FAILED_BAD_TARGETS;
+
+        Creature* creature = unit->ToCreature();
+        if (creature->IsSummon() || creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        {
+            player->SendTamePetFailure(PET_TAME_FAILURE_CREATURE_CONTROLLED);
+            return SPELL_FAILED_DONT_REPORT;
+        }
+
+        if (!creature->HasStaticFlag(CREATURE_STATIC_FLAG_TAMEABLE) && !creature->HasStaticFlag(CREATURE_STATIC_FLAG_3_TAMEABLE_EXOTIC))
+        {
+            player->SendTamePetFailure(PET_TAME_FAILURE_NOT_TAMEABLE);
+            return SPELL_FAILED_DONT_REPORT;
+        }
+
+        if (creature->HasStaticFlag(CREATURE_STATIC_FLAG_3_TAMEABLE_EXOTIC) && !player->CanTameExoticPets())
+        {
+            player->SendTamePetFailure(PET_TAME_FAILURE_CANNOT_TAME_EXOTIC);
+            return SPELL_FAILED_DONT_REPORT;
+        }
+
+        if (creature->getLevel() > player->getLevel())
+        {
+            player->SendTamePetFailure(PET_TAME_FAILURE_TOO_HIGH_LEVEL);
+            return SPELL_FAILED_DONT_REPORT;
         }
     }
 
@@ -6241,10 +6301,56 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (!unitCaster)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                Creature* pet = unitCaster->GetGuardianPet();
-                if (pet && pet->IsAlive())
-                    return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                Player* player = unitCaster->ToPlayer();
 
+                NewPet* pet = unitCaster->GetActivelyControlledSummon();
+                if (pet && pet->IsAlive())
+                {
+                    if (player)
+                    {
+                        player->SendTamePetFailure(PET_TAME_FAILURE_PET_NOT_DEAD);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+
+                    return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                }
+
+                if (!pet && player)
+                {
+                    Optional<PlayerPetDataKey> const& key = player->GetActiveClassPetDataKey();
+                    if (!key.has_value())
+                    {
+                        player->SendTamePetFailure(PET_TAME_FAILURE_NO_PET_TO_SUMMON);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+
+                    PlayerPetData* petData = player->GetPlayerPetData(key->first, key->second);
+                    if (!petData)
+                    {
+                        player->SendTamePetFailure(PET_TAME_FAILURE_NO_PET_TO_SUMMON);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+
+                    if (petData->SavedHealth != 0)
+                    {
+                        player->SendTamePetFailure(PET_TAME_FAILURE_PET_NOT_DEAD);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+                }
+                break;
+            }
+            case SPELL_EFFECT_DISMISS_PET:
+            {
+                Unit* unitCaster = m_caster->ToUnit();
+                if (!unitCaster)
+                    return SPELL_FAILED_BAD_TARGETS;
+
+                NewPet* pet = unitCaster->GetActivelyControlledSummon();
+                if (!pet)
+                    return SPELL_FAILED_BAD_TARGETS;
+
+                if (!pet->IsAlive())
+                    return SPELL_FAILED_TARGETS_DEAD;
                 break;
             }
             // This is generic summon effect
@@ -6254,19 +6360,21 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (!unitCaster)
                     break;
 
-                SummonPropertiesEntry const* SummonProperties = sSummonPropertiesStore.LookupEntry(m_spellInfo->Effects[i].MiscValueB);
-                if (!SummonProperties)
-                    break;
-                switch (SummonProperties->Control)
+                if (SummonPropertiesEntry const* summonProperties = sSummonPropertiesStore.LookupEntry(m_spellInfo->Effects[i].MiscValueB))
                 {
-                    case SUMMON_CATEGORY_PET:
-                        if (!m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST) && unitCaster->GetPetGUID())
-                            return SPELL_FAILED_ALREADY_HAVE_SUMMON;
-                        [[fallthrough]]; //  check both GetPetGUID() and GetCharmGUID for SUMMON_CATEGORY_PET*/
-                    case SUMMON_CATEGORY_PUPPET:
-                        if (unitCaster->GetCharmedGUID())
-                            return SPELL_FAILED_ALREADY_HAVE_CHARM;
-                        break;
+                    switch (static_cast<SummonPropertiesControl>(summonProperties->Control))
+                    {
+                        case SummonPropertiesControl::Pet:
+                            if (!m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST) && unitCaster->GetSummonGUID())
+                                return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                            [[fallthrough]]; //  check both GetSummonGUID() and GetCharmGUID for SUMMON_CATEGORY_PET*/
+                        case SummonPropertiesControl::Possessed:
+                            if (unitCaster->GetCharmedGUID())
+                                return SPELL_FAILED_ALREADY_HAVE_CHARM;
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 break;
             }
@@ -6276,7 +6384,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 {
                     if (m_targets.GetUnitTarget()->GetTypeId() != TYPEID_PLAYER)
                         return SPELL_FAILED_BAD_TARGETS;
-                    if (!m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST) && m_targets.GetUnitTarget()->GetPetGUID())
+                    if (!m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST) && m_targets.GetUnitTarget()->GetSummonGUID())
                         return SPELL_FAILED_ALREADY_HAVE_SUMMON;
                 }
                 break;
@@ -6287,22 +6395,22 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (!unitCaster)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                if (unitCaster->GetPetGUID())                  //let warlock do a replacement summon
-                {
-                    if (unitCaster->GetTypeId() == TYPEID_PLAYER)
-                    {
-                        if (strict)                         //starting cast, trigger pet stun (cast by pet so it doesn't attack player)
-                            if (Pet* pet = unitCaster->ToPlayer()->GetPet())
-                                pet->CastSpell(pet, 32752, CastSpellExtraArgs(TRIGGERED_FULL_MASK)
-                                .SetOriginalCaster(pet->GetGUID())
-                                .SetTriggeringSpell(this));
-                    }
-                    else if (!m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST))
-                        return SPELL_FAILED_ALREADY_HAVE_SUMMON;
-                }
+                if (unitCaster->GetSummonGUID() && !m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST))
+                    return SPELL_FAILED_ALREADY_HAVE_SUMMON;
 
                 if (unitCaster->GetCharmedGUID())
                     return SPELL_FAILED_ALREADY_HAVE_CHARM;
+
+                // Hunter Pets perform a special check
+                if (m_spellInfo->Effects[i].MiscValue == 0 && unitCaster->IsPlayer())
+                {
+                    Player* player = unitCaster->ToPlayer();
+                    if (!player->GetPlayerPetData(m_spellInfo->Effects[i].BasePoints, m_spellInfo->Effects[i].MiscValue))
+                    {
+                        player->SendTamePetFailure(PET_TAME_FAILURE_NO_PET_TO_SUMMON);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+                }
                 break;
             }
             case SPELL_EFFECT_SUMMON_PLAYER:
@@ -6427,7 +6535,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 if (m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_CHARM
                     || m_spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_POSSESS)
                 {
-                    if (!m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST) && unitCaster->GetPetGUID())
+                    if (!m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST) && unitCaster->GetSummonGUID())
                         return SPELL_FAILED_ALREADY_HAVE_SUMMON;
 
                     if (unitCaster->GetCharmedGUID())
@@ -8779,7 +8887,7 @@ bool WorldObjectSpellTargetCheck::operator()(WorldObject* target) const
             case TARGET_CHECK_SUMMONED:
                 if (!unitTarget->IsSummon())
                     return false;
-                if (unitTarget->ToTempSummon()->GetSummonerGUID() != _caster->GetGUID())
+                if (unitTarget->GetSummonerGUID() != _caster->GetGUID())
                     return false;
                 break;
             case TARGET_CHECK_THREAT:

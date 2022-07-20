@@ -507,7 +507,7 @@ class spell_warl_fel_synergy : public AuraScript
 
     bool CheckProc(ProcEventInfo& eventInfo)
     {
-        return GetTarget()->GetGuardianPet() && eventInfo.GetDamageInfo()->GetDamage();
+        return false;
     }
 
     void OnProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)

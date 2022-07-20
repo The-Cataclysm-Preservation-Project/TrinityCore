@@ -26,6 +26,7 @@
 #include "ObjectDefines.h"
 #include "ObjectMgr.h"
 #include "Pet.h"
+#include "NewPet.h"
 #include "Player.h"
 #include "Transport.h"
 #include "World.h"
@@ -114,8 +115,8 @@ WorldObject* ObjectAccessor::GetWorldObject(WorldObject const& p, ObjectGuid con
         case HighGuid::Mo_Transport:
         case HighGuid::GameObject:    return GetGameObject(p, guid);
         case HighGuid::Vehicle:
-        case HighGuid::Unit:          return GetCreature(p, guid);
-        case HighGuid::Pet:           return GetPet(p, guid);
+        case HighGuid::Unit:
+        case HighGuid::Pet:           return GetCreature(p, guid);
         case HighGuid::DynamicObject: return GetDynamicObject(p, guid);
         case HighGuid::AreaTrigger:   return GetAreaTrigger(p, guid);
         case HighGuid::Corpse:        return GetCorpse(p, guid);
@@ -143,12 +144,9 @@ Object* ObjectAccessor::GetObjectByTypeMask(WorldObject const& p, ObjectGuid con
             break;
         case HighGuid::Unit:
         case HighGuid::Vehicle:
-            if (typemask & TYPEMASK_UNIT)
-                return GetCreature(p, guid);
-            break;
         case HighGuid::Pet:
             if (typemask & TYPEMASK_UNIT)
-                return GetPet(p, guid);
+                return GetCreature(p, guid);
             break;
         case HighGuid::DynamicObject:
             if (typemask & TYPEMASK_DYNAMICOBJECT)
@@ -197,20 +195,12 @@ Unit* ObjectAccessor::GetUnit(WorldObject const& u, ObjectGuid const& guid)
     if (guid.IsPlayer())
         return GetPlayer(u, guid);
 
-    if (guid.IsPet())
-        return GetPet(u, guid);
-
     return GetCreature(u, guid);
 }
 
 Creature* ObjectAccessor::GetCreature(WorldObject const& u, ObjectGuid const& guid)
 {
     return u.GetMap()->GetCreature(guid);
-}
-
-Pet* ObjectAccessor::GetPet(WorldObject const& u, ObjectGuid const& guid)
-{
-    return u.GetMap()->GetPet(guid);
 }
 
 Player* ObjectAccessor::GetPlayer(Map const* m, ObjectGuid const& guid)
@@ -229,9 +219,6 @@ Player* ObjectAccessor::GetPlayer(WorldObject const& u, ObjectGuid const& guid)
 
 Creature* ObjectAccessor::GetCreatureOrPetOrVehicle(WorldObject const& u, ObjectGuid const& guid)
 {
-    if (guid.IsPet())
-        return GetPet(u, guid);
-
     if (guid.IsCreatureOrVehicle())
         return GetCreature(u, guid);
 

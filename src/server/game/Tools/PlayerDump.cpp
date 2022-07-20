@@ -69,7 +69,7 @@ struct BaseTable
 
 BaseTable const BaseTables[] =
 {
-    { "character_pet",           "id",      "owner",      GUID_TYPE_PET           },
+    { "character_pet",           "PetNumber", "Guid",     GUID_TYPE_PET           },
     { "mail",                    "id",      "receiver",   GUID_TYPE_MAIL          },
     { "item_instance",           "guid",    "owner_guid", GUID_TYPE_ITEM          },
 
@@ -346,10 +346,10 @@ void PlayerDump::InitializeTables()
                 MarkDependentColumn(t, "item_guid", GUID_TYPE_ITEM);
                 break;
             case DTT_PET:
-                MarkWhereField(t, "owner");
+                MarkWhereField(t, "Guid");
 
-                MarkDependentColumn(t, "id", GUID_TYPE_PET);
-                MarkDependentColumn(t, "owner", GUID_TYPE_CHAR);
+                MarkDependentColumn(t, "PetNumber", GUID_TYPE_PET);
+                MarkDependentColumn(t, "Guid", GUID_TYPE_CHAR);
                 break;
             case DTT_PET_TABLE:
                 MarkWhereField(t, "guid");

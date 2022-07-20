@@ -20,6 +20,7 @@
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
 #include "CellImpl.h"
+#include "CharmInfo.h"
 #include "Common.h"
 #include "DBCStores.h"
 #include "GridNotifiersImpl.h"
@@ -3917,6 +3918,8 @@ void AuraEffect::HandleAuraModIncreaseHealthPercent(AuraApplication const* aurAp
         target->SetStatPctModifier(UNIT_MOD_HEALTH, TOTAL_PCT, amount);
     }
 
+    target->UpdateMaxHealth();
+
     if (target->GetHealth() > 0)
     {
         uint32 newHealth = std::max<uint32>(CalculatePct(target->GetMaxHealth(), percent), 1);
@@ -4361,9 +4364,6 @@ void AuraEffect::HandleModDamageDone(AuraApplication const* aurApp, uint8 mode, 
         for (uint16 i = 0; i < MAX_SPELL_SCHOOL; ++i)
             if (GetMiscValue() & (1 << i))
                 target->ApplyModUInt32Value(baseField + i, GetAmount(), apply);
-
-        if (Guardian* pet = target->ToPlayer()->GetGuardianPet())
-            pet->UpdateAttackPowerAndDamage();
     }
 }
 
@@ -4561,23 +4561,13 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                     break;
                 case 34026:   // kill command
                 {
-                    Unit* pet = target->GetGuardianPet();
-                    if (!pet)
-                        break;
-
                     target->CastSpell(target, 34027, this);
 
                     // set 3 stacks and 3 charges (to make all auras not disappear at once)
                     Aura* owner_aura = target->GetAura(34027, GetCasterGUID());
-                    Aura* pet_aura  = pet->GetAura(58914, GetCasterGUID());
                     if (owner_aura)
                     {
                         owner_aura->SetStackAmount(owner_aura->GetSpellInfo()->StackAmount);
-                        if (pet_aura)
-                        {
-                            pet_aura->SetCharges(0);
-                            pet_aura->SetStackAmount(owner_aura->GetSpellInfo()->StackAmount);
-                        }
                     }
                     break;
                 }
@@ -5141,7 +5131,7 @@ void AuraEffect::HandleAuraOpenStable(AuraApplication const* aurApp, uint8 mode,
         return;
 
     if (apply)
-        target->ToPlayer()->GetSession()->SendStablePet(target->GetGUID());
+        target->ToPlayer()->GetSession()->SendPetStableList(target->GetGUID());
 
      // client auto close stable dialog at !apply aura
 }
@@ -6100,6 +6090,7 @@ void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster) con
     }
 
     // Drain Mana - Mana Feed effect
+    /*
     if (caster->GetGuardianPet() && m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[0] & 0x00000010)
     {
         int32 manaFeedVal = 0;
@@ -6115,6 +6106,7 @@ void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster) con
             caster->CastSpell(caster, 32554, args);
         }
     }
+    */
 }
 
 void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster) const
@@ -6348,12 +6340,14 @@ void AuraEffect::HandleRaidProcFromChargeAuraProc(AuraApplication* aurApp, ProcE
         {
             float radius = GetSpellInfo()->Effects[GetEffIndex()].CalcRadius(caster);
 
+            /*
             if (Unit* triggerTarget = target->GetNextRandomRaidMemberOrPet(radius))
             {
                 target->CastSpell(triggerTarget, GetId(), { this, GetCasterGUID() });
                 if (Aura* aura = triggerTarget->GetAura(GetId(), GetCasterGUID()))
                     aura->SetCharges(jumps);
             }
+            */
         }
     }
 
@@ -6390,12 +6384,14 @@ void AuraEffect::HandleRaidProcFromChargeWithValueAuraProc(AuraApplication* aurA
         {
             float radius = GetSpellInfo()->Effects[GetEffIndex()].CalcRadius(caster);
 
+            /*
             if (Unit* triggerTarget = target->GetNextRandomRaidMemberOrPet(radius))
             {
                 target->CastSpell(triggerTarget, GetId(), args);
                 if (Aura* aura = triggerTarget->GetAura(GetId(), GetCasterGUID()))
                     aura->SetCharges(jumps);
             }
+            */
         }
     }
 

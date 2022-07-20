@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "CellImpl.h"
+#include "CharmInfo.h"
 #include "CombatAI.h"
 #include "CreatureTextMgr.h"
 #include "GameEventMgr.h"
@@ -35,6 +36,8 @@
 #include "SpellAuras.h"
 #include "SpellHistory.h"
 #include "SpellMgr.h"
+#include "TotemAI.h"
+#include "NewTemporarySummon.h"
 #include "Vehicle.h"
 #include "World.h"
 
@@ -1905,42 +1908,6 @@ class npc_wormhole : public CreatureScript
 };
 
 /*######
-## npc_pet_trainer
-######*/
-
-enum PetTrainer
-{
-    MENU_ID_PET_UNLEARN      = 6520,
-    OPTION_ID_PLEASE_DO      = 0
-};
-
-class npc_pet_trainer : public CreatureScript
-{
-    public:
-        npc_pet_trainer() : CreatureScript("npc_pet_trainer") { }
-
-        struct npc_pet_trainerAI : public ScriptedAI
-        {
-            npc_pet_trainerAI(Creature* creature) : ScriptedAI(creature) { }
-
-            bool GossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
-            {
-                if (menuId == MENU_ID_PET_UNLEARN && gossipListId == OPTION_ID_PLEASE_DO)
-                {
-                    player->ResetPetTalents();
-                    CloseGossipMenuFor(player);
-                }
-                return false;
-            }
-        };
-
-        CreatureAI* GetAI(Creature* creature) const override
-        {
-            return new npc_pet_trainerAI(creature);
-        }
-};
-
-/*######
 ## npc_experience
 ######*/
 
@@ -2450,64 +2417,6 @@ enum StableMasters
     STABLE_MASTER_GOSSIP_SUB_MENU   = 9820
 };
 
-class npc_stable_master : public CreatureScript
-{
-    public:
-        npc_stable_master() : CreatureScript("npc_stable_master") { }
-
-        struct npc_stable_masterAI : public ScriptedAI
-        {
-            npc_stable_masterAI(Creature* creature) : ScriptedAI(creature) { }
-
-            bool GossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
-            {
-                if (menuId == STABLE_MASTER_GOSSIP_SUB_MENU)
-                {
-                    switch (gossipListId)
-                    {
-                        case 0:
-                            player->CastSpell(player, SPELL_MINIWING, false);
-                            break;
-                        case 1:
-                            player->CastSpell(player, SPELL_JUBLING, false);
-                            break;
-                        case 2:
-                            player->CastSpell(player, SPELL_DARTER, false);
-                            break;
-                        case 3:
-                            player->CastSpell(player, SPELL_WORG, false);
-                            break;
-                        case 4:
-                            player->CastSpell(player, SPELL_SMOLDERWEB, false);
-                            break;
-                        case 5:
-                            player->CastSpell(player, SPELL_CHIKEN, false);
-                            break;
-                        case 6:
-                            player->CastSpell(player, SPELL_WOLPERTINGER, false);
-                            break;
-                        default:
-                            return false;
-                    }
-                }
-                else
-                {
-                    if (gossipListId == 0)
-                    {
-                        player->GetSession()->SendStablePet(me->GetGUID());
-                        player->PlayerTalkClass->SendCloseGossip();
-                    }
-                }
-                return false;
-            }
-        };
-
-        CreatureAI* GetAI(Creature* creature) const override
-        {
-            return new npc_stable_masterAI(creature);
-        }
-};
-
 enum TrainWrecker
 {
     GO_TOY_TRAIN          = 193963,
@@ -3000,34 +2909,38 @@ enum DruidTreant
     SPELL_FUNGAL_GROWTH_SUMMON_R2 = 81283
 };
 
-class npc_druid_treant : public CreatureScript
+struct npc_druid_treant : public PetAI
 {
-    public:
-        npc_druid_treant() : CreatureScript("npc_druid_treant") { }
+    npc_druid_treant(Creature* creature) : PetAI(creature) { }
 
-        struct npc_druid_treantAI : public PetAI
+    void JustDied(Unit* /*killer*/) override
+    {
+        if (NewTemporarySummon const* summon = me->ToTemporarySummon())
         {
-            npc_druid_treantAI(Creature* creature) : PetAI(creature) { }
-
-            void JustDied(Unit* /*killer*/) override
+            if (Unit* summoner = summon->GetInternalSummoner())
             {
-                if (TempSummon* summon = me->ToTempSummon())
-                {
-                    if (Unit* summoner = summon->GetSummoner())
-                    {
-                        if (summoner->HasAura(SPELL_FUNGAL_GROWTH_R1))
-                            summoner->CastSpell(me, SPELL_FUNGAL_GROWTH_SUMMON_R1, true);
-                        else if (summoner->HasAura(SPELL_FUNGAL_GROWTH_R2))
-                            summoner->CastSpell(me, SPELL_FUNGAL_GROWTH_SUMMON_R2, true);
-                    }
-                }
+                if (summoner->HasAura(SPELL_FUNGAL_GROWTH_R1))
+                    summoner->CastSpell(me, SPELL_FUNGAL_GROWTH_SUMMON_R1, true);
+                else if (summoner->HasAura(SPELL_FUNGAL_GROWTH_R2))
+                    summoner->CastSpell(me, SPELL_FUNGAL_GROWTH_SUMMON_R2, true);
             }
-        };
-
-        CreatureAI* GetAI(Creature* creature) const override
-        {
-            return new npc_druid_treantAI(creature);
         }
+    }
+};
+
+enum WildMushroom
+{
+    SPELL_WILD_MUSHROOM_BIRTH_VISUAL = 94081
+};
+
+struct npc_druid_wild_mushroom : public NullCreatureAI
+{
+    npc_druid_wild_mushroom(Creature* creature) : NullCreatureAI(creature) { }
+
+    void JustAppeared() override
+    {
+        DoCastSelf(SPELL_WILD_MUSHROOM_BIRTH_VISUAL);
+    }
 };
 
 enum WhackAGnoll
@@ -3143,6 +3056,59 @@ private:
     bool _hit;
 };
 
+enum ShamanSpiritWolf
+{
+    SPELL_SPAWN_SMOKE               = 36747,
+    SPELL_FERAL_SPIRIT_SCALING_4    = 61783,
+    SPELL_SPIRIT_HUNT               = 58877
+};
+
+struct npc_shaman_spirit_wolf : public PetAI
+{
+    npc_shaman_spirit_wolf(Creature* creature) : PetAI(creature) { }
+
+    void JustAppeared() override
+    {
+        PetAI::JustAppeared();
+        DoCastSelf(SPELL_SPAWN_SMOKE);
+        DoCastSelf(SPELL_FERAL_SPIRIT_SCALING_4); // @todo: this should be updated like other scalings
+        DoCastSelf(SPELL_SPIRIT_HUNT);
+    }
+};
+
+struct npc_shaman_searing_totem : public TotemAI
+{
+    npc_shaman_searing_totem(Creature* creature) : TotemAI(creature) { }
+
+    Unit* SelectTotemTarget() override
+    {
+        // The Searing Totem prefers targets afflicted by its creator's Flameshock and Stormstrike ability
+        std::list<Unit*> targets;
+        Trinity::NearestAttackableUnitInObjectRangeCheck u_check(me, Coalesce<Unit const>(me->GetCreator(), me), _spellRange);
+        Trinity::UnitListSearcher<Trinity::NearestAttackableUnitInObjectRangeCheck> searcher(me, targets, u_check);
+        Cell::VisitAllObjects(me, searcher, _spellRange);
+
+        if (!targets.empty())
+        {
+            targets.remove_if([creatorGuid = me->GetCreatorGUID()](Unit const* target)
+            {
+                if (target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_SHAMAN, 0x10000000, 0x0, 0x0, creatorGuid))
+                    return false;
+
+                if (target->GetAuraEffect(SPELL_AURA_MOD_CRIT_CHANCE_FOR_CASTER, SPELLFAMILY_SHAMAN, 0x0, 0x1000000, 0x0, creatorGuid))
+                    return false;
+
+                return true;
+            });
+
+            if (!targets.empty())
+                return targets.front();
+        }
+
+        return TotemAI::SelectTotemTarget();
+    }
+};
+
 void AddSC_npcs_special()
 {
     new npc_air_force_bots();
@@ -3161,16 +3127,17 @@ void AddSC_npcs_special()
     new npc_brewfest_reveler();
     RegisterCreatureAI(npc_training_dummy);
     new npc_wormhole();
-    new npc_pet_trainer();
     new npc_experience();
     new npc_firework();
     new npc_spring_rabbit();
     new npc_imp_in_a_ball();
-    new npc_stable_master();
     new npc_train_wrecker();
     new npc_argent_squire_gruntling();
     new npc_bountiful_table();
     RegisterCreatureAI(npc_mage_orb);
-    new npc_druid_treant();
+    RegisterCreatureAI(npc_druid_treant);
+    RegisterCreatureAI(npc_druid_wild_mushroom);
     RegisterCreatureAI(npc_darkmoon_island_gnoll);
+    RegisterCreatureAI(npc_shaman_spirit_wolf);
+    RegisterCreatureAI(npc_shaman_searing_totem);
 }

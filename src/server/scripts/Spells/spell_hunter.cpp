@@ -34,11 +34,6 @@ enum HunterSpells
 {
     SPELL_HUNTER_AIMED_SHOT                         = 19434,
     SPELL_HUNTER_BESTIAL_WRATH                      = 19574,
-    SPELL_HUNTER_CALL_PET_1                         = 883,
-    SPELL_HUNTER_CALL_PET_2                         = 83242,
-    SPELL_HUNTER_CALL_PET_3                         = 83243,
-    SPELL_HUNTER_CALL_PET_4                         = 83244,
-    SPELL_HUNTER_CALL_PET_5                         = 83245,
     SPELL_HUNTER_CAMOUFLAGE_DURATION                = 51755,
     SPELL_HUNTER_CAMOUFLAGE_PERIODIC                = 80326,
     SPELL_HUNTER_CAMOUFLAGE_PERIODIC_TRIGGERED      = 80325,
@@ -709,74 +704,6 @@ class spell_hun_improved_steady_shot : public AuraScript
 
 private:
     uint8 _steadyShotCounter = 0;
-};
-
-uint32 callPetSpellIdBySlot[] =
-{
-    SPELL_HUNTER_CALL_PET_1,
-    SPELL_HUNTER_CALL_PET_2,
-    SPELL_HUNTER_CALL_PET_3,
-    SPELL_HUNTER_CALL_PET_4,
-    SPELL_HUNTER_CALL_PET_5
-};
-
-// 1515 - Tame Beast
-class spell_hun_tame_beast : public SpellScript
-{
-    SpellCastResult SendTameFailResult(PetTameFailureReason reason)
-    {
-        Player* player = GetCaster()->ToPlayer();
-        if (!player)
-            return SPELL_FAILED_DONT_REPORT;
-
-        player->SendTamePetFailure(reason);
-
-        return SPELL_FAILED_DONT_REPORT;
-    }
-
-    SpellCastResult CheckCast()
-    {
-        Player* player = GetCaster()->ToPlayer();
-        if (!player)
-            return SPELL_FAILED_DONT_REPORT;
-
-        if (!GetExplTargetUnit())
-            return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
-
-        if (player->getClass() != CLASS_HUNTER)
-            return SendTameFailResult(PET_TAME_FAILURE_CANNOT_TAME_CREATURES);
-
-        if (!player->GetFirstUnusedActivePetSlot())
-            return SendTameFailResult(PET_TAME_FAILURE_TOO_MANY_PETS);
-
-        if (Optional<uint8> slot = player->GetFirstUnusedActivePetSlot())
-            if (!player->HasSpell(callPetSpellIdBySlot[*slot]))
-                return SendTameFailResult(PET_TAME_FAILURE_SLOT_LOCKED);
-
-        if (Creature* target = GetExplTargetUnit()->ToCreature())
-        {
-            if (target->getLevel() > player->getLevel())
-                return SendTameFailResult(PET_TAME_FAILURE_TOO_HIGH_LEVEL);
-
-            if (!target->GetCreatureTemplate()->IsTameable(player->ToPlayer()->CanTameExoticPets()))
-                return SendTameFailResult(PET_TAME_FAILURE_CANNOT_TAME_EXOTIC);
-
-            if (player->GetPetGUID())
-                return SendTameFailResult(PET_TAME_FAILURE_ACTIVE_SUMMON);
-
-            if (player->GetCharmedGUID())
-                return SendTameFailResult(PET_TAME_FAILURE_CREATURE_CONTROLLED);
-        }
-        else
-            return SendTameFailResult(PET_TAME_FAILURE_NOT_TAMEABLE);
-
-        return SPELL_CAST_OK;
-    }
-
-    void Register() override
-    {
-        OnCheckCast.Register(&spell_hun_tame_beast::CheckCast);
-    }
 };
 
 //  53434 - Call of the Wild
@@ -1474,7 +1401,6 @@ void AddSC_hunter_spell_scripts()
     RegisterSpellScript(spell_hun_sniper_training);
     RegisterSpellScript(spell_hun_steady_shot);
     RegisterSpellScript(spell_hun_improved_steady_shot);
-    RegisterSpellScript(spell_hun_tame_beast);
     RegisterSpellScript(spell_hun_target_only_pet_and_owner);
     RegisterSpellScript(spell_hun_thrill_of_the_hunt);
     RegisterSpellScript(spell_hun_tnt);

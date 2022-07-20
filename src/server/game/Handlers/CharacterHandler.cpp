@@ -229,9 +229,25 @@ bool LoginQueryHolder::Initialize()
     stmt->setUInt32(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_CORPSE_LOCATION, stmt);
 
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_ALL_PETS_DETAIL);
-    stmt->setUInt64(0, lowGuid);
-    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_ALL_PETS, stmt);
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_PET);
+    stmt->setUInt32(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_PETS, stmt);
+
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_SPELL_COOLDOWNS);
+    stmt->setUInt32(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_PET_COOLDOWNS, stmt);
+
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_AURAS);
+    stmt->setUInt32(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_PET_AURAS, stmt);
+
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_DECLINED_NAMES);
+    stmt->setUInt32(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_PET_DECLINED_NAMES, stmt);
+
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_SPELLS);
+    stmt->setUInt32(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_PET_SPELL_STATES, stmt);
 
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_REWARDSTATUS_LFG);
     stmt->setUInt32(0, lowGuid);
@@ -969,11 +985,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
     if (pCurrChar->HasAtLoginFlag(AT_LOGIN_RESET_PET_TALENTS))
         Pet::resetTalentsForAllPetsOf(pCurrChar);
 
-    pCurrChar->LoadPetsFromDB(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ALL_PETS));
-
-    // Load pet if any (if player not alive and in taxi flight or another then pet will remember as temporary unsummoned)
-    pCurrChar->LoadPet();
-
     // Set FFA PvP for non GM in non-rest mode
     if (sWorld->IsFFAPvPRealm() && !pCurrChar->IsGameMaster() && !pCurrChar->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING))
         pCurrChar->SetByteFlag(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, UNIT_BYTE2_FLAG_FFA_PVP);
@@ -994,6 +1005,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
         pCurrChar->SendTalentsInfoData(false);              // original talents send already in to SendInitialPacketsBeforeAddToMap, resend reset state
         SendNotification(LANG_RESET_TALENTS);
     }
+
+    if (ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(pCurrChar->getClass()))
+        if (clsEntry->GetFlags().HasFlag(ChrClassesFlags::SendStableAtLogin))
+            SendPetStableList(ObjectGuid::Empty);
 
     bool firstLogin = pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST);
     if (firstLogin)
@@ -1083,8 +1098,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
         }
     }
 
-    if (pCurrChar->getClass() == CLASS_HUNTER)
-        pCurrChar->GetSession()->SendStablePet(ObjectGuid::Empty);
+    pCurrChar->ResummonActiveClassPet();
 
     // show time before shutdown if shutdown planned.
     if (sWorld->IsShuttingDown())

@@ -16,6 +16,7 @@
  */
 
 #include "TemporarySummon.h"
+#include "CharmInfo.h"
 #include "CreatureAI.h"
 #include "DBCStructure.h"
 #include "Log.h"
@@ -31,7 +32,7 @@ m_timer(0), m_lifetime(0)
     if (owner)
         m_summonerGUID = owner->GetGUID();
 
-    m_unitTypeMask |= UNIT_MASK_SUMMON;
+    m_unitTypeMask |= UNIT_MASK_SUMMON_OLD;
 }
 
 Unit* TempSummon::GetSummoner() const
@@ -183,16 +184,6 @@ void TempSummon::InitStats(uint32 duration)
     if (owner)
     {
         int32 slot = m_Properties->Slot;
-        if (slot > 0)
-        {
-            if (owner->m_SummonSlot[slot] && owner->m_SummonSlot[slot] != GetGUID())
-            {
-                Creature* oldSummon = GetMap()->GetCreature(owner->m_SummonSlot[slot]);
-                if (oldSummon && oldSummon->IsSummon())
-                    oldSummon->ToTempSummon()->UnSummon();
-            }
-            owner->m_SummonSlot[slot] = GetGUID();
-        }
 
         if (m_Properties->Control != SUMMON_CATEGORY_WILD)
         {
@@ -213,9 +204,6 @@ void TempSummon::InitStats(uint32 duration)
                 }
             }
         }
-
-        if (owner->IsTotem())
-            owner->m_Controlled.insert(this);
     }
 
     // If property has a faction defined, use it.
@@ -257,7 +245,7 @@ void TempSummon::UnSummon(uint32 msTime)
     //ASSERT(!IsPet());
     if (IsPet())
     {
-        ((Pet*)this)->Remove(PET_SAVE_DISMISS);
+        //((Pet*)this)->Remove(PET_SAVE_DISMISS);
         ASSERT(!IsInWorld());
         return;
     }
@@ -285,11 +273,6 @@ void TempSummon::RemoveFromWorld()
 
     if (m_Properties)
     {
-        int32 slot = m_Properties->Slot;
-        if (slot > 0)
-            if (Unit* owner = GetSummoner())
-                if (owner->m_SummonSlot[slot] == GetGUID())
-                    owner->m_SummonSlot[slot].Clear();
     }
 
     //if (GetOwnerGUID())
@@ -309,20 +292,6 @@ void Minion::InitStats(uint32 duration)
 {
     TempSummon::InitStats(duration);
     SetReactState(REACT_PASSIVE);
-
-    // Controlable guardians and minions shall receive a summoner guid
-    if ((IsMinion() || IsControlableGuardian()) && !IsTotem() && !IsVehicle())
-        GetOwner()->SetMinion(this, true);
-    else if (!IsPet() && !IsHunterPet())
-    {
-        GetOwner()->m_Controlled.insert(this);
-
-        // Store the totem elementals in players controlled list as well to trigger aggro mechanics
-        if (GetOwner()->IsTotem())
-            if (Unit* totemOwner = GetOwner()->GetOwner())
-                totemOwner->m_Controlled.insert(this);
-    }
-
     if (m_Properties && m_Properties->Slot == SUMMON_SLOT_MINIPET)
     {
         SelectLevel();       // some summoned creaters have different from 1 DB data for level/hp
@@ -337,21 +306,6 @@ void Minion::RemoveFromWorld()
         return;
 
     Unit* owner = GetOwner();
-
-    if ((IsMinion() || IsControlableGuardian()) && !IsTotem() && !IsVehicle())
-        owner->SetMinion(this, false);
-    else if (!IsPet() && !IsHunterPet())
-    {
-        if (owner->m_Controlled.find(this) != owner->m_Controlled.end())
-            owner->m_Controlled.erase(this);
-        else
-            TC_LOG_FATAL("entities.unit", "Minion::RemoveFromWorld: Owner %s tried to remove a non-existing controlled unit %s from controlled unit set.", owner->GetGUID().ToString().c_str(), GetGUID().ToString().c_str());
-
-        if (owner->IsTotem())
-            if (Unit* totemOwner = owner->GetOwner())
-                if (totemOwner->m_Controlled.find(this) != totemOwner->m_Controlled.end())
-                    totemOwner->m_Controlled.erase(this);
-    }
 
     TempSummon::RemoveFromWorld();
 }
@@ -403,13 +357,6 @@ void Guardian::InitStats(uint32 duration)
 void Guardian::InitSummon()
 {
     TempSummon::InitSummon();
-
-    if (GetOwner()->GetTypeId() == TYPEID_PLAYER
-            && GetOwner()->GetMinionGUID() == GetGUID()
-            && !GetOwner()->GetCharmedGUID())
-    {
-        GetOwner()->ToPlayer()->CharmSpellInitialize();
-    }
 }
 
 Puppet::Puppet(SummonPropertiesEntry const* properties, Unit* owner)

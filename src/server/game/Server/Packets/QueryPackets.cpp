@@ -217,3 +217,17 @@ WorldPacket const* WorldPackets::Query::QueryPlayerNameResponse::Write()
 
     return &_worldPacket;
 }
+
+WorldPacket const* WorldPackets::Query::QueryPetNameResponse::Write()
+{
+    _worldPacket << uint32(PetID);
+    _worldPacket << Name;
+    _worldPacket << uint32(Timestamp);
+    _worldPacket << uint8(HasDeclined);
+
+    if (HasDeclined)
+        for (std::string declinedName : DeclinedNames.name)
+            _worldPacket << declinedName;
+
+    return &_worldPacket;
+}

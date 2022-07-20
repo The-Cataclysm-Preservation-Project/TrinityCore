@@ -632,9 +632,9 @@ enum class SpellItemEnchantmentFlags : uint32
 
 DEFINE_ENUM_FLAG(SpellItemEnchantmentFlags);
 
-#define MAX_TALENT_RANK 5
-#define MAX_PET_TALENT_RANK 3                               // use in calculations, expected <= MAX_TALENT_RANK
-#define MAX_TALENT_TABS 3
+static constexpr uint8 MAX_TALENT_RANK = 3;
+static constexpr uint8 MAX_PET_TALENT_RANK = 3;                               // use in calculations, expected <= MAX_TALENT_RANK
+static constexpr uint8 MAX_TALENT_TABS = 3;
 
 enum class SpellShapeshiftFormFlags : int32
 {
@@ -713,31 +713,30 @@ enum class SummonPropertiesSlot : int8
     AnyAvailableTotem   = -1
 };
 
-// SummonProperties.dbc, col 5
 enum class SummonPropertiesFlags : uint32
 {
     None                              = 0x000000,
-    AttackSummoner                    = 0x000001,
-    HelpWhenSummonedInCombat          = 0x000002,
-    UseLevelOffset                    = 0x000004,
-    DespawnOnSummonerDeath            = 0x000008,
-    OnlyVisibleToSummoner             = 0x000010,
-    CannotDismissPet                  = 0x000020,
-    UseDemonTimeout                   = 0x000040,
-    UnlimitedSummons                  = 0x000080,
-    UseCreatureLevel                  = 0x000100,
-    JoinSummonerSpawnGroup            = 0x000200,
-    DoNotToggle                       = 0x000400,
-    DespawnWhenExpired                = 0x000800,
-    UseSummonerFaction                = 0x001000,
-    DoNotFollowMountedSummoner        = 0x002000,
-    SavePetAutocast                   = 0x004000,
-    IgnoreSummonerPhase               = 0x008000,
-    OnlyVisibleToSummonerGroup        = 0x010000,
-    DespawnOnSummonerLogout           = 0x020000,
-    CastRideVehicleSpellOnSummoner    = 0x040000,
-    GuardianActsLikePet               = 0x080000,
-    DontSnapSessileToGround           = 0x100000 
+    AttackSummoner                    = 0x000001, // Implemented in TemporarySummon::HandlePostSummonActions
+    HelpWhenSummonedInCombat          = 0x000002, // Implemented in TemporarySummon::HandlePostSummonActions
+    UseLevelOffset                    = 0x000004, // NYI
+    DespawnOnSummonerDeath            = 0x000008, // Implemented in Unit::UnsummonAllSummonsDueToDeath
+    OnlyVisibleToSummoner             = 0x000010, // Implemented in Spell::EffectSummonType
+    CannotDismissPet                  = 0x000020, // Implemented in PetHandler.cpp HandlePetActionHelper
+    UseDemonTimeout                   = 0x000040, // NYI
+    UnlimitedSummons                  = 0x000080, // NYI
+    UseCreatureLevel                  = 0x000100, // Implemented in TemporarySummon::HandlePreSummonActions
+    JoinSummonerSpawnGroup            = 0x000200, // Implemented in CreatureAI::JustAppeared
+    DoNotToggle                       = 0x000400, // Implemented in SpellEffect::SummonType
+    DespawnWhenExpired                = 0x000800, // Implemented in TemporarySummon::Update
+    UseSummonerFaction                = 0x001000, // Implemented in TemporarySummon::HandlePreSummonActions
+    DoNotFollowMountedSummoner        = 0x002000, // NYI
+    SavePetAutocast                   = 0x004000, // Implemented in Pet::Dismiss
+    IgnoreSummonerPhase               = 0x008000, // Wild Only - Implemented in Map::SummonCreature
+    OnlyVisibleToSummonerGroup        = 0x010000, // Implemented in Spell::EffectSummonType
+    DespawnOnSummonerLogout           = 0x020000, // Implemented in Unit::UnsummonAllSummonsOnLogout
+    CastRideVehicleSpellOnSummoner    = 0x040000, // NYI
+    GuardianActsLikePet               = 0x080000, // NYI - unused 4.3.4.15595
+    DontSnapSessileToGround           = 0x100000  // NYI
 };
 
 DEFINE_ENUM_FLAG(SummonPropertiesFlags);
@@ -889,5 +888,30 @@ enum class CurrencyTypeFlags : uint32
 };
 
 DEFINE_ENUM_FLAG(CurrencyTypeFlags);
+
+enum class ChrClassesFlags : uint32
+{
+    None                    = 0x000,
+    PlayerClass             = 0x001,
+    UseLoincloth            = 0x002,
+    DisplayPet              = 0x004,
+    Unused                  = 0x008,
+    CanWearScalingStatMail  = 0x010,
+    CanWearScalingStatPlate = 0x020,
+    BindStartingArea        = 0x040,
+    PetBarInitiallyHidden   = 0x080,
+    SendStableAtLogin       = 0x100
+};
+
+DEFINE_ENUM_FLAG(ChrClassesFlags);
+
+enum class TotemCategoryTypes : uint8
+{
+    // Shaman Totems
+    EarthTotem          = 2,
+    AirTotem            = 3,
+    FireTotem           = 4,
+    WaterTotem          = 5,
+};
 
 #endif

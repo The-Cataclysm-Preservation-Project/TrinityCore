@@ -199,6 +199,21 @@ namespace WorldPackets
         class SetRole;
     }
 
+    namespace Pet
+    {
+        class DismissCritter;
+        class PetAction;
+        class CPetStableList;
+        class SetPetSlot;
+        class PetAbandon;
+        class PetSetAction;
+        class PetSpellAutocast;
+        class PetStopAttack;
+        class PetRename;
+
+        struct PetRenameData;
+    }
+
     namespace Quest
     {
         class QuestGiverAcceptQuest;
@@ -233,6 +248,11 @@ namespace WorldPackets
         class CancelQueuedSpell;
         class UseItem;
         class UpdateMissileTrajectory;
+    }
+
+    namespace Talent
+    {
+        class LeanPreviewTalentsPet;
     }
 
     namespace Ticket
@@ -280,6 +300,8 @@ enum AccountDataType
     PER_CHARACTER_LAYOUT_CACHE      = 6,                    // 0x40 p
     PER_CHARACTER_CHAT_CACHE        = 7                     // 0x80 p
 };
+
+enum class PetStableResultCode : uint8;
 
 #define NUM_ACCOUNT_DATA_TYPES        8
 
@@ -486,7 +508,7 @@ class TC_GAME_API WorldSession
 
         void SendNotification(const char *format, ...) ATTR_PRINTF(2, 3);
         void SendNotification(uint32 string_id, ...);
-        void SendPetNameInvalid(uint32 error, std::string const& name, DeclinedName *declinedName);
+        void SendPetNameInvalid(uint32 error, WorldPackets::Pet::PetRenameData const& renameData);
         void SendPartyResult(PartyOperation operation, std::string const& member, PartyResult res, uint32 val = 0);
         void SendAreaTriggerMessage(char const* Text, ...) ATTR_PRINTF(2, 3);
         void SendQueryTimeResponse();
@@ -572,11 +594,10 @@ class TC_GAME_API WorldSession
 
         // Pet
         void SendPetNameQuery(ObjectGuid guid, uint32 petnumber);
-        void SendStablePet(ObjectGuid guid);
-        void SendStableResult(uint8 guid);
-        bool CheckStableMaster(ObjectGuid guid);
-        void UpdatePetSlot(uint32 petNumber, uint8 oldPetSlot, uint8 newPetSlot);
+        void SendPetStableList(ObjectGuid stableMasterGuid);
+        void SendStableResult(PetStableResultCode result);
         void SendPetSlotUpdated(int32 petNumberA, int32 petSlotA, int32 petNumberB, int32 petSlotB);
+        bool CheckStableMaster(ObjectGuid guid);
         void SendPetAdded(int32 petSlot, int32 petNumber, int32 creatureID, int32 level, std::string name);
 
         // Account Data
@@ -916,8 +937,8 @@ class TC_GAME_API WorldSession
         void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
         void HandleNpcTextQueryOpcode(WorldPacket& recvPacket);
         void HandleBinderActivateOpcode(WorldPackets::NPC::Hello& packet);
-        void HandleListStabledPetsOpcode(WorldPacket& recvPacket);
-        void HandleSetPetSlot(WorldPacket& recvPacket);
+        void HandleListStabledPetsOpcode(WorldPackets::Pet::CPetStableList& packet);
+        void HandleSetPetSlot(WorldPackets::Pet::SetPetSlot& packet);
         void HandleStableRevivePet(WorldPacket& recvPacket);
 
         void HandleDuelAcceptedOpcode(WorldPacket& recvPacket);
@@ -1060,23 +1081,22 @@ class TC_GAME_API WorldSession
         void HandleTutorialReset(WorldPacket& recvData);
 
         //Pet
-        void HandlePetAction(WorldPacket& recvData);
-        void HandlePetStopAttack(WorldPacket& recvData);
-        void HandlePetActionHelper(Unit* pet, ObjectGuid guid1, uint32 spellid, uint16 flag, ObjectGuid guid2, float x, float y, float z);
+        void HandlePetAction(WorldPackets::Pet::PetAction& packet);
+        void HandlePetStopAttack(WorldPackets::Pet::PetStopAttack& packet);
         void HandlePetNameQuery(WorldPacket& recvData);
-        void HandlePetSetAction(WorldPacket& recvData);
-        void HandlePetAbandon(WorldPacket& recvData);
-        void HandlePetRename(WorldPacket& recvData);
+        void HandlePetSetAction(WorldPackets::Pet::PetSetAction& packet);
+        void HandlePetAbandon(WorldPackets::Pet::PetAbandon& packet);
+        void HandlePetRename(WorldPackets::Pet::PetRename& packet);
         void HandlePetCancelAuraOpcode(WorldPacket& recvPacket);
-        void HandlePetSpellAutocastOpcode(WorldPacket& recvPacket);
+        void HandlePetSpellAutocastOpcode(WorldPackets::Pet::PetSpellAutocast& packet);
         void HandlePetCastSpellOpcode(WorldPacket& recvPacket);
         void HandlePetLearnTalent(WorldPacket& recvPacket);
-        void HandleLearnPreviewTalentsPet(WorldPacket& recvPacket);
+        void HandleLearnPreviewTalentsPet(WorldPackets::Talent::LeanPreviewTalentsPet& packet);
 
         void HandleSetActionBarToggles(WorldPacket& recvData);
 
         void HandleTotemDestroyed(WorldPackets::Totem::TotemDestroyed& packet);
-        void HandleDismissCritter(WorldPacket& recvData);
+        void HandleDismissCritter(WorldPackets::Pet::DismissCritter& packet);
 
         //Battleground
         void HandleBattlemasterHelloOpcode(WorldPacket& recvData);

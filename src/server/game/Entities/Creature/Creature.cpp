@@ -18,6 +18,7 @@
 #include "Creature.h"
 #include "BattlegroundMgr.h"
 #include "CellImpl.h"
+#include "CharmInfo.h"
 #include "Common.h"
 #include "CreatureAI.h"
 #include "CreatureAISelector.h"
@@ -50,6 +51,7 @@
 #include "SpellAuraEffects.h"
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
+#include "NewTemporarySummon.h"
 #include "Transport.h"
 #include "Util.h"
 #include "Vehicle.h"
@@ -452,6 +454,12 @@ void Creature::RemoveCorpse(bool setSpawnTime, bool destroyForNearbyPlayers)
             m_respawnTime = std::max<time_t>(GameTime::GetGameTime() + respawnDelay, m_respawnTime);
 
             SaveRespawnTime();
+        }
+
+        if (NewTemporarySummon* summon = ToTemporarySummon())
+        {
+            summon->Unsummon();
+            return;
         }
 
         if (TempSummon* summon = ToTempSummon())
@@ -1083,15 +1091,6 @@ Unit* Creature::SelectVictim()
                     target = owner->getAttackerForHelper();
                 if (!target)
                 {
-                    for (ControlList::const_iterator itr = owner->m_Controlled.begin(); itr != owner->m_Controlled.end(); ++itr)
-                    {
-                        if ((*itr)->IsInCombat())
-                        {
-                            target = (*itr)->getAttackerForHelper();
-                            if (target)
-                                break;
-                        }
-                    }
                 }
             }
         }
@@ -2163,10 +2162,6 @@ void Creature::LoadTemplateImmunities()
     for (uint32 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; ++i)
         ApplySpellImmune(placeholderSpellId, IMMUNITY_SCHOOL, 1 << i, false);
 
-    // don't inherit immunities for hunter pets
-    if (GetOwnerOrCreatorGUID().IsPlayer() && IsHunterPet())
-        return;
-
     if (uint32 mask = GetCreatureTemplate()->MechanicImmuneMask)
     {
         for (uint32 i = MECHANIC_NONE + 1; i < MAX_MECHANIC; ++i)
@@ -2593,7 +2588,7 @@ bool Creature::LoadCreaturesAddon()
     SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, creatureAddon->pvpFlags);
 
     // These fields must only be handled by core internals and must not be modified via scripts/DB data
-    SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PET_FLAGS, 0);
+    //SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PET_FLAGS, 0);
     SetShapeshiftForm(FORM_NONE);
 
     if (creatureAddon->emote != 0)

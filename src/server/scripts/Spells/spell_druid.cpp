@@ -33,6 +33,7 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"
+#include "NewTemporarySummon.h"
 
 enum DruidSpells
 {
@@ -63,8 +64,6 @@ enum DruidSpells
     SPELL_DRUID_FERAL_SWIFTNESS             = 17002,
     SPELL_DRUID_FERAL_SWIFTNESS_CLEAR_ROAR  = 97993,
     SPELL_DRUID_FERAL_SWIFTNESS_CLEAR_CAT   = 97985,
-    SPELL_DRUID_FUNGAL_GROWTH_R1            = 78788,
-    SPELL_DRUID_FUNGAL_GROWTH_R2            = 78789,
     SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R1     = 81291,
     SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R2     = 81283,
     SPELL_DRUID_FRENZIED_REGENERATION_HEAL  = 22845,
@@ -120,8 +119,8 @@ enum DruidSpells
     SPELL_DRUID_T13_FERAL_2P_BONUS          = 105725,
     SPELL_DRUID_WILD_MUSHROOM               = 88747,
     SPELL_DRUID_WILD_MUSHROOM_DAMAGE        = 78777,
-    SPELL_DRUID_WILD_MUSHROOM_SUICIDE       = 92853,
-    SPELL_DRUID_WILD_MUSHROOM_VISUAL        = 92701,
+    SPELL_DRUID_WILD_MUSHROOM_DETONATE_SUICIDE = 92853,
+    SPELL_DRUID_WILD_MUSHROOM_DETONATE_DEATH_VISUAL = 92701,
     SPELL_DRUID_FIREBLOOM                   = 99017
 };
 
@@ -136,7 +135,8 @@ enum DruidSpellIconIds
     SPELL_ICON_ID_GLYPH_OF_FEROCIOUS_BITE           = 1680,
     SPELL_ICON_ID_GLYPH_OF_FRENZIED_REGENERATION    = 50,
     SPELL_ICON_ID_GIFT_OF_THE_EARTHMOTHER           = 3186,
-    SPELL_ICON_ID_STAMPEDE                          = 3930
+    SPELL_ICON_ID_STAMPEDE                          = 3930,
+    SPELL_ICON_ID_FUNGAL_GROWTH                     = 2681
 };
 
 enum MiscSpells
@@ -1323,46 +1323,7 @@ class spell_dru_leader_of_the_pack : public AuraScript
     }
 };
 
-class spell_dru_wild_mushroom : public SpellScript
-{
-    void HandleSummon()
-    {
-        Unit* caster = GetCaster();
-        if (!caster)
-            return;
-
-        std::list<Creature*> mushrooms;
-        caster->GetAllMinionsByEntry(mushrooms, GetSpellInfo()->Effects[EFFECT_0].MiscValue);
-        if (mushrooms.empty())
-            return;
-
-        TempSummon* oldestMushroom = nullptr;
-
-        if (mushrooms.size() > uint32(GetSpellInfo()->Effects[EFFECT_0].BasePoints))
-        {
-            for (auto itr : mushrooms)
-            {
-                if (TempSummon* mushroomToCheck = itr->ToTempSummon())
-                {
-                    if (!oldestMushroom)
-                        oldestMushroom = mushroomToCheck;
-                    else
-                    {
-                        if (mushroomToCheck->GetTimer() < oldestMushroom->GetTimer())
-                            oldestMushroom = mushroomToCheck;
-                    }
-                }
-            }
-            if (oldestMushroom)
-                oldestMushroom->UnSummon();
-        }
-    }
-
-    void Register() override
-    {
-        AfterCast.Register(&spell_dru_wild_mushroom::HandleSummon);
-    }
-};
+static constexpr uint32 const NPC_WILD_MUSHROOM = 47649;
 
 class spell_dru_wild_mushroom_detonate : public SpellScript
 {
@@ -1370,12 +1331,9 @@ class spell_dru_wild_mushroom_detonate : public SpellScript
     {
         return ValidateSpellInfo(
             {
-                SPELL_DRUID_WILD_MUSHROOM,
                 SPELL_DRUID_WILD_MUSHROOM_DAMAGE,
-                SPELL_DRUID_WILD_MUSHROOM_SUICIDE,
-                SPELL_DRUID_WILD_MUSHROOM_VISUAL,
-                SPELL_DRUID_FUNGAL_GROWTH_R1,
-                SPELL_DRUID_FUNGAL_GROWTH_R2,
+                SPELL_DRUID_WILD_MUSHROOM_DETONATE_SUICIDE,
+                SPELL_DRUID_WILD_MUSHROOM_DETONATE_DEATH_VISUAL,
                 SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R1,
                 SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R2
             });
@@ -1383,33 +1341,19 @@ class spell_dru_wild_mushroom_detonate : public SpellScript
 
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
-        Unit* caster = GetCaster();
-        if (!caster)
-            return;
 
-        SpellInfo const* spell = sSpellMgr->GetSpellInfo(SPELL_DRUID_WILD_MUSHROOM);
-        if (!spell)
-            return;
-
-        std::list<Creature*> mushrooms;
-        caster->GetAllMinionsByEntry(mushrooms, spell->Effects[EFFECT_0].MiscValue);
-        if (mushrooms.empty())
-            return;
-
-        for (auto itr : mushrooms)
+        for (SummonPropertiesSlot slot : { SummonPropertiesSlot::Totem1, SummonPropertiesSlot::Totem2, SummonPropertiesSlot::Totem3, SummonPropertiesSlot::Totem4 })
         {
-            if (TempSummon* mushroom = itr->ToTempSummon())
-            {
-                if (caster->HasAura(SPELL_DRUID_FUNGAL_GROWTH_R1))
-                    caster->CastSpell(mushroom, SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R1, true);
-                else if (caster->HasAura(SPELL_DRUID_FUNGAL_GROWTH_R2))
-                    caster->CastSpell(mushroom, SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R2, true);
+            NewTemporarySummon* summon = GetHitUnit()->GetSummonInSlot(slot);
+            if (!summon || summon->GetEntry() != NPC_WILD_MUSHROOM)
+                continue;
 
-                caster->CastSpell(mushroom, SPELL_DRUID_WILD_MUSHROOM_DAMAGE, true);
-                mushroom->CastSpell(mushroom, SPELL_DRUID_WILD_MUSHROOM_VISUAL, true);
-                mushroom->CastSpell(mushroom, SPELL_DRUID_WILD_MUSHROOM_SUICIDE, true);
-                mushroom->UnSummon(1500);
-            }
+            if (AuraEffect const* fungalGrowth = GetHitUnit()->GetDummyAuraEffect(SPELLFAMILY_DRUID, SPELL_ICON_ID_FUNGAL_GROWTH, EFFECT_0))
+                GetHitUnit()->CastSpell(summon, fungalGrowth->GetSpellInfo()->GetRank() == 1 ? SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R1 : SPELL_DRUID_FUNGAL_GROWTH_SUMMON_R2, fungalGrowth);
+
+            GetHitUnit()->CastSpell(summon, SPELL_DRUID_WILD_MUSHROOM_DAMAGE, true);
+            summon->CastSpell(nullptr, SPELL_DRUID_WILD_MUSHROOM_DETONATE_DEATH_VISUAL);
+            summon->CastSpell(nullptr, SPELL_DRUID_WILD_MUSHROOM_DETONATE_SUICIDE);
         }
     }
 
@@ -2240,7 +2184,6 @@ void AddSC_druid_spell_scripts()
     RegisterSpellScript(spell_dru_t12_restoration_4p_bonus);
     RegisterSpellScript(spell_dru_item_t11_feral_4p_bonus);
     RegisterSpellScript(spell_dru_wild_growth);
-    RegisterSpellScript(spell_dru_wild_mushroom);
     RegisterSpellScript(spell_dru_wild_mushroom_detonate);
     RegisterSpellScript(spell_dru_stampeding_roar);
     RegisterSpellScript(spell_dru_feral_swiftness_clear);

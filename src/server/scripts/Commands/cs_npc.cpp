@@ -24,6 +24,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "Chat.h"
+#include "CharmInfo.h"
 #include "CreatureAI.h"
 #include "CreatureGroups.h"
 #include "DatabaseEnv.h"
@@ -36,6 +37,7 @@ EndScriptData */
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Pet.h"
+#include "NewPet.h"
 #include "PhasingHandler.h"
 #include "Player.h"
 #include "RBAC.h"
@@ -1476,63 +1478,40 @@ public:
         Creature* creatureTarget = handler->getSelectedCreature();
         if (!creatureTarget || creatureTarget->IsPet())
         {
-            handler->PSendSysMessage (LANG_SELECT_CREATURE);
-            handler->SetSentErrorMessage (true);
+            handler->PSendSysMessage(LANG_SELECT_CREATURE);
+            handler->SetSentErrorMessage(true);
             return false;
         }
 
         Player* player = handler->GetSession()->GetPlayer();
 
-        if (player->GetPetGUID())
-        {
-            handler->SendSysMessage (LANG_YOU_ALREADY_HAVE_PET);
-            handler->SetSentErrorMessage (true);
-            return false;
-        }
-
         CreatureTemplate const* cInfo = creatureTarget->GetCreatureTemplate();
 
         if (!cInfo->IsTameable (player->CanTameExoticPets()))
         {
-            handler->PSendSysMessage (LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
-            handler->SetSentErrorMessage (true);
+            handler->PSendSysMessage(LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
+            handler->SetSentErrorMessage(true);
             return false;
         }
 
-        // Everything looks OK, create new pet
-        Pet* pet = player->CreateTamedPetFrom(creatureTarget);
-        if (!pet)
+        Optional<uint8> slot = player->GetUnusedActivePetSlot();
+        if (!slot.has_value())
         {
-            handler->PSendSysMessage (LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
-            handler->SetSentErrorMessage (true);
+            handler->PSendSysMessage(LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
+            handler->SetSentErrorMessage(true);
             return false;
         }
 
-        // place pet before player
-        float x, y, z;
-        player->GetClosePoint (x, y, z, creatureTarget->GetCombatReach(), CONTACT_DISTANCE);
-        pet->Relocate(x, y, z, float(M_PI) - player->GetOrientation());
+        if (!player->CreatePlayerPetData(*slot, 0, creatureTarget->GetEntry()))
+        {
+            handler->PSendSysMessage(LANG_CREATURE_NON_TAMEABLE, cInfo->Entry);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
-        // set pet to defensive mode by default (some classes can't control controlled pets in fact).
-        pet->SetReactState(REACT_DEFENSIVE);
-
-        // calculate proper level
-        uint8 level = std::max<uint8>(player->getLevel()-5, creatureTarget->getLevel());
-
-        // prepare visual effect for levelup
-        pet->SetUInt32Value(UNIT_FIELD_LEVEL, level - 1);
-
-        // add to world
-        pet->GetMap()->AddToMap(pet->ToCreature());
-
-        // visual effect for levelup
-        pet->SetUInt32Value(UNIT_FIELD_LEVEL, level);
-
-        // caster have pet now
-        player->SetMinion(pet, true);
-
-        pet->SavePetToDB(PET_SAVE_NEW_PET);
-        player->PetSpellInitialize();
+        NewPet* pet = player->SummonPet(0, *slot, 0, true, creatureTarget->GetPosition());
+        player->GetSession()->SendPetAdded(*slot, pet->GetCharmInfo()->GetPetNumber(), creatureTarget->GetEntry(), pet->getLevel(), pet->GetName());
+        creatureTarget->DespawnOrUnsummon();
 
         return true;
     }

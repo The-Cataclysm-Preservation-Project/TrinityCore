@@ -62,6 +62,7 @@ enum InventorySlot
 };
 
 struct AbstractPursuer;
+struct CharmInfo;
 struct FactionTemplateEntry;
 struct LiquidData;
 struct LiquidTypeEntry;
@@ -77,14 +78,20 @@ class DynamicObject;
 class GameClient;
 class GameObject;
 class Guardian;
+class NewGuardian;
 class Item;
 class Minion;
 class MotionMaster;
 class Pet;
+class NewPet;
+class Player;
+class NewPet;
+class NewPossessed;
 class Spell;
 class SpellCastTargets;
 class SpellHistory;
 class SpellInfo;
+class NewTemporarySummon;
 class Totem;
 class Transport;
 class TransportBase;
@@ -94,6 +101,8 @@ class Vehicle;
 class VehicleJoinEvent;
 
 enum ZLiquidStatus : uint32;
+enum class SummonPropertiesSlot : int8;
+enum CharmType : uint8;
 
 namespace Movement
 {
@@ -364,16 +373,20 @@ enum DamageEffectType : uint8
 enum UnitTypeMask
 {
     UNIT_MASK_NONE                  = 0x00000000,
-    UNIT_MASK_SUMMON                = 0x00000001,
-    UNIT_MASK_MINION                = 0x00000002,
-    UNIT_MASK_GUARDIAN              = 0x00000004,
-    UNIT_MASK_TOTEM                 = 0x00000008,
-    UNIT_MASK_PET                   = 0x00000010,
-    UNIT_MASK_VEHICLE               = 0x00000020,
-    UNIT_MASK_PUPPET                = 0x00000040,
-    UNIT_MASK_HUNTER_PET            = 0x00000080,
-    UNIT_MASK_CONTROLABLE_GUARDIAN  = 0x00000100,
-    UNIT_MASK_ACCESSORY             = 0x00000200
+    UNIT_MASK_SUMMON                = 0x00000001, // SummonPropertiesControl = 0
+    UNIT_MASK_GUARDIAN              = 0x00000002, // SummonPropertiesControl = 1
+    UNIT_MASK_PET                   = 0x00000004, // SummonPropertiesControl = 2
+    UNIT_MASK_POSSESSED             = 0x00000008, // SummonPropertiesControl = 3
+    UNIT_MASK_POSSESSED_VEHICLE     = 0x00000010, // SummonPropertiesControl = 4
+    UNIT_MASK_VEHICLE               = 0x00000020, // SummonPropertiesControl = 5 and Wild entities
+    UNIT_MASK_TOTEM                 = 0x00000040, // TotemCategoryType 2 - 5
+
+    UNIT_MASK_MINION                = 0x00000080,
+    UNIT_MASK_PUPPET                = 0x00000200,
+    UNIT_MASK_HUNTER_PET            = 0x00000400,
+    UNIT_MASK_CONTROLABLE_GUARDIAN  = 0x00000800,
+    UNIT_MASK_ACCESSORY             = 0x00001000,
+    UNIT_MASK_SUMMON_OLD            = 0x00002000,
 };
 
 struct DiminishingReturn
@@ -608,136 +621,7 @@ enum CurrentSpellTypes : uint8
 #define CURRENT_FIRST_NON_MELEE_SPELL 1
 #define CURRENT_MAX_SPELL             4
 
-#define UNIT_ACTION_BUTTON_ACTION(X) (uint32(X) & 0x00FFFFFF)
-#define UNIT_ACTION_BUTTON_TYPE(X)   ((uint32(X) & 0xFF000000) >> 24)
-#define MAKE_UNIT_ACTION_BUTTON(A, T) (uint32(A) | (uint32(T) << 24))
-
-struct UnitActionBarEntry
-{
-    UnitActionBarEntry() : packedData(uint32(ACT_DISABLED) << 24) { }
-
-    uint32 packedData;
-
-    // helper
-    ActiveStates GetType() const { return ActiveStates(UNIT_ACTION_BUTTON_TYPE(packedData)); }
-    uint32 GetAction() const { return UNIT_ACTION_BUTTON_ACTION(packedData); }
-    bool IsActionBarForSpell() const
-    {
-        ActiveStates Type = GetType();
-        return Type == ACT_DISABLED || Type == ACT_ENABLED || Type == ACT_PASSIVE;
-    }
-
-    void SetActionAndType(uint32 action, ActiveStates type)
-    {
-        packedData = MAKE_UNIT_ACTION_BUTTON(action, type);
-    }
-
-    void SetType(ActiveStates type)
-    {
-        packedData = MAKE_UNIT_ACTION_BUTTON(UNIT_ACTION_BUTTON_ACTION(packedData), type);
-    }
-
-    void SetAction(uint32 action)
-    {
-        packedData = (packedData & 0xFF000000) | UNIT_ACTION_BUTTON_ACTION(action);
-    }
-};
-
 typedef std::list<Player*> SharedVisionList;
-
-enum CharmType
-{
-    CHARM_TYPE_CHARM,
-    CHARM_TYPE_POSSESS,
-    CHARM_TYPE_VEHICLE,
-    CHARM_TYPE_CONVERT
-};
-
-typedef UnitActionBarEntry CharmSpellInfo;
-
-enum ActionBarIndex
-{
-    ACTION_BAR_INDEX_START = 0,
-    ACTION_BAR_INDEX_ATTACK = ACTION_BAR_INDEX_START,
-    ACTION_BAR_INDEX_FOLLOW = 1,
-    ACTION_BAR_INDEX_MOVE_TO = 2,
-    ACTION_BAR_INDEX_PET_SPELL_START = 3,
-    ACTION_BAR_INDEX_PET_SPELL_END = 7,
-    ACTION_BAR_INDEX_ASSIST = ACTION_BAR_INDEX_PET_SPELL_END,
-    ACTION_BAR_INDEX_DEFENSIVE = 8,
-    ACTION_BAR_INDEX_PASSIVE = 9,
-    ACTION_BAR_INDEX_END = 10
-};
-
-#define MAX_UNIT_ACTION_BAR_INDEX (ACTION_BAR_INDEX_END-ACTION_BAR_INDEX_START)
-
-struct TC_GAME_API CharmInfo
-{
-    public:
-        explicit CharmInfo(Unit* unit);
-        ~CharmInfo();
-        void RestoreState();
-        uint32 GetPetNumber() const { return _petnumber; }
-        void SetPetNumber(uint32 petnumber, bool statwindow);
-
-        void SetCommandState(CommandStates st) { _CommandState = st; }
-        CommandStates GetCommandState() const { return _CommandState; }
-        bool HasCommandState(CommandStates state) const { return (_CommandState == state); }
-
-        void InitPossessCreateSpells();
-        void InitCharmCreateSpells();
-        void InitPetActionBar();
-        void InitEmptyActionBar(bool withAttack = true);
-
-                                                            //return true if successful
-        bool AddSpellToActionBar(SpellInfo const* spellInfo, ActiveStates newstate = ACT_DECIDE, uint8 preferredSlot = 0);
-        bool RemoveSpellFromActionBar(uint32 spell_id);
-        void LoadPetActionBar(const std::string& data);
-        void BuildActionBar(WorldPacket* data);
-        void SetSpellAutocast(SpellInfo const* spellInfo, bool state);
-        void SetActionBar(uint8 index, uint32 spellOrAction, ActiveStates type)
-        {
-            PetActionBar[index].SetActionAndType(spellOrAction, type);
-        }
-        UnitActionBarEntry const* GetActionBarEntry(uint8 index) const { return &(PetActionBar[index]); }
-
-        void ToggleCreatureAutocast(SpellInfo const* spellInfo, bool apply);
-
-        CharmSpellInfo* GetCharmSpell(uint8 index) { return &(_charmspells[index]); }
-
-        void SetIsCommandAttack(bool val);
-        bool IsCommandAttack();
-        void SetIsCommandFollow(bool val);
-        bool IsCommandFollow();
-        void SetIsAtStay(bool val);
-        bool IsAtStay();
-        void SetIsFollowing(bool val);
-        bool IsFollowing();
-        void SetIsReturning(bool val);
-        bool IsReturning();
-        void SaveStayPosition();
-        void GetStayPosition(float &x, float &y, float &z);
-
-    private:
-
-        Unit* _unit;
-        UnitActionBarEntry PetActionBar[MAX_UNIT_ACTION_BAR_INDEX];
-        CharmSpellInfo _charmspells[4];
-        CommandStates _CommandState;
-        uint32 _petnumber;
-
-        //for restoration after charmed
-        ReactStates     _oldReactState;
-
-        bool _isCommandAttack;
-        bool _isCommandFollow;
-        bool _isAtStay;
-        bool _isFollowing;
-        bool _isReturning;
-        float _stayX;
-        float _stayY;
-        float _stayZ;
-};
 
 // for clearing special attacks
 #define REACTIVE_TIMER_START 4000
@@ -780,7 +664,6 @@ class TC_GAME_API Unit : public WorldObject
     friend class WorldSession;
     public:
         typedef std::set<Unit*> AttackerSet;
-        typedef std::set<Unit*> ControlList;
         typedef std::vector<Unit*> UnitVector;
 
         typedef std::multimap<uint32, Aura*> AuraMap;
@@ -888,12 +771,13 @@ class TC_GAME_API Unit : public WorldObject
 
         uint32 HasUnitTypeMask(uint32 mask) const { return mask & m_unitTypeMask; }
         void AddUnitTypeMask(uint32 mask) { m_unitTypeMask |= mask; }
-        bool IsSummon() const   { return (m_unitTypeMask & UNIT_MASK_SUMMON) != 0; }
+        bool IsSummon() const           { return (m_unitTypeMask & UNIT_MASK_SUMMON) != 0; }
+        bool IsGuardian() const         { return (m_unitTypeMask & UNIT_MASK_GUARDIAN) != 0; }
+        bool IsPet() const              { return (m_unitTypeMask & UNIT_MASK_PET) != 0; }
+        bool IsTotem() const            { return (m_unitTypeMask & UNIT_MASK_TOTEM) != 0; }
+        bool IsPossessedSummon() const  { return (m_unitTypeMask & UNIT_MASK_POSSESSED) != 0; }
+
         bool IsMinion() const   { return (m_unitTypeMask & UNIT_MASK_MINION) != 0; }
-        bool IsGuardian() const { return (m_unitTypeMask & UNIT_MASK_GUARDIAN) != 0; }
-        bool IsPet() const      { return (m_unitTypeMask & UNIT_MASK_PET) != 0; }
-        bool IsHunterPet() const{ return (m_unitTypeMask & UNIT_MASK_HUNTER_PET) != 0; }
-        bool IsTotem() const    { return (m_unitTypeMask & UNIT_MASK_TOTEM) != 0; }
         bool IsVehicle() const  { return (m_unitTypeMask & UNIT_MASK_VEHICLE) != 0; }
         bool IsControlableGuardian() const  { return (m_unitTypeMask & UNIT_MASK_CONTROLABLE_GUARDIAN) != 0; }
 
@@ -1201,16 +1085,28 @@ class TC_GAME_API Unit : public WorldObject
         DeathState getDeathState() const { return m_deathState; }
         virtual void setDeathState(DeathState s);           // overwrited in Creature/Player/Pet
 
-        ObjectGuid GetOwnerGUID() const override { return GetGuidValue(UNIT_FIELD_SUMMONEDBY); }
-        void SetOwnerGUID(ObjectGuid owner);
         ObjectGuid GetCreatorGUID() const { return GetGuidValue(UNIT_FIELD_CREATEDBY); }
-        void SetCreatorGUID(ObjectGuid creator) { SetGuidValue(UNIT_FIELD_CREATEDBY, creator); }
-        ObjectGuid GetMinionGUID() const { return GetGuidValue(UNIT_FIELD_SUMMON); }
-        void SetMinionGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_SUMMON, guid); }
-        void SetPetGUID(ObjectGuid guid) { m_SummonSlot[SUMMON_SLOT_PET] = guid; }
-        ObjectGuid GetPetGUID() const { return m_SummonSlot[SUMMON_SLOT_PET]; }
-        void SetCritterGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_CRITTER, guid); }
+        void SetCreatorGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_CREATEDBY, guid); }
+        // Returns the unit that has been referenced by the guid value of UNIT_FIELD_CREATEDBY
+        Unit* GetCreator() const;
+
+        ObjectGuid GetSummonerGUID() const { return GetGuidValue(UNIT_FIELD_SUMMONEDBY); }
+        void SetSummonerGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_SUMMONEDBY, guid); }
+        // Returns the unit that has been referenced by the guid value of UNIT_FIELD_SUMMONEDBY
+        Unit* GetSummoner() const;
+
         ObjectGuid GetCritterGUID() const { return GetGuidValue(UNIT_FIELD_CRITTER); }
+        void SetCritterGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_CRITTER, guid); }
+        // Returns the temporary summon that has been referenced by the guid value of UNIT_FIELD_CRITTER
+        NewTemporarySummon* GetCritter() const;
+
+        ObjectGuid GetSummonGUID() const { return GetGuidValue(UNIT_FIELD_SUMMON); }
+        void SetSummonGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_SUMMON, guid); }
+        NewPet* GetActivelyControlledSummon() const;
+
+        void SetActivelyControlledSummon(NewPet* pet, bool apply);
+
+        ObjectGuid GetOwnerGUID() const override { return GetGuidValue(UNIT_FIELD_SUMMONEDBY); }
         ObjectGuid GetOwnerOrCreatorGUID() const { return GetOwnerGUID() ? GetOwnerGUID() : GetCreatorGUID(); }
 
         ObjectGuid GetCharmerGUID() const { return GetGuidValue(UNIT_FIELD_CHARMEDBY); }
@@ -1224,22 +1120,12 @@ class TC_GAME_API Unit : public WorldObject
         ObjectGuid GetCharmerOrOwnerGUID() const override { return IsCharmed() ? GetCharmerGUID() : GetOwnerGUID(); }
         bool IsCharmedOwnedByPlayerOrPlayer() const { return GetCharmerOrOwnerOrOwnGUID().IsPlayer(); }
 
-        Guardian* GetGuardianPet() const;
-        Minion* GetFirstMinion() const;
         Unit* GetCharmerOrOwner() const { return IsCharmed() ? GetCharmer() : GetOwner(); }
 
-        void SetMinion(Minion *minion, bool apply);
-        void GetAllMinionsByEntry(std::list<Creature*>& Minions, uint32 entry);
-        void RemoveAllMinionsByEntry(uint32 entry);
         void SetCharm(Unit* target, bool apply);
-        Unit* GetNextRandomRaidMemberOrPet(float radius);
         bool SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* aurApp = nullptr);
         void RemoveCharmedBy(Unit* charmer);
         void RestoreFaction();
-
-        ControlList m_Controlled;
-        Unit* GetFirstControlled() const;
-        void RemoveAllControlled();
 
         bool IsCharmed() const { return !GetCharmerGUID().IsEmpty(); }
         bool IsCharming() const { return !GetCharmedGUID().IsEmpty(); }
@@ -1270,10 +1156,6 @@ class TC_GAME_API Unit : public WorldObject
         bool HasSharedVision() const { return !m_sharedVision.empty(); }
         void RemoveBindSightAuras();
         void RemoveCharmAuras();
-
-        Pet* CreateTamedPetFrom(Creature* creatureTarget, uint32 spell_id = 0);
-        Pet* CreateTamedPetFrom(uint32 creatureEntry, uint32 spell_id = 0);
-        bool InitTamedPet(Pet* pet, uint8 level, uint32 spell_id);
 
         // aura apply/remove helpers - you should better not use these
         Aura* _TryStackingOrRefreshingExistingAura(AuraCreateInfo& createInfo);
@@ -1446,7 +1328,6 @@ class TC_GAME_API Unit : public WorldObject
         SpellHistory* GetSpellHistory() { return m_spellHistory.get(); }
         SpellHistory const* GetSpellHistory() const { return m_spellHistory.get(); }
 
-        std::array<ObjectGuid, MAX_SUMMON_SLOT> m_SummonSlot;
         std::array<ObjectGuid, MAX_GAMEOBJECT_SLOT> m_ObjectSlot;
 
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM)); }
@@ -1563,7 +1444,6 @@ class TC_GAME_API Unit : public WorldObject
         void ModifyAuraState(AuraStateType flag, bool apply);
         uint32 BuildAuraStateUpdateForTarget(Unit* target) const;
         bool HasAuraState(AuraStateType flag, SpellInfo const* spellProto = nullptr, Unit const* Caster = nullptr) const;
-        void UnsummonAllTotems();
         bool IsMagnet() const;
         Unit* GetMeleeHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo = nullptr);
 
@@ -1686,7 +1566,7 @@ class TC_GAME_API Unit : public WorldObject
         void SetCantProc(bool apply);
 
         uint32 GetModelForForm(ShapeshiftForm form, uint32 spellId) const;
-        uint32 GetModelForTotem(PlayerTotemType totemType);
+        uint32 GetModelForTotem(PlayerTotemType totemType) const;
 
         friend class VehicleJoinEvent;
         ObjectGuid LastCharmerGUID;
@@ -1750,6 +1630,18 @@ class TC_GAME_API Unit : public WorldObject
 
         TempSummon* ToTempSummon() { if (IsSummon()) return reinterpret_cast<TempSummon*>(this); else return nullptr; }
         TempSummon const* ToTempSummon() const { if (IsSummon()) return reinterpret_cast<TempSummon const*>(this); else return nullptr; }
+
+        NewTemporarySummon* ToTemporarySummon() { if (IsSummon()) return reinterpret_cast<NewTemporarySummon*>(this); else return nullptr; }
+        NewTemporarySummon const* ToTemporarySummon() const { if (IsSummon()) return reinterpret_cast<NewTemporarySummon const*>(this); else return nullptr; }
+
+        NewGuardian* ToNewGuardian() { if (IsGuardian()) return reinterpret_cast<NewGuardian*>(this); else return nullptr; }
+        NewGuardian const* ToNewGuardian() const { if (IsGuardian()) return reinterpret_cast<NewGuardian const*>(this); else return nullptr; }
+
+        NewPet* ToNewPet() { if (IsPet()) return reinterpret_cast<NewPet*>(this); else return nullptr; }
+        NewPet const* ToNewPet() const { if (IsPet()) return reinterpret_cast<NewPet const*>(this); else return nullptr; }
+
+        NewPossessed* ToNewPossessed() { if (IsPossessedSummon()) return reinterpret_cast<NewPossessed*>(this); else return nullptr; }
+        NewPossessed const* ToNewPossessed() const { if (IsPossessedSummon()) return reinterpret_cast<NewPossessed const*>(this); else return nullptr; }
 
         ObjectGuid GetTarget() const { return GetGuidValue(UNIT_FIELD_TARGET); }
         virtual void SetTarget(ObjectGuid /*guid*/) = 0;
@@ -1945,6 +1837,29 @@ class TC_GAME_API Unit : public WorldObject
         std::unordered_map<MovementChangeType, PlayerMovementPendingChange> m_pendingMovementChanges;
 
         /* Player Movement fields END*/
+
+        /*Temporary Summons*/
+        std::array<ObjectGuid, 7> _summonGUIDsInSlot;
+        std::unordered_set<ObjectGuid> _summonGUIDs;
+
+    public:
+        void AddSummonGUIDToSlot(ObjectGuid summonGuid, SummonPropertiesSlot slot);
+        void AddSummonGUID(ObjectGuid summonGuid);
+        void RemoveSummonGUIDFromSlot(ObjectGuid summonGuid, SummonPropertiesSlot slot);
+        void RemoveSummonGUID(ObjectGuid summonGuid);
+        bool HasSummonInSlot(SummonPropertiesSlot slot) const;
+        // Despawns all summons that are meant to be despawned when the unit has died
+        void UnsummonAllSummonsDueToDeath();
+        // Despawns all summons that are meant to be despawned when the player leaves the world. Despite its name and summon property flag handling, this method is meant to trigger on world leaving instead of logouts only
+        void UnsummonAllSummonsOnLogout(); // we are using this method in the unit class to restrict direct access of the _summonGUIDs container
+        std::unordered_set<ObjectGuid> const& GetSummonGUIDs() const { return _summonGUIDs; }
+
+        NewTemporarySummon* GetSummonInSlot(SummonPropertiesSlot slot) const;
+        NewTemporarySummon* GetSummonByGUID(ObjectGuid guid) const;
+
+        // Summons a pet that is being summoned by SPELL_EFFECT_SUMMON_PET. If creatureId is 0, we assume that the player attempts to summon a hunter pet.
+        NewPet* SummonPet(uint32 creatureId, uint8 slot, uint32 spellId, bool asClassPet, Position const& position);
+        /*End of Tempoary Summons*/
 };
 
 namespace Trinity

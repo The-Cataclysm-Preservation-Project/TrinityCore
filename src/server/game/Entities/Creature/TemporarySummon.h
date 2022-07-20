@@ -63,9 +63,6 @@ enum PlayerPetSpells
     // Risen Ghoul
     SPELL_PET_RISEN_GHOUL_SPAWN_IN  = 47448,
     SPELL_PET_RISEN_GHOUL_SELF_STUN = 47466,
-
-    // Hunter Pets
-    SPELL_PET_ENERGIZE              = 99289
 };
 
 class TC_GAME_API TempSummon : public Creature

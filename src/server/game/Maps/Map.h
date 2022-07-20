@@ -48,10 +48,12 @@ class InstanceMap;
 class InstanceSave;
 class InstanceScript;
 class Object;
+class NewPet;
 class PhaseShift;
 class Player;
 class SpawnedPoolData;
 class TempSummon;
+class NewTemporarySummon;
 class TerrainInfo;
 class Transport;
 class Unit;
@@ -149,17 +151,18 @@ struct TC_GAME_API SummonCreatureExtraArgs
 public:
     SummonCreatureExtraArgs() { }
 
-    SummonCreatureExtraArgs& SetSummonDuration(uint32 duration) { SummonDuration = duration; return *this; }
+    SummonCreatureExtraArgs& SetSummonDuration(int32 duration) { SummonDuration = duration; return *this; }
 
     SummonPropertiesEntry const* SummonProperties = nullptr;
     Unit* Summoner = nullptr;
-    uint32 SummonDuration = 0;
+    int32 SummonDuration = 0;
     uint32 SummonSpellId = 0;
     uint32 VehicleRecID = 0;
     uint32 SummonHealth = 0;
     uint32 RideSpell = 0;
     uint8 SeatNumber = 0;
     uint8 CreatureLevel = 0;
+    uint8 MaxSummons = 0;
     ObjectGuid PrivateObjectOwner;
 };
 
@@ -372,6 +375,8 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
         void UpdateIteratorBack(Player* player);
 
         TempSummon* SummonCreature(uint32 entry, Position const& pos, SummonCreatureExtraArgs const& summonArgs = { });
+        NewTemporarySummon* SummonCreatureNew(uint32 entry, Position const& pos, SummonCreatureExtraArgs const& summonArgs = { });
+
         void SummonCreatureGroup(uint8 group, std::list<TempSummon*>* list = nullptr);
         Player* GetPlayer(ObjectGuid const& guid);
         AreaTrigger* GetAreaTrigger(ObjectGuid const& guid);
@@ -393,7 +398,6 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
                     return nullptr;
             }
         }
-        Pet* GetPet(ObjectGuid const& guid);
         Transport* GetTransport(ObjectGuid const& guid);
 
         MapStoredObjectTypesContainer& GetObjectsStore() { return _objectsStore; }

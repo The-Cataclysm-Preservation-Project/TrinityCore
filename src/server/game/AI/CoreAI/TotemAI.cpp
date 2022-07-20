@@ -24,62 +24,83 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 
+static constexpr uint32 TargetSearchInterval = 400; // let's mimic one retail AI tick
+
 int32 TotemAI::Permissible(Creature const* creature)
 {
-    if (creature->IsTotem())
+    if (creature->IsSummon() && creature->IsTotem())
         return PERMIT_BASE_PROACTIVE;
 
     return PERMIT_BASE_NO;
 }
 
-TotemAI::TotemAI(Creature* creature) : NullCreatureAI(creature), _victimGUID()
+TotemAI::TotemAI(Creature* creature) : NullCreatureAI(creature), _spellInfo(nullptr), _spellRange(0.f), _targetSearchTimer(0) { }
+
+void TotemAI::JustAppeared()
 {
-    ASSERT(creature->IsTotem(), "TotemAI: AI assigned to a non-totem creature (%s)!", creature->GetGUID().ToString().c_str());
+    NullCreatureAI::JustAppeared();
+
+    _spellInfo = sSpellMgr->GetSpellInfo(me->m_spells[0]);
+    if (!_spellInfo)
+        return;
+
+    if (_spellInfo->IsPassive())
+        DoCastSelf(_spellInfo->Id);
+    else
+        _spellRange = _spellInfo->GetMaxRange(false);
 }
 
-void TotemAI::UpdateAI(uint32 /*diff*/)
+void TotemAI::UpdateAI(uint32 diff)
 {
-    if (me->ToTotem()->GetTotemType() != TOTEM_ACTIVE)
+    // Passive aura totems do not need any further casting
+    if (!_spellInfo || _spellInfo->IsPassive())
         return;
 
     if (!me->IsAlive() || me->IsNonMeleeSpellCast(false))
         return;
 
-    // Search spell
-    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(me->ToTotem()->GetSpell());
-    if (!spellInfo)
-        return;
-
-    // Get spell range
-    float max_range = spellInfo->GetMaxRange(false);
-
-    // SpellModOp::Range not applied in this place just because not existence range mods for attacking totems
-
-    // pointer to appropriate target if found any
-    Unit* victim = _victimGUID ? ObjectAccessor::GetUnit(*me, _victimGUID) : nullptr;
-
-    // Search victim if no, not attackable, or out of range, or friendly (possible in case duel end)
-    if (!victim || !victim->isTargetableForAttack() || !me->IsWithinDistInMap(victim, max_range) || me->IsFriendlyTo(victim) || !me->CanSeeOrDetect(victim))
+    if (_targetSearchTimer <= diff)
     {
-        victim = nullptr;
-        Trinity::NearestAttackableUnitInObjectRangeCheck u_check(me, me->GetCharmerOrOwnerOrSelf(), max_range);
-        Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInObjectRangeCheck> checker(me, victim, u_check);
-        Cell::VisitAllObjects(me, checker, max_range);
-    }
+        Unit* target = SelectTotemTarget();
 
-    // If have target
-    if (victim)
-    {
-        // remember
-        _victimGUID = victim->GetGUID();
-
-        // attack
-        me->CastSpell(victim, me->ToTotem()->GetSpell());
+        if ((!target && !_spellInfo->NeedsExplicitUnitTarget()) || target)
+        {
+            me->CastSpell(target, _spellInfo->Id);
+            if (target)
+                _victimGUID = target->GetGUID();
+        }
+        else
+            _targetSearchTimer = TargetSearchInterval;
     }
     else
-        _victimGUID.Clear();
+        _targetSearchTimer -= diff;
 }
 
-void TotemAI::AttackStart(Unit* /*victim*/)
+Unit* TotemAI::SelectTotemTarget()
 {
+    // Some totems do cast AoE spells so we don't do any target selection
+    if (!_spellInfo->NeedsExplicitUnitTarget())
+        return nullptr;
+
+    Unit* target = nullptr;
+    if (!_victimGUID.IsEmpty())
+    {
+        // We have an active target. Check if we can still attack it
+        target = ObjectAccessor::GetUnit(*me, _victimGUID);
+        if (!target || !target->IsAlive() || target->isTargetableForAttack() || me->IsFriendlyTo(target) || !me->CanSeeOrDetect(target) || !me->IsWithinDistInMap(target, _spellRange))
+        {
+            _victimGUID = ObjectGuid::Empty;
+            target = nullptr;
+        }
+    }
+
+    if (!target)
+    {
+        // No valid target has been found so far. Let's try to find a new one
+        Trinity::NearestAttackableUnitInObjectRangeCheck u_check(me, Coalesce<Unit const>(me->GetCreator(), me), _spellRange);
+        Trinity::UnitLastSearcher<Trinity::NearestAttackableUnitInObjectRangeCheck> checker(me, target, u_check);
+        Cell::VisitAllObjects(me, checker, _spellRange);
+    }
+
+    return target;
 }

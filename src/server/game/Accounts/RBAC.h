@@ -376,10 +376,10 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_GROUP_JOIN                             = 476,
     RBAC_PERM_COMMAND_GROUP_LIST                             = 477,
     RBAC_PERM_COMMAND_GROUP_SUMMON                           = 478,
-    RBAC_PERM_COMMAND_PET                                    = 479,
-    RBAC_PERM_COMMAND_PET_CREATE                             = 480,
-    RBAC_PERM_COMMAND_PET_LEARN                              = 481,
-    RBAC_PERM_COMMAND_PET_UNLEARN                            = 482,
+    RBAC_PERM_COMMAND_PET                                    = 479, // DEPRECATED: DON'T REUSE
+    RBAC_PERM_COMMAND_PET_CREATE                             = 480, // DEPRECATED: DON'T REUSE
+    RBAC_PERM_COMMAND_PET_LEARN                              = 481, // DEPRECATED: DON'T REUSE
+    RBAC_PERM_COMMAND_PET_UNLEARN                            = 482, // DEPRECATED: DON'T REUSE
     RBAC_PERM_COMMAND_SEND                                   = 483,
     RBAC_PERM_COMMAND_SEND_ITEMS                             = 484,
     RBAC_PERM_COMMAND_SEND_MAIL                              = 485,
@@ -735,7 +735,7 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_DEBUG_LOADCELLS                        = 835,
     RBAC_PERM_COMMAND_DEBUG_BOUNDARY                         = 836,
     RBAC_PERM_COMMAND_NPC_EVADE                              = 837,
-    RBAC_PERM_COMMAND_PET_LEVEL                              = 838,
+    RBAC_PERM_COMMAND_PET_LEVEL                              = 838, // DEPRECATED: DON'T REUSE
     RBAC_PERM_COMMAND_SERVER_SHUTDOWN_FORCE                  = 839,
     RBAC_PERM_COMMAND_SERVER_RESTART_FORCE                   = 840,
     RBAC_PERM_COMMAND_NEARGRAVEYARD                          = 841,

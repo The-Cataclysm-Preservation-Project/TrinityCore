@@ -19,14 +19,12 @@
 #include "Creature.h"
 #include "CreatureAISelector.h"
 #include "CreatureAIFactory.h"
-
 #include "MovementGenerator.h"
-
 #include "GameObject.h"
 #include "GameObjectAIFactory.h"
-
 #include "Log.h"
 #include "ScriptMgr.h"
+#include "NewPet.h"
 
 namespace FactorySelector
 {
@@ -81,7 +79,7 @@ namespace FactorySelector
     CreatureAI* SelectAI(Creature* creature)
     {
         // special pet case, if a tamed creature uses AIName (example SmartAI) we need to override it
-        if (creature->IsPet())
+        if (creature->IsPet() && creature->ToNewPet()->IsClassPet())
             return ASSERT_NOTNULL(sCreatureAIRegistry->GetRegistryItem("PetAI"))->Create(creature);
 
         // scriptname in db

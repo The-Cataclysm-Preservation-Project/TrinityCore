@@ -31,6 +31,7 @@
 #include "SpellMgr.h"
 #include "SpellHistory.h"
 #include "TemporarySummon.h"
+#include "NewTemporarySummon.h"
 #include "Vehicle.h"
 
 //Disable CreatureAI when charmed
@@ -92,9 +93,6 @@ void CreatureAI::DoZoneInCombat(Creature* creature /*= nullptr*/)
 
             creature->EngageWithTarget(player);
 
-            for (Unit* pet : player->m_Controlled)
-                creature->EngageWithTarget(pet);
-
             if (Unit* vehicle = player->GetVehicleBase())
                 creature->EngageWithTarget(vehicle);
         }
@@ -154,56 +152,20 @@ void CreatureAI::TriggerAlert(Unit const* who) const
     me->SetFacingTo(me->GetAngle(who));
 }
 
-// adapted from logic in Spell:EFfectSummonType before commit 8499434
-static bool ShouldFollowOnSpawn(SummonPropertiesEntry const* properties)
-{
-    // Summons without SummonProperties are generally scripted summons that don't belong to any owner
-    if (!properties)
-        return false;
-
-    switch (properties->Control)
-    {
-        case SUMMON_CATEGORY_PET:
-            return true;
-        case SUMMON_CATEGORY_WILD:
-        case SUMMON_CATEGORY_ALLY:
-        case SUMMON_CATEGORY_UNK:
-            if (properties->Flags & 512)
-                return true;
-
-            // Guides. They have their own movement
-            if (properties->Flags & SUMMON_PROP_FLAG_UNK14)
-                return false;
-
-            switch (SummonTitle(properties->Title))
-            {
-                case SummonTitle::Pet:
-                case SummonTitle::Guardian:
-                case SummonTitle::Runeblade:
-                case SummonTitle::Minion:
-                case SummonTitle::Companion:
-                    return true;
-                default:
-                    return false;
-            }
-        default:
-            return false;
-    }
-}
 void CreatureAI::JustAppeared()
 {
     if (!IsEngaged())
     {
-        if (TempSummon* summon = me->ToTempSummon())
+        if (!me->IsSummon())
+            return;
+
+        NewTemporarySummon* summon = me->ToTemporarySummon();
+        if (summon->ShouldJoinSummonerSpawnGroupAfterCreation() || summon->ShouldFollowSummonerAfterCreation() && !summon->GetVehicle())
         {
-            // Only apply this to specific types of summons
-            if (!summon->GetVehicle() && ShouldFollowOnSpawn(summon->m_Properties))
+            if (Unit* summoner = summon->GetInternalSummoner())
             {
-                if (Unit* owner = summon->GetCharmerOrOwner())
-                {
-                    summon->GetMotionMaster()->Clear();
-                    summon->FollowTarget(owner);
-                }
+                summon->GetMotionMaster()->Clear();
+                summon->FollowTarget(summoner); // @todo: ShouldJoinSummonerSpawnGroupAfterCreation should actually make the creature join the target's formation
             }
         }
     }

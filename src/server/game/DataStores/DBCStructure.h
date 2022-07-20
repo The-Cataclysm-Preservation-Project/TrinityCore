@@ -398,12 +398,14 @@ struct ChrClassesEntry
     //char* Name_male;                                      // 5
     //char* Filename                                        // 6
     uint32  SpellClassSet;                                  // 7
-    //uint32 Flags;                                         // 8        (0x08 HasRelicSlot)
+    uint32  Flags;                                          // 8
     uint32  CinematicSequenceID;                            // 9
     uint32  Required_expansion;                             // 10
     uint32  AttackPowerPerStrength;                         // 11
     uint32  AttackPowerPerAgility;                          // 12
     uint32  RangedAttackPowerPerAgility;                    // 13
+
+    EnumFlag<ChrClassesFlags> GetFlags() const { return static_cast<ChrClassesFlags>(Flags); }
 };
 
 struct ChrRacesEntry
@@ -2009,12 +2011,12 @@ struct TalentEntry
     uint32  TabID;                                          // 1 index in TalentTab.dbc (TalentTabEntry)
     uint32  TierID;                                         // 2
     uint32  ColumnIndex;                                    // 3
-    uint32  SpellRank[MAX_TALENT_RANK];                     // 4-8
-    uint32  PrereqTalent[3];                                // 9 - 11 (Talent.dbc)
-    uint32  PrereqRank[3];                                  // 12 - 14 part of prev field
-    //uint32  Flags;                                        // 15  also need disable higest ranks on reset talent tree
-    //uint32  RequiredSpellID;                              // 16
-    //uint64  CategoryMask[2];                              // 17 - 18 its a 64 bit mask for pet 1 << m_categoryEnumID in CreatureFamily.dbc
+    uint32  SpellRank[MAX_TALENT_RANK];                     // 4-6
+    uint32  PrereqTalent[MAX_TALENT_RANK];                  // 7 - 9 (Talent.dbc)
+    uint32  PrereqRank[MAX_TALENT_RANK];                    // 10 - 12 part of prev field
+    uint32  Flags;                                          // 13  also need disable higest ranks on reset talent tree
+    uint32  RequiredSpellID;                                // 14
+    uint64  CategoryMask[2];                                // 15 - 6 its a 64 bit mask for pet 1 << m_categoryEnumID in CreatureFamily.dbc
 };
 
 #define MAX_MASTERY_SPELLS 2

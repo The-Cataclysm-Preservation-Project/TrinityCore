@@ -30,6 +30,7 @@
 #include "SpellMgr.h"
 #include "Spell.h"
 #include "TemporarySummon.h"
+#include "NewTemporarySummon.h"
 
 enum PaladinSpells
 {
@@ -124,11 +125,6 @@ enum PaladinSpellIcons
     PALADIN_ICON_ID_SEALS_OF_COMMAND             = 561,
     PALADIN_ICON_ID_LONG_ARM_OF_THE_LAW          = 3013,
     PALADIN_ICON_ID_GUARDED_BY_THE_LIGHT         = 3026
-};
-
-enum PaladinCreatures
-{
-    NPC_PALADIN_CONSECRATION                     = 43499
 };
 
 class spell_pal_ardent_defender : public AuraScript
@@ -276,13 +272,6 @@ class spell_pal_blessing_of_faith : public SpellScript
 // 26573 - Consecration
 class spell_pal_consecration : public AuraScript
 {
-    bool Load() override
-    {
-        // Store the position of the initial Consecration cast for triggering the damage
-        castPos = GetCaster()->GetPosition();
-        return true;
-    }
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_PALADIN_CONSECRATION_TRIGGERED });
@@ -294,16 +283,14 @@ class spell_pal_consecration : public AuraScript
         if (GetTarget() != GetCaster())
             return;
 
-        if (Unit* caster = GetCaster())
-            caster->CastSpell({ castPos.GetPositionX(), castPos.GetPositionY(), castPos.GetPositionZ() }, SPELL_PALADIN_CONSECRATION_TRIGGERED, aurEff);
+        if (NewTemporarySummon* consecration = GetTarget()->GetSummonInSlot(SummonPropertiesSlot::Totem1))
+            GetTarget()->CastSpell(consecration, SPELL_PALADIN_CONSECRATION_TRIGGERED, aurEff);
     }
 
     void Register() override
     {
         OnEffectPeriodic.Register(&spell_pal_consecration::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
-private:
-    Position castPos;
 };
 
 // 64205 - Divine Sacrifice
@@ -1428,9 +1415,9 @@ class spell_pal_ancient_healer : public AuraScript
         int32 bp1 = CalculatePct(heal->GetEffectiveHeal(), 10);
 
 
-        for (Unit* guardian : GetTarget()->m_Controlled)
-            if (guardian->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SPELL_PALADIN_GUARDIAN_OF_ANCIENT_KINGS_HOLY)
-                guardian->CastSpell(heal->GetTarget(), SPELL_PALADIN_LIGHT_OF_THE_ANCIENT_KINGS, CastSpellExtraArgs(aurEff).AddSpellBP0(bp0).AddSpellMod(SPELLVALUE_BASE_POINT1, bp1));
+        //for (Unit* guardian : GetTarget()->m_Controlled)
+        //    if (guardian->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SPELL_PALADIN_GUARDIAN_OF_ANCIENT_KINGS_HOLY)
+        //        guardian->CastSpell(heal->GetTarget(), SPELL_PALADIN_LIGHT_OF_THE_ANCIENT_KINGS, CastSpellExtraArgs(aurEff).AddSpellBP0(bp0).AddSpellMod(SPELLVALUE_BASE_POINT1, bp1));
 
         _procCount++;
     }

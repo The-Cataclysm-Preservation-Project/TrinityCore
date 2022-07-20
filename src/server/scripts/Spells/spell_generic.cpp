@@ -1704,7 +1704,7 @@ class spell_ethereal_pet_aura : public AuraScript
         PreventDefaultAction();
 
         std::list<Creature*> minionList;
-        GetUnitOwner()->GetAllMinionsByEntry(minionList, NPC_ETHEREAL_SOUL_TRADER);
+        //GetUnitOwner()->GetAllMinionsByEntry(minionList, NPC_ETHEREAL_SOUL_TRADER);
         for (Creature* minion : minionList)
         {
             if (minion->IsAIEnabled())
@@ -2614,6 +2614,7 @@ class spell_gen_pet_summoned : public SpellScriptLoader
 
             void HandleScript(SpellEffIndex /*effIndex*/)
             {
+                /*
                 Player* player = GetCaster()->ToPlayer();
                 if (player->GetLastPetNumber())
                 {
@@ -2641,6 +2642,7 @@ class spell_gen_pet_summoned : public SpellScriptLoader
                     else
                         delete newPet;
                 }
+                */
             }
 
             void Register() override
@@ -3016,10 +3018,6 @@ public:
 
     void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (GetCaster())
-            if (Unit* owner = GetCaster()->GetOwner())
-                if (owner->GetTypeId() == TYPEID_PLAYER) /// @todo this check is maybe wrong
-                    owner->ToPlayer()->RemovePet(nullptr, PET_SAVE_DISMISS, true);
     }
 
     void Register() override
@@ -3484,10 +3482,10 @@ class spell_gen_gm_freeze : public AuraScript
             {
                 if (Pet* pet = player->GetPet())
                 {
-                    pet->SavePetToDB(PET_SAVE_CURRENT_STATE);
-                    // not let dismiss dead pet
-                    if (pet->IsAlive())
-                        player->RemovePet(pet, PET_SAVE_DISMISS);
+                 //pet->SavePetToDB(PET_SAVE_CURRENT_STATE);
+                 // not let dismiss dead pet
+                 //if (pet->IsAlive())
+                 //player->RemovePet(pet, PET_SAVE_DISMISS);
                 }
             }
         }
@@ -5190,6 +5188,48 @@ class spell_gen_arcane_torrent_racial : public SpellScript
     }
 };
 
+enum ControlPet
+{
+    SPELL_CONTROL_DEMON_EFFECT  = 93376,
+    SPELL_CONTROL_PET_EFFECT    = 93322,
+};
+
+// 93321 - Control Pet (Passive)
+// 93375 - Control Demon (Passive)
+class spell_gen_control_pet : public AuraScript
+{
+public:
+    spell_gen_control_pet(uint32 effectSpellId) : AuraScript(), _effectSpellId(effectSpellId) { }
+
+    bool Load() override
+    {
+        return GetCaster()->IsPlayer();
+    }
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ _effectSpellId });
+    }
+
+    void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Player* player = GetTarget()->ToPlayer();
+        if (!player)
+            return;
+
+        if (!player->CanControlClassPets())
+            player->CastSpell(nullptr, _effectSpellId, TRIGGERED_FULL_MASK);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply.Register(&spell_gen_control_pet::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+    }
+
+private:
+    uint32 _effectSpellId = 0;
+};
+
 void AddSC_generic_spell_scripts()
 {
     new spell_gen_absorb0_hitlimit1();
@@ -5333,4 +5373,6 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_shadowmeld);
     RegisterSpellScript(spell_gen_vehicle_control_link);
     RegisterSpellScript(spell_gen_polymorph_cast_visual);
+    RegisterSpellScriptWithArgs(spell_gen_control_pet, "spell_gen_control_demon", SPELL_CONTROL_DEMON_EFFECT);
+    RegisterSpellScriptWithArgs(spell_gen_control_pet, "spell_gen_control_pet", SPELL_CONTROL_PET_EFFECT);
 }
