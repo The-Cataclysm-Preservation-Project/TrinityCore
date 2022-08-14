@@ -629,6 +629,7 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
         void RemoveGameObjectModel(const GameObjectModel& model) { _dynamicTree.remove(model); }
         void InsertGameObjectModel(const GameObjectModel& model) { _dynamicTree.insert(model); }
         bool ContainsGameObjectModel(const GameObjectModel& model) const { return _dynamicTree.contains(model);}
+        DynamicMapTree const& GetDynamicMapTree() const { return _dynamicTree; }
         float GetGameObjectFloor(PhaseShift const& phaseShift, float x, float y, float z, float maxSearchDist = DEFAULT_HEIGHT_SEARCH) const
         {
             return _dynamicTree.getHeight(x, y, z, maxSearchDist, phaseShift);

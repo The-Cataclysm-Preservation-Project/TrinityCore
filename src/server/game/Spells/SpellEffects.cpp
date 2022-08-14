@@ -784,6 +784,12 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     float speedXY, speedZ;
     CalculateJumpSpeeds(effIndex, m_caster->GetExactDist2d(destTarget), speedXY, speedZ);
     unitCaster->GetMotionMaster()->MoveJump(*destTarget, speedXY, speedZ, EVENT_JUMP, !m_targets.GetObjectTargetGUID().IsEmpty());
+
+    if (Player* player = m_caster->ToPlayer())
+    {
+        player->SetCanTeleport(true);
+    }
+
 }
 
 void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)

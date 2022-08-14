@@ -19,6 +19,7 @@
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
 #include "Archaeology.h"
+#include "AnticheatMgr.h"
 #include "ArenaTeam.h"
 #include "ArenaTeamMgr.h"
 #include "Bag.h"
@@ -211,7 +212,8 @@ Player::Player(WorldSession* session): Unit(true)
     m_bCanDelayTeleport = false;
     m_bHasDelayedTeleport = false;
     m_teleport_options = 0;
-
+    m_canTeleport = false;
+    m_canKnockback = false;
     m_trade = nullptr;
 
     m_cinematic = 0;
@@ -1191,6 +1193,8 @@ void Player::Update(uint32 p_time)
             m_zoneUpdateTimer -= p_time;
     }
 
+    sScriptMgr->OnPlayerUpdate(this, p_time);
+
     // Power regeneration update
     _powerUpdateTimer -= p_time;
     if (IsAlive())
@@ -1520,6 +1524,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         // near teleport, triggering send CMSG_MOVE_TELEPORT_ACK from client at landing
         if (!GetSession()->PlayerLogout())
         {
+            SetCanTeleport(true);
             m_teleport_dest.m_positionZ += GetHoverOffset();
             SendTeleportPacket(m_teleport_dest);
         }
@@ -1631,6 +1636,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
             if (!GetSession()->PlayerLogout())
             {
+                SetCanTeleport(true);
                 WorldPackets::Movement::SuspendToken suspendToken;
                 suspendToken.SequenceIndex = 1; // to-do implement incremental value
                 suspendToken.Reason = 1;
@@ -19868,6 +19874,9 @@ void Player::SaveToDB(CharacterDatabaseTransaction trans, bool create /* = false
     // save stats can be out of transaction
     if (m_session->isLogingOut() || !sWorld->getBoolConfig(CONFIG_STATS_SAVE_ONLY_ON_LOGOUT))
         _SaveStats(trans);
+
+    // we save the data here to prevent spamming
+    sAnticheatMgr->SavePlayerData(this);
 
     // save pet (hunter pet level and experience and all type pets health/mana).
     if (Pet* pet = GetPet())

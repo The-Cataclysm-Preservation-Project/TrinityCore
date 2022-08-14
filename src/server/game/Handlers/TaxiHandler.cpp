@@ -166,7 +166,7 @@ void WorldSession::HandleActivateTaxiExpressOpcode (WorldPacket& recvData)
 
     ObjectGuid guid;
     uint32 node_count;
-
+    GetPlayer()->SetCanTeleport(true);
     recvData >> guid >> node_count;
 
     Creature* npc = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_FLIGHTMASTER);
@@ -284,6 +284,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recvData)
 
 void WorldSession::SendActivateTaxiReply(ActivateTaxiReply reply)
 {
+    GetPlayer()->SetCanTeleport(true);
     WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
     data << uint32(reply);
     SendPacket(&data);

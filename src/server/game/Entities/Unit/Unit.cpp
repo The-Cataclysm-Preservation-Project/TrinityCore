@@ -8423,6 +8423,9 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
     {
         MovementPacketSender::SendSpeedChangeToMover(this, mtype, newSpeedFlat);
         SetSpeedRateReal(mtype, rate);
+        // To prevent false positives in the Anticheat system
+        if (GetTypeId() == TYPEID_PLAYER)
+            ToPlayer()->SetCanTeleport(true);
     }
     else if (IsMovedByClient() && !IsInWorld()) // (1)
         SetSpeedRateReal(mtype, rate);
@@ -12846,6 +12849,9 @@ void Unit::ExitVehicle(Position const* /*exitPosition*/)
         return;
 
     GetVehicleBase()->RemoveAurasByType(SPELL_AURA_CONTROL_VEHICLE, GetGUID());
+    if (Player* player = ToPlayer())
+        player->SetCanTeleport(true);
+
     //! The following call would not even be executed successfully as the
     //! SPELL_AURA_CONTROL_VEHICLE unapply handler already calls _ExitVehicle without
     //! specifying an exitposition. The subsequent call below would return on if (!m_vehicle).
