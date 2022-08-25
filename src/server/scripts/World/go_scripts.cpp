@@ -1872,6 +1872,12 @@ public:
                 localtime_r(&time, &localTm);
                 uint8 _rings = (localTm.tm_hour - 1) % 12 + 1;
 
+                // Dwarf hourly horn should only play a single time, each time the next hour begins.
+                if (_soundId == BELLTOLLDWARFGNOME)
+                {
+                    _rings = 1;
+                }
+
                 for (auto i = 0; i < _rings; ++i)
                     _events.ScheduleEvent(EVENT_RING_BELL, Seconds(i * 4 + 1));
             }
