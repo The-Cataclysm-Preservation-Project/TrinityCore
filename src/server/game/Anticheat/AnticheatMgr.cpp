@@ -989,7 +989,9 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1490.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1490.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > 1500.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < 1450.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
