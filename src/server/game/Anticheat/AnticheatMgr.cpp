@@ -1012,11 +1012,14 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1270.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 1270.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < 1258.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > 1361.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 730.0f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 730.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > 724.8f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
@@ -1031,11 +1034,15 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 2512.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() < 2512.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > 1610.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < 1584.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 1816.0f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() > 1816.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > 1554.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() < 1526.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
@@ -1050,11 +1057,15 @@ void AnticheatMgr::BGStartExploit(Player* player, MovementInfo movementInfo)
                 if (bg->GetStatus() == STATUS_WAIT_JOIN)
                 {
                     // Outside of starting area before BG has started.
-                    if (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() > 412.0f)
+                    if ((player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionX() > 412.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() < -911.0f) ||
+                        (player->GetTeamId() == TEAM_ALLIANCE && movementInfo.pos.GetPositionY() > -760.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
-                    if (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() < 1147.8f)
+                    if ((player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionX() < 1147.8f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() < -855.0f) ||
+                        (player->GetTeamId() == TEAM_HORDE && movementInfo.pos.GetPositionY() > -676.0f))
                     {
                         sAnticheatMgr->BGreport(player);
                     }
