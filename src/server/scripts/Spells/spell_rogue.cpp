@@ -85,7 +85,13 @@ enum RogueSpellIcons
 {
     ICON_ROGUE_IMPROVED_RECUPERATE                  = 4819,
     ROGUE_ICON_ID_SERRATED_BLADES                   = 2004,
-    ROGUE_ICON_ID_SANGUINARY_VEIN                   = 4821
+    ROGUE_ICON_ID_SANGUINARY_VEIN                   = 4821,
+    ROGUE_ICON_ID_GLYPH_OF_BLIND                    = 48
+};
+
+enum MiscSpells
+{
+    SPELL_PRIEST_SHADOW_WORD_DEATH = 32409
 };
 
 // 13877, 33735, (check 51211, 65956) - Blade Flurry
@@ -1570,6 +1576,36 @@ class spell_rog_pickpocket : public SpellScript
     }
 };
 
+// 2094 - Blind
+class spell_rog_glyph_of_blind : public SpellScript
+{
+    bool Load()
+    {
+        return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_PRIEST_SHADOW_WORD_DEATH });
+    }
+
+    void HandleOnHit()
+    {
+        if (Unit* unitTarget = GetHitUnit())
+            if (GetCaster()->GetDummyAuraEffect(SPELLFAMILY_ROGUE, ROGUE_ICON_ID_GLYPH_OF_BLIND, EFFECT_0))
+            {
+                unitTarget->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE, ObjectGuid::Empty, unitTarget->GetAura(SPELL_PRIEST_SHADOW_WORD_DEATH)); // SW:D shall not be removed.
+                unitTarget->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE_PERCENT, ObjectGuid::Empty, NULL, true, false);
+                unitTarget->RemoveAurasByType(SPELL_AURA_PERIODIC_LEECH);
+            }
+    }
+
+    void Register()
+    {
+        OnHit.Register(&spell_rog_glyph_of_blind::HandleOnHit);
+    }
+};
+
 void AddSC_rogue_spell_scripts()
 {
     RegisterSpellScript(spell_rog_bandits_guile);
@@ -1607,4 +1643,5 @@ void AddSC_rogue_spell_scripts()
     RegisterSpellScript(spell_rog_tricks_of_the_trade_proc);
     RegisterSpellScript(spell_rog_honor_among_thieves);
     RegisterSpellScript(spell_rog_vanish);
+    RegisterSpellScript(spell_rog_glyph_of_blind);
 }
