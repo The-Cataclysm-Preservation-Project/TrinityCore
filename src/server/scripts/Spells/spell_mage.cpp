@@ -140,7 +140,8 @@ enum MageIcons
     ICON_MAGE_EARLY_FROST                        = 2114,
     ICON_MAGE_GLYPH_OF_MIRROR_IMAGE              = 331,
     ICON_MAGE_LIVING_BOMB                        = 3000,
-    ICON_MAGE_GLYPH_OF_FROSTFIRE                 = 2946
+    ICON_MAGE_GLYPH_OF_FROSTFIRE                 = 2946,
+    MAGE_ICON_ID_GLYPH_OF_POLYMORPH              = 82
 
 };
 
@@ -689,39 +690,40 @@ class spell_mage_glyph_of_icy_veins : public SpellScriptLoader
         }
 };
 
-// 56375 - Glyph of Polymorph
-class spell_mage_glyph_of_polymorph : public SpellScriptLoader
+// 118 - Polymorph
+// 28271 - Turtle
+// 28272 - Pig
+// 61025 - Serpent
+// 61305 - Cat
+// 61721 - Rabbit
+// 61780 - Turkey
+class spell_mage_glyph_of_polymorph : public SpellScript
 {
-    public:
-        spell_mage_glyph_of_polymorph() : SpellScriptLoader("spell_mage_glyph_of_polymorph") { }
+    bool Load() override
+    {
+        return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
 
-        class spell_mage_glyph_of_polymorph_AuraScript : public AuraScript
-        {
-            bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_PRIEST_SHADOW_WORD_DEATH });
+    }
+
+    void HandleOnHit()
+    {
+        if (Unit* unitTarget = GetHitUnit())
+            if (GetCaster()->GetDummyAuraEffect(SPELLFAMILY_MAGE, MAGE_ICON_ID_GLYPH_OF_POLYMORPH, EFFECT_0))
             {
-                return ValidateSpellInfo({ SPELL_PRIEST_SHADOW_WORD_DEATH });
+                unitTarget->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE, ObjectGuid::Empty, unitTarget->GetAura(SPELL_PRIEST_SHADOW_WORD_DEATH)); // SW:D shall not be removed.
+                unitTarget->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE_PERCENT, ObjectGuid::Empty, NULL, true, false);
+                unitTarget->RemoveAurasByType(SPELL_AURA_PERIODIC_LEECH);
             }
+    }
 
-            void HandleEffectProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-                Unit* target = eventInfo.GetProcTarget();
-
-                target->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE, ObjectGuid::Empty, target->GetAura(SPELL_PRIEST_SHADOW_WORD_DEATH)); // SW:D shall not be removed.
-                target->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE_PERCENT);
-                target->RemoveAurasByType(SPELL_AURA_PERIODIC_LEECH);
-            }
-
-            void Register() override
-            {
-                OnEffectProc.Register(&spell_mage_glyph_of_polymorph_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_mage_glyph_of_polymorph_AuraScript();
-        }
+    void Register() override
+    {
+        OnHit.Register(&spell_mage_glyph_of_polymorph::HandleOnHit);
+    }
 };
 
 // 44457 - Living Bomb
@@ -2196,7 +2198,7 @@ void AddSC_mage_spell_scripts()
     RegisterSpellScript(spell_mage_initialize_images);
     new spell_mage_glyph_of_ice_block();
     new spell_mage_glyph_of_icy_veins();
-    new spell_mage_glyph_of_polymorph();
+    RegisterSpellScript(spell_mage_glyph_of_polymorph);
     RegisterSpellScript(spell_mage_living_bomb);
     new spell_mage_mage_ward();
     new spell_mage_mana_shield();
