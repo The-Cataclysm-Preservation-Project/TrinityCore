@@ -1570,6 +1570,33 @@ class spell_rog_pickpocket : public SpellScript
     }
 };
 
+// 73981 - Redirect
+class spell_rog_redirect : public SpellScript
+{
+    SpellCastResult CheckCast()
+    {
+        Unit* caster = GetCaster();
+        Player* player = caster->ToPlayer();
+        uint8 const comboPoints = player->GetComboPoints();
+        if (!comboPoints)
+            return SPELL_FAILED_NO_COMBO_POINTS;
+
+        Unit* target = GetExplTargetUnit();
+        if (target->GetGUID() == player->GetComboTarget())
+            return SPELL_FAILED_BAD_TARGETS;
+
+        player->ClearComboPoints();
+        player->AddComboPoints(target, comboPoints);
+
+        return SPELL_CAST_OK;
+    }
+
+    void Register() override
+    {
+        OnCheckCast.Register(&spell_rog_redirect::CheckCast);
+    }
+};
+
 void AddSC_rogue_spell_scripts()
 {
     RegisterSpellScript(spell_rog_bandits_guile);
@@ -1607,4 +1634,5 @@ void AddSC_rogue_spell_scripts()
     RegisterSpellScript(spell_rog_tricks_of_the_trade_proc);
     RegisterSpellScript(spell_rog_honor_among_thieves);
     RegisterSpellScript(spell_rog_vanish);
+    RegisterSpellScript(spell_rog_redirect);
 }
