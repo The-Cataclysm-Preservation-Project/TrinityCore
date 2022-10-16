@@ -1415,17 +1415,8 @@ class spell_rog_bandits_guile : public AuraScript
             });
     }
 
-    bool CheckProc(ProcEventInfo& eventInfo)
-    {
-        if (GetTarget()->HasAura(SPELL_ROGUE_DEEP_INSIGHT, GetTarget()->GetGUID()))
-            return false;
-
-        return eventInfo.GetProcTarget();
-    }
-
     void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
     {
-        PreventDefaultAction();
         Unit* target = GetTarget();
         Unit* procTarget = eventInfo.GetProcTarget();
 
@@ -1441,6 +1432,9 @@ class spell_rog_bandits_guile : public AuraScript
             target->CastSpell(procTarget, SPELL_ROGUE_BANDITS_GUILE, true);
             _procStrikes = 0;
         }
+
+        if (target->HasAura(SPELL_ROGUE_DEEP_INSIGHT))
+            return;
 
         _procStrikes = std::min<uint8>(_procStrikes + 1, neededProcs * 3);
 
@@ -1475,7 +1469,6 @@ class spell_rog_bandits_guile : public AuraScript
 
     void Register() override
     {
-        DoCheckProc.Register(&spell_rog_bandits_guile::CheckProc);
         OnEffectProc.Register(&spell_rog_bandits_guile::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 private:
@@ -1592,9 +1585,46 @@ class spell_rog_redirect : public SpellScript
         return SPELL_CAST_OK;
     }
 
+    void HandleEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
+            return;
+
+        if (Player* caster = GetCaster()->ToPlayer())
+        {
+            if (Unit* target = GetHitUnit())
+            {
+                Unit::AuraList& scAuras = caster->GetSingleCastAuras();
+                for (Unit::AuraList::iterator itr = scAuras.begin(); itr != scAuras.end(); ++itr)
+                {
+                    Aura* aura = (*itr);
+                    if (aura->GetId() == SPELL_ROGUE_BANDITS_GUILE)
+                    {
+                        if (!target->HasAura(aura->GetId(), caster->GetGUID()))
+                        {
+                            if (Aura* newAura = caster->AddAura(aura->GetId(), target))
+                            {
+                                AuraEffect* oldAuraEff0 = aura->GetEffect(EFFECT_0);
+                                AuraEffect* oldAuraEff1 = aura->GetEffect(EFFECT_1);
+                                if (AuraEffect* newAuraEff0 = target->GetAuraEffect(aura->GetId(), EFFECT_0, caster->GetGUID()))
+                                    newAuraEff0->SetAmount(oldAuraEff0->GetAmount());
+                                if (AuraEffect* newAuraEff1 = target->GetAuraEffect(aura->GetId(), EFFECT_1, caster->GetGUID()))
+                                    newAuraEff1->SetAmount(oldAuraEff1->GetAmount());
+                                newAura->SetDuration(aura->GetDuration());
+                                aura->Remove();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     void Register() override
     {
         OnCheckCast.Register(&spell_rog_redirect::CheckCast);
+        OnEffectHitTarget.Register(&spell_rog_redirect::HandleEffect, EFFECT_0, SPELL_EFFECT_ADD_COMBO_POINTS);
     }
 };
 
