@@ -1600,7 +1600,7 @@ class spell_rog_glyph_of_blind : public SpellScript
             }
     }
 
-    void Register()
+    void Register() override
     {
         OnHit.Register(&spell_rog_glyph_of_blind::HandleOnHit);
     }
