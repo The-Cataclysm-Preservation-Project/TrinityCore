@@ -1579,7 +1579,7 @@ class spell_rog_pickpocket : public SpellScript
 // 2094 - Blind
 class spell_rog_glyph_of_blind : public SpellScript
 {
-    bool Load()
+    bool Load() override
     {
         return GetCaster()->GetTypeId() == TYPEID_PLAYER;
     }
