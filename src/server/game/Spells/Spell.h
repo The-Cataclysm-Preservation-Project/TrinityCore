@@ -21,6 +21,7 @@
 #include "ConditionMgr.h"
 #include "DBCEnums.h"
 #include "ObjectGuid.h"
+#include "Optional.h"
 #include "Position.h"
 #include "SharedDefines.h"
 #include <memory>
@@ -241,8 +242,8 @@ struct SpellValue
     uint32    MaxAffectedTargets;
     float     RadiusMod;
     uint8     AuraStackAmount;
-    int32     AuraDuration;
     float     CriticalChance;
+    Optional<int32> Duration;
 };
 
 enum SpellState
