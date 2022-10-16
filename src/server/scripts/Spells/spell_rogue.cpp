@@ -1428,47 +1428,49 @@ class spell_rog_bandits_guile : public AuraScript
         PreventDefaultAction();
         Unit* target = GetTarget();
         Unit* procTarget = eventInfo.GetProcTarget();
-        uint32 spellId = SPELL_ROGUE_SHALLOW_INSIGHT;
-        int32 basepoints = 10;
 
         // Todo: validate if the required number of successful procs itself changes or if the proc chance of lower ranks is taking care of it already.
         uint8 const neededProcs = 4;
 
-        // We are striking a new opponent, reset progress
-        if (_recentTargetGUID != procTarget->GetGUID())
+        // We are striking a new opponent or bandits guile has faded from target - reset progress
+        if (!procTarget->HasAura(SPELL_ROGUE_BANDITS_GUILE, target->GetGUID()))
         {
             target->RemoveAurasDueToSpell(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID());
             target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID());
             target->RemoveAurasDueToSpell(SPELL_ROGUE_DEEP_INSIGHT, target->GetGUID());
-            _recentTargetGUID = procTarget->GetGUID();
+            target->CastSpell(procTarget, SPELL_ROGUE_BANDITS_GUILE, true);
             _procStrikes = 0;
         }
 
         _procStrikes = std::min<uint8>(_procStrikes + 1, neededProcs * 3);
 
-        if (_procStrikes < neededProcs)
-            return;
-
-        // We are increasing our insight on the opponent
-        if (_procStrikes >= neededProcs * 3)
+        if (Aura* guile = procTarget->GetAura(SPELL_ROGUE_BANDITS_GUILE, target->GetGUID()))
         {
-            spellId = SPELL_ROGUE_DEEP_INSIGHT;
-            basepoints = 30;
-            _procStrikes = 0;
-        }
-        else if (_procStrikes >= neededProcs * 2)
-        {
-            spellId = SPELL_ROGUE_MODERATE_INSIGHT;
-            basepoints = 20;
-        }
+            guile->RefreshDuration();
 
-        if (spellId == SPELL_ROGUE_DEEP_INSIGHT && target->HasAura(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID()))
-            target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT, target->GetGUID());
-        else if (spellId == SPELL_ROGUE_MODERATE_INSIGHT && target->HasAura(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID()))
-            target->RemoveAurasDueToSpell(SPELL_ROGUE_SHALLOW_INSIGHT, target->GetGUID());
-
-        target->CastSpell(target, spellId);
-        target->CastSpell(procTarget, SPELL_ROGUE_BANDITS_GUILE, CastSpellExtraArgs().AddSpellBP0(basepoints).AddSpellMod(SPELLVALUE_BASE_POINT1, basepoints));
+            switch (_procStrikes)
+            {
+            case neededProcs:
+                target->CastSpell(target, SPELL_ROGUE_SHALLOW_INSIGHT, true);
+                guile->GetEffect(EFFECT_0)->SetAmount(10);
+                guile->GetEffect(EFFECT_1)->SetAmount(10);
+                break;
+            case neededProcs * 2:
+                target->RemoveAurasDueToSpell(SPELL_ROGUE_SHALLOW_INSIGHT);
+                target->CastSpell(target, SPELL_ROGUE_MODERATE_INSIGHT, true);
+                guile->GetEffect(EFFECT_0)->SetAmount(20);
+                guile->GetEffect(EFFECT_1)->SetAmount(20);
+                break;
+            case neededProcs * 3:
+                target->RemoveAurasDueToSpell(SPELL_ROGUE_MODERATE_INSIGHT);
+                target->CastSpell(target, SPELL_ROGUE_DEEP_INSIGHT, true);
+                guile->GetEffect(EFFECT_0)->SetAmount(30);
+                guile->GetEffect(EFFECT_1)->SetAmount(30);
+                break;
+            default:
+                break;
+            }
+        }
     }
 
     void Register() override
@@ -1477,7 +1479,6 @@ class spell_rog_bandits_guile : public AuraScript
         OnEffectProc.Register(&spell_rog_bandits_guile::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 private:
-    ObjectGuid _recentTargetGUID;
     uint8 _procStrikes = 0;
 };
 
