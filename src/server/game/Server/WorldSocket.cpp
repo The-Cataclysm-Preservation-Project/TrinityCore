@@ -581,7 +581,7 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
 
     // Must be done before WorldSession is created
     bool wardenActive = sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED);
-    if (wardenActive && account.BattleNet.OS != "Win" && account.BattleNet.OS != "OSX")
+    if (wardenActive && account.BattleNet.OS != "Win" && account.BattleNet.OS != "Wn64" && account.BattleNet.OS != "Mac" && account.BattleNet.OS != "Mc64")
     {
         SendAuthResponseError(AUTH_REJECT);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Client %s attempted to log in using invalid client OS (%s).", address.c_str(), account.BattleNet.OS.c_str());
