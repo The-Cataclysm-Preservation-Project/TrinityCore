@@ -75,6 +75,7 @@ bool ConfusedMovementGenerator<T>::DoUpdate(T* owner, uint32 diff)
         float distance = 4.0f * frand(0.0f, 1.0f) - 2.0f;
         float angle = frand(0.0f, 1.0f) * float(M_PI) * 2.0f;
         owner->MovePositionToFirstCollision(destination, distance, angle);
+        owner->SetOrientation(owner->GetAngle(destination));
 
         if (!_path)
             _path = new PathGenerator(owner);
@@ -92,6 +93,7 @@ bool ConfusedMovementGenerator<T>::DoUpdate(T* owner, uint32 diff)
         Movement::MoveSplineInit init(owner);
         init.MovebyPath(_path->GetPath());
         init.SetWalk(true);
+        init.SetFacing(owner->GetAngle(destination));
         int32 traveltime = init.Launch();
         _timer.Reset(traveltime + urand(800, 1500));
     }
