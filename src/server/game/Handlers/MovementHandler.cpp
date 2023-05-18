@@ -28,9 +28,10 @@
 #include "MapManager.h"
 #include "MotionMaster.h"
 #include "MovementGenerator.h"
-#include "MovementPacketSender.h"
 #include "MovementPackets.h"
 #include "MovementStructures.h"
+#include "MovementStatus.h"
+#include "MoveStateChange.h"
 #include "Transport.h"
 #include "Battleground.h"
 #include "InstanceSaveMgr.h"
@@ -42,6 +43,7 @@
 #include <boost/accumulators/statistics/variance.hpp>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
+#include <G3D/Vector3.h>
 
 void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket & /*recvData*/)
 {
@@ -453,68 +455,6 @@ void WorldSession::HandleMovementOpcode(uint16 opcode, MovementInfo& movementInf
     }
 }
 
-void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recvData)
-{
-    /* extract packet */
-    MovementInfo movementInfo;
-    static MovementStatusElements const speedElement = MSEExtraFloat;
-    Movement::ExtraMovementStatusElement extras(&speedElement);
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo, &extras);
-
-    GameClient* client = GetGameClient();
-
-    // ACK handlers should call GameClient::IsAllowedToMove instead of WorldSession::IsRightUnitBeingMoved
-    // because the ACK could be coming from a unit that is under the control of that client but is not the 'Active Mover' unit.
-    // Example: Get a speed buff on yourself, then mount a vehicle before the end of the buff. When the buff expires,
-    // a force message will be sent to the client regarding the player and the client is required to respond with an ACK.
-    // But the vehicle will be the active mover unit at that time.
-    if (!client->IsAllowedToMove(movementInfo.guid))
-    {
-        TC_LOG_ERROR("entities.unit", "Ignoring ACK. Bad or outdated movement data by Player %s", _player->GetName().c_str());
-        return;
-    }
-
-    Unit* mover = ObjectAccessor::GetUnit(*_player, movementInfo.guid);
-
-    UnitMoveType move_type;
-    switch (recvData.GetOpcode())
-    {
-        case CMSG_MOVE_FORCE_WALK_SPEED_CHANGE_ACK:          move_type = MOVE_WALK;          break;
-        case CMSG_MOVE_FORCE_RUN_SPEED_CHANGE_ACK:           move_type = MOVE_RUN;           break;
-        case CMSG_MOVE_FORCE_RUN_BACK_SPEED_CHANGE_ACK:      move_type = MOVE_RUN_BACK;      break;
-        case CMSG_MOVE_FORCE_SWIM_SPEED_CHANGE_ACK:          move_type = MOVE_SWIM;          break;
-        case CMSG_MOVE_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:     move_type = MOVE_SWIM_BACK;     break;
-        case CMSG_MOVE_FORCE_TURN_RATE_CHANGE_ACK:           move_type = MOVE_TURN_RATE;     break;
-        case CMSG_MOVE_FORCE_FLIGHT_SPEED_CHANGE_ACK:        move_type = MOVE_FLIGHT;        break;
-        case CMSG_MOVE_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:   move_type = MOVE_FLIGHT_BACK;   break;
-        case CMSG_MOVE_FORCE_PITCH_RATE_CHANGE_ACK:          move_type = MOVE_PITCH_RATE;    break;
-        default:
-            TC_LOG_ERROR("network", "WorldSession::HandleForceSpeedChangeAck: Unknown move type opcode: %s", GetOpcodeNameForLogging(static_cast<OpcodeClient>(recvData.GetOpcode())).c_str());
-            return;
-    }
-
-    MovementChangeType changeType = MovementPacketSender::GetChangeTypeByMoveType(move_type);
-
-    // verify that we have a pending change for the change type and that the counter equals our expected change in case we are about to receive multiple ack messages for the same type
-    PlayerMovementPendingChange const* pendingChange = mover->GetPendingMovementChange(changeType);
-    if (!pendingChange || pendingChange->movementCounter != movementInfo.movementCounter)
-        return;
-
-    // Player tried to apply a speed that has not been request. Possible cheating or malformed packet. Kick the player
-    float speedReceived = extras.Data.floatData;
-    float speedSent = pendingChange->newValue;
-    if (std::fabs(speedSent - speedReceived) > 0.01f)
-    {
-        TC_LOG_INFO("cheat", "WorldSession::HandleForceSpeedChangeAck: Player %s from account id %u kicked for incorrect data returned in an ack",
-            _player->GetName().c_str(), _player->GetSession()->GetAccountId());
-        _player->GetSession()->KickPlayer();
-        return;
-    }
-
-    MovementPacketSender::SendSpeedChangeToObservers(mover, move_type, speedSent);
-    mover->ClearPendingMovementChangeForType(changeType);
-}
-
 void WorldSession::HandleSetActiveMoverOpcode(WorldPackets::Movement::SetActiveMover& packet)
 {
     GameClient* client = GetGameClient();
@@ -573,194 +513,6 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket& recvData)
     _player->SummonIfPossible(agree);
 }
 
-void WorldSession::HandleMoveKnockBackAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_MOVE_KNOCK_BACK_ACK");
-
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-
-    GameClient* client = GetGameClient();
-
-    // ACK handlers should call GameClient::IsAllowedToMove instead of WorldSession::IsRightUnitBeingMoved
-    // because the ACK could be coming from a unit that is under the control of that client but is not the 'Active Mover' unit.
-    // Example: Get a speed buff on yourself, then mount a vehicle before the end of the buff. When the buff expires,
-    // a force message will be sent to the client regarding the player and the client is required to respond with an ACK.
-    // But the vehicle will be the active mover unit at that time.
-    if (!client->IsAllowedToMove(movementInfo.guid))
-        return;
-
-    Unit* mover = ObjectAccessor::GetUnit(*_player, movementInfo.guid);
-
-    int64 movementTime = (int64)movementInfo.time + _timeSyncClockDelta;
-    if (_timeSyncClockDelta == 0 || movementTime < 0 || movementTime > 0xFFFFFFFF)
-    {
-        TC_LOG_WARN("misc", "The computed movement time using clockDelta is erronous. Using fallback instead");
-        movementInfo.time = GameTime::GetGameTimeMS();
-    }
-    else
-    {
-        movementInfo.time = (uint32)movementTime;
-    }
-
-    mover->m_movementInfo = movementInfo;
-    mover->UpdatePosition(movementInfo.pos);
-
-    WorldPacket data(SMSG_MOVE_UPDATE_KNOCK_BACK, 66);
-    mover->WriteMovementInfo(data);
-    client->GetBasePlayer()->SendMessageToSet(&data, false);
-}
-
-void WorldSession::HandleMoveHoverAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_MOVE_HOVER_ACK");
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-}
-
-void WorldSession::HandleMoveWaterWalkAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_MOVE_WATER_WALK_ACK");
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-}
-
-void WorldSession::HandleMoveRootAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_FORCE_MOVE_ROOT_ACK");
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-}
-
-void WorldSession::HandleFeatherFallAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_MOVE_FEATHER_FALL_ACK");
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-}
-
-void WorldSession::HandleMoveUnRootAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_FORCE_MOVE_UNROOT_ACK");
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-}
-
-void WorldSession::HandleMoveSetCanTransitionBetweenSwinAndFlyAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY_ACK");
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-
-    GameClient* client = GetGameClient();
-    if (!client->IsAllowedToMove(movementInfo.guid))
-        return;
-
-    Unit* mover = ObjectAccessor::GetUnit(*_player, movementInfo.guid);
-
-    // verify that we have a pending change for the change type and that the counter equals our expected change in case we are about to receive multiple ack messages for the same type
-    PlayerMovementPendingChange const* pendingChange = mover->GetPendingMovementChange(MovementChangeType::SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY);
-    if (!pendingChange || pendingChange->movementCounter != movementInfo.movementCounter)
-        return;
-
-    MovementPacketSender::SendMovementFlagChangeToObservers(mover);
-    mover->ClearPendingMovementChangeForType(MovementChangeType::SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY);
-}
-
-void WorldSession::HandleMoveGravityDisableAck(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "received %s", GetOpcodeNameForLogging(static_cast<OpcodeClient>(recvData.GetOpcode())).c_str());
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-
-    GameClient* client = GetGameClient();
-    if (!client->IsAllowedToMove(movementInfo.guid))
-        return;
-
-    Unit* mover = ObjectAccessor::GetUnit(*_player, movementInfo.guid);
-
-    // verify that we have a pending change for the change type and that the counter equals our expected change in case we are about to receive multiple ack messages for the same type
-    PlayerMovementPendingChange const* pendingChange = mover->GetPendingMovementChange(MovementChangeType::GRAVITY_DISABLE);
-    bool disable = recvData.GetOpcode() == CMSG_MOVE_GRAVITY_DISABLE_ACK;
-    if (!pendingChange || pendingChange->movementCounter != movementInfo.movementCounter)
-        return;
-
-    if (pendingChange->apply != disable)
-    {
-        TC_LOG_INFO("cheat", "WorldSession::HandleMoveGravityDisableAck: Player %s from account id %u kicked for incorrect data returned in an ack",
-            _player->GetName().c_str(), _player->GetSession()->GetAccountId());
-        _player->GetSession()->KickPlayer();
-        return;
-    }
-
-    MovementPacketSender::SendMovementFlagChangeToObservers(mover);
-    mover->ClearPendingMovementChangeForType(MovementChangeType::GRAVITY_DISABLE);
-}
-
-void WorldSession::HandleSetCollisionHeightAck(WorldPacket& recvData)
-{
-    MovementInfo movementInfo;
-    static MovementStatusElements const extraElements[] =
-    {
-        MSEExtraFloat,
-        MSEExtraTwoBits
-    };
-
-    Movement::ExtraMovementStatusElement extra(extraElements);
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo, &extra);
-
-    GameClient* client = GetGameClient();
-    if (!client->IsAllowedToMove(movementInfo.guid))
-        return;
-
-    Unit* mover = ObjectAccessor::GetUnit(*_player, movementInfo.guid);
-
-    PlayerMovementPendingChange const* pendingChange = mover->GetPendingMovementChange(MovementChangeType::SET_COLLISION_HGT);
-    if (!pendingChange || pendingChange->movementCounter != movementInfo.movementCounter)
-        return;
-
-    if (std::fabs(pendingChange->newValue - extra.Data.floatData) > 0.01f)
-    {
-        TC_LOG_INFO("cheat", "WorldSession::HandleSetCollisionHeightAck: Player %s from account id %u kicked for incorrect data returned in an ack",
-            _player->GetName().c_str(), _player->GetSession()->GetAccountId());
-        _player->GetSession()->KickPlayer();
-        return;
-    }
-
-    MovementPacketSender::SendHeightChangeToObservers(mover, pendingChange->newValue);
-}
-
-void WorldSession::HandleMoveSetCanFlyAckOpcode(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_MOVE_SET_CAN_FLY_ACK");
-    MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recvData, &movementInfo);
-
-    GameClient* client = GetGameClient();
-    if (!client->IsAllowedToMove(movementInfo.guid))
-        return;
-
-    Unit* mover = ObjectAccessor::GetUnit(*_player, movementInfo.guid);
-
-    // verify that we have a pending change for the change type and that the counter equals our expected change in case we are about to receive multiple ack messages for the same type
-    PlayerMovementPendingChange const* pendingChange = mover->GetPendingMovementChange(MovementChangeType::SET_CAN_FLY);
-    if (!pendingChange || pendingChange->movementCounter != movementInfo.movementCounter)
-        return;
-
-    int64 movementTime = (int64)movementInfo.time + _timeSyncClockDelta;
-    if (_timeSyncClockDelta == 0 || movementTime < 0 || movementTime > 0xFFFFFFFF)
-    {
-        TC_LOG_WARN("misc", "The computed movement time using clockDelta is erronous. Using fallback instead");
-        movementInfo.time = GameTime::GetGameTimeMS();
-    }
-    else
-    {
-        movementInfo.time = (uint32)movementTime;
-    }
-
-    MovementPacketSender::SendMovementFlagChangeToObservers(mover);
-    mover->ClearPendingMovementChangeForType(MovementChangeType::SET_CAN_FLY);
-}
 void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_MOVE_TIME_SKIPPED");
@@ -886,4 +638,550 @@ void WorldSession::ComputeNewClockDelta()
         std::pair<int64, uint32> back = _timeSyncClockDeltaQueue.back();
         _timeSyncClockDelta = back.first;
     }
+}
+
+void ExtractMovementStatusFromPacket(WorldPacket& recvPacket, MovementStatus& movementStatus, MoveStateChange* stateChange = nullptr)
+{
+    MovementStatusElements const* sequence = GetMovementStatusElementsSequence(static_cast<OpcodeClient>(recvPacket.GetOpcode()));
+    if (!sequence)
+    {
+        TC_LOG_ERROR("network", "WorldSession::ExtractMovementStatusFromPacket: No movement sequence found for opcode %s", GetOpcodeNameForLogging(static_cast<OpcodeClient>(recvPacket.GetOpcode())).c_str());
+        return;
+    }
+
+    bool hasMovementFlags0 = false;
+    bool hasMovementFlags1 = false;
+    bool hasFacing = false;
+    bool hasMoveTime = false;
+    bool hasPitch = false;
+    bool hasStepUpStartElevation = false;
+
+    for (; *sequence != MSEEnd; ++sequence)
+    {
+        MovementStatusElements const& element = *sequence;
+
+        switch (element)
+        {
+            case MSEHasGuidByte0:
+            case MSEHasGuidByte1:
+            case MSEHasGuidByte2:
+            case MSEHasGuidByte3:
+            case MSEHasGuidByte4:
+            case MSEHasGuidByte5:
+            case MSEHasGuidByte6:
+            case MSEHasGuidByte7:
+                movementStatus.MoverGUID[element - MSEHasGuidByte0] = recvPacket.ReadBit();
+                break;
+            case MSEHasTransportGuidByte0:
+            case MSEHasTransportGuidByte1:
+            case MSEHasTransportGuidByte2:
+            case MSEHasTransportGuidByte3:
+            case MSEHasTransportGuidByte4:
+            case MSEHasTransportGuidByte5:
+            case MSEHasTransportGuidByte6:
+            case MSEHasTransportGuidByte7:
+                if (movementStatus.Transport.has_value())
+                    movementStatus.Transport->Guid[element - MSEHasTransportGuidByte0] = recvPacket.ReadBit();
+                break;
+            case MSEGuidByte0:
+            case MSEGuidByte1:
+            case MSEGuidByte2:
+            case MSEGuidByte3:
+            case MSEGuidByte4:
+            case MSEGuidByte5:
+            case MSEGuidByte6:
+            case MSEGuidByte7:
+                recvPacket.ReadByteSeq(movementStatus.MoverGUID[element - MSEGuidByte0]);
+                break;
+            case MSETransportGuidByte0:
+            case MSETransportGuidByte1:
+            case MSETransportGuidByte2:
+            case MSETransportGuidByte3:
+            case MSETransportGuidByte4:
+            case MSETransportGuidByte5:
+            case MSETransportGuidByte6:
+            case MSETransportGuidByte7:
+                if (movementStatus.Transport.has_value())
+                    recvPacket.ReadByteSeq(movementStatus.Transport->Guid[element - MSETransportGuidByte0]);
+                break;
+            case MSEHasMovementFlags:
+                hasMovementFlags0 = !recvPacket.ReadBit();
+                break;
+            case MSEHasMovementFlags2:
+                hasMovementFlags1 = !recvPacket.ReadBit();
+                break;
+            case MSEHasTimestamp:
+                hasMoveTime = !recvPacket.ReadBit();
+                break;
+            case MSEHasOrientation:
+                hasFacing = !recvPacket.ReadBit();
+                break;
+            case MSEHasTransportData:
+                if (recvPacket.ReadBit())
+                    movementStatus.Transport.emplace();
+                break;
+            case MSEHasTransportTime2:
+                if (movementStatus.Transport.has_value())
+                    if (recvPacket.ReadBit())
+                        movementStatus.Transport->PrevMoveTime.emplace();
+                break;
+            case MSEHasVehicleId:
+                if (movementStatus.Transport.has_value())
+                    if (recvPacket.ReadBit())
+                        movementStatus.Transport->VehicleRecID.emplace();
+                break;
+            case MSEHasPitch:
+                hasPitch = !recvPacket.ReadBit();
+                break;
+            case MSEHasFallData:
+                if (recvPacket.ReadBit())
+                    movementStatus.Fall.emplace();
+                break;
+            case MSEHasFallDirection:
+                if (movementStatus.Fall.has_value())
+                    if (recvPacket.ReadBit())
+                        movementStatus.Fall->Velocity.emplace();
+                break;
+            case MSEHasSplineElevation:
+                hasStepUpStartElevation = !recvPacket.ReadBit();
+                break;
+            case MSEHasSpline:
+                movementStatus.HasSpline = recvPacket.ReadBit();
+                break;
+            case MSEHasHeightChangeFailed:
+                movementStatus.HeightChangeFailed = recvPacket.ReadBit();
+                break;
+            case MSEMovementFlags:
+                if (hasMovementFlags0)
+                    movementStatus.MoveFlags0 = recvPacket.ReadBits(30);
+                break;
+            case MSEMovementFlags2:
+                if (hasMovementFlags1)
+                    movementStatus.MoveFlags1 = recvPacket.ReadBits(12);
+                break;
+            case MSETimestamp:
+                if (hasMoveTime)
+                    recvPacket >> movementStatus.MoveTime;
+                break;
+            case MSEPositionX:
+                recvPacket >> movementStatus._Position.Pos.m_positionX;
+                break;
+            case MSEPositionY:
+                recvPacket >> movementStatus._Position.Pos.m_positionY;
+                break;
+            case MSEPositionZ:
+                recvPacket >> movementStatus._Position.Pos.m_positionZ;
+                break;
+            case MSEOrientation:
+                if (hasFacing)
+                    recvPacket >> movementStatus.Facing;
+                break;
+            case MSETransportPositionX:
+                if (movementStatus.Transport.has_value())
+                    recvPacket >> movementStatus.Transport->_Position.Pos.m_positionX;
+                break;
+            case MSETransportPositionY:
+                if (movementStatus.Transport.has_value())
+                    recvPacket >> movementStatus.Transport->_Position.Pos.m_positionY;
+                break;
+            case MSETransportPositionZ:
+                if (movementStatus.Transport.has_value())
+                    recvPacket >> movementStatus.Transport->_Position.Pos.m_positionZ;
+                break;
+            case MSETransportOrientation:
+                if (movementStatus.Transport.has_value())
+                    recvPacket >> movementStatus.Transport->Facing;
+                break;
+            case MSETransportSeat:
+                if (movementStatus.Transport.has_value())
+                    recvPacket >> movementStatus.Transport->VehicleSeatIndex;
+                break;
+            case MSETransportTime:
+                if (movementStatus.Transport.has_value())
+                    recvPacket >> movementStatus.Transport->MoveTime;
+                break;
+            case MSETransportTime2:
+                if (movementStatus.Transport.has_value() && movementStatus.Transport->PrevMoveTime.has_value())
+                    movementStatus.Transport->PrevMoveTime = recvPacket.read<uint32>();
+                break;
+            case MSETransportVehicleId:
+                if (movementStatus.Transport.has_value() && movementStatus.Transport->VehicleRecID.has_value())
+                    movementStatus.Transport->VehicleRecID = recvPacket.read<uint32>();
+                break;
+            case MSEPitch:
+                if (hasPitch)
+                    movementStatus.Pitch = G3D::wrap(recvPacket.read<float>(), float(-M_PI), float(M_PI));
+                break;
+            case MSEFallTime:
+                if (movementStatus.Fall.has_value())
+                    recvPacket >> movementStatus.Fall->Time;
+                break;
+            case MSEFallVerticalSpeed:
+                if (movementStatus.Fall.has_value())
+                    recvPacket >> movementStatus.Fall->JumpVelocity;
+                break;
+            case MSEFallCosAngle:
+                if (movementStatus.Fall.has_value() && movementStatus.Fall->Velocity.has_value())
+                    recvPacket >> movementStatus.Fall->Velocity->Direction.Pos.m_positionX;
+                break;
+            case MSEFallSinAngle:
+                if (movementStatus.Fall.has_value() && movementStatus.Fall->Velocity.has_value())
+                    recvPacket >> movementStatus.Fall->Velocity->Direction.Pos.m_positionY;
+                break;
+            case MSEFallHorizontalSpeed:
+                if (movementStatus.Fall.has_value() && movementStatus.Fall->Velocity.has_value())
+                    recvPacket >> movementStatus.Fall->Velocity->Speed;
+                break;
+            case MSESplineElevation:
+                if (hasStepUpStartElevation)
+                    recvPacket >> movementStatus.StepUpStartElevation;
+                break;
+            case MSECounter:
+                recvPacket >> movementStatus.MoveIndex;
+                break;
+            case MSEMoveStateChangeSpeed:
+                if (stateChange)
+                    stateChange->Speed = recvPacket.read<float>();
+                else
+                    recvPacket.read<float>();
+                break;
+            case MSEMoveStateChangeVehicleRecId:
+                if (stateChange)
+                    stateChange->VehicleRecID = recvPacket.read<int32>();
+                else
+                    recvPacket.read<int32>();
+                break;
+            case MSEMoveStateChangeCollisionHeightHeight:
+                if (stateChange)
+                {
+                    if (!stateChange->CollisionHeight.has_value())
+                        stateChange->CollisionHeight.emplace();
+                    stateChange->CollisionHeight->Height = recvPacket.read<float>();
+                }
+                else
+                    recvPacket.read<float>();
+                break;
+            case MSEMoveStateChangeCollisionHeightReason:
+                if (stateChange)
+                {
+                    if (!stateChange->CollisionHeight.has_value())
+                        stateChange->CollisionHeight.emplace();
+                    stateChange->CollisionHeight->Reason = recvPacket.ReadBits(2);
+                }
+                else
+                    recvPacket.ReadBits(2);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+// Some lightweight packet spoofing checks. Each of the MSG_MOVE packets either add or remove a movement flag so we are going to check for the presence/absence of these
+inline bool HasRequiredMovementFlagForPacket(uint16 opcode, MovementStatus& movementStatus)
+{
+    switch (opcode)
+    {
+        case MSG_MOVE_FALL_LAND:            return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_FALLING);
+        case MSG_MOVE_HEARTBEAT:            return true; // todo: investigate which flags must be present at any time
+        case MSG_MOVE_JUMP:                 return movementStatus.HasMovementFlag0(MOVEMENTFLAG_FALLING);
+        case MSG_MOVE_SET_FACING:           return true; // @todo: investigate
+        case MSG_MOVE_SET_PITCH:            return true; // @todo: investigate
+        case MSG_MOVE_SET_RUN_MODE:         return true; // @todo: investigate
+        case MSG_MOVE_SET_WALK_MODE:        return true; // @todo: investigate
+        case MSG_MOVE_START_ASCEND:         return movementStatus.HasMovementFlag0(MOVEMENTFLAG_ASCENDING);
+        case MSG_MOVE_START_BACKWARD:       return movementStatus.HasMovementFlag0(MOVEMENTFLAG_BACKWARD);
+        case MSG_MOVE_START_DESCEND:        return movementStatus.HasMovementFlag0(MOVEMENTFLAG_DESCENDING);
+        case MSG_MOVE_START_FORWARD:        return movementStatus.HasMovementFlag0(MOVEMENTFLAG_FORWARD);
+        case MSG_MOVE_START_PITCH_DOWN:     return movementStatus.HasMovementFlag0(MOVEMENTFLAG_PITCH_DOWN);
+        case MSG_MOVE_START_PITCH_UP:       return movementStatus.HasMovementFlag0(MOVEMENTFLAG_PITCH_UP);
+        case MSG_MOVE_START_STRAFE_LEFT:    return movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_PENDING_STRAFE_LEFT));
+        case MSG_MOVE_START_STRAFE_RIGHT:   return movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_STRAFE_RIGHT | MOVEMENTFLAG_PENDING_STRAFE_RIGHT));
+        case MSG_MOVE_START_SWIM:           return movementStatus.HasMovementFlag0(MOVEMENTFLAG_SWIMMING);
+        case MSG_MOVE_START_TURN_LEFT:      return movementStatus.HasMovementFlag0(MOVEMENTFLAG_LEFT);
+        case MSG_MOVE_START_TURN_RIGHT:     return movementStatus.HasMovementFlag0(MOVEMENTFLAG_RIGHT);
+        case MSG_MOVE_STOP:                 return true; // sniffs show the presence of turning and strafe flags so we wont check anything here for now.
+        case MSG_MOVE_STOP_ASCEND:          return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_ASCENDING);
+        case MSG_MOVE_STOP_PITCH:           return !movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_PITCH_DOWN | MOVEMENTFLAG_PITCH_UP));
+        case MSG_MOVE_STOP_STRAFE:          return !movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT));
+        case MSG_MOVE_STOP_SWIM:            return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_SWIMMING);
+        case MSG_MOVE_STOP_TURN:            return !movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_LEFT | MOVEMENTFLAG_RIGHT));
+        case CMSG_MOVE_SET_CAN_FLY:         return movementStatus.HasMovementFlag0(MOVEMENTFLAG_CAN_FLY);
+        default:
+            return true;
+    }
+}
+
+/*
+    The MSG_MOVE packets are the most common packets received from the client. These are the ones that we have to check for credibility the most as we have to use most
+    of their movement status data. This means we have to ensure that the flags in particular are valid before broadcasting player updates.
+*/
+void WorldSession::HandleClientAuthorativeMovementOpcode(WorldPacket& recvPacket)
+{
+    MovementStatus movementStatus;
+    ExtractMovementStatusFromPacket(recvPacket, movementStatus);
+    if (!ValidateMovementStatus(recvPacket.GetOpcode(), movementStatus))
+    {
+        // Zero tolerance for invalid packet data.
+        //KickPlayer();
+        TC_LOG_ERROR("network", "duh...");
+        return;
+    }
+
+    ApplyMovementStatus(movementStatus);
+}
+
+void WorldSession::HandleMoveStateChangeAckOpcode(WorldPacket& recvPacket)
+{
+    MoveStateChange change;
+    MovementStatus movementStatus;
+    ExtractMovementStatusFromPacket(recvPacket, movementStatus, &change);
+    if (!ValidateMovementStatus(recvPacket.GetOpcode(), movementStatus))
+        return;
+
+    GameClient* client = GetGameClient();
+
+    // ACK handlers should call GameClient::IsAllowedToMove instead of WorldSession::IsRightUnitBeingMoved
+    // because the ACK could be coming from a unit that is under the control of that client but is not the 'Active Mover' unit.
+    // Example: Get a speed buff on yourself, then mount a vehicle before the end of the buff. When the buff expires,
+    // a force message will be sent to the client regarding the player and the client is required to respond with an ACK.
+    // But the vehicle will be the active mover unit at that time.
+    if (!client->IsAllowedToMove(movementStatus.MoverGUID))
+    {
+        TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) tried to change a unit that is not under his control.", _player->GetName().c_str());
+        return;
+    }
+
+    Unit* mover = ObjectAccessor::GetUnit(*_player, movementStatus.MoverGUID);
+    if (!mover)
+        return;
+
+    MoveStateChange const* expectedChange = mover->GetExpectedMoveStateChange(recvPacket.GetOpcode());
+    if (!expectedChange)
+    {
+        TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) tried to acknowledge a packet (%s) that we did not expect. Possible cheater or malformed packet.",
+            _player->GetName().c_str(),
+            GetOpcodeNameForLogging(OpcodeClient(recvPacket.GetOpcode())).c_str());
+        return;
+    }
+
+    // Skip wrong or outdated ack messages. We do not log anything here because some scenarios trigger multiple acks for the same opcode in quick succession.
+    if (expectedChange->SequenceIndex != movementStatus.MoveIndex)
+        return;
+
+    // Now we are ready to validate the information that we wanted
+    bool hasRequiredMovementFlags = [&]()
+    {
+        switch (recvPacket.GetOpcode())
+        {
+            case CMSG_MOVE_FEATHER_FALL_ACK:                            return (expectedChange->MessageID == SMSG_MOVE_FEATHER_FALL) == movementStatus.HasMovementFlag0(MOVEMENTFLAG_FALLING_SLOW);
+            case CMSG_MOVE_GRAVITY_DISABLE_ACK:                         return movementStatus.HasMovementFlag0(MOVEMENTFLAG_DISABLE_GRAVITY);
+            case CMSG_MOVE_GRAVITY_ENABLE_ACK:                          return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_DISABLE_GRAVITY);
+            case CMSG_MOVE_HOVER_ACK:                                   return (expectedChange->MessageID == SMSG_MOVE_SET_HOVER) == movementStatus.HasMovementFlag0(MOVEMENTFLAG_HOVER);
+            case CMSG_MOVE_SET_CAN_FLY_ACK:                             return (expectedChange->MessageID == SMSG_MOVE_SET_CAN_FLY) == movementStatus.HasMovementFlag0(MOVEMENTFLAG_CAN_FLY);
+            case CMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY_ACK: return (expectedChange->MessageID == SMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY) == movementStatus.HasMovementFlag1(MOVEMENTFLAG2_CAN_SWIM_TO_FLY_TRANS);
+            case CMSG_MOVE_WATER_WALK_ACK:                              return (expectedChange->MessageID == SMSG_MOVE_WATER_WALK) == movementStatus.HasMovementFlag0(MOVEMENTFLAG_WATERWALKING);
+            case CMSG_FORCE_MOVE_ROOT_ACK:                              return movementStatus.HasMovementFlag0(MOVEMENTFLAG_ROOT);
+            case CMSG_FORCE_MOVE_UNROOT_ACK:                            return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_ROOT);
+            default:
+                return true;
+        }
+
+        return true;
+    }();
+
+    if (!hasRequiredMovementFlags)
+    {
+        TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has not returned expected movement flags. Possible cheater or malformed packet.", _player->GetName().c_str());
+        return;
+    }
+
+    switch (recvPacket.GetOpcode())
+    {
+        case CMSG_MOVE_FORCE_WALK_SPEED_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_RUN_SPEED_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_RUN_BACK_SPEED_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_SWIM_SPEED_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_TURN_RATE_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_FLIGHT_SPEED_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:
+        case CMSG_MOVE_FORCE_PITCH_RATE_CHANGE_ACK:
+            if (!expectedChange->Speed.has_value() || !change.Speed.has_value() || std::fabs(*expectedChange->Speed - *change.Speed) > 0.01f)
+            {
+                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned an invalid speed change value. Possible cheater or malformed packet.", _player->GetName().c_str());
+                return;
+            }
+            break;
+        case CMSG_MOVE_SET_COLLISION_HEIGHT_ACK:
+            if (!expectedChange->CollisionHeight.has_value() || !change.CollisionHeight.has_value()
+                || std::fabs(expectedChange->CollisionHeight->Height - change.CollisionHeight->Height) > 0.01f
+                || expectedChange->CollisionHeight->Reason != change.CollisionHeight->Reason)
+            {
+                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned invalid collision height data. Possible cheater or malformed packet.", _player->GetName().c_str());
+                return;
+            }
+            break;
+        case CMSG_SET_VEHICLE_REC_ID_ACK:
+            if (!expectedChange->VehicleRecID.has_value() || !change.VehicleRecID.has_value() || *expectedChange->VehicleRecID != *change.VehicleRecID)
+            {
+                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned an invalid vehicle rec Id. Possible cheater or malformed packet.", _player->GetName().c_str());
+                return;
+            }
+            break;
+        case CMSG_MOVE_KNOCK_BACK_ACK:
+            // Todo. Packet doesnt return anything???
+            break;
+        default:
+            break;
+    }
+
+    ApplyMovementStatus(movementStatus, expectedChange);
+}
+
+bool WorldSession::ValidateMovementStatus(uint16 opcode, MovementStatus& movementStatus)
+{
+    // Invalid mover GUID
+    if (movementStatus.MoverGUID.IsEmpty())
+    {
+        TC_LOG_ERROR("network", "WorldSession::ValidateMovementStatus: Player (%s) has sent a packet (Opcode: %s) with an empty MoverGUID.", _player->GetName().c_str(), GetOpcodeNameForLogging(OpcodeClient(opcode)).c_str());
+        return false;
+    }
+
+    // Mover validation
+    Unit* mover = GetGameClient()->GetActivelyMovedUnit();
+    if (!mover || mover->GetGUID() != movementStatus.MoverGUID)
+    {
+        TC_LOG_ERROR("network", "WorldSession::ValidateMovementStatus: Player (%s) has sent a packet (Opcode: %s) with an mismatching mover.", _player->GetName().c_str(), GetOpcodeNameForLogging(OpcodeClient(opcode)).c_str());
+        return false;
+    }
+
+    // Position validation
+    if (!movementStatus.GetPosition().IsPositionValid())
+    {
+        TC_LOG_ERROR("network", "WorldSession::ValidateMovementStatus: Player (%s) has sent a packet (Opcode: %s) with an invalid Position.", _player->GetName().c_str(), GetOpcodeNameForLogging(OpcodeClient(opcode)).c_str());
+        return false;
+    }
+
+    // Check for expected movement flags
+    if (!HasRequiredMovementFlagForPacket(opcode, movementStatus))
+    {
+        TC_LOG_ERROR("network", "WorldSession::ValidateMovementStatus: Player (%s) has sent a packet (Opcode: %s) with missing expected movement flags.", _player->GetName().c_str(), GetOpcodeNameForLogging(OpcodeClient(opcode)).c_str());
+        return false;
+    }
+
+    // Sanitize movement flags
+    {
+        if (!mover->GetCharmedOrSelf()->GetVehicleBase() || !(mover->GetCharmedOrSelf()->GetVehicle()->GetVehicleInfo()->Flags & VEHICLE_FLAG_FIXED_POSITION))
+            movementStatus.RemoveMovementFlag0(MOVEMENTFLAG_ROOT);
+
+        /*! This must be a packet spoofing attempt. MOVEMENTFLAG_ROOT sent from the client is not valid
+            in conjunction with any of the moving movement flags such as MOVEMENTFLAG_FORWARD.
+            It will freeze clients that receive this player's movement info.*/
+
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_ROOT) && movementStatus.HasMovementFlag0(MOVEMENTFLAG_MASK_MOVING))
+            movementStatus.RemoveMovementFlag0(MOVEMENTFLAG_MASK_MOVING);
+
+        //! Cannot hover without SPELL_AURA_HOVER
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_HOVER) && !mover->HasAuraType(SPELL_AURA_HOVER))
+            movementStatus.RemoveMovementFlag0(MOVEMENTFLAG_HOVER);
+
+        //! Cannot ascend and descend at the same time
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_ASCENDING) && movementStatus.HasMovementFlag0(MOVEMENTFLAG_DESCENDING))
+            movementStatus.RemoveMovementFlag0(MovementFlags(MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_DESCENDING));
+
+        //! Cannot move left and right at the same time
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_LEFT) && movementStatus.HasMovementFlag0(MOVEMENTFLAG_RIGHT))
+            movementStatus.RemoveMovementFlag0(MovementFlags(MOVEMENTFLAG_LEFT | MOVEMENTFLAG_RIGHT));
+
+        //! Cannot strafe left and right at the same time
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_STRAFE_LEFT) && movementStatus.HasMovementFlag0(MOVEMENTFLAG_STRAFE_RIGHT))
+            movementStatus.RemoveMovementFlag0(MovementFlags(MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT));
+
+        //! Cannot pitch up and down at the same time
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_PITCH_UP) && movementStatus.HasMovementFlag0(MOVEMENTFLAG_PITCH_DOWN))
+            movementStatus.RemoveMovementFlag0(MovementFlags(MOVEMENTFLAG_PITCH_UP | MOVEMENTFLAG_PITCH_DOWN));
+
+        //! Cannot move forwards and backwards at the same time
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_FORWARD) && movementStatus.HasMovementFlag0(MOVEMENTFLAG_BACKWARD))
+            movementStatus.RemoveMovementFlag0(MovementFlags(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD));
+
+        //! Cannot walk on water without SPELL_AURA_WATER_WALK except for ghosts
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_WATERWALKING) && !mover->HasAuraType(SPELL_AURA_WATER_WALK) && !mover->HasAuraType(SPELL_AURA_GHOST))
+            movementStatus.RemoveMovementFlag0(MOVEMENTFLAG_WATERWALKING);
+
+        //! Cannot feather fall without SPELL_AURA_FEATHER_FALL
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_FALLING_SLOW) && !mover->GetCharmedOrSelf()->HasAuraType(SPELL_AURA_FEATHER_FALL))
+            movementStatus.RemoveMovementFlag0(MOVEMENTFLAG_FALLING_SLOW);
+
+        /*! Cannot fly if no fly auras present. Exception is being a GM.
+            Note that we check for account level instead of Player::IsGameMaster() because in some
+            situations it may be feasable to use .gm fly on as a GM without having .gm on,
+            e.g. aerial combat.*/
+
+        //if (movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_CAN_FLY)) && player->GetSession()->GetSecurity() == SEC_PLAYER &&
+        if (movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_CAN_FLY)) &&
+            !mover->HasAuraType(SPELL_AURA_FLY) && !mover->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED))
+            movementStatus.RemoveMovementFlag0(MovementFlags(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_CAN_FLY));
+
+        if (movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_CAN_FLY)) && movementStatus.HasMovementFlag0(MOVEMENTFLAG_FALLING))
+            movementStatus.RemoveMovementFlag0(MOVEMENTFLAG_FALLING);
+
+        if (movementStatus.HasMovementFlag0(MOVEMENTFLAG_SPLINE_ELEVATION) && G3D::fuzzyEq(movementStatus.StepUpStartElevation, 0.0f))
+            movementStatus.RemoveMovementFlag0(MOVEMENTFLAG_SPLINE_ELEVATION);
+
+        // Client first checks if spline elevation != 0, then verifies flag presence
+        if (G3D::fuzzyNe(movementStatus.StepUpStartElevation, 0.0f))
+            movementStatus.AddMovementFlag0(MOVEMENTFLAG_SPLINE_ELEVATION);
+    }
+
+    return true;
+}
+
+void WorldSession::ApplyMovementStatus(MovementStatus& movementStatus, MoveStateChange const* stateChange /*= nullptr*/)
+{
+    // WorldSession::ValidateMovementStatus made sure that we have a valid mover so we can go for a simple ptr check.
+    Unit* mover = GetGameClient()->GetActivelyMovedUnit();
+    if (!mover)
+        return;
+
+    // Correct move time
+    int64 movementTime = (int64)movementStatus.MoveTime + _timeSyncClockDelta;
+    if (_timeSyncClockDelta == 0 || movementTime < 0 || movementTime > 0xFFFFFFFF)
+        movementStatus.MoveTime = GameTime::GetGameTimeMS();
+    else
+        movementStatus.MoveTime = (uint32)movementTime;
+
+    // Apply position
+    Position position = movementStatus.GetPosition();
+    position.SetOrientation(movementStatus.Facing != 0.f ? movementStatus.Facing : mover->GetOrientation());
+    mover->UpdatePosition(position);
+
+    // Apply movement status
+    mover->_movementStatus = movementStatus;
+
+    // Send corresponding MOVE_UPDATE packet
+    if (stateChange)
+    {
+        // Because Cataclysm is using randomized packet structures, we have to use cases here. For WoD onwards you should use one class for all speed changes
+        switch (stateChange->MessageID)
+        {
+            case SMSG_MOVE_SET_RUN_SPEED:           mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateRunSpeed(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_RUN_BACK_SPEED:      mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateRunBackSpeed(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_WALK_SPEED:          mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateWalkSpeed(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_SWIM_SPEED:          mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateSwimSpeed(movementStatus, *stateChange->Speed).Write(), _player);  break;
+            case SMSG_MOVE_SET_SWIM_BACK_SPEED:     mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateSwimBackSpeed(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_FLIGHT_SPEED:        mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateFlightSpeed(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_FLIGHT_BACK_SPEED:   mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateFlightBackSpeed(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_TURN_RATE:           mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateTurnRate(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_PITCH_RATE:          mover->SendMessageToSet(WorldPackets::Movement::MoveUpdatePitchRate(movementStatus, *stateChange->Speed).Write(), _player); break;
+            case SMSG_MOVE_SET_COLLISION_HEIGHT:    mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateCollisionHeight(movementStatus, stateChange->CollisionHeight->Height).Write(), _player); break;
+            case SMSG_MOVE_KNOCK_BACK:              mover->SendMessageToSet(WorldPackets::Movement::MoveUpdateKnockBack(movementStatus).Write(), _player); break;
+            default:
+                mover->SendMessageToSet(WorldPackets::Movement::MoveUpdate(movementStatus).Write(), _player);
+                break;
+        }
+    }
+    else
+        mover->SendMessageToSet(WorldPackets::Movement::MoveUpdate(movementStatus).Write(), _player);
 }

@@ -85,7 +85,6 @@ enum InventoryType : uint8;
 enum ItemClass : uint8;
 enum LootError : uint8;
 enum LootType : uint8;
-enum UpdateCollisionHeightReason : uint8;
 enum ZLiquidStatus : uint32;
 
 typedef std::deque<Mail*> PlayerMails;
@@ -2145,11 +2144,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         WorldObject* m_seer;
         void SetFallInformation(uint32 time, float z);
         void HandleFall(MovementInfo const& movementInfo);
-        bool SetDisableGravity(bool disable, bool packetOnly = false, bool updateAnimationTier = true) override;
-        bool SetCanFly(bool enable, bool packetOnly = false) override;
-        bool SetCanTransitionBetweenSwimAndFly(bool enable) override;
-        void SendMovementSetCollisionHeight(float height, UpdateCollisionHeightReason reason);
-
         void SetClientControl(Unit* target, bool allowMove);
 
         void SetSeer(WorldObject* target) { m_seer = target; }

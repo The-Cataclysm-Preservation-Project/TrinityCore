@@ -94,6 +94,10 @@ enum MovementStatusElements
     MSEFallSinAngle,
     MSEFallHorizontalSpeed,
     MSESplineElevation,
+    MSEMoveStateChangeSpeed,
+    MSEMoveStateChangeVehicleRecId,
+    MSEMoveStateChangeCollisionHeightHeight,
+    MSEMoveStateChangeCollisionHeightReason,
 
     MSECounter,
 

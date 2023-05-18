@@ -40,6 +40,7 @@ class GameObject;
 class InstanceSave;
 class Item;
 class LoginQueryHolder;
+class MovementStatus;
 class Object;
 class Player;
 class Quest;
@@ -55,6 +56,7 @@ struct AuctionEntry;
 struct DeclinedName;
 struct ItemTemplate;
 struct MovementInfo;
+struct MoveStateChange;
 struct Petition;
 
 namespace lfg
@@ -703,19 +705,7 @@ class TC_GAME_API WorldSession
         void HandleRequestHonorStatsOpcode(WorldPackets::Inspect::RequestHonorStats& packet);
         void HandleRequestInspectRatedBgStatsOpcode(WorldPackets::Inspect::RequestInspectRatedBgStats& packet);
 
-        void HandleForceSpeedChangeAck(WorldPacket& recvData);
-        void HandleMoveKnockBackAck(WorldPacket& recvPacket);
         void HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck& packet);
-        void HandleMoveWaterWalkAck(WorldPacket& recvPacket);
-        void HandleFeatherFallAck(WorldPacket& recvData);
-        void HandleMoveHoverAck(WorldPacket& recvData);
-        void HandleMoveUnRootAck(WorldPacket& recvPacket);
-        void HandleMoveRootAck(WorldPacket& recvPacket);
-        void HandleMoveSetCanFlyAckOpcode(WorldPacket& recvData);
-        void HandleMoveSetCanTransitionBetweenSwinAndFlyAck(WorldPacket& recvData);
-        void HandleMoveGravityDisableAck(WorldPacket& recvData);
-
-        void HandleSetCollisionHeightAck(WorldPacket& recvData);
 
         void HandleMountSpecialAnimOpcode(WorldPacket& recvdata);
 
@@ -800,6 +790,11 @@ class TC_GAME_API WorldSession
         void HandleRequestVehicleExit(WorldPacket& recvData);
         void HandleChangeSeatsOnControlledVehicle(WorldPacket& recvData);
         void HandleMoveTimeSkippedOpcode(WorldPacket& recvData);
+
+        void HandleClientAuthorativeMovementOpcode(WorldPacket& recvPacket);
+        void HandleMoveStateChangeAckOpcode(WorldPacket& recvPacket);
+        bool ValidateMovementStatus(uint16 opcode, MovementStatus& movementStatus);
+        void ApplyMovementStatus(MovementStatus& movementStatus, MoveStateChange const* stateChange = nullptr);
 
         void HandleRequestRaidInfoOpcode(WorldPacket& recvData);
 

@@ -25,6 +25,7 @@
 #include "GridRefManager.h"
 #include "ModelIgnoreFlags.h"
 #include "MovementInfo.h"
+#include "MovementStatus.h"
 #include "ObjectDefines.h"
 #include "ObjectGuid.h"
 #include "Optional.h"
@@ -527,6 +528,8 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         void SetTransport(TransportBase* t) { m_transport = t; }
 
         MovementInfo m_movementInfo;
+
+        MovementStatus _movementStatus;
 
         virtual float GetStationaryX() const { return GetPositionX(); }
         virtual float GetStationaryY() const { return GetPositionY(); }

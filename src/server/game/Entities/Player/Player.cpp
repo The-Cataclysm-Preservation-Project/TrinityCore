@@ -73,7 +73,6 @@
 #include "MotionMaster.h"
 #include "MovementStructures.h"
 #include "MovementPackets.h"
-#include "MovementPacketSender.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Opcodes.h"
@@ -1641,9 +1640,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             if (oldmap)
                 oldmap->RemovePlayerFromMap(this, false);
 
-            // players on mount will be dismounted. the speed and height change should not require an ACK and should be applied directly
-            PurgeAndApplyPendingMovementChanges(false);
-
             m_teleport_dest = WorldLocation(mapid, x, y, z, orientation);
             m_teleport_instanceId = instanceId;
             m_teleport_options = options;
@@ -1817,7 +1813,7 @@ void Player::SetObjectScale(float scale)
     SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, scale * DEFAULT_PLAYER_BOUNDING_RADIUS);
     SetFloatValue(UNIT_FIELD_COMBATREACH, scale * DEFAULT_PLAYER_COMBAT_REACH);
     if (IsInWorld())
-        SendMovementSetCollisionHeight(GetCollisionHeight(), UPDATE_COLLISION_HEIGHT_SCALE);
+        SetCollisionHeight(GetCollisionHeight(), UPDATE_COLLISION_HEIGHT_SCALE);
 }
 
 bool Player::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, WorldObject const* caster,
@@ -25243,51 +25239,6 @@ void Player::HandleFall(MovementInfo const& movementInfo)
             TC_LOG_DEBUG("entities.player", "FALLDAMAGE z=%f sz=%f pZ=%f FallTime=%d mZ=%f damage=%d SF=%d", movementInfo.pos.GetPositionZ(), height, GetPositionZ(), movementInfo.jump.fallTime, height, damage, safe_fall);
         }
     }
-}
-
-bool Player::SetDisableGravity(bool disable, bool /*packetOnly = false*/, bool /*updateAnimationTier = true*/)
-{
-    if (disable == IsGravityDisabled())
-        return false;
-
-    if (IsMovedByClient() && IsInWorld())
-        MovementPacketSender::SendMovementFlagChangeToMover(this, MOVEMENTFLAG_DISABLE_GRAVITY, disable);
-
-    Unit::SetDisableGravity(disable, false, false);
-
-    return true;
-}
-
-bool Player::SetCanFly(bool enable, bool /*packetOnly = false*/)
-{
-    if (enable == HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
-        return false;
-
-    if (IsMovedByClient() && IsInWorld())
-        MovementPacketSender::SendMovementFlagChangeToMover(this, MOVEMENTFLAG_CAN_FLY, enable);
-
-    Unit::SetCanFly(enable);
-
-    return true;
-}
-
-bool Player::SetCanTransitionBetweenSwimAndFly(bool enable)
-{
-    if (enable == HasExtraUnitMovementFlag(MOVEMENTFLAG2_CAN_SWIM_TO_FLY_TRANS))
-        return false;
-
-    if (IsMovedByClient() && IsInWorld())
-        MovementPacketSender::SendMovementFlagChangeToMover(this, MOVEMENTFLAG2_CAN_SWIM_TO_FLY_TRANS, enable);
-
-    Unit::SetCanTransitionBetweenSwimAndFly(enable);
-
-    return true;
-}
-
-void Player::SendMovementSetCollisionHeight(float height, UpdateCollisionHeightReason reason)
-{
-    if (IsMovedByClient() && IsInWorld())
-        MovementPacketSender::SendHeightChangeToMover(this, height, reason);
 }
 
 void Player::ResetAchievements()

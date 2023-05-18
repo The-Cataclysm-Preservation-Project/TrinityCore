@@ -52,7 +52,7 @@
 #include "MovementStructures.h"
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
-#include "MovementPacketSender.h"
+#include "MoveStateChange.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Opcodes.h"
@@ -303,7 +303,7 @@ Unit::Unit(bool isWorldObject) :
     m_vehicleKit(nullptr), m_unitTypeMask(UNIT_MASK_NONE), m_Diminishing(),
     m_isEngaged(false), m_combatManager(this), m_threatManager(this),
     i_AI(nullptr), m_aiLocked(false), m_spellHistory(new SpellHistory(this)),
-    _isIgnoringCombat(false)
+    _isIgnoringCombat(false), _movementStateChangeSequenceIndex(0u)
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -319,8 +319,6 @@ Unit::Unit(bool isWorldObject) :
 
     m_extraAttacks = 0;
     m_canDualWield = false;
-
-    m_movementCounter = 0;
 
     m_state = 0;
     m_deathState = ALIVE;
@@ -433,8 +431,6 @@ void Unit::Update(uint32 p_time)
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
     m_Events.Update(p_time);
-
-    CheckPendingMovementAcks();
 
     if (!IsInWorld())
         return;
@@ -7828,7 +7824,7 @@ void Unit::Mount(uint32 mount, uint32 VehicleId, uint32 creatureEntry)
                 charm->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
 
         if (player->IsInWorld())
-            player->SendMovementSetCollisionHeight(player->GetCollisionHeight(), UPDATE_COLLISION_HEIGHT_MOUNT);
+            player->SetCollisionHeight(player->GetCollisionHeight(), UPDATE_COLLISION_HEIGHT_MOUNT);
     }
 
     RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::Mount);
@@ -7842,8 +7838,7 @@ void Unit::Dismount()
     SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT);
 
-    if (Player* thisPlayer = ToPlayer())
-        thisPlayer->SendMovementSetCollisionHeight(thisPlayer->GetCollisionHeight(), UPDATE_COLLISION_HEIGHT_MOUNT);
+    SetCollisionHeight(GetCollisionHeight(), UPDATE_COLLISION_HEIGHT_MOUNT);
 
     WorldPackets::Misc::Dismount packet;
     packet.Guid = GetGUID();
@@ -8421,26 +8416,73 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate)
         return;
 
 
-    float newSpeedFlat = rate * (IsControlledByPlayer() ? playerBaseMoveSpeed[mtype] : baseMoveSpeed[mtype]);
+    SetSpeedRateReal(mtype, rate);
+
+    // The unit is currently moved by a client, inform the client about the speed change
     if (IsMovedByClient() && IsInWorld())
     {
-        MovementPacketSender::SendSpeedChangeToMover(this, mtype, newSpeedFlat);
-        SetSpeedRateReal(mtype, rate);
-    }
-    else if (IsMovedByClient() && !IsInWorld()) // (1)
-        SetSpeedRateReal(mtype, rate);
-    else // <=> if(!IsMovedByPlayer())
-    {
-        SetSpeedRateReal(mtype, rate);
-        MovementPacketSender::SendSpeedChangeToAll(this, mtype, newSpeedFlat);
-    }
+        float newSpeedFlat = rate * (IsControlledByPlayer() ? playerBaseMoveSpeed[mtype] : baseMoveSpeed[mtype]);
+        GameClient* client = GetGameClientMovingMe();
+        MoveStateChange moveStateChange;
+        moveStateChange.Speed = newSpeedFlat;
+        moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
 
-    // explaination of (1):
-    // If the player is not in the world yet, it won't reply to the packets requiring an ack. And once the player is in the world, next time a movement
-    // packet which requires an ack is sent to the client (change of speed for example), the client is kicked from the
-    // server on the ground that it should have replied to the first packet first. That line is a hacky fix
-    // in the sense that it doesn't work like that in retail since buffs are applied only after the player has been
-    // initialized in the world. cf description of PR #18771
+        switch (mtype)
+        {
+            case MOVE_RUN:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetRunSpeed(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_RUN_SPEED;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_RUN_SPEED_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_RUN_BACK:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetRunBackSpeed(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_RUN_BACK_SPEED;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_RUN_BACK_SPEED_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_WALK:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetWalkSpeed(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_WALK_SPEED;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_WALK_SPEED_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_SWIM:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetSwimSpeed(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_SWIM_SPEED;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_SWIM_SPEED_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_SWIM_BACK:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetSwimBackSpeed(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_SWIM_BACK_SPEED;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_SWIM_BACK_SPEED_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_FLIGHT:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetFlightSpeed(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_FLIGHT_SPEED;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_FLIGHT_SPEED_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_FLIGHT_BACK:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetFlightBackSpeed(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_FLIGHT_BACK_SPEED;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_TURN_RATE:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetTurnRate(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_TURN_RATE;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_TURN_RATE_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            case MOVE_PITCH_RATE:
+                client->SendDirectMessage(WorldPackets::Movement::MoveSetPitchRate(GetGUID(), newSpeedFlat, _movementStateChangeSequenceIndex).Write());
+                moveStateChange.MessageID = SMSG_MOVE_SET_PITCH_RATE;
+                SetExpectedMoveStateChange(CMSG_MOVE_FORCE_PITCH_RATE_CHANGE_ACK, std::move(moveStateChange));
+                break;
+            default:
+                break;
+        }
+    }
+    else if (!IsMovedByClient() && IsInWorld())
+    {
+        // The unit is not moved by a client so we only broadcast spline speed changes (only for pets?)
+        // @todo
+    }
 }
 
 void Unit::SetSpeedRateReal(UnitMoveType mtype, float rate)
@@ -11385,10 +11427,15 @@ void Unit::SetRooted(bool apply, bool packetOnly /*= false*/)
     {
         if (apply)
         {
-            // MOVEMENTFLAG_ROOT cannot be used in conjunction with MOVEMENTFLAG_MASK_MOVING (tested 3.3.5a)
-            // this will freeze clients. That's why we remove MOVEMENTFLAG_MASK_MOVING before
-            // setting MOVEMENTFLAG_ROOT
-            RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING);
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_ROOT;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveRoot(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_FORCE_MOVE_ROOT_ACK, std::move(moveStateChange));
+            }
+
             AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
 
             // Do not stop movement when the unit is affected by parabolic spline movement (knockbacks, pulls, scripted leaps etc.)
@@ -11396,13 +11443,19 @@ void Unit::SetRooted(bool apply, bool packetOnly /*= false*/)
                 StopMoving();
         }
         else
-            RemoveUnitMovementFlag(MOVEMENTFLAG_ROOT);
-    }
+        {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_UNROOT;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveUnroot(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_FORCE_MOVE_UNROOT_ACK, std::move(moveStateChange));
+            }
 
-    if (apply)
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_ROOT, SMSG_MOVE_ROOT, SMSG_MOVE_ROOT).Send();
-    else
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_UNROOT, SMSG_MOVE_UNROOT, SMSG_MOVE_UNROOT).Send();
+            RemoveUnitMovementFlag(MOVEMENTFLAG_ROOT);
+        }
+    }
 }
 
 void Unit::SetFeared(bool apply)
@@ -12135,7 +12188,7 @@ void Unit::SendMoveKnockBack(Player* player, float speedXY, float speedZ, float 
 {
     WorldPackets::Movement::MoveKnockBack moveKnockBack;
     moveKnockBack.MoverGUID = GetGUID();
-    moveKnockBack.SequenceIndex = m_movementCounter++;
+    moveKnockBack.SequenceIndex = _movementStateChangeSequenceIndex++;
     moveKnockBack.Speeds.HorzSpeed = speedXY;
     moveKnockBack.Speeds.VertSpeed = speedZ;
     moveKnockBack.Direction = Position(vcos, vsin);
@@ -13222,7 +13275,7 @@ void Unit::SendTeleportPacket(Position const& pos)
         if (GetTransGUID())
             moveTeleport.TransportGUID = GetTransGUID();
         moveTeleport.Facing = o;
-        moveTeleport.SequenceIndex = m_movementCounter++;
+        moveTeleport.SequenceIndex = _movementStateChangeSequenceIndex++;
         playerMover->SendDirectMessage(moveTeleport.Write());
     }
     else
@@ -13292,120 +13345,6 @@ void Unit::UpdateHeight(float newZ)
     Relocate(GetPositionX(), GetPositionY(), newZ);
     if (IsVehicle())
         GetVehicleKit()->RelocatePassengers();
-}
-
-void Unit::ClearPendingMovementChangeForType(MovementChangeType changeType)
-{
-    m_pendingMovementChanges.erase(changeType);
-}
-
-void Unit::AssignPendingMovementChange(MovementChangeType changeType, PlayerMovementPendingChange&& newChange)
-{
-    m_pendingMovementChanges[changeType] = newChange;
-}
-
-PlayerMovementPendingChange const* Unit::GetPendingMovementChange(MovementChangeType changeType) const
-{
-    return Trinity::Containers::MapGetValuePtr(m_pendingMovementChanges, changeType);
-}
-
-void Unit::CheckPendingMovementAcks()
-{
-    if (sWorld->getIntConfig(CONFIG_PENDING_MOVE_CHANGES_TIMEOUT) == 0)
-        return;
-
-    if (!HasPendingMovementChange())
-        return;
-
-    for (std::pair<MovementChangeType const, PlayerMovementPendingChange> const& pendingChange : m_pendingMovementChanges)
-    {
-        if (GameTime::GetGameTimeMS() > pendingChange.second.time + sWorld->getIntConfig(CONFIG_PENDING_MOVE_CHANGES_TIMEOUT))
-        {
-            /*
-            when players are teleported from one corner of a map to an other (example: from Dragonblight to the entrance of Naxxramas, both in the same map: Northend),
-            is it done through what is called a 'near' teleport. A near teleport always involve teleporting a player from one point to an other in the same map, even if
-            the distance is huge. When that distance is big enough, a loading screen appears on the client side. During that time, the client loads the surrounding zone
-            of the new location (and everything it contains). The problem is that, as long as the client hasn't finished loading the new zone, it will NOT ack the near
-            teleport. So if the server sends a near teleport order at a certain time and the client takes 20s to load the new zone (let's imagine a very slow computer),
-            even with zero latency, the server will receive an ack from the client only after 20s.
-
-            For this reason and because the current implementation is simple (you dear reader, feel free to improve it if you can), we will just ignore checking for
-            near teleport acks (for now. @todo).
-            */
-            if (pendingChange.second.movementChangeType == MovementChangeType::TELEPORT)
-                return;
-
-            GameClient* controller = GetGameClientMovingMe();
-            controller->GetWorldSession()->KickPlayer();
-            TC_LOG_INFO("cheat", "Unit::CheckPendingMovementAcks: Player GUID: %s took too long to acknowledge a movement change. He was therefore kicked.", controller->GetBasePlayer()->GetGUID().ToString().c_str());
-            break;
-        }
-    }
-}
-
-void Unit::PurgeAndApplyPendingMovementChanges(bool informObservers /* = true */)
-{
-    for (std::pair<MovementChangeType const, PlayerMovementPendingChange> const& pendingChange : m_pendingMovementChanges)
-    {
-        float speedFlat = pendingChange.second.newValue;
-        MovementChangeType changeType = pendingChange.second.movementChangeType;
-        Optional<UnitMoveType> moveType;
-        switch (changeType)
-        {
-            case MovementChangeType::SPEED_CHANGE_WALK:                 moveType = MOVE_WALK; break;
-            case MovementChangeType::SPEED_CHANGE_RUN:                  moveType = MOVE_RUN; break;
-            case MovementChangeType::SPEED_CHANGE_RUN_BACK:             moveType = MOVE_RUN_BACK; break;
-            case MovementChangeType::SPEED_CHANGE_SWIM:                 moveType = MOVE_SWIM; break;
-            case MovementChangeType::SPEED_CHANGE_SWIM_BACK:            moveType = MOVE_SWIM_BACK; break;
-            case MovementChangeType::RATE_CHANGE_TURN:                  moveType = MOVE_TURN_RATE; break;
-            case MovementChangeType::SPEED_CHANGE_FLIGHT_SPEED:         moveType = MOVE_FLIGHT; break;
-            case MovementChangeType::SPEED_CHANGE_FLIGHT_BACK_SPEED:    moveType = MOVE_FLIGHT_BACK; break;
-            case MovementChangeType::RATE_CHANGE_PITCH:                 moveType = MOVE_PITCH_RATE; break;
-            case MovementChangeType::GRAVITY_DISABLE:
-                Unit::SetDisableGravity(pendingChange.second.apply);
-                break;
-            case MovementChangeType::SET_CAN_FLY:
-                Unit::SetCanFly(pendingChange.second.apply);
-                break;
-            case MovementChangeType::SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY:
-                Unit::SetCanTransitionBetweenSwimAndFly(pendingChange.second.apply);
-                break;
-            case MovementChangeType::SET_COLLISION_HGT:
-                break;
-            default:
-                ASSERT(false);
-                return;
-        }
-
-        if (moveType.has_value())
-        {
-            float newSpeedRate = speedFlat / (IsControlledByPlayer() ? playerBaseMoveSpeed[*moveType] : baseMoveSpeed[*moveType]);
-            SetSpeedRateReal(*moveType, newSpeedRate);
-
-            if (informObservers)
-                MovementPacketSender::SendSpeedChangeToObservers(this, *moveType, speedFlat);
-        }
-        else if (informObservers)
-        {
-            switch (changeType)
-            {
-                case MovementChangeType::GRAVITY_DISABLE:
-                case MovementChangeType::SET_CAN_FLY:
-                case MovementChangeType::SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY:
-                    MovementPacketSender::SendMovementFlagChangeToObservers(this);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    m_pendingMovementChanges.clear();
-}
-
-PlayerMovementPendingChange::PlayerMovementPendingChange()
-{
-    time = GameTime::GetGameTimeMS();
 }
 
 // baseRage means damage taken when attacker = false
@@ -13663,12 +13602,30 @@ bool Unit::SetDisableGravity(bool disable, bool packetOnly /*= false*/, bool /*u
 
         if (disable)
         {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_GRAVITY_DISABLE;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveDisableGravity(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_GRAVITY_DISABLE_ACK, std::move(moveStateChange));
+            }
+
             AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
             RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
             SetFall(false);
         }
         else
         {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_GRAVITY_ENABLE;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveEnableGravity(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_GRAVITY_ENABLE_ACK, std::move(moveStateChange));
+            }
+
             RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
             if (!HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
                 SetFall(true);
@@ -13721,12 +13678,30 @@ bool Unit::SetCanFly(bool enable, bool packetOnly)
 
         if (enable)
         {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_SET_CAN_FLY;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveSetCanFly(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_SET_CAN_FLY_ACK, std::move(moveStateChange));
+            }
+
             AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
             RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
             SetFall(false);
         }
         else
         {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_UNSET_CAN_FLY;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveUnsetCanFly(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_SET_CAN_FLY_ACK, std::move(moveStateChange));
+            }
+
             if (IsFlying() && !IsGravityDisabled())
                 SetFall(true);
             RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_MASK_MOVING_FLY);
@@ -13736,15 +13711,53 @@ bool Unit::SetCanFly(bool enable, bool packetOnly)
     return true;
 }
 
+void Unit::SetCollisionHeight(float height, UpdateCollisionHeightReason reason)
+{
+    if (!IsMovedByClient() || !IsInWorld())
+        return;
+
+    MoveStateChange moveStateChange;
+    moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+    moveStateChange.MessageID = SMSG_MOVE_SET_COLLISION_HEIGHT;
+    CollisionHeightInfo& info = moveStateChange.CollisionHeight.emplace();
+    info.Height = height;
+    info.Reason = reason;
+
+    GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveSetCollisionHeight(GetGUID(), height, reason, _movementStateChangeSequenceIndex).Write());
+    SetExpectedMoveStateChange(CMSG_MOVE_SET_COLLISION_HEIGHT_ACK, std::move(moveStateChange));
+}
+
 bool Unit::SetCanTransitionBetweenSwimAndFly(bool enable)
 {
     if (enable == HasExtraUnitMovementFlag(MOVEMENTFLAG2_CAN_SWIM_TO_FLY_TRANS))
         return false;
 
     if (enable)
+    {
+        if (IsMovedByClient() && IsInWorld())
+        {
+            MoveStateChange moveStateChange;
+            moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+            moveStateChange.MessageID = SMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY;
+            GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveEnableTransitionBetweenSwimAndFly(GetGUID(), _movementStateChangeSequenceIndex).Write());
+            SetExpectedMoveStateChange(CMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY_ACK, std::move(moveStateChange));
+        }
+
         AddExtraUnitMovementFlag(MOVEMENTFLAG2_CAN_SWIM_TO_FLY_TRANS);
+    }
     else
+    {
+        if (IsMovedByClient() && IsInWorld())
+        {
+            MoveStateChange moveStateChange;
+            moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+            moveStateChange.MessageID = SMSG_MOVE_UNSET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY;
+            GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveDisableTransitionBetweenSwimAndFly(GetGUID(), _movementStateChangeSequenceIndex).Write());
+            SetExpectedMoveStateChange(CMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY_ACK, std::move(moveStateChange));
+        }
+
         RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_CAN_SWIM_TO_FLY_TRANS);
+    }
 
     return true;
 }
@@ -13757,15 +13770,32 @@ bool Unit::SetWaterWalking(bool enable, bool packetOnly /*= false */)
             return false;
 
         if (enable)
-            AddUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
-        else
-            RemoveUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
-    }
+        {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_WATER_WALK;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveSetWaterWalk(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_WATER_WALK_ACK, std::move(moveStateChange));
+            }
 
-    if (enable)
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_SET_WATER_WALK, SMSG_MOVE_WATER_WALK).Send();
-    else
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_SET_LAND_WALK, SMSG_MOVE_LAND_WALK).Send();
+            AddUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
+        }
+        else
+        {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_LAND_WALK;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveSetLandWalk(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_WATER_WALK_ACK, std::move(moveStateChange));
+            }
+
+            RemoveUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
+        }
+    }
 
     return true;
 }
@@ -13778,15 +13808,32 @@ bool Unit::SetFeatherFall(bool enable, bool packetOnly /*= false */)
             return false;
 
         if (enable)
-            AddUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
-        else
-            RemoveUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
-    }
+        {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_FEATHER_FALL;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveSetFeaterFall(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_FEATHER_FALL_ACK, std::move(moveStateChange));
+            }
 
-    if (enable)
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_SET_FEATHER_FALL, SMSG_MOVE_FEATHER_FALL).Send();
-    else
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_SET_NORMAL_FALL, SMSG_MOVE_NORMAL_FALL).Send();
+            AddUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
+        }
+        else
+        {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_NORMAL_FALL;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveSetNormalFall(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_FEATHER_FALL_ACK, std::move(moveStateChange));
+            }
+
+            RemoveUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
+        }
+    }
 
     return true;
 }
@@ -13802,6 +13849,15 @@ bool Unit::SetHover(bool enable, bool packetOnly /*= false*/, bool /*updateAnima
 
         if (enable)
         {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_SET_HOVER;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveSetHovering(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_HOVER_ACK, std::move(moveStateChange));
+            }
+
             //! No need to check height on ascent
             AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
             if (hoverHeight && GetPositionZ() - GetFloorZ() < hoverHeight)
@@ -13809,6 +13865,15 @@ bool Unit::SetHover(bool enable, bool packetOnly /*= false*/, bool /*updateAnima
         }
         else
         {
+            if (IsMovedByClient() && IsInWorld())
+            {
+                MoveStateChange moveStateChange;
+                moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+                moveStateChange.MessageID = SMSG_MOVE_UNSET_HOVER;
+                GetGameClientMovingMe()->SendDirectMessage(WorldPackets::Movement::MoveUnsetHovering(GetGUID(), _movementStateChangeSequenceIndex).Write());
+                SetExpectedMoveStateChange(CMSG_MOVE_HOVER_ACK, std::move(moveStateChange));
+            }
+
             RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
             //! Dying creatures will MoveFall from setDeathState
             if (hoverHeight && (!isDying() || GetTypeId() != TYPEID_UNIT))
@@ -13819,11 +13884,6 @@ bool Unit::SetHover(bool enable, bool packetOnly /*= false*/, bool /*updateAnima
             }
         }
     }
-
-    if (enable)
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_SET_HOVER, SMSG_MOVE_SET_HOVER).Send();
-    else
-        Movement::PacketSender(this, SMSG_SPLINE_MOVE_UNSET_HOVER, SMSG_MOVE_UNSET_HOVER).Send();
 
     SendSetPlayHoverAnim(enable);
 
@@ -14042,6 +14102,16 @@ void Unit::DestroyForPlayer(Player* target, bool /*onDeath = false*/) const
     }
 
     WorldObject::DestroyForPlayer(target);
+}
+
+void Unit::SetExpectedMoveStateChange(uint16 ackOpcode, MoveStateChange&& moveStateChange)
+{
+    _movementStateChanges[ackOpcode] = moveStateChange;
+}
+
+MoveStateChange const* Unit::GetExpectedMoveStateChange(uint16 ackOpcode) const
+{
+    return Trinity::Containers::MapGetValuePtr(_movementStateChanges, ackOpcode);
 }
 
 int32 Unit::GetHighestExclusiveSameEffectSpellGroupValue(AuraEffect const* aurEff, AuraType auraType, bool checkMiscValue /*= false*/, int32 miscValue /*= 0*/) const

@@ -22,6 +22,8 @@
 #include "Object.h"
 #include "Optional.h"
 
+class MovementStatus;
+
 namespace Movement
 {
     template<class index_type>
@@ -92,13 +94,14 @@ namespace WorldPackets
         class MoveSetCollisionHeight final : public ServerPacket
         {
         public:
-            MoveSetCollisionHeight() : ServerPacket(SMSG_MOVE_SET_COLLISION_HEIGHT, 15) { }
+            MoveSetCollisionHeight(ObjectGuid moverGuid, float height, UpdateCollisionHeightReason reason, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_COLLISION_HEIGHT, 8 + 4 + 4+ 1),
+                MoverGUID(moverGuid), Height(height), SequenceIndex(sequenceIndex), Reason(reason) { }
 
             WorldPacket const* Write() override;
 
             ObjectGuid MoverGUID;
             uint32 SequenceIndex = 0;
-            float Height = 1.0f;
+            float Height = 0.0f;
             UpdateCollisionHeightReason Reason = UPDATE_COLLISION_HEIGHT_MOUNT;
         };
 
@@ -269,6 +272,398 @@ namespace WorldPackets
             ObjectGuid MoverGUID;
             uint32 SequenceIndex = 0;
             int32 VehicleRecID = 0;
+        };
+
+        class MoveUpdate final : public ServerPacket
+        {
+        public:
+            MoveUpdate(MovementStatus const& status) : ServerPacket(SMSG_MOVE_UPDATE), Status(status) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+        };
+
+        class MoveUpdateKnockBack final : public ServerPacket
+        {
+        public:
+            MoveUpdateKnockBack(MovementStatus const& status) : ServerPacket(SMSG_MOVE_UPDATE_KNOCK_BACK), Status(status) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+        };
+
+        class MoveUpdateRunSpeed final : public ServerPacket
+        {
+        public:
+            MoveUpdateRunSpeed(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_RUN_SPEED), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateRunBackSpeed final : public ServerPacket
+        {
+        public:
+            MoveUpdateRunBackSpeed(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_RUN_BACK_SPEED), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateWalkSpeed final : public ServerPacket
+        {
+        public:
+            MoveUpdateWalkSpeed(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_WALK_SPEED), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateSwimSpeed final : public ServerPacket
+        {
+        public:
+            MoveUpdateSwimSpeed(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_SWIM_SPEED), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateSwimBackSpeed final : public ServerPacket
+        {
+        public:
+            MoveUpdateSwimBackSpeed(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_SWIM_BACK_SPEED), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateFlightSpeed final : public ServerPacket
+        {
+        public:
+            MoveUpdateFlightSpeed(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_FLIGHT_SPEED), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateFlightBackSpeed final : public ServerPacket
+        {
+        public:
+            MoveUpdateFlightBackSpeed(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_FLIGHT_BACK_SPEED), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateTurnRate final : public ServerPacket
+        {
+        public:
+            MoveUpdateTurnRate(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_TURN_RATE), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdatePitchRate final : public ServerPacket
+        {
+        public:
+            MoveUpdatePitchRate(MovementStatus const& status, float speed) : ServerPacket(SMSG_MOVE_UPDATE_PITCH_RATE), Status(status), Speed(speed) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Speed = 0.0f;
+        };
+
+        class MoveUpdateCollisionHeight final : public ServerPacket
+        {
+        public:
+            MoveUpdateCollisionHeight(MovementStatus const& status, float height) : ServerPacket(SMSG_MOVE_UPDATE_COLLISION_HEIGHT), Status(status), Height(height) { }
+
+            WorldPacket const* Write() override;
+
+            MovementStatus Status;
+            float Height = 0.0f;
+        };
+
+        class MoveSetRunSpeed final : public ServerPacket
+        {
+        public:
+            MoveSetRunSpeed(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_RUN_SPEED, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex){ }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetRunBackSpeed final : public ServerPacket
+        {
+        public:
+            MoveSetRunBackSpeed(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_RUN_BACK_SPEED, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetWalkSpeed final : public ServerPacket
+        {
+        public:
+            MoveSetWalkSpeed(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_WALK_SPEED, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetSwimSpeed final : public ServerPacket
+        {
+        public:
+            MoveSetSwimSpeed(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_SWIM_SPEED, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetSwimBackSpeed final : public ServerPacket
+        {
+        public:
+            MoveSetSwimBackSpeed(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_SWIM_BACK_SPEED, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetFlightSpeed final : public ServerPacket
+        {
+        public:
+            MoveSetFlightSpeed(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_FLIGHT_SPEED, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetFlightBackSpeed final : public ServerPacket
+        {
+        public:
+            MoveSetFlightBackSpeed(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_FLIGHT_BACK_SPEED, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetTurnRate final : public ServerPacket
+        {
+        public:
+            MoveSetTurnRate(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_TURN_RATE, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetPitchRate final : public ServerPacket
+        {
+        public:
+            MoveSetPitchRate(ObjectGuid moverGuid, float speed, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_PITCH_RATE, 8 + 4 + 4), MoverGUID(moverGuid), Speed(speed), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            float Speed = 0.0f;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetCanFly final : public ServerPacket
+        {
+        public:
+            MoveSetCanFly(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_CAN_FLY, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveUnsetCanFly final : public ServerPacket
+        {
+        public:
+            MoveUnsetCanFly(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_UNSET_CAN_FLY, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveDisableGravity final : public ServerPacket
+        {
+        public:
+            MoveDisableGravity(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_GRAVITY_DISABLE, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveEnableGravity final : public ServerPacket
+        {
+        public:
+            MoveEnableGravity(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_GRAVITY_ENABLE, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetWaterWalk final : public ServerPacket
+        {
+        public:
+            MoveSetWaterWalk(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_WATER_WALK, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetLandWalk final : public ServerPacket
+        {
+        public:
+            MoveSetLandWalk(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_LAND_WALK, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetFeaterFall final : public ServerPacket
+        {
+        public:
+            MoveSetFeaterFall(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_FEATHER_FALL, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetNormalFall final : public ServerPacket
+        {
+        public:
+            MoveSetNormalFall(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_NORMAL_FALL, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveSetHovering final : public ServerPacket
+        {
+        public:
+            MoveSetHovering(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_HOVER, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveUnsetHovering final : public ServerPacket
+        {
+        public:
+            MoveUnsetHovering(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_UNSET_HOVER, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveRoot final : public ServerPacket
+        {
+        public:
+            MoveRoot(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_ROOT, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveUnroot final : public ServerPacket
+        {
+        public:
+            MoveUnroot(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_UNROOT, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveEnableTransitionBetweenSwimAndFly final : public ServerPacket
+        {
+        public:
+            MoveEnableTransitionBetweenSwimAndFly(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
+        };
+
+        class MoveDisableTransitionBetweenSwimAndFly final : public ServerPacket
+        {
+        public:
+            MoveDisableTransitionBetweenSwimAndFly(ObjectGuid moverGuid, uint32 sequenceIndex) : ServerPacket(SMSG_MOVE_UNSET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY, 8 + 4), MoverGUID(moverGuid), SequenceIndex(sequenceIndex) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0;
         };
     }
 

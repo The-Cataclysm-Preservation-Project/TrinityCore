@@ -20,6 +20,7 @@
 
 #include "Object.h"
 #include "CombatManager.h"
+#include "MoveStateChange.h"
 #include "SpellAuraDefines.h"
 #include "SpellDefines.h"
 #include "ThreatManager.h"
@@ -94,6 +95,7 @@ class UnitAura;
 class Vehicle;
 class VehicleJoinEvent;
 
+enum UpdateCollisionHeightReason : uint8;
 enum ZLiquidStatus : uint32;
 
 namespace Movement
@@ -273,52 +275,6 @@ enum UnitState : uint32
 
 TC_GAME_API extern float baseMoveSpeed[MAX_MOVE_TYPE];
 TC_GAME_API extern float playerBaseMoveSpeed[MAX_MOVE_TYPE];
-
-enum class MovementChangeType : uint8
-{
-    INVALID,
-
-    ROOT,
-    WATER_WALK,
-    SET_HOVER,
-    SET_CAN_FLY,
-    SET_CAN_TRANSITION_BETWEEN_SWIM_AND_FLY,
-    FEATHER_FALL,
-    GRAVITY_DISABLE,
-
-    SPEED_CHANGE_WALK,
-    SPEED_CHANGE_RUN,
-    SPEED_CHANGE_RUN_BACK,
-    SPEED_CHANGE_SWIM,
-    SPEED_CHANGE_SWIM_BACK,
-    RATE_CHANGE_TURN,
-    SPEED_CHANGE_FLIGHT_SPEED,
-    SPEED_CHANGE_FLIGHT_BACK_SPEED,
-    RATE_CHANGE_PITCH,
-
-    SET_COLLISION_HGT,
-    TELEPORT,
-    KNOCK_BACK
-};
-
-struct PlayerMovementPendingChange
-{
-    PlayerMovementPendingChange();
-
-    uint32 movementCounter = 0;
-    MovementChangeType movementChangeType = MovementChangeType::INVALID;
-    uint32 time;
-
-    float newValue = 0.0f; // used if speed or height change
-    bool apply = false; // used if movement flag change
-    struct KnockbackInfo
-    {
-        float vcos = 0.0f;
-        float vsin = 0.0f;
-        float speedXY = 0.0f;
-        float speedZ = 0.0f;
-    } knockbackInfo; // used if knockback
-};
 
 enum CombatRating
 {
@@ -1208,7 +1164,8 @@ class TC_GAME_API Unit : public WorldObject
         bool SetFall(bool enable);
         bool SetSwim(bool enable);
         virtual bool SetCanFly(bool enable, bool packetOnly = false);
-        virtual bool SetCanTransitionBetweenSwimAndFly(bool enable);
+        void SetCollisionHeight(float height, UpdateCollisionHeightReason reason);
+        bool SetCanTransitionBetweenSwimAndFly(bool enable);
         bool SetWaterWalking(bool enable, bool packetOnly = false);
         bool SetFeatherFall(bool enable, bool packetOnly = false);
         virtual bool SetHover(bool enable, bool packetOnly = false, bool updateAnimationTier = true);
@@ -1755,14 +1712,6 @@ class TC_GAME_API Unit : public WorldObject
             return HasUnitMovementFlag(MOVEMENTFLAG_HOVER) ? GetFloatValue(UNIT_FIELD_HOVERHEIGHT) : 0.0f;
         }
 
-        uint32 GetMovementCounterAndInc() { return m_movementCounter++; }
-        uint32 GetMovementCounter() { return m_movementCounter; }
-        void ClearPendingMovementChangeForType(MovementChangeType changeType);
-        void AssignPendingMovementChange(MovementChangeType changeType, PlayerMovementPendingChange&& newChange);
-        bool HasPendingMovementChange() const { return !m_pendingMovementChanges.empty(); }
-        PlayerMovementPendingChange const* GetPendingMovementChange(MovementChangeType changeType) const;
-        void PurgeAndApplyPendingMovementChanges(bool informObservers = true);
-
         void RewardRage(uint32 baseRage, bool attacker);
 
         void OutDebugInfo() const;
@@ -1812,6 +1761,9 @@ class TC_GAME_API Unit : public WorldObject
         bool CanRequestSpellCast(SpellInfo const* spell) const;
 
         void DestroyForPlayer(Player* target, bool onDeath = false) const override;
+
+        void SetExpectedMoveStateChange(uint16 ackOpcode, MoveStateChange&& moveStateChange);
+        MoveStateChange const* GetExpectedMoveStateChange(uint16 ackOpcode) const;
 
     protected:
         explicit Unit (bool isWorldObject);
@@ -1901,7 +1853,6 @@ class TC_GAME_API Unit : public WorldObject
         virtual void AtDisengage() {}
 
         void InterruptMovementBasedAuras();
-        void CheckPendingMovementAcks();
 
         uint32 GetPowerUpdateInterval() const { return IsPlayer() ? PLAYER_POWER_UPDATE_INTERVAL : UNIT_POWER_UPDATE_INTERVAL; }
     private:
@@ -1965,13 +1916,9 @@ class TC_GAME_API Unit : public WorldObject
         void ProcessItemCast(PendingSpellCastRequest const& castRequest, SpellCastTargets const& targets);
         bool CanExecutePendingSpellCastRequest(SpellInfo const* spellInfo) const;
 
-        /* Player Movement fields START*/
-
-        // when a player controls this unit, and when change is made to this unit which requires an ack from the client to be acted (change of speed for example), this movementCounter is incremented
-        uint32 m_movementCounter;
-        std::unordered_map<MovementChangeType, PlayerMovementPendingChange> m_pendingMovementChanges;
-
-        /* Player Movement fields END*/
+        // MovementChange data
+        uint32 _movementStateChangeSequenceIndex;
+        std::unordered_map<uint16 /*opcode*/, MoveStateChange> _movementStateChanges;
 };
 
 namespace Trinity
