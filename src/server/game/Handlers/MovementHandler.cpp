@@ -883,14 +883,14 @@ inline bool HasRequiredMovementFlagForPacket(uint16 opcode, MovementStatus& move
     switch (opcode)
     {
         case MSG_MOVE_FALL_LAND:            return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_FALLING);
-        case MSG_MOVE_HEARTBEAT:            return true; // todo: investigate which flags must be present at any time
+        case MSG_MOVE_HEARTBEAT:            return movementStatus.HasAnyMovementFlags0();
         case MSG_MOVE_JUMP:                 return movementStatus.HasMovementFlag0(MOVEMENTFLAG_FALLING);
         case MSG_MOVE_SET_FACING:           return true; // @todo: investigate
         case MSG_MOVE_SET_PITCH:            return true; // @todo: investigate
         case MSG_MOVE_SET_RUN_MODE:         return true; // @todo: investigate
         case MSG_MOVE_SET_WALK_MODE:        return true; // @todo: investigate
-        case MSG_MOVE_START_ASCEND:         return movementStatus.HasMovementFlag0(MOVEMENTFLAG_ASCENDING);
-        case MSG_MOVE_START_BACKWARD:       return movementStatus.HasMovementFlag0(MOVEMENTFLAG_BACKWARD);
+        case MSG_MOVE_START_ASCEND:         return movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_ASCENDING | MOVEMENTFLAG_FALLING));
+        case MSG_MOVE_START_BACKWARD:       return movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_FALLING));
         case MSG_MOVE_START_DESCEND:        return movementStatus.HasMovementFlag0(MOVEMENTFLAG_DESCENDING);
         case MSG_MOVE_START_FORWARD:        return movementStatus.HasMovementFlag0(MOVEMENTFLAG_FORWARD);
         case MSG_MOVE_START_PITCH_DOWN:     return movementStatus.HasMovementFlag0(MOVEMENTFLAG_PITCH_DOWN);
@@ -900,12 +900,6 @@ inline bool HasRequiredMovementFlagForPacket(uint16 opcode, MovementStatus& move
         case MSG_MOVE_START_SWIM:           return movementStatus.HasMovementFlag0(MOVEMENTFLAG_SWIMMING);
         case MSG_MOVE_START_TURN_LEFT:      return movementStatus.HasMovementFlag0(MOVEMENTFLAG_LEFT);
         case MSG_MOVE_START_TURN_RIGHT:     return movementStatus.HasMovementFlag0(MOVEMENTFLAG_RIGHT);
-        case MSG_MOVE_STOP:                 return true; // sniffs show the presence of turning and strafe flags so we wont check anything here for now.
-        case MSG_MOVE_STOP_ASCEND:          return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_ASCENDING);
-        case MSG_MOVE_STOP_PITCH:           return !movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_PITCH_DOWN | MOVEMENTFLAG_PITCH_UP));
-        case MSG_MOVE_STOP_STRAFE:          return !movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT));
-        case MSG_MOVE_STOP_SWIM:            return !movementStatus.HasMovementFlag0(MOVEMENTFLAG_SWIMMING);
-        case MSG_MOVE_STOP_TURN:            return !movementStatus.HasMovementFlag0(MovementFlags(MOVEMENTFLAG_LEFT | MOVEMENTFLAG_RIGHT));
         case CMSG_MOVE_SET_CAN_FLY:         return movementStatus.HasMovementFlag0(MOVEMENTFLAG_CAN_FLY);
         default:
             return true;
@@ -1009,7 +1003,7 @@ void WorldSession::HandleMoveStateChangeAckOpcode(WorldPacket& recvPacket)
         case CMSG_MOVE_FORCE_PITCH_RATE_CHANGE_ACK:
             if (!expectedChange->Speed.has_value() || !change.Speed.has_value() || std::fabs(*expectedChange->Speed - *change.Speed) > 0.01f)
             {
-                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned an invalid speed change value. Possible cheater or malformed packet.", _player->GetName().c_str());
+                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned an invalid speed change ack value. Possible cheater or malformed packet.", _player->GetName().c_str());
                 return;
             }
             break;
@@ -1018,20 +1012,52 @@ void WorldSession::HandleMoveStateChangeAckOpcode(WorldPacket& recvPacket)
                 || std::fabs(expectedChange->CollisionHeight->Height - change.CollisionHeight->Height) > 0.01f
                 || expectedChange->CollisionHeight->Reason != change.CollisionHeight->Reason)
             {
-                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned invalid collision height data. Possible cheater or malformed packet.", _player->GetName().c_str());
+                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned invalid collision height ack data. Possible cheater or malformed packet.", _player->GetName().c_str());
                 return;
             }
             break;
         case CMSG_SET_VEHICLE_REC_ID_ACK:
             if (!expectedChange->VehicleRecID.has_value() || !change.VehicleRecID.has_value() || *expectedChange->VehicleRecID != *change.VehicleRecID)
             {
-                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned an invalid vehicle rec Id. Possible cheater or malformed packet.", _player->GetName().c_str());
+                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned invalid vehicle rec Id ack data. Possible cheater or malformed packet.", _player->GetName().c_str());
                 return;
             }
             break;
         case CMSG_MOVE_KNOCK_BACK_ACK:
-            // Todo. Packet doesnt return anything???
+        {
+            bool isValidAck = [&]()
+            {
+                if (!expectedChange->KnockBack.has_value() || !movementStatus.Fall.has_value())
+                    return false;
+
+                if (!movementStatus.Fall->Velocity.has_value() && (expectedChange->KnockBack->Direction.Pos.GetPositionX() != 0.f
+                    || expectedChange->KnockBack->Direction.Pos.GetPositionY() != 0.f
+                    || expectedChange->KnockBack->HorzSpeed != 0.f))
+                    return false;
+
+                if (std::fabs(expectedChange->KnockBack->InitVertSpeed - movementStatus.Fall->JumpVelocity) > 0.01f)
+                    return false;
+
+                if (movementStatus.Fall->Velocity.has_value())
+                {
+                    if (std::fabs(movementStatus.Fall->Velocity->Speed - expectedChange->KnockBack->HorzSpeed) > 0.01f
+                        || std::fabs(movementStatus.Fall->Velocity->Direction.Pos.GetPositionX() - expectedChange->KnockBack->Direction.Pos.GetPositionX()) > 0.01f
+                        || std::fabs(movementStatus.Fall->Velocity->Direction.Pos.GetPositionY() - expectedChange->KnockBack->Direction.Pos.GetPositionY()) > 0.01f)
+                        return false;
+                }
+
+                return true;
+            }();
+
+            if (!isValidAck)
+            {
+                TC_LOG_ERROR("network", "WorldSession::HandleMoveStateChangeAckOpcode player (%s) has returned an invalid knockback ack packet. Possible cheater or malformed packet.", _player->GetName().c_str());
+                printf("Expected: VertSpeed = %f, HorzSpeed = %f, X: %f, Y: %f\n", expectedChange->KnockBack->InitVertSpeed, movementStatus.Fall->Velocity->Speed, expectedChange->KnockBack->Direction.Pos.GetPositionX(), expectedChange->KnockBack->Direction.Pos.GetPositionY());
+                printf("Retrieve: VertSpeed = %f, HorzSpeed = %f, X: %f, Y: %f\n", movementStatus.Fall->JumpVelocity, expectedChange->KnockBack->HorzSpeed, movementStatus.Fall->Velocity->Direction.Pos.GetPositionX(), movementStatus.Fall->Velocity->Direction.Pos.GetPositionY());
+                return;
+            }
             break;
+        }
         default:
             break;
     }

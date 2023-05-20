@@ -12184,15 +12184,29 @@ void Unit::UpdateObjectVisibility(bool forced)
     }
 }
 
-void Unit::SendMoveKnockBack(Player* player, float speedXY, float speedZ, float vcos, float vsin)
+void Unit::SendMoveKnockBack(float speedXY, float speedZ, float vcos, float vsin)
 {
+    if (!IsMovedByClient() || !IsInWorld())
+        return;
+
+    MoveStateChange moveStateChange;
+    moveStateChange.SequenceIndex = ++_movementStateChangeSequenceIndex;
+    moveStateChange.MessageID = SMSG_MOVE_KNOCK_BACK;
+
+    KnockBackInfo& knockBack = moveStateChange.KnockBack.emplace();
+    knockBack.HorzSpeed = speedXY;
+    knockBack.InitVertSpeed = speedZ;
+    knockBack.Direction = Position(vcos, vsin);
+
     WorldPackets::Movement::MoveKnockBack moveKnockBack;
     moveKnockBack.MoverGUID = GetGUID();
-    moveKnockBack.SequenceIndex = _movementStateChangeSequenceIndex++;
+    moveKnockBack.SequenceIndex = _movementStateChangeSequenceIndex;
     moveKnockBack.Speeds.HorzSpeed = speedXY;
     moveKnockBack.Speeds.VertSpeed = speedZ;
     moveKnockBack.Direction = Position(vcos, vsin);
-    player->SendDirectMessage(moveKnockBack.Write());
+
+    GetGameClientMovingMe()->SendDirectMessage(moveKnockBack.Write());
+    SetExpectedMoveStateChange(CMSG_MOVE_KNOCK_BACK_ACK, std::move(moveStateChange));
 }
 
 void Unit::KnockbackFrom(float x, float y, float speedXY, float speedZ)
@@ -12203,7 +12217,7 @@ void Unit::KnockbackFrom(float x, float y, float speedXY, float speedZ)
     {
         float vcos, vsin;
         GetSinCos(x, y, vsin, vcos);
-        SendMoveKnockBack(GetGameClientMovingMe()->GetBasePlayer(), speedXY, -speedZ, vcos, vsin);
+        SendMoveKnockBack(speedXY, -speedZ, vcos, vsin);
 
         if (HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) || HasAuraType(SPELL_AURA_FLY))
             SetCanFly(true, false);
@@ -12699,7 +12713,7 @@ void Unit::JumpTo(float speedXY, float speedZ, bool forward, Optional<Position> 
     {
         float vcos = std::cos(angle + GetOrientation());
         float vsin = std::sin(angle + GetOrientation());
-        SendMoveKnockBack(ToPlayer(), speedXY, -speedZ, vcos, vsin);
+        SendMoveKnockBack(speedXY, -speedZ, vcos, vsin);
     }
 }
 
