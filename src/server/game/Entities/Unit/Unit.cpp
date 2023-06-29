@@ -14326,8 +14326,7 @@ void Unit::ProcessPendingSpellCastRequest()
         }
     }
 
-    if (caster->GetTypeId() == TYPEID_PLAYER && !caster->ToPlayer()->HasActiveSpell(spellInfo->Id) && !spellInfo->IsRaidMarker() &&
-        !caster->ToPlayer()->HasArchProject(static_cast<uint16>(spellInfo->ResearchProjectId)))
+    if (caster->GetTypeId() == TYPEID_PLAYER && !caster->ToPlayer()->HasActiveSpell(spellInfo->Id) && !spellInfo->IsRaidMarker() && !spellInfo->ResearchProjectId)
     {
         bool allow = false;
 
@@ -14392,33 +14391,10 @@ void Unit::ProcessPendingSpellCastRequest()
         }
     }
 
-    if (!_pendingSpellCastRequest->CastRequest.Weight.empty())
-    {
-        ArchData archaeologyCastData;
-        for (WorldPackets::Spells::SpellWeight const& weight : _pendingSpellCastRequest->CastRequest.Weight)
-        {
-            switch (weight.Type)
-            {
-                case 1: // Currency
-                    archaeologyCastData.FragId = weight.ID;
-                    archaeologyCastData.FragCount = weight.Quantity;
-                    break;
-                case 2: // Item
-                    archaeologyCastData.KeyId = weight.ID;
-                    archaeologyCastData.KeyCount = weight.Quantity;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (Player* player = caster->ToPlayer())
-            player->SetArchData(archaeologyCastData);
-    }
-
     Spell* spell = new Spell(caster, spellInfo, TRIGGERED_NONE);
     spell->m_cast_count = _pendingSpellCastRequest->CastRequest.CastID; // set count of casts
     spell->m_glyphIndex = _pendingSpellCastRequest->CastRequest.Misc;
+    spell->m_weight = std::move(_pendingSpellCastRequest->CastRequest.Weight);
     spell->prepare(targets);
 
     _pendingSpellCastRequest.reset();

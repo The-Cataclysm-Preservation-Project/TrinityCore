@@ -19,6 +19,8 @@
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
 #include "Archaeology.h"
+#include "NewArchaeology.h"
+#include "NewArchaeologyMgr.h"
 #include "ArenaTeam.h"
 #include "ArenaTeamMgr.h"
 #include "Bag.h"
@@ -354,6 +356,7 @@ Player::Player(WorldSession* session): Unit(true)
     m_reputationMgr = std::make_unique<ReputationMgr>(this);
     _hasValidLFGLeavePoint = false;
     _archaeology = std::make_unique<Archaeology>(this);
+    _newArchaeology = std::make_unique<NewArchaeology>(this);
     m_petScalingSynchTimer.Reset(1000);
     m_groupUpdateTimer.Reset(5000);
 }
@@ -5183,9 +5186,6 @@ bool Player::UpdateSkill(uint32 skill_id, uint32 step)
     UpdateSkillEnchantments(skill_id, value, new_value);
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skill_id);
 
-    if (skill_id == SKILL_ARCHAEOLOGY)
-        _archaeology->Update();
-
     return true;
 }
 
@@ -5427,6 +5427,20 @@ void Player::ModifySkillBonus(uint32 skillid, int32 val, bool talent)
     SetUInt16Value(field, offset, bonus + val);
 }
 
+void Player::SetResearchProjectId(uint8 pos, uint16 value)
+{
+    uint16 field = pos / 2;
+    uint8 offset = pos & 1;
+    SetUInt16Value(PLAYER_FIELD_RESEARCH_PROJECT_1 + field, offset, value);
+}
+
+void Player::SetResearchSiteId(uint8 pos, uint16 value)
+{
+    uint16 field = pos / 2;
+    uint8 offset = pos & 1;
+    SetUInt16Value(PLAYER_FIELD_RESEARCH_SITE_1 + field, offset, value);
+}
+
 void Player::UpdateSkillsForLevel()
 {
     uint32 maxSkill = GetMaxSkillValueForLevel();
@@ -5521,15 +5535,6 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
                     itr->second.uState = SKILL_NEW;
                 else                // updated skill, mark as changed to save into database
                     itr->second.uState = SKILL_CHANGED;
-            }
-
-            // archaeology handling
-            if (id == SKILL_ARCHAEOLOGY)
-            {
-                if (itr->second.uState == SKILL_NEW)
-                    _archaeology->Learn();
-
-                _archaeology->Update();
             }
         }
         else if (currVal) // Deactivate skill line
@@ -5630,10 +5635,6 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
             for (AuraEffect* effect : GetAuraEffectsByType(SPELL_AURA_MOD_SKILL_TALENT))
                 if (effect->GetMiscValue() == int32(id))
                     effect->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
-
-            // archaeology skill learned
-            if (id == SKILL_ARCHAEOLOGY)
-                _archaeology->Learn();
 
             // Learn all spells for skill
             LearnSkillRewardedSpells(id, newVal);
@@ -6795,10 +6796,14 @@ void Player::ModifyCurrency(uint32 currencyId, int32 amount, bool supressChatLog
 
     SendDirectMessage(setCurrency.Write());
 
-    // Archaeology branch activation
-    if (itr->second.State == PLAYERCURRENCY_NEW && HasSkill(SKILL_ARCHAEOLOGY) &&
-        currency->CategoryID == CURRENCY_CATEGORY_ARCHAEOLOGY)
-        _archaeology->ActivateBranch(sArchaeologyMgr->Currency2BranchId(currency->ID));
+
+    if (itr->second.State == PLAYERCURRENCY_NEW && HasSkill(SKILL_ARCHAEOLOGY) && currency->CategoryID == CURRENCY_CATEGORY_ARCHAEOLOGY)
+    {
+        ResearchBranches researchBranch = sNewArchaeologyMgr->GetResearchBranchForCurrency(currency->ID);
+        if (researchBranch != ResearchBranches::None)
+            if (NewArchaeology* archaeology = GetArchaeology())
+                archaeology->StartResearchProjectForBranch(researchBranch);
+    }
 }
 
 void Player::SetCurrency(uint32 currencyId, uint32 amount)
@@ -17176,6 +17181,12 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     _LoadCUFProfiles(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CUF_PROFILES));
 
+    /*
+    _newArchaeology->LoadResearchHistory(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_RESEARCH_HISTORY));
+    _newArchaeology->LoadResearchSites(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_RESEARCH_SITES));
+    _newArchaeology->LoadResearchProjects(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_RESEARCH_PROJECTS));
+    */
+
     return true;
 }
 
@@ -25117,9 +25128,6 @@ void Player::_LoadSkills(PreparedQueryResult result)
             SetSkillPermBonus(skillItr->second.pos, 0);
 
             loadedSkillValues[skill] = value;
-
-            if (skill == SKILL_ARCHAEOLOGY)
-                _archaeology->Initialize();
         }
         while (result->NextRow());
     }

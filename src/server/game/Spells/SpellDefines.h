@@ -246,4 +246,11 @@ enum class SummonPropertiesParamType : uint8
     NumUnitsMax     = 7  // Fail if less than 1
 };
 
+enum class SpellWeightType : uint8
+{
+    None        = 0,
+    Currency    = 1,
+    Item        = 2
+};
+
 #endif // TRINITY_SPELLDEFINES_H

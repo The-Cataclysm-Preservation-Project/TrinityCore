@@ -16,6 +16,7 @@
  */
 
 #include "Spell.h"
+#include "NewArchaeology.h"
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
@@ -6508,6 +6509,67 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
         if (Player* plrCaster = m_caster->ToPlayer())
             if (!plrCaster->GetComboPoints())
                 return SPELL_FAILED_NO_COMBO_POINTS;
+
+    // Archaeology research project spell checks
+    if (uint32 projectId = m_spellInfo->ResearchProjectId)
+    {
+        // Creatures should never be able to cast archaeology related spells
+        Player* plrCaster = m_caster->ToPlayer();
+        if (!plrCaster)
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Check project validity
+        ResearchProjectEntry const* projectEntry = sResearchProjectStore.LookupEntry(projectId);
+        if (!projectEntry || !plrCaster->GetArchaeology()->HasResearchProjectActive(projectEntry))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        // Check for valid branch
+        ResearchBranchEntry const* branchEntry = sResearchBranchStore.LookupEntry(projectEntry->ResearchBranchID);
+        if (!branchEntry)
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
+        if (projectEntry->RequiredWeight != 0 && m_weight.empty())
+            return SPELL_FAILED_WEIGHT_NOT_ENOUGH;
+
+        uint32 weightDiscount = 0;
+        uint32 availableWeight = 0;
+
+        for (WorldPackets::Spells::SpellWeight const& weight : m_weight)
+        {
+            switch (static_cast<SpellWeightType>(weight.Type))
+            {
+                case SpellWeightType::Currency:
+                    if (static_cast<int32>(branchEntry->CurrencyID) != weight.ID)
+                        return SPELL_FAILED_CURRENCY_WEIGHT_MISMATCH;
+
+                    availableWeight = weight.Quantity;
+                    break;
+                case SpellWeightType::Item:
+                    if (static_cast<int32>(branchEntry->ItemID) != weight.ID) // packet spoofing
+                        return SPELL_FAILED_ITEM_NOT_FOUND;
+
+                    if (weight.Quantity > projectEntry->NumSockets)
+                        return SPELL_FAILED_TOO_MANY_OF_ITEM;
+
+                    if (plrCaster->GetItemCount(weight.ID) < weight.Quantity)
+                        return SPELL_FAILED_NEED_MORE_ITEMS;
+
+                    // the discount of 12 currency per item is hardcoded
+                    weightDiscount += 12 * weight.Quantity;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Now that we have all weight information, we can do the actual validation
+        uint32 neededWeight = projectEntry->RequiredWeight - weightDiscount;
+        if (neededWeight < availableWeight)
+            return SPELL_FAILED_WEIGHT_NOT_ENOUGH;
+
+        if (neededWeight > availableWeight)
+            return SPELL_FAILED_WEIGHT_TOO_MUCH;
+    }
 
     // all ok
     return SPELL_CAST_OK;

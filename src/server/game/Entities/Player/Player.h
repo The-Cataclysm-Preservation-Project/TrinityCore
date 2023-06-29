@@ -59,6 +59,7 @@ template<class T>
 class AchievementMgr;
 
 class Archaeology;
+class NewArchaeology;
 class Bag;
 class Battleground;
 class CinematicMgr;
@@ -800,6 +801,9 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_CORPSE_LOCATION         = 36,
     PLAYER_LOGIN_QUERY_LOAD_ALL_PETS                = 37,
     PLAYER_LOGIN_QUERY_LOAD_LFG_REWARD_STATUS       = 38,
+    PLAYER_LOGIN_QUERY_LOAD_RESEARCH_HISTORY        = 39,
+    PLAYER_LOGIN_QUERY_LOAD_RESEARCH_SITES          = 40,
+    PLAYER_LOGIN_QUERY_LOAD_RESEARCH_PROJECTS       = 41,
     MAX_PLAYER_LOGIN_QUERY
 };
 
@@ -1958,6 +1962,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SetLastSoulburnSpell(SpellInfo const* spell) { m_lastSoulburnSpell = spell; }
         SpellInfo const* GetLastSoulburnSpell() const { return m_lastSoulburnSpell; }
 
+        void SetResearchProjectId(uint8 pos, uint16 value);
+        void SetResearchSiteId(uint8 pos, uint16 value);
+        NewArchaeology* GetArchaeology() const { return _newArchaeology.get(); }
+
         /*********************************************************/
         /***                  PVP SYSTEM                       ***/
         /*********************************************************/
@@ -2755,6 +2763,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         WorldLocation _corpseLocation;
 
         std::unique_ptr<Archaeology> _archaeology;
+        std::unique_ptr<NewArchaeology> _newArchaeology;
 
         std::vector<PlayerPetData*> PlayerPetDataStore;
 

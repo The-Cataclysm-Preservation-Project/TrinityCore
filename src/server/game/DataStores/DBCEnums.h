@@ -856,4 +856,25 @@ enum class CurrencyTypeFlags : uint32
 
 DEFINE_ENUM_FLAG(CurrencyTypeFlags);
 
+enum class ResearchBranches : uint32
+{
+    None        = 0,
+    Dwarf       = 1,
+    Draenei     = 2,
+    Fossil      = 3,
+    NightElf    = 4,
+    Nerubian    = 5,
+    Orc         = 6,
+    Tolvir      = 7,
+    Troll       = 8,
+    Vrykul      = 27,
+    Other       = 29
+};
+
+enum class ResearchProjectRarity : uint32
+{
+    Common  = 0,
+    Rare    = 1
+};
+
 #endif

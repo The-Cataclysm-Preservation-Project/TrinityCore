@@ -37,6 +37,7 @@ namespace WorldPackets
         struct SpellCastData;
         struct SpellHitInfo;
         struct SpellHealPrediction;
+        struct SpellWeight;
     }
 }
 
@@ -529,6 +530,7 @@ class TC_GAME_API Spell
         uint32 m_castItemEntry;
         uint8 m_cast_count;
         uint32 m_glyphIndex;
+        std::vector<WorldPackets::Spells::SpellWeight> m_weight;
         SpellCastTargets m_targets;
         int8 m_comboPointGain;
         SpellCustomErrors m_customError;

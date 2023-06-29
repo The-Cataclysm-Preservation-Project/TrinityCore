@@ -17,6 +17,7 @@
 
 #include "Spell.h"
 #include "AccountMgr.h"
+#include "NewArchaeology.h"
 #include "AreaTrigger.h"
 #include "Battleground.h"
 #include "CellImpl.h"
@@ -1363,13 +1364,6 @@ void Spell::DoCreateItem(uint32 /*i*/, uint32 itemtype)
 
     if (num_to_add)
     {
-        uint16 projectId = static_cast<uint16>(GetSpellInfo()->ResearchProjectId);
-        if (projectId && !player->ArchProjectCompleteable(projectId))
-        {
-            player->SendEquipError(EQUIP_ERR_SPELL_FAILED_REAGENTS_GENERIC, nullptr, nullptr);
-            return;
-        }
-
         // create the new item and store it
         Item* pItem = player->StoreNewItem(dest, newitemid, true, GenerateItemRandomPropertyId(newitemid));
 
@@ -1380,8 +1374,8 @@ void Spell::DoCreateItem(uint32 /*i*/, uint32 itemtype)
             return;
         }
 
-        if (projectId)
-            player->CompleteArchProject(projectId);
+        if (uint32 researchProjectId = m_spellInfo->ResearchProjectId)
+            player->GetArchaeology()->CompleteResearchProject(researchProjectId, m_weight);
 
         // set the "Crafted by ..." property of the item
         if (pItem->GetTemplate()->GetClass() != ITEM_CLASS_CONSUMABLE && pItem->GetTemplate()->GetClass() != ITEM_CLASS_QUEST && newitemid != 6265 && newitemid != 6948)
