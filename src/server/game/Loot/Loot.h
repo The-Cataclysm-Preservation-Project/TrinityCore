@@ -29,6 +29,7 @@
 
 class Item;
 class LootStore;
+class Map;
 class Player;
 struct Loot;
 struct LootStoreItem;
@@ -222,12 +223,13 @@ struct TC_GAME_API Loot
     uint32 gold;
     uint8 unlootedCount;
     ObjectGuid roundRobinPlayer;                            // GUID of the player having the Round-Robin ownership for the loot. If 0, round robin owner has released.
-    ObjectGuid lootOwnerGUID;
     LootType loot_type;                                     // required for achievement system
     uint8 maxDuplicates;                                    // Max amount of items with the same entry that can drop (default is 1; on 25 man raid mode 3)
 
-    Loot();
+    explicit Loot(ObjectGuid owner, LootType type);
     ~Loot();
+
+    ObjectGuid const& GetOwnerGUID() const { return _owner; }
 
     // if loot becomes invalid this reference is used to inform the listener
     void addLootValidatorRef(LootValidatorRef* pLootValidatorRef)
@@ -263,10 +265,10 @@ struct TC_GAME_API Loot
     bool empty() const { return items.empty() && gold == 0; }
     bool isLooted() const { return gold == 0 && unlootedCount == 0; }
 
-    void NotifyItemRemoved(uint8 lootIndex);
-    void NotifyQuestItemRemoved(uint8 questIndex);
-    void NotifyCurrencyRemoved(uint8 lootIndex);
-    void NotifyMoneyRemoved();
+    void NotifyItemRemoved(uint8 lootIndex, Map const* map);
+    void NotifyQuestItemRemoved(uint8 questIndex, Map const* map);
+    void NotifyCurrencyRemoved(uint8 lootIndex, Map const* map);
+    void NotifyMoneyRemoved(Map const* map);
     void AddLooter(ObjectGuid GUID) { PlayersLooting.insert(GUID); }
     void RemoveLooter(ObjectGuid GUID) { PlayersLooting.erase(GUID); }
 
@@ -274,7 +276,7 @@ struct TC_GAME_API Loot
     bool FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bool personal, bool noEmptyError = false, uint16 lootMode = LOOT_MODE_DEFAULT);
 
     // Inserts the item into the loot (called by LootTemplate processors)
-    void AddItem(LootStoreItem const & item);
+    void AddItem(LootStoreItem const & item, Player const* player);
 
     void LootCurrencyInSlot(uint8 lootSlot, Player* player);
 
@@ -288,10 +290,10 @@ struct TC_GAME_API Loot
     void BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* viewer, PermissionTypes permission = ALL_PERMISSION) const;
 
     private:
-        void FillNotNormalLootFor(Player* player, bool presentAtLooting);
-        NotNormalLootItemList* FillFFALoot(Player* player);
-        NotNormalLootItemList* FillQuestLoot(Player* player);
-        NotNormalLootItemList* FillNonQuestNonFFAConditionalLoot(Player* player, bool presentAtLooting);
+        void FillNotNormalLootFor(Player const* player, bool presentAtLooting);
+        NotNormalLootItemList* FillFFALoot(Player const* player);
+        NotNormalLootItemList* FillQuestLoot(Player const* player);
+        NotNormalLootItemList* FillNonQuestNonFFAConditionalLoot(Player const* player, bool presentAtLooting);
 
         GuidSet PlayersLooting;
         NotNormalLootItemMap PlayerQuestItems;
@@ -300,6 +302,8 @@ struct TC_GAME_API Loot
 
         // All rolls are registered here. They need to know, when the loot is not valid anymore
         LootValidatorRefManager i_LootValidatorRefManager;
+
+        ObjectGuid _owner;                                              // The WorldObject that holds this loot
 };
 
 struct LootView

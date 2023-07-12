@@ -8276,7 +8276,7 @@ void Player::RemovedInsignia(Player* looterPlr)
     // Now we must make bones lootable, and send player loot
     bones->SetFlag(CORPSE_FIELD_DYNAMIC_FLAGS, CORPSE_DYNFLAG_LOOTABLE);
 
-    bones->m_loot.reset(new Loot());
+    bones->m_loot.reset(new Loot(bones->GetGUID(), LOOT_INSIGNIA));
 
     // For AV Achievement
     if (Battleground* bg = GetBattleground())
@@ -8364,7 +8364,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                     return;
                 }
 
-            loot = new Loot();
+            loot = new Loot(guid, loot_type);
             if (go->GetMap()->Is25ManRaid())
                 loot->maxDuplicates = 3;
 
@@ -8466,7 +8466,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
         if (!item->m_lootGenerated && !sLootItemStorage->LoadStoredLoot(item, this))
         {
             item->m_lootGenerated = true;
-            loot = new Loot();
+            loot = new Loot(guid, loot_type);
             item->m_loot.reset(loot);
 
             switch (loot_type)
@@ -8654,10 +8654,6 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
         case LOOT_FISHING_JUNK: loot_type = LOOT_FISHING; break;
         default: break;
     }
-
-    // need know merged fishing/corpse loot type for achievements
-    if (loot)
-        loot->loot_type = loot_type;
 
     if (permission != NONE_PERMISSION)
     {
@@ -24879,8 +24875,8 @@ bool Player::IsBaseRuneSlotsOnCooldown(RuneType runeType) const
 
 void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore const& store, bool broadcast)
 {
-    Loot loot;
-    loot.FillLoot (loot_id, store, this, true);
+    Loot loot(ObjectGuid::Empty, LOOT_NONE);
+    loot.FillLoot(loot_id, store, this, true, false, LOOT_MODE_DEFAULT);
 
     uint32 max_slot = loot.GetMaxSlotInLootFor(this);
     for (uint32 i = 0; i < max_slot; ++i)
@@ -24952,7 +24948,7 @@ void Player::StoreLootItem(ObjectGuid lootWorldObjectGuid, uint8 lootSlot, Loot*
             if (item->freeforall || loot->GetPlayerQuestItems().size() == 1)
                 SendNotifyLootItemRemoved(lootSlot);
             else
-                loot->NotifyQuestItemRemoved(qitem->index);
+                loot->NotifyQuestItemRemoved(qitem->index, GetMap());
         }
         else
         {
@@ -24967,7 +24963,7 @@ void Player::StoreLootItem(ObjectGuid lootWorldObjectGuid, uint8 lootSlot, Loot*
                 //not freeforall, notify everyone
                 if (conditem)
                     conditem->is_looted = true;
-                loot->NotifyItemRemoved(lootSlot);
+                loot->NotifyItemRemoved(lootSlot, GetMap());
             }
         }
 

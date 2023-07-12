@@ -11016,7 +11016,7 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
         // Generate loot before updating looter
         if (creature)
         {
-            creature->m_loot.reset(new Loot());
+            creature->m_loot.reset(new Loot(creature->GetGUID(), LOOT_CORPSE));
             Loot* loot = creature->m_loot.get();
             if (creature->GetMap()->Is25ManRaid())
                 loot->maxDuplicates = 3;

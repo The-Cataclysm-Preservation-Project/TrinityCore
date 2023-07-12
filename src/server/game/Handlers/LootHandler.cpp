@@ -236,7 +236,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recvData*/)
 
     if (loot)
     {
-        loot->NotifyMoneyRemoved();
+        loot->NotifyMoneyRemoved(player->GetMap());
         if (shareMoney && player->GetGroup())      //item, pickpocket and players can be looted only single player
         {
             Group* group = player->GetGroup();
@@ -566,6 +566,6 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvData)
     item.count = 0;
     item.is_looted = true;
 
-    loot->NotifyItemRemoved(slotid);
+    loot->NotifyItemRemoved(slotid, GetPlayer()->GetMap());
     --loot->unlootedCount;
 }
