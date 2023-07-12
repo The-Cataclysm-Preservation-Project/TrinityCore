@@ -58,6 +58,7 @@ class WorldObject;
 class WorldPacket;
 class ZoneScript;
 struct FactionTemplateEntry;
+struct Loot;
 struct PositionFullTerrainStatus;
 struct QuaternionData;
 enum ZLiquidStatus : uint32;
@@ -189,6 +190,8 @@ class TC_GAME_API Object
         inline bool IsAreaTrigger() const { return GetTypeId() == TYPEID_AREATRIGGER; }
         AreaTrigger* ToAreaTrigger() { if (GetTypeId() == TYPEID_AREATRIGGER) return reinterpret_cast<AreaTrigger*>(this); else return nullptr; }
         AreaTrigger const* ToAreaTrigger() const { if (GetTypeId() == TYPEID_AREATRIGGER) return reinterpret_cast<AreaTrigger const*>(this); else return nullptr; }
+
+        virtual Loot* GetLootForPlayer([[maybe_unused]] Player const* player) const { return nullptr; }
 
     protected:
         Object();

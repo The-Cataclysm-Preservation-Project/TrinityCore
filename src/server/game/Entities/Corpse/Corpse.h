@@ -21,7 +21,8 @@
 #include "Object.h"
 #include "DatabaseEnvFwd.h"
 #include "GridDefines.h"
-#include "Loot.h"
+
+struct Loot;
 
 enum CorpseType
 {
@@ -73,7 +74,9 @@ class TC_GAME_API Corpse : public WorldObject, public GridObject<Corpse>
         CellCoord const& GetCellCoord() const { return _cellCoord; }
         void SetCellCoord(CellCoord const& cellCoord) { _cellCoord = cellCoord; }
 
-        Loot loot;                                          // remove insignia ONLY at BG
+        std::unique_ptr<Loot> m_loot;
+        Loot* GetLootForPlayer(Player const* /*player*/) const override { return m_loot.get(); }
+
         Player* lootRecipient;
 
         bool IsExpired(time_t t) const;

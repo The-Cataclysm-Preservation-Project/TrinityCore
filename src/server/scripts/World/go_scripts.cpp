@@ -52,6 +52,7 @@ EndContentData */
 #include "GameObjectAI.h"
 #include "GameTime.h"
 #include "Log.h"
+#include "Loot.h"
 #include "MotionMaster.h"
 #include "ObjectMgr.h"
 #include "Player.h"

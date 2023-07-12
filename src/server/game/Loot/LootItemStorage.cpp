@@ -133,7 +133,7 @@ void LootItemStorage::LoadStorageFromDB()
 
 bool LootItemStorage::LoadStoredLoot(Item* item, Player* player)
 {
-    Loot* loot = &item->loot;
+    Loot* loot = item->GetLootForPlayer(player);
     StoredLootContainer const* container = nullptr;
 
     // read

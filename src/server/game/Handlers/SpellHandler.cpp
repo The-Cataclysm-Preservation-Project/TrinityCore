@@ -28,6 +28,7 @@
 #include "GuildMgr.h"
 #include "Item.h"
 #include "Log.h"
+#include "Loot.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Opcodes.h"

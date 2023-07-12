@@ -17,9 +17,9 @@
 
 #include "ItemPacketsCommon.h"
 #include "Item.h"
+#include "Loot.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "Loot.h"
 
 void WorldPackets::Item::ItemInstance::Initialize(::Item const* item)
 {

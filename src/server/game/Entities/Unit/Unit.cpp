@@ -11011,24 +11011,15 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
             }
         }
         else
-        {
             player->SendDirectMessage(&data);
-
-            if (creature)
-            {
-                WorldPackets::Loot::LootList lootList;
-                lootList.Owner = creature->GetGUID();
-                lootList.RoundRobinWinner = player->GetGUID();
-
-                player->SendMessageToSet(lootList.Write(), false);
-            }
-        }
 
         // Generate loot before updating looter
         if (creature)
         {
-            Loot* loot = &creature->loot;
-            loot->clear();
+            creature->m_loot.reset(new Loot());
+            Loot* loot = creature->m_loot.get();
+            if (creature->GetMap()->Is25ManRaid())
+                loot->maxDuplicates = 3;
 
             if (uint32 lootid = creature->GetCreatureTemplate()->lootid)
                 loot->FillLoot(lootid, LootTemplates_Creature, looter, false, false, creature->GetLootMode());
@@ -11046,6 +11037,12 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
                 // Update round robin looter only if the creature had loot
                 if (!loot->empty())
                     group->UpdateLooterGuid(creature);
+            }
+            else
+            {
+                WorldPackets::Loot::LootList lootList;
+                lootList.Owner = creature->GetGUID();
+                player->SendMessageToSet(lootList.Write(), true);
             }
         }
 
@@ -11127,7 +11124,7 @@ void Unit::PlayOneShotAnimKitId(uint16 animKitId)
         if (creature && !creature->IsPet())
         {
             // must be after setDeathState which resets dynamic flags
-            if (!creature->loot.isLooted())
+            if (creature->m_loot && !creature->m_loot->isLooted())
                 creature->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
             else
                 creature->AllLootRemovedFromCorpse();

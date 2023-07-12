@@ -31,6 +31,7 @@ EndScriptData */
 #include "FollowMovementGenerator.h"
 #include "GameTime.h"
 #include "Language.h"
+#include "Loot.h"
 #include "Log.h"
 #include "Map.h"
 #include "ObjectAccessor.h"
@@ -1620,8 +1621,8 @@ public:
             return false;
         }
 
-        Loot const& loot = creatureTarget->loot;
-        if (!creatureTarget->isDead() || loot.empty())
+        Loot const* loot = creatureTarget->m_loot.get();
+        if (!creatureTarget->isDead() || !loot || loot->empty())
         {
             handler->PSendSysMessage(LANG_COMMAND_NOT_DEAD_OR_NO_LOOT, creatureTarget->GetName());
             handler->SetSentErrorMessage(true);
@@ -1629,43 +1630,43 @@ public:
         }
 
         handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_HEADER, creatureTarget->GetName(), creatureTarget->GetEntry());
-        handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_MONEY, loot.gold / GOLD, (loot.gold%GOLD) / SILVER, loot.gold%SILVER);
+        handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_MONEY, loot->gold / GOLD, (loot->gold % GOLD) / SILVER, loot->gold % SILVER);
 
         if (strcmp(args, "all")) // nonzero from strcmp <-> not equal
         {
-            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL, "Standard items", loot.items.size());
-            for (LootItem const& item : loot.items)
+            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL, "Standard items", loot->items.size());
+            for (LootItem const& item : loot->items)
                 if (!item.is_looted)
                     _ShowLootEntry(handler, item.itemid, item.count);
 
-            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL, "Quest items", loot.quest_items.size());
-            for (LootItem const& item : loot.quest_items)
+            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL, "Quest items", loot->quest_items.size());
+            for (LootItem const& item : loot->quest_items)
                 if (!item.is_looted)
                     _ShowLootEntry(handler, item.itemid, item.count);
         }
         else
         {
-            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL, "Standard items", loot.items.size());
-            for (LootItem const& item : loot.items)
+            handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL, "Standard items", loot->items.size());
+            for (LootItem const& item : loot->items)
                 if (!item.is_looted && !item.freeforall && item.conditions.empty())
                     _ShowLootEntry(handler, item.itemid, item.count);
 
-            if (!loot.GetPlayerQuestItems().empty())
+            if (!loot->GetPlayerQuestItems().empty())
             {
                 handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL_2, "Per-player quest items");
-                _IterateNotNormalLootMap(handler, loot.GetPlayerQuestItems(), loot.quest_items);
+                _IterateNotNormalLootMap(handler, loot->GetPlayerQuestItems(), loot->quest_items);
             }
 
-            if (!loot.GetPlayerFFAItems().empty())
+            if (!loot->GetPlayerFFAItems().empty())
             {
                 handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL_2, "FFA items per allowed player");
-                _IterateNotNormalLootMap(handler, loot.GetPlayerFFAItems(), loot.items);
+                _IterateNotNormalLootMap(handler, loot->GetPlayerFFAItems(), loot->items);
             }
 
-            if (!loot.GetPlayerNonQuestNonFFAConditionalItems().empty())
+            if (!loot->GetPlayerNonQuestNonFFAConditionalItems().empty())
             {
                 handler->PSendSysMessage(LANG_COMMAND_NPC_SHOWLOOT_LABEL_2, "Per-player conditional items");
-                _IterateNotNormalLootMap(handler, loot.GetPlayerNonQuestNonFFAConditionalItems(), loot.items);
+                _IterateNotNormalLootMap(handler, loot->GetPlayerNonQuestNonFFAConditionalItems(), loot->items);
             }
         }
 

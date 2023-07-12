@@ -21,7 +21,6 @@
 #include "Object.h"
 #include "DatabaseEnvFwd.h"
 #include "GameObjectData.h"
-#include "Loot.h"
 #include "MapObject.h"
 #include "SharedDefines.h"
 
@@ -34,6 +33,7 @@ class SpellInfo;
 class Transport;
 class TransportBase;
 class Unit;
+struct Loot;
 struct TransportAnimation;
 enum SpellTargetCheckTypes : uint8;
 enum TriggerCastFlags : uint32;
@@ -239,13 +239,14 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
 
         void SaveRespawnTime(uint32 forceDelay = 0);
 
-        Loot        loot;
+        std::unique_ptr<Loot> m_loot;
 
         Player* GetLootRecipient() const;
         Group* GetLootRecipientGroup() const;
         void SetLootRecipient(Unit* unit, Group* group = nullptr);
         bool IsLootAllowedFor(Player const* player) const;
         bool HasLootRecipient() const { return !m_lootRecipient.IsEmpty() || m_lootRecipientGroup; }
+        Loot* GetLootForPlayer(Player const* /*player*/) const override { return m_loot.get(); }
         uint32 m_groupLootTimer;                            // (msecs)timer used for group loot
         ObjectGuid::LowType lootingGroupLowGUID;                         // used to find group which is looting
 

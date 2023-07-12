@@ -18,6 +18,7 @@
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "Battlefield/BattlefieldWG.h"
+#include "ConditionMgr.h"
 #include "DBCStores.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"

@@ -22,6 +22,7 @@
 #include "DBCStores.h"
 #include "GameTime.h"
 #include "Log.h"
+#include "Loot.h"
 #include "Map.h"
 #include "ObjectAccessor.h"
 #include "PhasingHandler.h"

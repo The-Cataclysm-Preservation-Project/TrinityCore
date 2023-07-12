@@ -28,6 +28,7 @@ npc_creditmarker_visit_with_ancestors
 EndContentData */
 
 #include "ScriptMgr.h"
+#include "ConditionMgr.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "MotionMaster.h"

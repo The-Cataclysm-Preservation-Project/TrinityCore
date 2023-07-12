@@ -24,7 +24,6 @@
 #include "ItemDefines.h"
 #include "ItemEnchantmentMgr.h"
 #include "ItemTemplate.h"
-#include "Loot.h"
 
 class SpellInfo;
 class Bag;
@@ -159,8 +158,9 @@ class TC_GAME_API Item : public Object
         int32 GetSpellCharges(uint8 index/*0..5*/ = 0) const { return GetInt32Value(ITEM_FIELD_SPELL_CHARGES + index); }
         void  SetSpellCharges(uint8 index/*0..5*/, int32 value) { SetInt32Value(ITEM_FIELD_SPELL_CHARGES + index, value); }
 
-        Loot loot;
+        std::unique_ptr<Loot> m_loot;
         bool m_lootGenerated;
+        Loot* GetLootForPlayer(Player const* /*player*/) const override { return m_loot.get(); }
 
         // Update States
         ItemUpdateState GetState() const { return uState; }

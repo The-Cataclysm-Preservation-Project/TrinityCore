@@ -8276,9 +8276,21 @@ void Player::RemovedInsignia(Player* looterPlr)
     // Now we must make bones lootable, and send player loot
     bones->SetFlag(CORPSE_FIELD_DYNAMIC_FLAGS, CORPSE_DYNFLAG_LOOTABLE);
 
-    // We store the level of our player in the gold field
-    // We retrieve this information at Player::SendLoot()
-    bones->loot.gold = getLevel();
+    bones->m_loot.reset(new Loot());
+
+    // For AV Achievement
+    if (Battleground* bg = GetBattleground())
+    {
+        if (bg->GetTypeID(true) == BATTLEGROUND_AV)
+            bones->m_loot->FillLoot(PLAYER_CORPSE_LOOT_ENTRY, LootTemplates_Creature, this, true);
+    }
+    // For wintergrasp Quests
+    else if (GetZoneId() == AREA_WINTERGRASP)
+        bones->m_loot->FillLoot(PLAYER_CORPSE_LOOT_ENTRY, LootTemplates_Creature, this, true);
+
+    // It may need a better formula
+    // Now it works like this: lvl10: ~6copper, lvl70: ~9silver
+    bones->m_loot->gold = uint32(urand(50, 150) * 0.016f * std::pow(float(getLevel()) / 5.76f, 2.5f) * sWorld->getRate(RATE_DROP_MONEY));
     bones->lootRecipient = looterPlr;
     looterPlr->SendLoot(bones->GetGUID(), LOOT_INSIGNIA);
 }
@@ -8295,7 +8307,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
     if (ObjectGuid lguid = GetLootGUID())
         m_session->DoLootRelease(lguid);
 
-    Loot* loot;
+    Loot* loot = nullptr;
     PermissionTypes permission = ALL_PERMISSION;
 
     TC_LOG_DEBUG("loot", "Player::SendLoot: Player: '%s' (%s), Loot: %s",
@@ -8334,12 +8346,12 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
             return;
         }
 
-        loot = &go->loot;
+        loot = go->GetLootForPlayer(this);
 
         // loot was generated and respawntime has passed since then, allow to recreate loot
         // to avoid bugs, this rule covers spawned gameobjects only
         // Don't allow to regenerate chest loot inside instances and raids, to avoid exploits with duplicate boss loot being given for some encounters
-        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !go->loot.isLooted() && !go->GetMap()->Instanceable() && go->GetLootGenerationTime() + go->GetRespawnDelay() < GameTime::GetGameTime())
+        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && (!loot || !loot->isLooted()) && !go->GetMap()->Instanceable() && go->GetLootGenerationTime() + go->GetRespawnDelay() < GameTime::GetGameTime())
             go->SetLootState(GO_READY);
 
         if (go->getLootState() == GO_READY)
@@ -8351,6 +8363,12 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                     SendLootRelease(guid);
                     return;
                 }
+
+            loot = new Loot();
+            if (go->GetMap()->Is25ManRaid())
+                loot->maxDuplicates = 3;
+
+            go->m_loot.reset(loot);
 
             if (lootid)
             {
@@ -8367,7 +8385,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                 go->SetLootGenerationTime();
 
                 // get next RR player (for next loot)
-                if (groupRules && !go->loot.empty())
+                if (groupRules && !loot->empty())
                     group->UpdateLooterGuid(go);
             }
 
@@ -8441,14 +8459,15 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
 
         permission = OWNER_PERMISSION;
 
-        loot = &item->loot;
+        loot = item->GetLootForPlayer(this);
 
         // If item doesn't already have loot, attempt to load it. If that
         // fails then this is first time opening, generate loot
         if (!item->m_lootGenerated && !sLootItemStorage->LoadStoredLoot(item, this))
         {
             item->m_lootGenerated = true;
-            loot->clear();
+            loot = new Loot();
+            item->m_loot.reset(loot);
 
             switch (loot_type)
             {
@@ -8484,32 +8503,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
             return;
         }
 
-        loot = &bones->loot;
+        loot = bones->GetLootForPlayer(this);
 
-        if (loot->loot_type == LOOT_NONE)
-        {
-            uint32 pLevel = bones->loot.gold;
-            bones->loot.clear();
-
-            // For AV Achievement
-            if (Battleground* bg = GetBattleground())
-            {
-                if (bg->GetTypeID(true) == BATTLEGROUND_AV)
-                    loot->FillLoot(PLAYER_CORPSE_LOOT_ENTRY, LootTemplates_Creature, this, true);
-            }
-            // For wintergrasp Quests
-            else if (GetZoneId() == AREA_WINTERGRASP)
-                loot->FillLoot(PLAYER_CORPSE_LOOT_ENTRY, LootTemplates_Creature, this, true);
-            // For Tol Barad Quests
-            else if (GetZoneId() == AREA_TOLBARAD)
-                loot->FillLoot(PLAYER_CORPSE_LOOT_ENTRY, LootTemplates_Creature, this, true);
-
-            // It may need a better formula
-            // Now it works like this: lvl10: ~6copper, lvl70: ~9silver
-            bones->loot.gold = uint32(urand(50, 150) * 0.016f * std::pow(float(pLevel) / 5.76f, 2.5f) * sWorld->getRate(RATE_DROP_MONEY));
-        }
-
-        if (bones->lootRecipient != this)
+        if (bones->lootRecipient && bones->lootRecipient != this)
             permission = NONE_PERMISSION;
         else
             permission = OWNER_PERMISSION;
@@ -8531,7 +8527,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
             return;
         }
 
-        loot = &creature->loot;
+        loot = creature->GetLootForPlayer(this);
 
         if (loot_type == LOOT_PICKPOCKETING)
         {
@@ -8660,7 +8656,8 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
     }
 
     // need know merged fishing/corpse loot type for achievements
-    loot->loot_type = loot_type;
+    if (loot)
+        loot->loot_type = loot_type;
 
     if (permission != NONE_PERMISSION)
     {
@@ -8679,7 +8676,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
             SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
     }
     else
-        SendLootError(GetLootGUID(), LOOT_ERROR_DIDNT_KILL);
+        SendLootError(guid, LOOT_ERROR_DIDNT_KILL);
 }
 
 void Player::SendLootError(ObjectGuid guid, LootError error) const
@@ -17222,8 +17219,8 @@ bool Player::isAllowedToLoot(Creature const* creature)
     if (HasPendingBind())
         return false;
 
-    Loot const* loot = &creature->loot;
-    if (loot->isLooted()) // nothing to loot or everything looted.
+    Loot const* loot = creature->GetLootForPlayer(this);
+    if (!loot || loot->isLooted()) // nothing to loot or everything looted.
         return false;
     if (!loot->hasItemForAll() && !loot->hasItemFor(this)) // no loot in creature for this player
         return false;
