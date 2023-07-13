@@ -29,6 +29,7 @@
 #include "Player.h"
 #include "Random.h"
 #include "World.h"
+#include "WorldSession.h"
 
 //
 // --------- LootItem ---------
@@ -149,6 +150,35 @@ Loot::Loot(ObjectGuid owner, LootType type, LootMethod lootMethod) :
 Loot::~Loot()
 {
     clear();
+}
+
+void Loot::clear()
+{
+    for (NotNormalLootItemMap::const_iterator itr = PlayerQuestItems.begin(); itr != PlayerQuestItems.end(); ++itr)
+        delete itr->second;
+    PlayerQuestItems.clear();
+
+    for (NotNormalLootItemMap::const_iterator itr = PlayerFFAItems.begin(); itr != PlayerFFAItems.end(); ++itr)
+        delete itr->second;
+    PlayerFFAItems.clear();
+
+    for (NotNormalLootItemMap::const_iterator itr = PlayerNonQuestNonFFAConditionalItems.begin(); itr != PlayerNonQuestNonFFAConditionalItems.end(); ++itr)
+        delete itr->second;
+    PlayerNonQuestNonFFAConditionalItems.clear();
+
+    for (ObjectGuid playerGuid : PlayersLooting)
+        if (Player* player = ObjectAccessor::FindConnectedPlayer(playerGuid))
+            player->GetSession()->DoLootRelease(GetOwnerGUID());
+
+    PlayersLooting.clear();
+
+    items.clear();
+    quest_items.clear();
+    gold = 0;
+    unlootedCount = 0;
+    roundRobinPlayer.Clear();
+    loot_type = LOOT_NONE;
+    i_LootValidatorRefManager.clearReferences();
 }
 
 // Inserts the item into the loot (called by LootTemplate processors)

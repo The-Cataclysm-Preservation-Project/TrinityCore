@@ -8375,8 +8375,6 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
 
             if (lootid)
             {
-                loot->clear();
-
                 // check current RR player and get next if necessary
                 if (groupRules)
                     group->UpdateLooterGuid(go, true);

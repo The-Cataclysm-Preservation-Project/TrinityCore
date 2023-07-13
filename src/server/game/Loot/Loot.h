@@ -238,30 +238,7 @@ struct TC_GAME_API Loot
         i_LootValidatorRefManager.insertFirst(pLootValidatorRef);
     }
 
-    // void clear();
-    void clear()
-    {
-        for (NotNormalLootItemMap::const_iterator itr = PlayerQuestItems.begin(); itr != PlayerQuestItems.end(); ++itr)
-            delete itr->second;
-        PlayerQuestItems.clear();
-
-        for (NotNormalLootItemMap::const_iterator itr = PlayerFFAItems.begin(); itr != PlayerFFAItems.end(); ++itr)
-            delete itr->second;
-        PlayerFFAItems.clear();
-
-        for (NotNormalLootItemMap::const_iterator itr = PlayerNonQuestNonFFAConditionalItems.begin(); itr != PlayerNonQuestNonFFAConditionalItems.end(); ++itr)
-            delete itr->second;
-        PlayerNonQuestNonFFAConditionalItems.clear();
-
-        PlayersLooting.clear();
-        items.clear();
-        quest_items.clear();
-        gold = 0;
-        unlootedCount = 0;
-        roundRobinPlayer.Clear();
-        loot_type = LOOT_NONE;
-        i_LootValidatorRefManager.clearReferences();
-    }
+    void clear();
 
     bool empty() const { return items.empty() && gold == 0; }
     bool isLooted() const { return gold == 0 && unlootedCount == 0; }
