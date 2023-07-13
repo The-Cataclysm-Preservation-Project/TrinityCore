@@ -99,7 +99,7 @@ void MailDraft::prepareItems(Player* receiver, CharacterDatabaseTransaction& tra
 
     m_mailTemplateItemsNeed = false;
 
-    Loot mailLoot(ObjectGuid::Empty, LOOT_NONE);
+    Loot mailLoot(ObjectGuid::Empty, LOOT_NONE, FREE_FOR_ALL);
 
     // can be empty
     mailLoot.FillLoot(m_mailTemplateId, LootTemplates_Mail, receiver, true, true);

@@ -1017,7 +1017,7 @@ void Group::SendLooter(Creature* creature, Player* groupLooter)
 
     lootList.Owner = creature->GetGUID();
 
-    if (GetLootMethod() == MASTER_LOOT && creature->m_loot->hasOverThresholdItem())
+    if (creature->m_loot->GetLootMethod() == MASTER_LOOT && creature->m_loot->hasOverThresholdItem())
         lootList.Master = GetMasterLooterGuid();
 
     if (groupLooter)
@@ -1594,7 +1594,7 @@ void Group::CountTheRoll(Rolls::iterator rollI, Map* allowedMap)
                             player->AutoStoreLoot(pProto->DisenchantID, LootTemplates_Disenchant, true);
                         else // If the player's inventory is full, send the disenchant result in a mail.
                         {
-                            Loot loot(roll->getLoot()->GetOwnerGUID(), LOOT_DISENCHANTING);
+                            Loot loot(roll->getLoot()->GetOwnerGUID(), LOOT_DISENCHANTING, roll->getLoot()->GetLootMethod());
                             loot.FillLoot(pProto->DisenchantID, LootTemplates_Disenchant, player, true);
 
                             uint32 max_slot = loot.GetMaxSlotInLootFor(player);

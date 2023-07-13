@@ -477,7 +477,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvData)
 
     recvData >> lootguid >> slotid >> target_playerguid;
 
-    if (!_player->GetGroup() || _player->GetGroup()->GetMasterLooterGuid() != _player->GetGUID() || _player->GetGroup()->GetLootMethod() != MASTER_LOOT)
+    if (!_player->GetGroup() || _player->GetGroup()->GetMasterLooterGuid() != _player->GetGUID())
     {
         _player->SendLootError(lootguid, LOOT_ERROR_DIDNT_KILL);
         return;
@@ -525,7 +525,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvData)
         loot = go->GetLootForPlayer(_player);
     }
 
-    if (!loot)
+    if (!loot || loot->GetLootMethod() != MASTER_LOOT)
         return;
 
     if (slotid >= loot->items.size() + loot->quest_items.size())

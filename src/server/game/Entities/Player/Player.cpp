@@ -8276,7 +8276,7 @@ void Player::RemovedInsignia(Player* looterPlr)
     // Now we must make bones lootable, and send player loot
     bones->SetFlag(CORPSE_FIELD_DYNAMIC_FLAGS, CORPSE_DYNFLAG_LOOTABLE);
 
-    bones->m_loot.reset(new Loot(bones->GetGUID(), LOOT_INSIGNIA));
+    bones->m_loot.reset(new Loot(bones->GetGUID(), LOOT_INSIGNIA, looterPlr->GetGroup() ? looterPlr->GetGroup()->GetLootMethod() : FREE_FOR_ALL));
 
     // For AV Achievement
     if (Battleground* bg = GetBattleground())
@@ -8364,7 +8364,10 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                     return;
                 }
 
-            loot = new Loot(guid, loot_type);
+            Group* group = GetGroup();
+            bool groupRules = (group && go->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.usegrouplootrules);
+
+            loot = new Loot(guid, loot_type, groupRules ? group->GetLootMethod() : FREE_FOR_ALL);
             if (go->GetMap()->Is25ManRaid())
                 loot->maxDuplicates = 3;
 
@@ -8373,9 +8376,6 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
             if (lootid)
             {
                 loot->clear();
-
-                Group* group = GetGroup();
-                bool groupRules = (group && go->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.usegrouplootrules);
 
                 // check current RR player and get next if necessary
                 if (groupRules)
@@ -8400,23 +8400,20 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
 
             if (go->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.usegrouplootrules)
             {
-                if (Group* group = GetGroup())
+                switch (loot->GetLootMethod())
                 {
-                    switch (group->GetLootMethod())
-                    {
-                        case GROUP_LOOT:
-                            // GroupLoot: rolls items over threshold. Items with quality < threshold, round robin
-                            group->GroupLoot(loot, go);
-                            break;
-                        case NEED_BEFORE_GREED:
-                            group->NeedBeforeGreed(loot, go);
-                            break;
-                        case MASTER_LOOT:
-                            group->MasterLoot(loot, go);
-                            break;
-                        default:
-                            break;
-                    }
+                    case GROUP_LOOT:
+                        // GroupLoot: rolls items over threshold. Items with quality < threshold, round robin
+                        group->GroupLoot(loot, go);
+                        break;
+                    case NEED_BEFORE_GREED:
+                        group->NeedBeforeGreed(loot, go);
+                        break;
+                    case MASTER_LOOT:
+                        group->MasterLoot(loot, go);
+                        break;
+                    default:
+                        break;
                 }
             }
 
@@ -8427,7 +8424,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
         {
             if (Group* group = GetGroup())
             {
-                switch (group->GetLootMethod())
+                switch (loot->GetLootMethod())
                 {
                     case MASTER_LOOT:
                         permission = group->GetMasterLooterGuid() == GetGUID() ? MASTER_PERMISSION : RESTRICTED_PERMISSION;
@@ -8466,7 +8463,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
         if (!item->m_lootGenerated && !sLootItemStorage->LoadStoredLoot(item, this))
         {
             item->m_lootGenerated = true;
-            loot = new Loot(guid, loot_type);
+            loot = new Loot(guid, loot_type, FREE_FOR_ALL);
             item->m_loot.reset(loot);
 
             switch (loot_type)
@@ -8536,8 +8533,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                 if (creature->CanGeneratePickPocketLoot())
                 {
                     creature->StartPickPocketRefillTimer();
-                    loot->clear();
 
+                    loot = new Loot(creature->GetGUID(), LOOT_PICKPOCKETING, FREE_FOR_ALL);
+                    creature->m_loot.reset(loot);
                     if (uint32 lootid = creature->GetCreatureTemplate()->pickpocketLootId)
                         loot->FillLoot(lootid, LootTemplates_Pickpocketing, this, true);
 
@@ -8578,7 +8576,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                 // for creature, loot is filled when creature is killed.
                 if (Group* group = creature->GetLootRecipientGroup())
                 {
-                    switch (group->GetLootMethod())
+                    switch (loot->GetLootMethod())
                     {
                         case GROUP_LOOT:
                             // GroupLoot: rolls items over threshold. Items with quality < threshold, round robin
@@ -8619,7 +8617,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                     Group* group = GetGroup();
                     if (group == creature->GetLootRecipientGroup())
                     {
-                        switch (group->GetLootMethod())
+                        switch (loot->GetLootMethod())
                         {
                             case MASTER_LOOT:
                                 permission = group->GetMasterLooterGuid() == GetGUID() ? MASTER_PERMISSION : RESTRICTED_PERMISSION;
@@ -17230,7 +17228,7 @@ bool Player::isAllowedToLoot(Creature const* creature)
     else if (thisGroup != creature->GetLootRecipientGroup())
         return false;
 
-    switch (thisGroup->GetLootMethod())
+    switch (loot->GetLootMethod())
     {
         case MASTER_LOOT:
         case FREE_FOR_ALL:
@@ -24875,7 +24873,7 @@ bool Player::IsBaseRuneSlotsOnCooldown(RuneType runeType) const
 
 void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore const& store, bool broadcast)
 {
-    Loot loot(ObjectGuid::Empty, LOOT_NONE);
+    Loot loot(ObjectGuid::Empty, LOOT_NONE, FREE_FOR_ALL);
     loot.FillLoot(loot_id, store, this, true, false, LOOT_MODE_DEFAULT);
 
     uint32 max_slot = loot.GetMaxSlotInLootFor(this);
