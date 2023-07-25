@@ -22,6 +22,7 @@ if(SERVERS OR TOOLS)
   add_subdirectory(utf8cpp)
   add_subdirectory(valgrind)
   add_subdirectory(openssl)
+  add_subdirectory(MinHook)
 endif()
 
 if(SERVERS)
