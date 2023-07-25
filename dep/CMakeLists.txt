@@ -22,7 +22,6 @@ if(SERVERS OR TOOLS)
   add_subdirectory(utf8cpp)
   add_subdirectory(valgrind)
   add_subdirectory(openssl)
-  add_subdirectory(MinHook)
 endif()
 
 if(SERVERS)
@@ -37,6 +36,9 @@ endif()
 
 if(TOOLS)
   add_subdirectory(StormLib)
+  if(WIN32)
+    add_subdirectory(MinHook)
+  endif()
 endif()
 
 if(BUILD_TESTING)
