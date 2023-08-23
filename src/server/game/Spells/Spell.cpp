@@ -6174,7 +6174,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                     (!pTempItem || !pTempItem->GetTemplate()->GetLockID() || !pTempItem->IsLocked()))
                     return SPELL_FAILED_BAD_TARGETS;
 
-                if (m_spellInfo->Id != 1842 || (m_targets.GetGOTarget() &&
+                if (m_spellInfo->Id != 1842 || (m_targets.GetGOTarget() && //<- Hackfix
                     m_targets.GetGOTarget()->GetGOInfo()->type != GAMEOBJECT_TYPE_TRAP))
                     if (m_caster->ToPlayer()->InBattleground() && // In Battleground players can use only flags and banners
                         !m_caster->ToPlayer()->CanUseBattlegroundObject(m_targets.GetGOTarget()))
