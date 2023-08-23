@@ -5917,8 +5917,9 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
     }
 
     // check reputation
-    if (m_spellInfo->MinFactionId && m_spellInfo->MinReputation && m_caster->IsPlayer())
-        if (m_caster->ToPlayer()->GetReputationRank(m_spellInfo->MinFactionId) < static_cast<ReputationRank>(m_spellInfo->MinReputation))
+    if (auto p = m_caster->ToPlayer())
+    if (m_spellInfo->MinFactionId && m_spellInfo->MinReputation)
+        if (p->GetReputationRank(m_spellInfo->MinFactionId) < static_cast<ReputationRank>(m_spellInfo->MinReputation))
             return SPELL_FAILED_REPUTATION;
 
     SpellCastResult castResult = SPELL_CAST_OK;
