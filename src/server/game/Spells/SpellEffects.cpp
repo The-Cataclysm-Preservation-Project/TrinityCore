@@ -2049,6 +2049,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
 
         if (TempSummon* summon = caster->GetMap()->SummonCreature(entry, !_foundMoreTargets ? dest : *targetList[_targetCounter], extraArgs))
         {
+            --_targetCounter;
             ExecuteLogEffectSummonObject(effIndex, summon);
 
             if (summonCount == 1 && summon->IsVehicle())
