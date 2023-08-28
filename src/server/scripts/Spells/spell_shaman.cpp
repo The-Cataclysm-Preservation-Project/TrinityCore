@@ -278,17 +278,15 @@ class spell_sha_earth_shield : public AuraScript
     void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
     {
         PreventDefaultAction();
-
         Unit* caster = GetCaster();
         if (!caster)
             return;
 
-        Unit* target = GetTarget();
-        int32 basePoints = caster->SpellHealingBonusDone(target, GetSpellInfo(), aurEff->GetAmount(), HEAL, EFFECT_0);
+        int32 bp = caster->SpellHealingBonusDone(GetTarget(), GetSpellInfo(), aurEff->GetAmount(), HEAL, aurEff->GetEffIndex());
         if (AuraEffect const* glyphEff = caster->GetDummyAuraEffect(SPELLFAMILY_SHAMAN, SHAMAN_ICON_ID_GLYPH_OF_EARTH_SHIELD, EFFECT_0))
-            AddPct(basePoints, glyphEff->GetAmount());
+            AddPct(bp, glyphEff->GetAmount());
 
-        target->CastSpell(target, SPELL_SHAMAN_EARTH_SHIELD_HEAL, CastSpellExtraArgs(aurEff).SetOriginalCaster(GetCasterGUID()).AddSpellBP0(basePoints));
+        GetTarget()->CastSpell(GetTarget(), SPELL_SHAMAN_EARTH_SHIELD_HEAL,  CastSpellExtraArgs(aurEff).SetOriginalCaster(GetCasterGUID()).AddSpellBP0(bp));
     }
 
     void Register() override
@@ -841,9 +839,14 @@ class spell_sha_mana_tide_totem : public AuraScript
     void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
     {
         // @TODO: Exclude the "short term" buffs from the stat value
-        if (Unit* caster = GetUnitOwner())
-            if (Unit* owner = caster->GetCharmerOrOwner())
-                amount = CalculatePct(owner->GetStat(STAT_SPIRIT), amount);
+        Unit* caster = GetUnitOwner();
+        if (!caster || !caster->IsSummon())
+            return;
+
+        if (Unit* summoner = caster->ToTempSummon()->GetSummoner())
+            amount = CalculatePct(summoner->GetStat(STAT_SPIRIT), amount);
+        else
+            amount = 0;
     }
 
     void Register() override

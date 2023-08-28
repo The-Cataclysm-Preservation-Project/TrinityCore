@@ -377,31 +377,16 @@ void WorldPackets::Movement::MonsterMove::InitializeSplineData(::Movement::MoveS
     ::Movement::MoveSplineFlag splineFlags = moveSpline.splineflags;
     splineFlags.enter_cycle = moveSpline.isCyclic();
     movementSpline.Flags = uint32(splineFlags & uint32(~::Movement::MoveSplineFlag::Mask_No_Monster_Move));
-
-    switch (moveSpline.splineflags & ::Movement::MoveSplineFlag::Mask_Final_Facing)
-    {
-        case ::Movement::MoveSplineFlag::Final_Point:
-            movementSpline.Face = ::Movement::MONSTER_MOVE_FACING_SPOT;
-            movementSpline.FaceSpot = Position(moveSpline.facing.f.x, moveSpline.facing.f.y, moveSpline.facing.f.z);
-            break;
-        case ::Movement::MoveSplineFlag::Final_Target:
-            movementSpline.Face = ::Movement::MONSTER_MOVE_FACING_TARGET;
-            movementSpline.FaceGUID = moveSpline.facing.target;
-            break;
-        case ::Movement::MoveSplineFlag::Final_Angle:
-            movementSpline.Face = ::Movement::MONSTER_MOVE_FACING_ANGLE;
-            movementSpline.FaceDirection = moveSpline.facing.angle;
-            break;
-        default:
-            movementSpline.Face = ::Movement::MONSTER_MOVE_NORMAL;
-            break;
-    }
+    movementSpline.Face = moveSpline.facing.type;
+    movementSpline.FaceDirection = moveSpline.facing.angle;
+    movementSpline.FaceGUID = moveSpline.facing.target;
+    movementSpline.FaceSpot = Position(moveSpline.facing.f.x, moveSpline.facing.f.y, moveSpline.facing.f.z);
 
     if (splineFlags.animation)
     {
         movementSpline.Animation.emplace();
-        movementSpline.Animation->AnimTier = splineFlags.animTier;
         movementSpline.Animation->TierTransStartTime = moveSpline.effect_start_time;
+        movementSpline.Animation->AnimTier = AsUnderlyingType(*moveSpline.anim_tier);
     }
 
     movementSpline.MoveTime = moveSpline.Duration();
@@ -498,8 +483,6 @@ ByteBuffer& WorldPackets::operator<<(ByteBuffer& data, Movement::MovementSpline 
 
     switch (movementSpline.Face)
     {
-        case ::Movement::MONSTER_MOVE_NORMAL:
-            break;
         case ::Movement::MONSTER_MOVE_FACING_SPOT:
             data << movementSpline.FaceSpot;
             break;
@@ -509,8 +492,6 @@ ByteBuffer& WorldPackets::operator<<(ByteBuffer& data, Movement::MovementSpline 
         case ::Movement::MONSTER_MOVE_FACING_ANGLE:
             data << float(movementSpline.FaceDirection);
             break;
-        default:
-            return data;
     }
 
     data << int32(movementSpline.Flags);
@@ -559,6 +540,32 @@ WorldPacket const* WorldPackets::Movement::MoveSetActiveMover::Write()
     _worldPacket.WriteByteSeq(MoverGUID[7]);
     _worldPacket.WriteByteSeq(MoverGUID[1]);
     _worldPacket.WriteByteSeq(MoverGUID[4]);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Movement::MoveSetVehicleRecID::Write()
+{
+    _worldPacket << uint32(SequenceIndex);
+    _worldPacket << int32(VehicleRecID);
+
+    _worldPacket.WriteBit(MoverGUID[3]);
+    _worldPacket.WriteBit(MoverGUID[0]);
+    _worldPacket.WriteBit(MoverGUID[1]);
+    _worldPacket.WriteBit(MoverGUID[7]);
+    _worldPacket.WriteBit(MoverGUID[2]);
+    _worldPacket.WriteBit(MoverGUID[6]);
+    _worldPacket.WriteBit(MoverGUID[5]);
+    _worldPacket.WriteBit(MoverGUID[4]);
+
+    _worldPacket.WriteByteSeq(MoverGUID[5]);
+    _worldPacket.WriteByteSeq(MoverGUID[7]);
+    _worldPacket.WriteByteSeq(MoverGUID[4]);
+    _worldPacket.WriteByteSeq(MoverGUID[3]);
+    _worldPacket.WriteByteSeq(MoverGUID[2]);
+    _worldPacket.WriteByteSeq(MoverGUID[6]);
+    _worldPacket.WriteByteSeq(MoverGUID[1]);
+    _worldPacket.WriteByteSeq(MoverGUID[0]);
 
     return &_worldPacket;
 }

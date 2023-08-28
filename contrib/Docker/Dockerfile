@@ -1,8 +1,8 @@
-FROM funjoker/circle-ci:4.3.4-buildpacks-hirsute
+FROM cataclysmpreservationproject/circle-ci:master-base-22.04
 
 #Setup
 WORKDIR /home/circleci
 COPY README.md /
 COPY --chown=circleci:circleci sql /home/circleci/project/sql
-COPY ["bnetserver", "mapextractor", "mmaps_generator", "vmap4assembler", "vmap4extractor", "worldserver", "connection_patcher", "/usr/local/bin/"]
+COPY bin /usr/local/bin/
 ENTRYPOINT [ "echo",  "Check the README.md file for instructions"]

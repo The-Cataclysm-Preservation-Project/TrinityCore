@@ -26,12 +26,13 @@
 enum STRData
 {
     // Crusader Square
-    DATA_HEARTHSINGER_FORRESTEN     = 0,
-    DATA_TIMMY_THE_CRUEL            = 1,
-    DATA_COMMANDER_MALOR            = 2,
-    DATA_WILLEY_HOPEBREAKER         = 3,
-    DATA_INSTRUCTOR_GALFORD         = 4,
-    DATA_BALNAZZAR                  = 5,
+    BOSS_HEARTHSINGER_FORRESTEN     = 0,
+    BOSS_TIMMY_THE_CRUEL            = 1,
+    BOSS_COMMANDER_MALOR            = 2,
+    BOSS_WILLEY_HOPEBREAKER         = 3,
+    BOSS_INSTRUCTOR_GALFORD         = 4,
+    BOSS_BALNAZZAR                  = 5,
+
     // The Gauntlet
     DATA_THE_UNFORGIVEN             = 6,
     DATA_BARONESS_ANASTARI          = 7,
@@ -69,12 +70,12 @@ enum STRDataTypes
 enum STRCreatureIds
 {
     // Crusader Square
-    BOSS_HEARTSINGER_FORRESTEN          = 10558,
-    BOSS_TIMMY_THE_CRUEL                = 10808,
-    BOSS_COMMANDER_MALOR                = 11032,
-    BOSS_WILLEY_HOPEBREAKER             = 10997,
-    BOSS_INSTRUCTOR_GALFORD             = 10811,
-    BOSS_BALNAZZAR                      = 10813,
+    NPC_HEARTSINGER_FORRESTEN           = 10558,
+    NPC_TIMMY_THE_CRUEL                 = 10808,
+    NPC_COMMANDER_MALOR                 = 11032,
+    NPC_WILLEY_HOPEBREAKER              = 10997,
+    NPC_INSTRUCTOR_GALFORD              = 10811,
+    NPC_BALNAZZAR                       = 10813,
 
     NPC_CRYSTAL                         = 10415, // ziggurat crystal
     NPC_BARON                           = 10440, // ziggurat crystal
@@ -84,15 +85,7 @@ enum STRCreatureIds
     NPC_ABOM_BILE                       = 10416,
     NPC_ABOM_VENOM                      = 10417,
     NPC_BLACK_GUARD                     = 10394,
-    NPC_YSIDA                           = 16031,
-
-   // Scarlet side creatures
-    NPC_CRIMSON_GUARDSMAN               = 10418,
-    NPC_CRIMSON_CONJUROR                = 10419,
-    NPC_CRIMSON_INITATE                 = 10420,
-    NPC_CRIMSON_GALLANT                 = 10424,
-
-    NPC_TIMMY_THE_CRUEL                 = 10808
+    NPC_YSIDA                           = 16031
 };
 
 enum STRGameobjectIds
@@ -126,8 +119,6 @@ enum STRSpellIds
 
 enum STRMisc
 {
-    //! amount of crusade monsters required to be killed in order for timmy the cruel to spawn
-    TIMMY_THE_CRUEL_CRUSADERS_REQUIRED  = 15,
     MAX_ENCOUNTER_OLD                   = 6
 };
 

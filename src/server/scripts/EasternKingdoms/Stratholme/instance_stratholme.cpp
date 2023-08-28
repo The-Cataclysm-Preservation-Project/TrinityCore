@@ -15,13 +15,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: instance_stratholme
-SD%Complete: 50
-SDComment: In progress. Undead side 75% implemented. Save/load not implemented.
-SDCategory: Stratholme
-EndScriptData */
-
 #include "ScriptMgr.h"
 #include "AreaBoundary.h"
 #include "Creature.h"
@@ -46,18 +39,15 @@ enum StratholmeMisc
     SAY_YSIDA_SAVED         = 0
 };
 
-Position const timmyTheCruelSpawnPosition = { 3625.358f, -3188.108f, 130.3985f, 4.834562f };
-EllipseBoundary const beforeScarletGate(Position(3671.158f, -3181.79f), 60.0f, 40.0f);
-
 ObjectData const creatureData[] =
 {
-    { BOSS_HEARTSINGER_FORRESTEN,   DATA_HEARTHSINGER_FORRESTEN },
-    { BOSS_TIMMY_THE_CRUEL,         DATA_TIMMY_THE_CRUEL        },
-    { BOSS_COMMANDER_MALOR,         DATA_COMMANDER_MALOR        },
-    { BOSS_WILLEY_HOPEBREAKER,      DATA_WILLEY_HOPEBREAKER     },
-    { BOSS_INSTRUCTOR_GALFORD,      DATA_INSTRUCTOR_GALFORD     },
-    { BOSS_BALNAZZAR,               DATA_BALNAZZAR              },
-    { 0,                            0                           }, // END
+    { NPC_HEARTSINGER_FORRESTEN,   BOSS_HEARTHSINGER_FORRESTEN },
+    { NPC_TIMMY_THE_CRUEL,         BOSS_TIMMY_THE_CRUEL        },
+    { NPC_COMMANDER_MALOR,         BOSS_COMMANDER_MALOR        },
+    { NPC_WILLEY_HOPEBREAKER,      BOSS_WILLEY_HOPEBREAKER     },
+    { NPC_INSTRUCTOR_GALFORD,      BOSS_INSTRUCTOR_GALFORD     },
+    { NPC_BALNAZZAR,               BOSS_BALNAZZAR              },
+    { 0,                           0                           }, // END
 };
 
 class instance_stratholme : public InstanceMapScript
@@ -78,16 +68,11 @@ class instance_stratholme : public InstanceMapScript
 
                 for (uint8 i = 0; i < 5; ++i)
                     IsSilverHandDead[i] = false;
-
-                timmySpawned = false;
-                scarletsKilled = 0;
             }
 
             uint32 EncounterState[MAX_ENCOUNTER_OLD];
-            uint8 scarletsKilled;
 
             bool IsSilverHandDead[5];
-            bool timmySpawned;
 
             ObjectGuid serviceEntranceGUID;
             ObjectGuid gauntletGate1GUID;
@@ -107,33 +92,6 @@ class instance_stratholme : public InstanceMapScript
             GuidSet crystalsGUID;
             GuidSet abomnationGUID;
             EventMap events;
-
-            void OnUnitDeath(Unit* who) override
-            {
-                switch (who->GetEntry())
-                {
-                    case NPC_CRIMSON_GUARDSMAN:
-                    case NPC_CRIMSON_CONJUROR:
-                    case NPC_CRIMSON_INITATE:
-                    case NPC_CRIMSON_GALLANT:
-                    {
-                        if (!timmySpawned)
-                        {
-                            Position pos = who->ToCreature()->GetHomePosition();
-                            // check if they're in front of the entrance
-                            if (beforeScarletGate.IsWithinBoundary(pos))
-                            {
-                                if (++scarletsKilled >= TIMMY_THE_CRUEL_CRUSADERS_REQUIRED)
-                                {
-                                    instance->SummonCreature(NPC_TIMMY_THE_CRUEL, timmyTheCruelSpawnPosition);
-                                    timmySpawned = true;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
 
             bool StartSlaugtherSquare()
             {

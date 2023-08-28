@@ -1350,6 +1350,12 @@ struct OverrideSpellDataEntry
     // char*   PlayerActionbar;                             // 12
 };
 
+struct PlayerConditionEntry
+{
+    uint32 ID;                                              // 0
+    char* FailureDescription;                               // 1
+};
+
 struct PowerDisplayEntry
 {
     uint32  ID;                                             // 0
@@ -1631,12 +1637,12 @@ struct SpellAuraRestrictionsEntry
 // SpellCastingRequirements.dbc
 struct SpellCastingRequirementsEntry
 {
-    //uint32  ID;                                           // 0
+    uint32  ID;                                             // 0
     uint32  FacingCasterFlags;                              // 1
-    //uint32  MinFactionID;                                 // 2
-    //uint32  MinReputation;                                // 3
-    int32  RequiredAreasID;                                 // 4
-    //uint32  RequiredAuraVision;                           // 5
+    uint32  MinFactionID;                                   // 2
+    uint32  MinReputation;                                  // 3
+    int32   RequiredAreasID;                                // 4
+    uint32  RequiredAuraVision;                             // 5
     uint32  RequiresSpellFocus;                             // 6
 };
 

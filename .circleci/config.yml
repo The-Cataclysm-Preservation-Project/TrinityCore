@@ -2,11 +2,11 @@ version: 2
 jobs:
   codestyle_and_sql:
     docker:
-      - image: cataclysmpreservationproject/circle-ci:4.3.4-buildpacks-hirsute
+      - image: cataclysmpreservationproject/circle-ci:master-base-22.04
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-      - image: circleci/mysql:8
+      - image: cimg/mysql:8.0
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -34,13 +34,17 @@ jobs:
             ./contrib/check_updates.sh auth 4.3.4 auth 127.0.0.1
             mysql -h 127.0.0.1 -uroot characters < sql/base/characters_database.sql
             ./contrib/check_updates.sh characters 4.3.4 characters 127.0.0.1
+            echo "Importing world database structure"
             mysql -h 127.0.0.1 -uroot world < sql/base/dev/world_database.sql
+            echo "Importing hotfixes database structure"
             mysql -h 127.0.0.1 -uroot hotfixes < sql/base/dev/hotfixes_database.sql
+            echo "Importing world database updates"
             cat sql/updates/world/4.3.4/*.sql | mysql -h 127.0.0.1 -uroot world
+            echo "Importing hotfixes database updates"
             cat sql/updates/hotfixes/4.3.4/*.sql | mysql -h 127.0.0.1 -uroot hotfixes
   pch:
     docker:
-      - image: cataclysmpreservationproject/circle-ci:4.3.4-buildpacks-hirsute
+      - image: cataclysmpreservationproject/circle-ci:master-base-22.04
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -54,7 +58,11 @@ jobs:
           command: |
             mkdir bin
             cd bin
-            cmake ../ -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS=static -DSERVERS=1 -DNOJEM=0 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_C_FLAGS_DEBUG="-DNDEBUG" -DCMAKE_CXX_FLAGS_DEBUG="-DNDEBUG" -DCMAKE_INSTALL_PREFIX=check_install -DBUILD_TESTING=1
+            if [ "$DOCKERHUB_PUSH_IMAGES" == "TRUE" ]; then
+              cmake ../ -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS=static -DSERVERS=1 -DNOJEM=0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX=check_install -DCMAKE_INSTALL_RPATH=\$ORIGIN/../lib -DBUILD_TESTING=1
+            else
+              cmake ../ -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS=static -DSERVERS=1 -DNOJEM=0 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_C_FLAGS_DEBUG="-DNDEBUG" -DCMAKE_CXX_FLAGS_DEBUG="-DNDEBUG" -DCMAKE_INSTALL_PREFIX=check_install -DCMAKE_INSTALL_RPATH=\$ORIGIN/../lib -DBUILD_TESTING=1
+            fi
             cd ..
       - run:
           name: Build
@@ -77,22 +85,28 @@ jobs:
       - run:
           name: Create docker images
           command: |
-            cd bin/check_install/bin
-            cp -r ../../../contrib/Docker/* .
-            cp -r ../../../sql ./sql
-            image_prefix=$(echo cataclysmpreservationproject/$CIRCLE_PROJECT_REPONAME-$(echo $CIRCLE_BRANCH | tr '/' '-') | tr '[:upper:]' '[:lower:]')
+            cd bin/check_install
+            cp -r ../../contrib/Docker/* .
+            cp -r ../../sql ./sql
+            image_prefix=$(echo cataclysmpreservationproject/$CIRCLE_PROJECT_REPONAME | tr '[:upper:]' '[:lower:]')
             echo $image_prefix
-            docker build --file Dockerfile --force-rm --tag $image_prefix:$CIRCLE_SHA1 --tag $image_prefix:latest .
-            docker save $image_prefix:$CIRCLE_SHA1 | gzip > ../../../docker.tar.gz
+            docker build --file Dockerfile --force-rm --tag $image_prefix:$CIRCLE_SHA1 --tag $image_prefix:$(echo $CIRCLE_BRANCH | tr '/' '-' | tr '[:upper:]' '[:lower:]') .
+            docker save $image_prefix | gzip > ../../docker.tar.gz
+            if [ "$DOCKERHUB_PUSH_IMAGES" == "TRUE" ]; then
+              if [ "$CIRCLE_BRANCH" == "master" ]; then
+                docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+                echo "Pushing docker image to dockerhub"
+                docker push --all-tags $image_prefix
+              fi
+            fi
       - store_artifacts:
           path: docker.tar.gz
   nopch:
     docker:
-      - image: cataclysmpreservationproject/circle-ci:4.3.4-buildpacks-hirsute
+      - image: cataclysmpreservationproject/circle-ci:master-base-22.04
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-    resource_class: large
     steps:
       - run:
           name: Requirements
@@ -105,9 +119,9 @@ jobs:
             /scripts/checkout.sh
       - restore_cache:
           keys:
-            - 4.3.4-nopch-{{ .Branch }}-{{ .Revision }}
-            - 4.3.4-nopch-{{ .Branch }}
-            - 4.3.4-nopch
+            - master-nopch-{{ .Branch }}-{{ .Revision }}
+            - master-nopch-{{ .Branch }}
+            - master-nopch-master
       - run:
           name: Setup
           command: |
@@ -136,7 +150,7 @@ jobs:
             ./bnetserver --version
             ./worldserver --version
       - save_cache:
-          key: 4.3.4-nopch-{{ .Branch }}-{{ .Revision }}
+          key: master-nopch-{{ .Branch }}-{{ .Revision }}
           paths:
             - /home/circleci/.ccache
 workflows:

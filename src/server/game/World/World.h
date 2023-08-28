@@ -30,6 +30,7 @@
 #include "SharedDefines.h"
 #include "Timer.h"
 
+#include <array>
 #include <atomic>
 #include <list>
 #include <map>
@@ -74,7 +75,7 @@ enum ShutdownExitCode : uint32
 };
 
 /// Timers for different object refresh rates
-enum WorldTimers
+enum WorldTimers : uint8
 {
     WUPDATE_AUCTIONS,
     WUPDATE_AUCTIONS_PENDING,
@@ -94,7 +95,7 @@ enum WorldTimers
 };
 
 /// Configuration elements
-enum WorldBoolConfigs
+enum WorldBoolConfigs : uint8
 {
     CONFIG_DURABILITY_LOSS_IN_PVP = 0,
     CONFIG_ADDON_CHANNEL,
@@ -188,7 +189,7 @@ enum WorldBoolConfigs
     BOOL_CONFIG_VALUE_COUNT
 };
 
-enum WorldFloatConfigs
+enum WorldFloatConfigs : uint8
 {
     CONFIG_GROUP_XP_DISTANCE = 0,
     CONFIG_MAX_RECRUIT_A_FRIEND_DISTANCE,
@@ -213,7 +214,7 @@ enum WorldFloatConfigs
     FLOAT_CONFIG_VALUE_COUNT
 };
 
-enum WorldIntConfigs
+enum WorldIntConfigs : uint8
 {
     CONFIG_COMPRESSION = 0,
     CONFIG_INTERVAL_SAVE,
@@ -422,7 +423,7 @@ enum WorldIntConfigs
 };
 
 /// Server rates
-enum Rates
+enum Rates : uint8
 {
     RATE_HEALTH = 0,
     RATE_POWER_MANA,
@@ -842,7 +843,7 @@ class TC_GAME_API World
 
         bool m_isClosed;
 
-        IntervalTimer m_timers[WUPDATE_COUNT];
+        std::array<IntervalTimer, WUPDATE_COUNT> m_timers;
         time_t mail_timer;
         time_t mail_timer_expires;
 
@@ -856,10 +857,10 @@ class TC_GAME_API World
 
         std::string m_newCharString;
 
-        float rate_values[MAX_RATES];
-        uint32 m_int_configs[INT_CONFIG_VALUE_COUNT];
-        bool m_bool_configs[BOOL_CONFIG_VALUE_COUNT];
-        float m_float_configs[FLOAT_CONFIG_VALUE_COUNT];
+        std::array<float, MAX_RATES> rate_values;
+        std::array<uint32, INT_CONFIG_VALUE_COUNT> m_int_configs;
+        std::array<bool, BOOL_CONFIG_VALUE_COUNT> m_bool_configs;
+        std::array<float, FLOAT_CONFIG_VALUE_COUNT> m_float_configs;
         std::unordered_map<std::string, int32> m_worldVariables;
         uint32 m_playerLimit;
         AccountTypes m_allowedSecurityLevel;

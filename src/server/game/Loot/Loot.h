@@ -61,7 +61,7 @@ enum RollMask
     ROLL_ALL_TYPE_MASK          = 0x0F
 };
 
-#define MAX_NR_LOOT_ITEMS 16
+#define MAX_NR_LOOT_ITEMS 18
 // note: the client cannot show more than 16 items total
 #define MAX_NR_QUEST_ITEMS 32
 // unrelated to the number of quest items shown, just for reserve
@@ -137,6 +137,7 @@ enum LootSlotType
 struct TC_GAME_API LootItem
 {
     uint32  itemid;
+    uint32  itemIndex;
     uint32  randomSuffix;
     ItemRandomEnchantmentId randomPropertyId;
     ConditionContainer conditions;                               // additional loot condition
@@ -157,13 +158,13 @@ struct TC_GAME_API LootItem
     explicit LootItem(LootStoreItem const& li);
 
     // Empty constructor for creating an empty LootItem to be filled in with DB data
-    LootItem() : itemid(0), randomSuffix(0), randomPropertyId(), count(0), is_looted(false), is_blocked(false),
+    LootItem() : itemid(0), itemIndex(0), randomSuffix(0), randomPropertyId(), count(0), is_looted(false), is_blocked(false),
                  freeforall(false), is_underthreshold(false), is_counted(false), needs_quest(false), is_currency(false),
                  follow_loot_rules(false)
                  { };
 
     // Basic checks for player/item compatibility - if false no chance to see the item in the loot
-    bool AllowedForPlayer(Player const* player) const;
+    bool AllowedForPlayer(Player const* player, bool isGivenByMasterLooter = false) const;
     void AddAllowedLooter(Player const* player);
     GuidSet const& GetAllowedLooters() const { return allowedGUIDs; }
 };
@@ -224,10 +225,6 @@ struct TC_GAME_API Loot
     ObjectGuid lootOwnerGUID;
     LootType loot_type;                                     // required for achievement system
     uint8 maxDuplicates;                                    // Max amount of items with the same entry that can drop (default is 1; on 25 man raid mode 3)
-
-    // GUIDLow of container that holds this loot (item_instance.entry)
-    //  Only set for inventory items that can be right-click looted
-    uint32 containerID;
 
     Loot(uint32 _gold = 0);
     ~Loot();

@@ -65,7 +65,7 @@ LootItem::LootItem(LootStoreItem const& li)
 }
 
 // Basic checks for player/item compatibility - if false no chance to see the item in the loot
-bool LootItem::AllowedForPlayer(Player const* player) const
+bool LootItem::AllowedForPlayer(Player const* player, bool isGivenByMasterLooter) const
 {
     // DB conditions check
     if (!sConditionMgr->IsObjectMeetToConditions(const_cast<Player*>(player), conditions))
@@ -78,16 +78,51 @@ bool LootItem::AllowedForPlayer(Player const* player) const
     if (!pProto)
         return false;
 
-    // not show loot for players without profession or those who already know the recipe
-    if ((pProto->GetFlags() & ITEM_FLAG_HIDE_UNUSABLE_RECIPE) && (!player->HasSkill(pProto->GetRequiredSkill()) || player->HasSpell(pProto->Effects[1].SpellID)))
-        return false;
-
     // not show loot for not own team
     if ((pProto->GetFlags2() & ITEM_FLAG2_FACTION_HORDE) && player->GetTeam() != HORDE)
         return false;
 
     if ((pProto->GetFlags2() & ITEM_FLAG2_FACTION_ALLIANCE) && player->GetTeam() != ALLIANCE)
         return false;
+
+    // Master looter can see certain items even if the character can't loot them
+    if (!isGivenByMasterLooter && player->GetGroup() && player->GetGroup()->GetMasterLooterGuid() == player->GetGUID())
+    {
+        // check quest requirements
+        if (!(pProto->FlagsCu & ITEM_FLAGS_CU_IGNORE_QUEST_STATUS) && (needs_quest || pProto->GetStartQuest()))
+            return false;
+
+        return true;
+    }
+
+    // Don't allow loot for players without profession or those who already know the recipe
+    if (pProto->GetFlags() & ITEM_FLAG_HIDE_UNUSABLE_RECIPE)
+    {
+        if (!player->HasSkill(pProto->GetRequiredSkill()))
+            return false;
+
+        for (ItemEffect const& itemEffect : pProto->Effects)
+        {
+            if (itemEffect.Trigger != ITEM_SPELLTRIGGER_LEARN_SPELL_ID)
+                continue;
+
+            if (player->HasSpell(itemEffect.SpellID))
+                return false;
+        }
+    }
+
+    // Don't allow to loot soulbound recipes that the player has already learned
+    if (pProto->GetClass() == ITEM_CLASS_RECIPE && pProto->GetBonding() == BIND_ON_ACQUIRE)
+    {
+        for (ItemEffect const& itemEffect : pProto->Effects)
+        {
+            if (itemEffect.Trigger != ITEM_SPELLTRIGGER_LEARN_SPELL_ID)
+                continue;
+
+            if (player->HasSpell(itemEffect.SpellID))
+                return false;
+        }
+    }
 
     // check quest requirements
     if (!(pProto->FlagsCu & ITEM_FLAGS_CU_IGNORE_QUEST_STATUS) && ((needs_quest || (pProto->GetStartQuest() && player->GetQuestStatus(pProto->GetStartQuest()) != QUEST_STATUS_NONE)) && !player->HasQuestForItem(itemid)))
@@ -105,7 +140,7 @@ void LootItem::AddAllowedLooter(Player const* player)
 // --------- Loot ---------
 //
 
-Loot::Loot(uint32 _gold /*= 0*/) : gold(_gold), unlootedCount(0), roundRobinPlayer(), loot_type(LOOT_NONE), maxDuplicates(1), containerID(0)
+Loot::Loot(uint32 _gold /*= 0*/) : gold(_gold), unlootedCount(0), roundRobinPlayer(), loot_type(LOOT_NONE), maxDuplicates(1)
 {
 }
 
@@ -141,6 +176,7 @@ void Loot::AddItem(LootStoreItem const& item)
         {
             LootItem generatedLoot(item);
             generatedLoot.count = std::min(count, currency->MaxQty);
+            generatedLoot.itemIndex = lootItems.size();
             lootItems.push_back(generatedLoot);
             count -= currency->MaxQty;
 
@@ -180,6 +216,7 @@ void Loot::AddItem(LootStoreItem const& item)
     {
         LootItem generatedLoot(item);
         generatedLoot.count = std::min(count, proto->GetMaxStackSize());
+        generatedLoot.itemIndex = lootItems.size();
         lootItems.push_back(generatedLoot);
         count -= proto->GetMaxStackSize();
 

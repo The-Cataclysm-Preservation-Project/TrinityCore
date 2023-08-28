@@ -634,12 +634,9 @@ void WorldSession::SendListInventory(ObjectGuid vendorGuid)
 
         WorldPackets::NPC::VendorItem& item = packet.Items[count];
 
-        /*
-        // Todo: implement dbc file and handling
         if (PlayerConditionEntry const* playerCondition = sPlayerConditionStore.LookupEntry(vendorItem->PlayerConditionId))
             if (!ConditionMgr::IsPlayerMeetingCondition(_player, playerCondition))
                 item.PlayerConditionFailed = playerCondition->ID;
-        */
 
         if (vendorItem->Type == ITEM_VENDOR_TYPE_ITEM)
         {
@@ -1497,6 +1494,14 @@ void WorldSession::HandleReforgeItemOpcode(WorldPacket& recvData)
     if (!item)
     {
         TC_LOG_DEBUG("network", "WORLD: HandleReforgeItemOpcode - Player (Guid: %u Name: %s) tried to reforge an invalid/non-existant item.", player->GetGUID().GetCounter(), player->GetName().c_str());
+        SendReforgeResult(false);
+        return;
+    }
+
+    // Packet spoofing check. The client does not allow reforging reforging items below item level 200
+    if (item->GetItemLevel() < 200)
+    {
+        TC_LOG_ERROR("network", "WORLD: HandleReforgeItemOpcode - Player (Guid: %u Name: %s) tried to reforge an item item (Entry: %u) below item level 200. Probably cheater.", player->GetGUID().GetCounter(), player->GetName().c_str(), item->GetEntry());
         SendReforgeResult(false);
         return;
     }

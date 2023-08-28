@@ -31,6 +31,12 @@ enum SpellEffIndex : uint8
     EFFECT_2 = 2
 };
 
+enum class SpellTargetIndex : uint8
+{
+    TargetA = 0,
+    TargetB = 1
+};
+
 // used in script definitions
 #define EFFECT_FIRST_FOUND 254
 #define EFFECT_ALL 255
@@ -901,7 +907,7 @@ enum Team
     TEAM_OTHER               = 0                            // if ReputationListId > 0 && Flags != FACTION_FLAG_TEAM_HEADER
 };
 
-enum SpellEffects
+enum SpellEffects : uint32
 {
     SPELL_EFFECT_INSTAKILL                          = 1,
     SPELL_EFFECT_SCHOOL_DAMAGE                      = 2,
@@ -3220,20 +3226,32 @@ enum HolidayIds : uint32
     HOLIDAY_ANNIVERSARY_8_YEARS      = 484
 };
 
-// values based at QuestInfo.dbc
-enum QuestTypes
+enum QuestType
 {
-    QUEST_TYPE_ELITE               = 1,
-    QUEST_TYPE_LIFE                = 21,
-    QUEST_TYPE_PVP                 = 41,
-    QUEST_TYPE_RAID                = 62,
-    QUEST_TYPE_DUNGEON             = 81,
-    QUEST_TYPE_WORLD_EVENT         = 82,
-    QUEST_TYPE_LEGENDARY           = 83,
-    QUEST_TYPE_ESCORT              = 84,
-    QUEST_TYPE_HEROIC              = 85,
-    QUEST_TYPE_RAID_10             = 88,
-    QUEST_TYPE_RAID_25             = 89
+    QUEST_TYPE_TURNIN               = 0,
+    QUEST_TYPE_WITH_MAX_LEVEL       = 1,
+    QUEST_TYPE_NORMAL               = 2,
+    MAX_DB_ALLOWED_QUEST_TYPES      = 3,
+
+    // values used in quest menu packets
+    QUEST_TYPE_IN_PROGRESS          = 4,
+    QUEST_TYPE_TASK_IN_PROGRESS     = 5
+};
+
+// values based at QuestInfo.dbc
+enum QuestInfo
+{
+    QUEST_INFO_GROUP        = 1,
+    QUEST_INFO_CLASS        = 21,
+    QUEST_INFO_PVP          = 41,
+    QUEST_INFO_RAID         = 62,
+    QUEST_INFO_DUNGEON      = 81,
+    QUEST_INFO_WORLD_EVENT  = 82,
+    QUEST_INFO_LEGENDARY    = 83,
+    QUEST_INFO_ESCORT       = 84,
+    QUEST_INFO_HEROIC       = 85,
+    QUEST_INFO_RAID_10      = 88,
+    QUEST_INFO_RAID_25      = 89
 };
 
 // values based at QuestSort.dbc

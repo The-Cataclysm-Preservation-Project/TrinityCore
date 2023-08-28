@@ -31,6 +31,7 @@ class Unit;
 class Player;
 class Item;
 class Spell;
+class SpellEffectInfo;
 class SpellInfo;
 class WorldObject;
 struct SpellChainNode;
@@ -139,7 +140,8 @@ enum SpellTargetDirectionTypes
     TARGET_DIR_BACK_LEFT,
     TARGET_DIR_FRONT_LEFT,
     TARGET_DIR_RANDOM,
-    TARGET_DIR_ENTRY
+    TARGET_DIR_ENTRY,
+    TARGET_DIR_SUMMON // alters direction based on summon type (creatures are summoned on the left side, gameobjects in front)
 };
 
 enum SpellEffectImplicitTargetTypes
@@ -201,7 +203,9 @@ enum SpellCustomAttributes
     SPELL_ATTR0_CU_ALLOW_INFLIGHT_TARGET         = 0x00040000,
     SPELL_ATTR0_CU_BINARY_SPELL                  = 0x00100000,
     SPELL_ATTR0_CU_SCHOOLMASK_NORMAL_WITH_MAGIC  = 0x00200000,
-    SPELL_ATTR0_CU_LIQUID_AURA                   = 0x00400000,
+    SPELL_ATTR0_CU_DEPRECATED_LIQUID_AURA        = 0x00400000, // DO NOT REUSE
+    SPELL_ATTR0_CU_IS_TALENT                     = 0x00800000,
+    SPELL_ATTR0_CU_AURA_CANNOT_BE_SAVED          = 0x01000000,
 
     SPELL_ATTR0_CU_NEGATIVE                      = SPELL_ATTR0_CU_NEGATIVE_EFF0 | SPELL_ATTR0_CU_NEGATIVE_EFF1 | SPELL_ATTR0_CU_NEGATIVE_EFF2
 };
@@ -222,7 +226,7 @@ public:
     SpellTargetObjectTypes GetObjectType() const;
     SpellTargetCheckTypes GetCheckType() const;
     SpellTargetDirectionTypes GetDirectionType() const;
-    float CalcDirectionAngle() const;
+    float CalcDirectionAngle(SpellEffectInfo const& effectInfo) const;
 
     Targets GetTarget() const;
     uint32 GetExplicitTargetMask(bool& srcSet, bool& dstSet) const;
@@ -259,8 +263,8 @@ public:
     Mechanics Mechanic;
     SpellImplicitTargetInfo TargetA;
     SpellImplicitTargetInfo TargetB;
-    SpellRadiusEntry const* RadiusEntry;
-    SpellRadiusEntry const* MaxRadiusEntry;
+    SpellRadiusEntry const* TargetARadiusEntry;
+    SpellRadiusEntry const* TargetBRadiusEntry;
     uint32    ChainTarget;
     uint32    ItemType;
     uint32    TriggerSpell;
@@ -276,7 +280,7 @@ public:
 
     SpellEffectInfo() : _spellInfo(nullptr), _effIndex(0), Effect(0), ApplyAuraName(0), AuraPeriod(0), DieSides(0),
                         RealPointsPerLevel(0.f), BasePoints(0), PointsPerComboPoint(0), Amplitude(0.f), DamageMultiplier(0.f),
-                        BonusMultiplier(0.f), MiscValue(0), MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(nullptr), MaxRadiusEntry(nullptr),
+                        BonusMultiplier(0.f), MiscValue(0), MiscValueB(0), Mechanic(MECHANIC_NONE), TargetARadiusEntry(nullptr), TargetBRadiusEntry(nullptr),
                         ChainTarget(0), ItemType(0), TriggerSpell(0), ImplicitTargetConditions(nullptr) { }
 
     SpellEffectInfo(SpellEntry const* spellEntry, SpellInfo const* spellInfo, uint8 effIndex, SpellEffectEntry const* effect);
@@ -294,9 +298,8 @@ public:
     float CalcValueMultiplier(WorldObject* caster, Spell* spell = nullptr) const;
     float CalcDamageMultiplier(WorldObject* caster, Spell* spell = nullptr) const;
 
-    bool HasRadius() const;
-    bool HasMaxRadius() const;
-    float CalcRadius(WorldObject* caster = nullptr, Spell* = nullptr) const;
+    bool HasRadius(SpellTargetIndex targetIndex) const;
+    float CalcRadius(WorldObject* caster = nullptr, SpellTargetIndex targetIndex = SpellTargetIndex::TargetA, Spell* = nullptr) const;
 
     uint32 GetProvidedTargetMask() const;
     uint32 GetMissingTargetMask(bool srcSet = false, bool destSet = false, uint32 mask = 0) const;
@@ -359,7 +362,7 @@ class TC_GAME_API SpellInfo
         uint32 Targets;
         uint32 TargetCreatureType;
         uint32 RequiresSpellFocus;
-        uint32 FacingCasterFlags;
+        EnumFlag<SpellFacingCasterFlags> FacingCasterFlags = SpellFacingCasterFlags::None;
         uint32 CasterAuraState;
         uint32 TargetAuraState;
         uint32 CasterAuraStateNot;
@@ -414,6 +417,8 @@ class TC_GAME_API SpellInfo
         flag96 SpellFamilyFlags;
         uint32 DmgClass;
         uint32 PreventionType;
+        uint32 MinFactionId;
+        uint32 MinReputation;
         int32  AreaGroupId;
         uint32 SchoolMask;
         uint32 SpellDifficultyId;
@@ -474,6 +479,7 @@ class TC_GAME_API SpellInfo
         bool HasAura(AuraType aura) const;
         bool HasAreaAuraEffect() const;
         bool HasOnlyDamageEffects() const;
+        bool HasTargetType(::Targets target) const;
 
         inline bool HasAttribute(SpellAttr0 attribute)  const { return !!(Attributes & attribute); }
         inline bool HasAttribute(SpellAttr1 attribute)  const { return !!(AttributesEx & attribute); }
@@ -586,7 +592,7 @@ class TC_GAME_API SpellInfo
         uint32 GetRecoveryTime() const;
 
         int32 CalcPowerCost(WorldObject const* caster, SpellSchoolMask schoolMask, Spell* spell = nullptr) const;
-        float GetSpellScalingMultiplier(WorldObject const* caster, SpellScalingEntry const* scalingEntry, bool isPowerCostRelated = false) const;
+        float GetSpellScalingMultiplier(WorldObject const* caster, bool isPowerCostRelated = false) const;
 
         bool IsRanked() const;
         uint8 GetRank() const;

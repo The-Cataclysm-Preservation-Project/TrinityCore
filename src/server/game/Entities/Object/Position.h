@@ -58,12 +58,7 @@ private:
     float m_orientation;
 
 public:
-    bool operator==(Position const& a);
-
-    inline bool operator!=(Position const& a)
-    {
-        return !(operator==(a));
-    }
+    bool operator==(Position const& a) const;
 
     void Relocate(float x, float y)
     {

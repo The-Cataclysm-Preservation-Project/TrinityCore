@@ -3,10 +3,12 @@ target_compile_definitions(trinity-compile-option-interface
   INTERFACE
     -D_BUILD_DIRECTIVE="$<CONFIG>")
 
-set(GCC_EXPECTED_VERSION 7.1.0)
+set(GCC_EXPECTED_VERSION 10.0.0)
 
 if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_EXPECTED_VERSION)
   message(FATAL_ERROR "GCC: TrinityCore requires version ${GCC_EXPECTED_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
+else()
+  message(STATUS "GCC: Minimum version required is ${GCC_EXPECTED_VERSION}, found ${CMAKE_CXX_COMPILER_VERSION} - ok!")
 endif()
 
 if(PLATFORM EQUAL 32)
@@ -22,7 +24,7 @@ target_compile_definitions(trinity-compile-option-interface
     -D__SSE2__)
 message(STATUS "GCC: SFMT enabled, SSE2 flags forced")
 
-if( WITH_WARNINGS )
+if(WITH_WARNINGS)
   target_compile_options(trinity-warning-interface
     INTERFACE
       -W
@@ -31,12 +33,13 @@ if( WITH_WARNINGS )
       -Winit-self
       -Winvalid-pch
       -Wfatal-errors
-      -Woverloaded-virtual)
+      -Woverloaded-virtual
+      -Wno-missing-field-initializers) # this warning is useless when combined with structure members that have default initializers
 
   message(STATUS "GCC: All warnings enabled")
 endif()
 
-if( WITH_COREDEBUG )
+if(WITH_COREDEBUG)
   target_compile_options(trinity-compile-option-interface
     INTERFACE
       -g3)
@@ -44,7 +47,7 @@ if( WITH_COREDEBUG )
   message(STATUS "GCC: Debug-flags set (-g3)")
 endif()
 
-if (BUILD_SHARED_LIBS)
+if(BUILD_SHARED_LIBS)
   target_compile_options(trinity-compile-option-interface
     INTERFACE
       -fPIC

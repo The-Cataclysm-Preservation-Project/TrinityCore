@@ -9,7 +9,6 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 if(WIN32)
-  set(BOOST_DEBUG ON)
   if(DEFINED ENV{BOOST_ROOT})
     set(BOOST_ROOT $ENV{BOOST_ROOT})
     list(APPEND BOOST_LIBRARYDIR
@@ -23,10 +22,7 @@ if(WIN32)
   set(Boost_USE_STATIC_RUNTIME     OFF)
 endif()
 
-if (CMAKE_VERSION VERSION_LESS "3.16.0")
-  # boost's own cmake file adds extra compile definitions that cotire fails to pick up
-  set(Boost_NO_BOOST_CMAKE ON)
-endif()
+set(Boost_NO_WARN_NEW_VERSIONS ON)
 
 include (CheckCXXSourceCompiles)
 

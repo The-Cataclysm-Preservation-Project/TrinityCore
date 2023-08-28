@@ -33,6 +33,7 @@
 #include "Item.h"
 #include "LFGMgr.h"
 #include "Log.h"
+#include "ObjectAccessor.h"
 #include "Pet.h"
 #include "ReputationMgr.h"
 #include "SkillDiscovery.h"
@@ -5482,6 +5483,133 @@ class spell_gen_vehicle_control_link : public AuraScript
     }
 };
 
+enum PolymorphCastVisual
+{
+    // Spells
+    SPELL_MAGE_SQUIRREL_FORM    = 32813,
+    SPELL_MAGE_GIRAFFE_FORM     = 32816,
+    SPELL_MAGE_SERPENT_FORM     = 32817,
+    SPELL_MAGE_DRAGONHAWK_FORM  = 32818,
+    SPELL_MAGE_WORGEN_FORM      = 32819,
+    SPELL_MAGE_SHEEP_FORM       = 32820,
+
+    NPC_AUROSALIA               = 18744
+
+};
+
+/// @todo move out of here and rename - not a mage spell
+// 32826 - Polymorph (Visual)
+class spell_gen_polymorph_cast_visual : public SpellScript
+{
+    static const uint32 PolymorhForms[6];
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        // check if spell ids exist in dbc
+        return ValidateSpellInfo(PolymorhForms);
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetCaster()->FindNearestCreature(NPC_AUROSALIA, 30.0f))
+            if (target->GetTypeId() == TYPEID_UNIT)
+                target->CastSpell(target, PolymorhForms[urand(0, 5)], true);
+    }
+
+    void Register() override
+    {
+        // add dummy effect spell handler to Polymorph visual
+        OnEffectHitTarget.Register(&spell_gen_polymorph_cast_visual::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+uint32 const spell_gen_polymorph_cast_visual::PolymorhForms[6] =
+{
+    SPELL_MAGE_SQUIRREL_FORM,
+    SPELL_MAGE_GIRAFFE_FORM,
+    SPELL_MAGE_SERPENT_FORM,
+    SPELL_MAGE_DRAGONHAWK_FORM,
+    SPELL_MAGE_WORGEN_FORM,
+    SPELL_MAGE_SHEEP_FORM
+};
+
+enum DalaranShopKeeper
+{
+    SPELL_DALARAN_SHOP_KEEPER_AOE           = 60912,
+    SPELL_DALARAN_SHOP_KEEPER_PING          = 60909,
+    SPELL_DALARAN_SHOP_KEEPER_DUMMY_AURA    = 61354
+};
+
+// 60913 - [DND] Dalaran - Shop Keeper Greeting
+class spell_gen_dalaran_shop_keeper_greeting_periodic : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DALARAN_SHOP_KEEPER_AOE, SPELL_DALARAN_SHOP_KEEPER_DUMMY_AURA });
+    }
+
+    void HandlePeriodic(AuraEffect const* /*aurEff*/)
+    {
+        if (!GetTarget()->HasAura(SPELL_DALARAN_SHOP_KEEPER_DUMMY_AURA))
+            GetTarget()->CastSpell(nullptr, SPELL_DALARAN_SHOP_KEEPER_AOE);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic.Register(&spell_gen_dalaran_shop_keeper_greeting_periodic::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+// 60912 - [DND] Dalaran - Shop Keeper Greeting
+class spell_gen_dalaran_shop_keeper_greeting_aoe : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DALARAN_SHOP_KEEPER_PING });
+    }
+
+    void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
+            GetTarget()->CastSpell(nullptr, SPELL_DALARAN_SHOP_KEEPER_PING, CastSpellExtraArgs(TRIGGERED_FULL_MASK).SetCustomArg(caster->GetGUID()));
+    }
+
+    void Register() override
+    {
+        AfterEffectApply.Register(&spell_gen_dalaran_shop_keeper_greeting_aoe::AfterApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// 60909 - [DND] Dalaran - Shop Keeper Greeting
+class spell_gen_dalaran_shop_keeper_greeting_ping : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DALARAN_SHOP_KEEPER_DUMMY_AURA });
+    }
+
+    // We are going to skip an endless number of condition entries and just provide the target guid right away.
+    void SelectVendor(WorldObject*& target)
+    {
+        if (GetSpell()->m_customArg.has_value())
+        {
+            ObjectGuid targetGuid = std::any_cast<ObjectGuid>(GetSpell()->m_customArg);
+            target = ObjectAccessor::GetCreature(*GetCaster(), targetGuid);
+        }
+    }
+
+    void HandleDummyEffect(SpellEffIndex /*effIndex*/)
+    {
+        GetHitUnit()->CastSpell(nullptr, SPELL_DALARAN_SHOP_KEEPER_DUMMY_AURA);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_gen_dalaran_shop_keeper_greeting_ping::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnObjectTargetSelect.Register(&spell_gen_dalaran_shop_keeper_greeting_ping::SelectVendor, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     new spell_gen_absorb0_hitlimit1();
@@ -5512,6 +5640,9 @@ void AddSC_generic_spell_scripts()
     new spell_gen_creature_permanent_feign_death();
     new spell_gen_dalaran_disguise("spell_gen_sunreaver_disguise");
     new spell_gen_dalaran_disguise("spell_gen_silver_covenant_disguise");
+    RegisterSpellScript(spell_gen_dalaran_shop_keeper_greeting_periodic);
+    RegisterSpellScript(spell_gen_dalaran_shop_keeper_greeting_aoe);
+    RegisterSpellScript(spell_gen_dalaran_shop_keeper_greeting_ping);
     new spell_gen_decay_over_time_fungal_decay();
     new spell_gen_decay_over_time_tail_sting();
     new spell_gen_defend();
@@ -5620,4 +5751,5 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_face_rage);
     RegisterSpellScript(spell_gen_shadowmeld);
     RegisterSpellScript(spell_gen_vehicle_control_link);
+    RegisterSpellScript(spell_gen_polymorph_cast_visual);
 }
