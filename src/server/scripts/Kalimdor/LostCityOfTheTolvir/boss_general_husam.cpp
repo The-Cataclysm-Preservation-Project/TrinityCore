@@ -256,7 +256,7 @@ struct npc_husam_tolvir_land_mine : public NullCreatureAI
 {
     npc_husam_tolvir_land_mine(Creature* creature) : NullCreatureAI(creature)
     {
-        me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+        me->SetDisplayFromModel(1);
     }
 
     void JustAppeared() override

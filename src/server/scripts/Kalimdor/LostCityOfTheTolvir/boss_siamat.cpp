@@ -194,7 +194,7 @@ struct boss_siamat : public BossAI
                 break;
             case NPC_CLOUD_BURST:
                 summons.Summon(summon);
-                summon->SetDisplayId(summon->GetCreatureTemplate()->Modelid2);
+                summon->SetDisplayFromModel(1);
                 break;
             case NPC_MINION_OF_SIAMAT_STORM:
                 summons.Summon(summon);

@@ -1444,8 +1444,7 @@ void GameEventMgr::ChangeEquipOrModel(int16 event_id, bool activate)
                     if (itr->second.modelid > 0 && itr->second.modelid_prev != itr->second.modelid &&
                         sObjectMgr->GetCreatureModelInfo(itr->second.modelid))
                     {
-                        creature->SetDisplayId(itr->second.modelid);
-                        creature->SetNativeDisplayId(itr->second.modelid);
+                        creature->SetDisplayId(itr->second.modelid, true);
                     }
                 }
                 else
@@ -1454,8 +1453,7 @@ void GameEventMgr::ChangeEquipOrModel(int16 event_id, bool activate)
                     if (itr->second.modelid_prev > 0 && itr->second.modelid_prev != itr->second.modelid &&
                         sObjectMgr->GetCreatureModelInfo(itr->second.modelid_prev))
                     {
-                        creature->SetDisplayId(itr->second.modelid_prev);
-                        creature->SetNativeDisplayId(itr->second.modelid_prev);
+                        creature->SetDisplayId(itr->second.modelid_prev, true);
                     }
                 }
             }

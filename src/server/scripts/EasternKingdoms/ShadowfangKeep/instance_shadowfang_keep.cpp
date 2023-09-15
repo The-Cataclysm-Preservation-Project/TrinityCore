@@ -157,7 +157,7 @@ public:
             switch (creature->GetEntry())
             {
                 case NPC_FORSAKEN_BLIGHTSPREADER:
-                    creature->SetDisplayId(creature->GetCreatureTemplate()->Modelid1);
+                    creature->SetDisplayFromModel(0);
                     break;
                 case NPC_HIGH_WARLORD_CROMUSH:
                     if (creature->ToTempSummon())

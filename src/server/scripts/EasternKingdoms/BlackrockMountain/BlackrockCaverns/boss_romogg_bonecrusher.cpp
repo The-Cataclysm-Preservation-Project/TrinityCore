@@ -208,7 +208,7 @@ struct npc_romogg_chains_of_woe : public NullCreatureAI
 
     void IsSummonedBy(Unit* /*summoner*/) override
     {
-        me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+        me->SetDisplayFromModel(1);
         DoCastSelf(SPELL_CHAINS_OF_WOE_TELEPORT);
         DoCastSelf(SPELL_CHAINS_OF_WOE_CHANNELED);
     }

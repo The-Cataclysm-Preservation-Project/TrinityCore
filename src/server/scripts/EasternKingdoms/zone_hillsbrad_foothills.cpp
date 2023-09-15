@@ -740,7 +740,7 @@ struct npc_brazie_fertilitize_o_tron_2000 : public ScriptedAI
 
     void IsSummonedBy(Unit* summoner) override
     {
-        me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+        me->SetDisplayFromModel(1);
 
         if (Creature* vehicle = summoner->GetVehicleCreatureBase())
             if (vehicle->IsAIEnabled())
@@ -828,7 +828,7 @@ struct npc_brazie_spot : public ScriptedAI
             me->SetFullHealth();
             me->UpdateEntry(NPC_EMPTY_SPOT);
             _currentEntry = NPC_EMPTY_SPOT;
-            me->SetDisplayId(me->GetCreatureTemplate()->Modelid1);
+            me->SetDisplayFromModel(0);
             me->AttackStop();
             me->SetFacingTo(me->GetHomePosition().GetOrientation());
             _events.Reset();
@@ -840,7 +840,7 @@ struct npc_brazie_spot : public ScriptedAI
         me->m_SightDistance = 150.0f;
         me->m_CombatDistance = 150.0f;
 
-        me->SetDisplayId(me->GetCreatureTemplate()->Modelid1);
+        me->SetDisplayFromModel(0);
 
         if (Creature* vehicle = summoner->GetVehicleCreatureBase())
             if (vehicle->IsAIEnabled())
@@ -899,7 +899,7 @@ struct npc_brazie_spot : public ScriptedAI
         }
 
         if (spell->Id != SPELL_PLAGUE_GAS)
-            me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+            me->SetDisplayFromModel(1);
     }
 
     void UpdateAI(uint32 diff) override
@@ -969,7 +969,7 @@ struct npc_brazie_zombie : public ScriptedAI
             DoCastSelf(SPELL_ZOMBIE_GROWL);
         else if (me->GetEntry() == NPC_GHOUL)
         {
-            me->SetDisplayId(me->GetCreatureTemplate()->Modelid4);
+            me->SetDisplayFromModel(3);
             DoCastSelf(SPELL_GHOUL_GROWL, true);
             DoCastSelf(SPELL_BUCKET_HEAD, true);
         }
@@ -1125,15 +1125,15 @@ struct npc_brazie_vehicle_notifier : public ScriptedAI
         {
         case NPC_SOLAR_POWER:
         case NPC_FREEZYA_SEEDS:
-            me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+            me->SetDisplayFromModel(1);
             me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
             break;
         case NPC_PLACE_IT_HERE:
             me->Relocate(EmptySpotPositions[0]);
-            me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+            me->SetDisplayFromModel(1);
             break;
         default:
-            me->SetDisplayId(me->GetCreatureTemplate()->Modelid1);
+            me->SetDisplayFromModel(0);
             break;
         }
 

@@ -2894,8 +2894,8 @@ public:
             init.SetFacing(o);
             who->GetMotionMaster()->LaunchMoveSpline(std::move(init), EVENT_VEHICLE_BOARD, MOTION_SLOT_CONTROLLED);
             who->m_Events.AddEvent(new CastFoodSpell(who, _chairSpells.at(who->GetEntry())), who->m_Events.CalculateTime(1000));
-            if (who->GetTypeId() == TYPEID_UNIT)
-                who->SetDisplayId(who->ToCreature()->GetCreatureTemplate()->Modelid1);
+            if (Creature* creature = who->ToCreature())
+                creature->SetDisplayFromModel(0);
         }
     };
 

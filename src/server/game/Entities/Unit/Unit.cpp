@@ -10354,12 +10354,15 @@ void Unit::RecalculateObjectScale()
     SetObjectScale(std::max(scale, scaleMin));
 }
 
-void Unit::SetDisplayId(uint32 modelId)
+void Unit::SetDisplayId(uint32 modelId, bool setNative /*= false*/)
 {
     SetUInt32Value(UNIT_FIELD_DISPLAYID, modelId);
     // Set Gender by modelId
     if (CreatureModelInfo const* minfo = sObjectMgr->GetCreatureModelInfo(modelId))
         SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_GENDER, minfo->gender);
+
+    if (setNative)
+        SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, modelId);
 }
 
 void Unit::RestoreDisplayId()
@@ -13997,7 +14000,7 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target)
 
                     if (cinfo->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER)
                         if (target->IsGameMaster())
-                            displayId = cinfo->GetFirstVisibleModel();
+                            displayId = cinfo->GetFirstVisibleModel()->CreatureDisplayID;
                 }
 
                 fieldBuffer << uint32(displayId);

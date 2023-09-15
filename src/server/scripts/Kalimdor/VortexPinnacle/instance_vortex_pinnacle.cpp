@@ -129,7 +129,7 @@ class instance_vortex_pinnacle : public InstanceMapScript
                 switch (creature->GetEntry())
                 {
                     case NPC_HOWLING_GALE:
-                        creature->SetDisplayId(creature->GetCreatureTemplate()->Modelid2);
+                        creature->SetDisplayFromModel(1);
                         break;
                     case NPC_AIR_CURRENT:
                         _airCurrentGUIDs.push_back(creature->GetGUID());
@@ -163,7 +163,7 @@ class instance_vortex_pinnacle : public InstanceMapScript
                         }
                         break;
                     case NPC_GOLDEN_ORB:
-                        creature->SetDisplayId(creature->GetCreatureTemplate()->Modelid2);
+                        creature->SetDisplayFromModel(1);
                         break;
                     default:
                         break;

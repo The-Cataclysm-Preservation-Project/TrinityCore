@@ -250,7 +250,7 @@ public:
         void Reset() override
         {
             _events.Reset();
-            me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+            me->SetDisplayFromModel(1);
         }
 
         void JustEngagedWith(Unit* /*who*/) override

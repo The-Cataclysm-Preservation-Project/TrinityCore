@@ -315,7 +315,7 @@ struct boss_magmaw : public BossAI
         {
             case NPC_PILLAR_OF_FLAME:
                 summon->CastSpell(summon, SPELL_PILLAR_OF_FLAME_DUMMY);
-                summon->SetDisplayId(summon->GetCreatureTemplate()->Modelid1);
+                summon->SetDisplayFromModel(0);
                 summon->DespawnOrUnsummon(7s);
                 Talk(SAY_ANNOUNCE_LAVA_PARASITES);
                 summons.Summon(summon);
@@ -533,7 +533,7 @@ private:
         if (pincer1)
         {
             pincer1->EnterVehicle(me, SEAT_MAGMAWS_PINCER_1);
-            pincer1->SetDisplayId(pincer1->GetCreatureTemplate()->Modelid3);
+            pincer1->SetDisplayFromModel(2);
             _bodyPartGUIDs[BODY_PART_PINCER_1] = pincer1->GetGUID();
         }
 
@@ -541,7 +541,7 @@ private:
         if (pincer2)
         {
             pincer2->EnterVehicle(me, SEAT_MAGMAWS_PINCER_2);
-            pincer2->SetDisplayId(pincer2->GetCreatureTemplate()->Modelid3);
+            pincer2->SetDisplayFromModel(2);
             _bodyPartGUIDs[BODY_PART_PINCER_2] = pincer2->GetGUID();
         }
 

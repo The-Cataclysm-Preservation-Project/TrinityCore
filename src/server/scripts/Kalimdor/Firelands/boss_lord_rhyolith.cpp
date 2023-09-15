@@ -225,7 +225,7 @@ struct boss_lord_rhyolith : public BossAI
         {
             if (Creature* foot = DoSummon(entry, me->GetPosition(), 0, TEMPSUMMON_MANUAL_DESPAWN))
             {
-                foot->SetDisplayId(foot->GetCreatureTemplate()->Modelid2);
+                foot->SetDisplayFromModel(1);
                 foot->CastSpell(me, SPELL_RIDE_VEHICLE, CastSpellExtraArgs().AddSpellBP0(seatId));
                 foot->CastSpell(foot, SPELL_START_FIGHT);
                 foot->CastSpell(foot, SPELL_FOOT_DAMAGE_TRACKER);
@@ -323,7 +323,7 @@ struct boss_lord_rhyolith : public BossAI
                 break;
             case NPC_VOLCANO:
                 summon->CastSpell(nullptr, SPELL_VOLCANO_BASE);
-                summon->SetDisplayId(summon->GetCreatureTemplate()->Modelid2);
+                summon->SetDisplayFromModel(1);
                 summons.Summon(summon);
                 break;
             case NPC_PILLAR:
@@ -906,7 +906,7 @@ struct npc_rhyolith_volcano : public NullCreatureAI
             case ACTION_ACTIVATE_VOLCANO:
                 me->UpdateEntry(NPC_VOLCANO_HEATED, nullptr, false);
                 if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_HEATED))
-                    me->SetDisplayId(transformTemplate->Modelid2);
+                    me->SetDisplayFromModel(1);
                 _events.ScheduleEvent(EVENT_ERUPTION, 5s);
                 break;
             case ACTION_SCHEDULE_MAGMA_FLOW:
@@ -921,7 +921,7 @@ struct npc_rhyolith_volcano : public NullCreatureAI
 
                 me->UpdateEntry(NPC_VOLCANO_CRATER, nullptr, false);
                 if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_CRATER))
-                    me->SetDisplayId(transformTemplate->Modelid2);
+                    me->SetDisplayFromModel(1);
                 break;
             default:
                 break;

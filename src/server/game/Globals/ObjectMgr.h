@@ -1013,8 +1013,8 @@ class TC_GAME_API ObjectMgr
         CreatureTemplate const* GetCreatureTemplate(uint32 entry) const;
         CreatureTemplateContainer const* GetCreatureTemplates() const { return &_creatureTemplateStore; }
         CreatureModelInfo const* GetCreatureModelInfo(uint32 modelId) const;
-        CreatureModelInfo const* GetCreatureModelRandomGender(uint32* displayID) const;
-        static uint32 ChooseDisplayId(CreatureTemplate const* cinfo, CreatureData const* data = nullptr);
+        CreatureModelInfo const* GetCreatureModelRandomGender(CreatureModel* model, CreatureTemplate const* creatureTemplate) const;
+        static CreatureModel const* ChooseDisplayId(CreatureTemplate const* cinfo, CreatureData const* data = nullptr);
         static void ChooseCreatureFlags(CreatureTemplate const* cinfo, uint32& npcflag, uint32& unit_flags, uint32& dynamicflags, CreatureData const* data = nullptr);
         EquipmentInfo const* GetEquipmentInfo(uint32 entry, int8& id) const;
         CreatureAddon const* GetCreatureAddon(ObjectGuid::LowType lowguid) const;
@@ -1187,6 +1187,7 @@ class TC_GAME_API ObjectMgr
         void LoadCreatureTemplateAddons();
         void LoadCreatureSparringTemplate();
         void LoadCreatureTemplate(Field* fields);
+        void LoadCreatureTemplateModels();
         void CheckCreatureTemplate(CreatureTemplate const* cInfo);
         void CheckCreatureMovement(char const* table, uint64 id, CreatureMovementData& creatureMovement);
         void LoadGameObjectQuestItems();
