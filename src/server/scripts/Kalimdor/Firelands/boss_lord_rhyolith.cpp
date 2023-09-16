@@ -922,7 +922,8 @@ struct npc_rhyolith_volcano : public NullCreatureAI
 
                 me->UpdateEntry(NPC_VOLCANO_CRATER, nullptr, false);
                 if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_CRATER))
-                    me->SetDisplayFromModel(1);
+                    if (CreatureModel const* model = transformTemplate->GetModelByIdx(1))
+                        me->SetDisplayId(model->CreatureDisplayID);
                 break;
             default:
                 break;
