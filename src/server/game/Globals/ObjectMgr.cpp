@@ -612,15 +612,6 @@ void ObjectMgr::LoadCreatureTemplateModels()
         if (!modelInfo)
             TC_LOG_ERROR("sql.sql", "No model data exist for `CreatureDisplayID` = %u listed by creature (Entry: %u).", creatureDisplayId, creatureId);
 
-        /// if not set custom creature scale then load scale from CreatureDisplayInfo.dbc
-        if (cInfo->scale <= 0.0f)
-        {
-            if (displayEntry)
-                const_cast<CreatureTemplate*>(cInfo)->scale = displayEntry->CreatureModelScale;
-            else
-                const_cast<CreatureTemplate*>(cInfo)->scale = 1.0f;
-        }
-
         const_cast<CreatureTemplate*>(cInfo)->Models.emplace_back(creatureDisplayId, idx, probability);
 
         ++count;

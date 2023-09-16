@@ -906,7 +906,8 @@ struct npc_rhyolith_volcano : public NullCreatureAI
             case ACTION_ACTIVATE_VOLCANO:
                 me->UpdateEntry(NPC_VOLCANO_HEATED, nullptr, false);
                 if (CreatureTemplate const* transformTemplate = sObjectMgr->GetCreatureTemplate(NPC_VOLCANO_HEATED))
-                    me->SetDisplayFromModel(1);
+                    if (CreatureModel const* model = transformTemplate->GetModelByIdx(1))
+                        me->SetDisplayId(model->CreatureDisplayID);
                 _events.ScheduleEvent(EVENT_ERUPTION, 5s);
                 break;
             case ACTION_SCHEDULE_MAGMA_FLOW:
