@@ -673,7 +673,7 @@ class spell_gilneas_drowning_vehicle_exit_dummy : public SpellScript
     void Register() override
     {
         OnEffectHitTarget.Register(&spell_gilneas_drowning_vehicle_exit_dummy::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-        OnEffectHitTarget.Register(&spell_gilneas_drowning_vehicle_exit_dummy::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_gilneas_drowning_vehicle_exit_dummy::HandleHit, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
 
