@@ -64,7 +64,7 @@ static bool IsTargetMoving(Unit const* owner, Unit const* target, float distance
     return false;
 }
 
-static float GetVelocity(Unit* owner, Unit* target, bool catchUp)
+static float GetVelocity(Unit const* owner, Unit const* target, bool catchUp)
 {
     float targetSpeed = 0.f;
     float velocity = 0.f;
@@ -96,9 +96,9 @@ static float GetVelocity(Unit* owner, Unit* target, bool catchUp)
     return velocity;
 }
 
-static void ApplyCatchUpMod(Unit* owner, Position dest, float& velocity)
+static void ApplyCatchUpMod(Unit const* owner, Position dest, float& velocity)
 {
-    float distance = owner->GetExactDist2d(dest);
+    float const distance = owner->GetExactDist2d(dest);
 
     if (!dest.HasInArc(float(M_PI), owner)) // owner is falling back. Catch up
         AddPct(velocity, ((distance / velocity) * 100.f));
@@ -106,7 +106,7 @@ static void ApplyCatchUpMod(Unit* owner, Position dest, float& velocity)
         AddPct(velocity, -((distance / velocity) * 100.f));
 }
 
-static void DoMovementInform(Unit* owner, Unit* target)
+static void DoMovementInform(Unit const* owner, Unit const* target)
 {
     if (owner->GetTypeId() != TYPEID_UNIT)
         return;
