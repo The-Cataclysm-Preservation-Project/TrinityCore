@@ -1666,8 +1666,17 @@ void Spell::SelectImplicitCasterObjectTargets(SpellEffIndex effIndex, SpellImpli
             checkIfValid = false;
             break;
         case TARGET_UNIT_MASTER:
+        {
             target = m_caster->GetCharmerOrOwner();
+            if (target == nullptr && m_caster->IsCreature())
+            {
+                if (TempSummon const* meTempSummon = m_caster->ToCreature()->ToTempSummon())
+                {
+                    target = meTempSummon->GetSummoner();
+                }
+            }
             break;
+        }
         case TARGET_UNIT_PET:
             if (Unit* unitCaster = m_caster->ToUnit())
                 target = unitCaster->GetGuardianPet();
