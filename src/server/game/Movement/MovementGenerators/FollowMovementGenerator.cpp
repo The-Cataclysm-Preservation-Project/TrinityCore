@@ -29,7 +29,7 @@
 #include <optional>
 
 // Helpers
-inline UnitMoveType SelectSpeedType(uint32 moveFlags)
+static UnitMoveType SelectSpeedType(uint32 moveFlags)
 {
     if (moveFlags & MOVEMENTFLAG_FLYING)
     {
@@ -53,12 +53,18 @@ inline UnitMoveType SelectSpeedType(uint32 moveFlags)
     return MOVE_RUN;
 }
 
-inline bool IsTargetMoving(Unit const* target)
+static bool IsTargetMoving(Unit const* owner, Unit const* target, float distance)
 {
-    return target->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !target->movespline->Finalized();
+    if (target->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !target->movespline->Finalized())
+        return true;
+
+    if (owner->GetExactDistSq(target) > square(owner->GetCombatReach() + target->GetCombatReach() + distance))
+        return true;
+
+    return false;
 }
 
-inline float GetVelocity(Unit* owner, Unit* target, bool catchUp)
+static float GetVelocity(Unit* owner, Unit* target, bool catchUp)
 {
     float targetSpeed = 0.f;
     float velocity = 0.f;
@@ -224,7 +230,7 @@ bool FollowMovementGenerator::Update(Unit* owner, uint32 diff)
     {
 
         _followMovementTimer.Reset(FOLLOW_MOVEMENT_INTERVAL);
-        if (IsTargetMoving(target))
+        if (IsTargetMoving(owner, target, _distance))
         {
             _events.Reset();
             LaunchMovement(owner);
