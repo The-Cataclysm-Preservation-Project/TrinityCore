@@ -55,7 +55,20 @@ inline UnitMoveType SelectSpeedType(uint32 moveFlags)
 
 inline bool IsTargetMoving(Unit const* target)
 {
-    return target->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !target->movespline->Finalized();
+    if (target->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !target->movespline->Finalized())
+    {
+        return true;
+    }
+
+    if (Unit* targetVehicle = target->GetVehicleBase())
+    {
+        if (targetVehicle->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !targetVehicle->movespline->Finalized())
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 inline float GetVelocity(Unit* owner, Unit* target, bool catchUp)
