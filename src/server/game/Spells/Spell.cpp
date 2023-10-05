@@ -1670,9 +1670,9 @@ void Spell::SelectImplicitCasterObjectTargets(SpellEffIndex effIndex, SpellImpli
             target = m_caster->GetCharmerOrOwner();
             if (target == nullptr && m_caster->IsCreature())
             {
-                if (TempSummon const* meTempSummon = m_caster->ToCreature()->ToTempSummon())
+                if (TempSummon const* casterTempSummon = m_caster->ToCreature()->ToTempSummon())
                 {
-                    target = meTempSummon->GetSummoner();
+                    target = casterTempSummon->GetSummoner();
                 }
             }
             break;
