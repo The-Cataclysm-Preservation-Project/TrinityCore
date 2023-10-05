@@ -60,7 +60,7 @@ inline bool IsTargetMoving(Unit const* target)
         return true;
     }
 
-    if (Unit* targetVehicle = target->GetVehicleBase())
+    if (Unit const* targetVehicle = target->GetVehicleBase())
     {
         if (targetVehicle->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !targetVehicle->movespline->Finalized())
         {
