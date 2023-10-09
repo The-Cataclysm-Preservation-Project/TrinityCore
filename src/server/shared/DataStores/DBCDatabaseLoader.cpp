@@ -50,7 +50,7 @@ DBCDatabaseLoader::DBCDatabaseLoader(std::string const& storageName, std::string
     }
 }
 
-static char const* nullStr = "";
+static char const* dbcNullStr = "";
 
 char* DBCDatabaseLoader::Load(uint32& records, char**& indexTable)
 {
@@ -130,7 +130,7 @@ char* DBCDatabaseLoader::Load(uint32& records, char**& indexTable)
                         offset += 1;
                         break;
                     case FT_STRING:
-                        *reinterpret_cast<char**>(&dataValue[offset]) = const_cast<char*>(nullStr);
+                        *reinterpret_cast<char**>(&dataValue[offset]) = const_cast<char*>(dbcNullStr);
                         offset += sizeof(char*);
                         break;
                 }

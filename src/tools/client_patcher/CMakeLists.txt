@@ -28,4 +28,13 @@ target_link_libraries(${target_name}
     minhook
 )
 
+if(UNITY_BUILDS)
+  set_target_properties(${target_name}
+      PROPERTIES UNITY_BUILD ON)
+  set_target_properties(${target_name}
+      PROPERTIES
+        UNITY_BUILD_MODE BATCH
+        UNITY_BUILD_BATCH_SIZE 4)
+endif()
+
 install(TARGETS ${target_name} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}")

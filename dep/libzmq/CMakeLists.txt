@@ -217,3 +217,12 @@ target_compile_definitions(libzmq
     -DZMQ_STATIC
     ${ZMQ_PLATFORM}
     ${ADDITIONAL_DEFINES})
+
+if(UNITY_BUILDS)
+  set_target_properties(libzmq
+      PROPERTIES UNITY_BUILD ON)
+  set_target_properties(libzmq
+      PROPERTIES
+        UNITY_BUILD_MODE BATCH
+        UNITY_BUILD_BATCH_SIZE 2)
+endif()
