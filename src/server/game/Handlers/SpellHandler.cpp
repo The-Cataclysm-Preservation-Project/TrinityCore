@@ -36,6 +36,7 @@
 #include "ScriptMgr.h"
 #include "Spell.h"
 #include "SpellAuraEffects.h"
+#include "SpellCastRequest.h"
 #include "SpellMgr.h"
 #include "SpellPackets.h"
 #include "Totem.h"
@@ -103,7 +104,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::UseItem& packet)
         return;
 
     if (user->CanRequestSpellCast(spellInfo))
-        user->RequestSpellCast(PendingSpellCastRequest(std::move(packet.Cast), SpellCastRequestItemData(packet.PackSlot, packet.Slot, packet.CastItem)), spellInfo);
+        user->RequestSpellCast(std::make_unique<PendingSpellCastRequest>(std::move(packet.Cast), SpellCastRequestItemData(packet.PackSlot, packet.Slot, packet.CastItem)), spellInfo);
 }
 
 void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
@@ -274,7 +275,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
         return;
 
     if (mover->CanRequestSpellCast(spellInfo))
-        mover->RequestSpellCast(PendingSpellCastRequest(std::move(cast.Cast)), spellInfo);
+        mover->RequestSpellCast(std::make_unique<PendingSpellCastRequest>(std::move(cast.Cast)), spellInfo);
     else if (mover->IsPlayer())
         Spell::SendCastResult(mover->ToPlayer(), spellInfo, cast.Cast.CastID, SPELL_FAILED_SPELL_IN_PROGRESS);
 }
