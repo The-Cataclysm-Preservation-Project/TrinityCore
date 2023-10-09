@@ -1732,8 +1732,9 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         while (groupEntry)
         {
             for (uint8 i = 0; i < MAX_GROUP_AREA_IDS; ++i)
-                if (groupEntry->AreaID[i] == zone_id || groupEntry->AreaID[i] == area_id)
+                if (DBCManager::IsInArea(area_id, groupEntry->AreaID[i]))
                     found = true;
+
             if (found || !groupEntry->NextAreaID)
                 break;
             // Try search in next group
