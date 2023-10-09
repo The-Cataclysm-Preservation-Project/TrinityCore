@@ -222,21 +222,13 @@ struct AreaTableEntry
     uint32 World_pvp_ID;                                    // 24
     int32 PvpCombatWorldStateID;                            // 25- worldStateId
 
+    EnumFlag<AreaFlags> GetFlags() const { return static_cast<AreaFlags>(Flags); }
+    EnumFlag<AreaMountFlags> GetMountFlags() const { return static_cast<AreaMountFlags>(MountFlags); }
+
     // helpers
     bool IsSanctuary() const
     {
-        return (Flags & AREA_FLAG_SANCTUARY) != 0;
-    }
-
-    bool IsFlyable() const
-    {
-        if (Flags & AREA_FLAG_OUTLAND)
-        {
-            if (!(Flags & AREA_FLAG_NO_FLY_ZONE))
-                return true;
-        }
-
-        return false;
+        return GetFlags().HasFlag(AreaFlags::NoPvP);
     }
 };
 
