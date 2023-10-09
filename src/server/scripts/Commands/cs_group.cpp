@@ -428,7 +428,7 @@ public:
                 LocaleConstant localeConstant = handler->GetSessionDbcLocale();
 
                 AreaTableEntry const* area = sAreaTableStore.LookupEntry(p->GetAreaId());
-                if (area)
+                if (area && area->GetFlags().HasFlag(AreaFlags::IsSubzone))
                 {
                     AreaTableEntry const* zone = sAreaTableStore.LookupEntry(area->ParentAreaID);
                     if (zone)

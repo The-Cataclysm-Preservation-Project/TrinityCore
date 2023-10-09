@@ -619,7 +619,7 @@ uint32 TerrainInfo::GetZoneId(PhaseShift const& phaseShift, uint32 mapId, float 
 {
     uint32 areaId = GetAreaId(phaseShift, mapId, x, y, z);
     if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(areaId))
-        if (area->ParentAreaID)
+        if (area->ParentAreaID && area->GetFlags().HasFlag(AreaFlags::IsSubzone))
             return area->ParentAreaID;
 
     return areaId;
@@ -629,7 +629,7 @@ void TerrainInfo::GetZoneAndAreaId(PhaseShift const& phaseShift, uint32 mapId, u
 {
     areaid = zoneid = GetAreaId(phaseShift, mapId, x, y, z);
     if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(areaid))
-        if (area->ParentAreaID)
+        if (area->ParentAreaID && area->GetFlags().HasFlag(AreaFlags::IsSubzone))
             zoneid = area->ParentAreaID;
 }
 

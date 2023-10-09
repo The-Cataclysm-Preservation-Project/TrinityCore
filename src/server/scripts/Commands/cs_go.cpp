@@ -315,7 +315,9 @@ public:
         }
 
         // update to parent zone if exist (client map show only zones without parents)
-        AreaTableEntry const* zoneEntry = areaEntry->ParentAreaID ? sAreaTableStore.LookupEntry(areaEntry->ParentAreaID) : areaEntry;
+        AreaTableEntry const* zoneEntry = areaEntry->ParentAreaID && areaEntry->GetFlags().HasFlag(AreaFlags::IsSubzone)
+            ? sAreaTableStore.LookupEntry(areaEntry->ParentAreaID)
+            : areaEntry;
         ASSERT(zoneEntry);
 
         std::shared_ptr<TerrainInfo> terrain = sTerrainMgr.LoadTerrain(zoneEntry->ContinentID);
