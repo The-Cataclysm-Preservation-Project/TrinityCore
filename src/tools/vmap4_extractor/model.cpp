@@ -20,6 +20,7 @@
 #include "model.h"
 #include "wmo.h"
 #include "adtfile.h"
+#include "mpqfile.h"
 #include "VMapDefinitions.h"
 #include <G3D/Quat.h>
 #include <cstdio>

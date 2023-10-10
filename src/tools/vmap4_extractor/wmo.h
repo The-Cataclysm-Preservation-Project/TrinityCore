@@ -18,6 +18,7 @@
 #ifndef WMO_H
 #define WMO_H
 
+#include "mpqfile.h"
 #include <string>
 #include <unordered_set>
 #include <memory>

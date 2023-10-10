@@ -18,6 +18,7 @@
 #include "adtfile.h"
 #include "wdtfile.h"
 #include "dbcfile.h"
+#include "mpqfile.h"
 #include "wmo.h"
 #include "StringFormat.h"
 #include "vmapexport.h"
