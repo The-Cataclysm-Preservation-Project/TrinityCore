@@ -2977,6 +2977,12 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
                     return false;
                 break;
             }
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_COMPLETE_QUEST_NOT_IN_GROUP: // 35
+            {
+                if (referencePlayer->IsInGroup())
+                    return false;
+                break;
+            }
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TITLE_BIT_INDEX: // 38
                 // miscValue1 is title's bit index
                 if (miscValue1 != reqValue)
