@@ -58,9 +58,9 @@ static bool IsTargetMoving(Unit const* target)
     return target->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !target->movespline->Finalized();
 }
 
-static bool IsWithinFollowDistance(Unit const* owner, Unit const* target, float followDistance)
+static bool IsFarFromFollowDistance(Unit const* owner, Unit const* target, float followDistance)
 {
-    return owner->GetExactDistSq(target) > square(followDistance);
+    return owner->GetExactDistSq(target) > square(followDistance;
 }
 
 static float GetVelocity(Unit const* owner, Unit const* target, bool catchUp)
@@ -229,7 +229,7 @@ bool FollowMovementGenerator::Update(Unit* owner, uint32 diff)
     {
 
         _followMovementTimer.Reset(FOLLOW_MOVEMENT_INTERVAL);
-        if (IsTargetMoving(target) || IsWithinFollowDistance(owner, target, _distance))
+        if (IsTargetMoving(target) || IsFarFromFollowDistance(owner, target, _distance))
         {
             _events.Reset();
             LaunchMovement(owner);
