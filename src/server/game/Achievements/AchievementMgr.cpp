@@ -2865,7 +2865,7 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
                 if (!referencePlayer->HasAura(reqValue))
                     return false;
                 break;
-            case CRITERIA_ADDITIONAL_CONDITION_SOURCE_HAS_AURA_TYPE: // 9
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_HAS_AURA_TYPE: // 9
                 if (!referencePlayer->HasAuraType(AuraType(reqValue)))
                     return false;
                 break;
