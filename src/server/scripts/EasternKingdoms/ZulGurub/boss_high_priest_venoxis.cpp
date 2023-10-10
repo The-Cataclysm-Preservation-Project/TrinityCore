@@ -97,6 +97,11 @@ enum WeaponDisplayIds
     WEAPON_DISPLAY_ID_STAVE = 68821
 };
 
+enum Misc
+{
+    GAME_EVENT_ENABLE_ACHIEVEMENT = 28223
+};
+
 Position const PoisonCloudPositions[] =
 {
     { -12019.1f, -1724.89f, 39.6277f, 0.0f },
@@ -223,6 +228,7 @@ struct boss_high_priest_venoxis : public BossAI
         events.ScheduleEvent(EVENT_WHISPERS_OF_HETHISS, 6s);
         events.ScheduleEvent(EVENT_TOXIC_LINK, 14s + 400ms);
         events.ScheduleEvent(EVENT_BLESSING_OF_THE_SNAKE_GOD, 34s);
+        instance->TriggerGameEvent(GAME_EVENT_ENABLE_ACHIEVEMENT);
     }
 
     void JustDied(Unit* /*killer*/) override
