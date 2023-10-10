@@ -6,6 +6,7 @@
 #ifndef MPQ_H
 #define MPQ_H
 
+#include "StormLib.h"
 #include "Define.h"
 
 #ifdef _WIN32
