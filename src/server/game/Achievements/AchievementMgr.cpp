@@ -3014,6 +3014,12 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
                     return false;
                 break;
             }
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_MIN_ACHIEVEMENT_POINTS: // 56
+            {
+                if (referencePlayer->GetAchievementPoints() < reqValue)
+                    return false;
+                break;
+            }
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_REQUIRES_GUILD_GROUP: // 61
             {
                 Guild* guild = referencePlayer->GetGuild();
