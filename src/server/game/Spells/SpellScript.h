@@ -19,16 +19,12 @@
 #define __SPELL_SCRIPT_H
 
 #include "ObjectGuid.h"
-#include "Optional.h"
 #include "SharedDefines.h"
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"
 #include "Utilities/StringFormat.h"
 #include "Util.h"
-#include "Unit.h"
-#include "advstd.h"
 
-#include <memory>
 #include <functional>
 #include <stack>
 

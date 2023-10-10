@@ -28,7 +28,6 @@ EndScriptData */
 #include "Player.h"
 #include "ScriptedCreature.h"
 #include "shattered_halls.h"
-#include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"

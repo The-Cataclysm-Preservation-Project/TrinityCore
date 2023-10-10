@@ -20,7 +20,7 @@
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-#include "Spell.h"
+#include "SpellScript.h"
 #include "SpellAuras.h"
 #include "SpellAuraEffects.h"
 #include "Player.h"

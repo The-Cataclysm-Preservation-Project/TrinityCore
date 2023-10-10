@@ -19,7 +19,6 @@
 #include "deadmines.h"
 #include "InstanceScript.h"
 #include "MotionMaster.h"
-#include "MovementTypedefs.h"
 #include "PassiveAI.h"
 #include "PhasingHandler.h"
 #include "Player.h"
@@ -27,7 +26,6 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 #include "SpellMgr.h"
-#include "VehicleDefines.h"
 #include "GridNotifiers.h"
 #include "Map.h"
 

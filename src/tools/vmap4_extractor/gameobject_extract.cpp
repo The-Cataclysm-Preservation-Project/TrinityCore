@@ -20,7 +20,6 @@
 #include "adtfile.h"
 #include "vmapexport.h"
 #include "VMapDefinitions.h"
-#include <algorithm>
 #include <stdio.h>
 
 bool ExtractSingleModel(std::string& fname)

@@ -15,6 +15,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SpellCastRequest_h__
+#define SpellCastRequest_h__
+
 #include "SpellPacketsCommon.h"
 
 struct SpellCastRequestItemData
@@ -35,3 +38,5 @@ struct PendingSpellCastRequest
     WorldPackets::Spells::SpellCastRequest CastRequest;
     Optional<SpellCastRequestItemData> CastItemData;
 };
+
+#endif // SpellCastRequest_h__

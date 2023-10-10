@@ -25,7 +25,6 @@
 #include "Log.h"
 #include "ObjectMgr.h"
 #include "Timer.h"
-#include "Opcodes.h"
 #include "DatabaseEnv.h"
 
 namespace WeatherMgr

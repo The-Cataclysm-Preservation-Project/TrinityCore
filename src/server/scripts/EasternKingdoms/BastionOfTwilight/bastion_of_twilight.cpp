@@ -21,7 +21,6 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
-#include "GameObject.h"
 #include "GameObjectAI.h"
 #include "Object.h"
 #include "Map.h"

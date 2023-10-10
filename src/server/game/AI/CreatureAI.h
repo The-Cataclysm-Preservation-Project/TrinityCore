@@ -19,7 +19,6 @@
 #define TRINITY_CREATUREAI_H
 
 #include "UnitAI.h"
-#include "Common.h"
 #include "ObjectDefines.h"
 #include "Optional.h"
 #include "QuestDef.h"

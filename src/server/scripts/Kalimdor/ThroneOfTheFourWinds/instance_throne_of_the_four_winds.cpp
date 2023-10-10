@@ -29,7 +29,6 @@
 #include "Weather.h"
 #include "Player.h"
 #include "Creature.h"
-#include "Map.h"
 
 ObjectData const creatureData[] =
 {

@@ -21,7 +21,6 @@
 #include "GameObject.h"
 #include "Player.h"
 #include "InstanceScript.h"
-#include "shadowfang_keep.h"
 #include "Map.h"
 #include "Creature.h"
 #include "EventMap.h"

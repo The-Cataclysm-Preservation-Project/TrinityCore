@@ -25,8 +25,6 @@
 #include "MovementGenerator.h"
 #include "ObjectMgr.h"
 
-#include <cmath>
-
 #define MAX_DESYNC 5.0f
 
 FormationMgr* FormationMgr::instance()

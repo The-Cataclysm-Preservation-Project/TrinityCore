@@ -22,7 +22,6 @@
 #include "CellImpl.h"
 #include "Common.h"
 #include "DBCStores.h"
-#include "EventProcessor.h"
 #include "GridNotifiersImpl.h"
 #include "Item.h"
 #include "Log.h"
@@ -31,7 +30,6 @@
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
-#include "Opcodes.h"
 #include "OutdoorPvPMgr.h"
 #include "Pet.h"
 #include "PhasingHandler.h"
@@ -46,7 +44,6 @@
 #include "Util.h"
 #include "Vehicle.h"
 #include "Weather.h"
-#include "WeatherMgr.h"
 #include "WorldPacket.h"
 #include <G3D/g3dmath.h>
 #include <numeric>

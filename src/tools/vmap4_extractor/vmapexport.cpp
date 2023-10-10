@@ -19,7 +19,6 @@
 #include "wdtfile.h"
 #include "dbcfile.h"
 #include "wmo.h"
-#include "mpqfile.h"
 #include "StringFormat.h"
 #include "vmapexport.h"
 #include "VMapDefinitions.h"
@@ -41,7 +40,6 @@
 #undef max
 
 #include <cstdio>
-#include <iostream>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>

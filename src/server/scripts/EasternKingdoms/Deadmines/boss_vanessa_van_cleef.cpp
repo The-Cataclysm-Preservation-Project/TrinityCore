@@ -20,15 +20,11 @@
 #include "InstanceScript.h"
 #include "GridNotifiers.h"
 #include "MotionMaster.h"
-#include "MovementTypedefs.h"
 #include "MoveSplineInit.h"
-#include "PassiveAI.h"
 #include "PhasingHandler.h"
 #include "Player.h"
 #include "ScriptedCreature.h"
-#include "SpellAuraEffects.h"
 #include "ObjectAccessor.h"
-#include "MotionMaster.h"
 #include "SpellScript.h"
 
 enum Texts

@@ -25,7 +25,6 @@
 #include "Containers.h"
 #include "DBCStores.h"
 #include "Item.h"
-#include "Log.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
 #include "SpellAuraEffects.h"

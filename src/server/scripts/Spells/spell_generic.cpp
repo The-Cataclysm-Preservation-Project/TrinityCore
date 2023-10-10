@@ -31,7 +31,6 @@
 #include "Group.h"
 #include "InstanceScript.h"
 #include "Item.h"
-#include "LFGMgr.h"
 #include "Log.h"
 #include "ObjectAccessor.h"
 #include "Pet.h"

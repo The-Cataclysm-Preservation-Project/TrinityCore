@@ -24,7 +24,6 @@
 #include "MoveSplineInit.h"
 #include "PassiveAI.h"
 #include "Spell.h"
-#include "Vehicle.h"
 #include "Map.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"

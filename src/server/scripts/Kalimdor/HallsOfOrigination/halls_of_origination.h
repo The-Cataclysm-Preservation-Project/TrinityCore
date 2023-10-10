@@ -20,7 +20,6 @@
 
 #include "CreatureAIImpl.h"
 #include "Position.h"
-#include "Creature.h"
 
 #define DataHeader "HOO"
 #define HoOScriptName "instance_halls_of_origination"

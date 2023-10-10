@@ -664,6 +664,35 @@ void Vehicle::InitMovementInfoForBase()
         _me->AddExtraUnitMovementFlag(MOVEMENTFLAG2_FULL_SPEED_PITCHING);
 }
 
+ObjectGuid Vehicle::GetTransportGUID() const
+{
+    return GetBase()->GetGUID();
+}
+
+float Vehicle::GetTransportOrientation() const
+{
+    return GetBase()->GetOrientation();
+}
+
+void Vehicle::CalculatePassengerPosition(float& x, float& y, float& z, float* o /*= nullptr*/) const
+{
+    TransportBase::CalculatePassengerPosition(x, y, z, o,
+        GetBase()->GetPositionX(), GetBase()->GetPositionY(),
+        GetBase()->GetPositionZ(), GetBase()->GetOrientation());
+}
+
+void Vehicle::CalculatePassengerOffset(float& x, float& y, float& z, float* o /*= nullptr*/) const
+{
+    TransportBase::CalculatePassengerOffset(x, y, z, o,
+        GetBase()->GetPositionX(), GetBase()->GetPositionY(),
+        GetBase()->GetPositionZ(), GetBase()->GetOrientation());
+}
+
+int32 Vehicle::GetMapIdForSpawning() const
+{
+    return GetBase()->GetMapId();
+}
+
 /**
  * @fn VehicleSeatEntry const* Vehicle::GetSeatForPassenger(Unit* passenger)
  *

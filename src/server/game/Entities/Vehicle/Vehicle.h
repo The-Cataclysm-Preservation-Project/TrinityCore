@@ -18,10 +18,8 @@
 #ifndef __TRINITY_VEHICLE_H
 #define __TRINITY_VEHICLE_H
 
-#include "ObjectDefines.h"
 #include "Object.h"
 #include "VehicleDefines.h"
-#include "Unit.h"
 #include <list>
 
 struct VehicleEntry;
@@ -82,29 +80,18 @@ class TC_GAME_API Vehicle : public TransportBase
         SeatMap::iterator GetSeatIteratorForPassenger(Unit* passenger);
         void InitMovementInfoForBase();
 
-        ObjectGuid GetTransportGUID() const override { return GetBase()->GetGUID(); }
+        ObjectGuid GetTransportGUID() const override;
 
-        float GetTransportOrientation() const override { return GetBase()->GetOrientation(); }
+        float GetTransportOrientation() const override;
 
         void AddPassenger(WorldObject* /*passenger*/) override { ASSERT("Vehicle cannot directly gain passengers without auras"); }
 
         /// This method transforms supplied transport offsets into global coordinates
-        void CalculatePassengerPosition(float& x, float& y, float& z, float* o /*= nullptr*/) const override
-        {
-            TransportBase::CalculatePassengerPosition(x, y, z, o,
-                GetBase()->GetPositionX(), GetBase()->GetPositionY(),
-                GetBase()->GetPositionZ(), GetBase()->GetOrientation());
-        }
-
+        void CalculatePassengerPosition(float& x, float& y, float& z, float* o /*= nullptr*/) const override;
         /// This method transforms supplied global coordinates into local offsets
-        void CalculatePassengerOffset(float& x, float& y, float& z, float* o /*= nullptr*/) const override
-        {
-            TransportBase::CalculatePassengerOffset(x, y, z, o,
-                GetBase()->GetPositionX(), GetBase()->GetPositionY(),
-                GetBase()->GetPositionZ(), GetBase()->GetOrientation());
-        }
+        void CalculatePassengerOffset(float& x, float& y, float& z, float* o /*= nullptr*/) const override;
 
-        int32 GetMapIdForSpawning() const override { return GetBase()->GetMapId(); }
+        int32 GetMapIdForSpawning() const override;
 
 
         void RemovePendingEvent(VehicleJoinEvent* e);
@@ -112,7 +99,6 @@ class TC_GAME_API Vehicle : public TransportBase
 
         bool HasPendingEventForSeat(int8 seatId) const;
 
-    private:
         Unit* _me;                                          ///< The underlying unit with the vehicle kit. Can be player or creature.
         VehicleEntry const* _vehicleInfo;                   ///< DBC data for vehicle
         GuidSet vehiclePlayers;

@@ -6,12 +6,6 @@
 #ifndef MPQ_H
 #define MPQ_H
 
-#include <string.h>
-#include <ctype.h>
-#include <vector>
-#include <iostream>
-#include <deque>
-#include "StormLib.h"
 #include "Define.h"
 
 #ifdef _WIN32

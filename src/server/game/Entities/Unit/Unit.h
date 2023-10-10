@@ -24,14 +24,12 @@
 #include "SpellDefines.h"
 #include "ThreatManager.h"
 #include "Timer.h"
-#include "SpellPacketsCommon.h"
 #include "UnitDefines.h"
 #include "Util.h"
 #include <array>
 #include <map>
 #include <memory>
 #include <stack>
-#include <queue>
 
 #define WORLD_TRIGGER   12999
 

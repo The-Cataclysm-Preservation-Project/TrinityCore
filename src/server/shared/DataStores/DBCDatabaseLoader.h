@@ -20,7 +20,6 @@
 
 #include "DBCFileLoader.h"
 #include <string>
-#include <vector>
 
 struct TC_SHARED_API DBCDatabaseLoader
 {

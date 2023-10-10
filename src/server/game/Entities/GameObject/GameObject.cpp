@@ -41,7 +41,6 @@
 #include "PhasingHandler.h"
 #include "PoolMgr.h"
 #include "QueryPackets.h"
-#include "ScriptMgr.h"
 #include "SpellMgr.h"
 #include "Transport.h"
 #include "UpdateFieldFlags.h"

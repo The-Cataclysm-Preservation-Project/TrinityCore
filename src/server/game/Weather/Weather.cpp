@@ -22,14 +22,12 @@
 #include "Weather.h"
 #include "GameTime.h"
 #include "Log.h"
-#include "Opcodes.h"
 #include "MiscPackets.h"
 #include "Player.h"
 #include "Random.h"
 #include "ScriptMgr.h"
 #include "Util.h"
 #include "World.h"
-#include "WorldPacket.h"
 
 /// Create the Weather object
 Weather::Weather(uint32 zone, WeatherData const* weatherChances)

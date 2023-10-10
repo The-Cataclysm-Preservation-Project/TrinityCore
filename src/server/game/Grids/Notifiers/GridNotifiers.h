@@ -21,13 +21,11 @@
 #include "AreaTrigger.h"
 #include "Corpse.h"
 #include "Creature.h"
-#include "CreatureAI.h"
 #include "DynamicObject.h"
 #include "GameObject.h"
 #include "Player.h"
 #include "Spell.h"
 #include "SpellInfo.h"
-#include "TemporarySummon.h"
 #include "UnitAI.h"
 #include "UpdateData.h"
 

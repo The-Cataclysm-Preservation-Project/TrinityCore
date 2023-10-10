@@ -1,5 +1,4 @@
 #include "mpqfile.h"
-#include <deque>
 #include <cstdio>
 #include "StormLib.h"
 

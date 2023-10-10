@@ -17,7 +17,6 @@
 
 #include "vmapexport.h"
 #include "adtfile.h"
-#include "mpqfile.h"
 #include "Errors.h"
 #include "vec3d.h"
 #include "VMapDefinitions.h"

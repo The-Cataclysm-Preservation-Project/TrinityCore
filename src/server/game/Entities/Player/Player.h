@@ -30,7 +30,6 @@
 #include "PetDefines.h"
 #include "PlayerTaxi.h"
 #include "QuestDef.h"
-#include <queue>
 
 struct AccessRequirement;
 struct AchievementEntry;

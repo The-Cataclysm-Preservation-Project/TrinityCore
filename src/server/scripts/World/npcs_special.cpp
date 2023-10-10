@@ -31,7 +31,6 @@
 #include "PetAI.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptedGossip.h"
-#include "ScriptMgr.h"
 #include "SmartAI.h"
 #include "SpellAuras.h"
 #include "SpellHistory.h"

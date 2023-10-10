@@ -21,7 +21,6 @@
 #include "InstanceScript.h"
 #include "Map.h"
 #include "MapManager.h"
-#include "Transport.h"
 #include "EventMap.h"
 #include "CreatureAI.h"
 #include "TemporarySummon.h"

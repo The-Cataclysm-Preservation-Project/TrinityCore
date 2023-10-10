@@ -23,7 +23,6 @@
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
-#include "PassiveAI.h"
 #include "PhasingHandler.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"

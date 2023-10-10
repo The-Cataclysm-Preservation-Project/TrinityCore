@@ -21,7 +21,6 @@
 #include "DB2Structure.h"
 #include "Errors.h"
 #include "SharedDefines.h"
-#include "WorldPacket.h"
 #include <vector>
 
 enum ItemModType

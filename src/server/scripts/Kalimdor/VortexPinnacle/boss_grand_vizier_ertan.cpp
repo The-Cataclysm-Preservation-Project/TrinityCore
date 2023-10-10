@@ -22,7 +22,6 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include "InstanceScript.h"
-#include "SpellScript.h"
 #include "Unit.h"
 #include "SpellInfo.h"
 #include "vortex_pinnacle.h"

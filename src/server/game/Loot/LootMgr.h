@@ -21,7 +21,6 @@
 #include "Define.h"
 #include "ConditionMgr.h"
 #include "ObjectGuid.h"
-#include "SharedDefines.h"
 #include <list>
 #include <vector>
 
