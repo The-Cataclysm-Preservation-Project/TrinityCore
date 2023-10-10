@@ -132,25 +132,25 @@ void WaypointMovementGenerator<Creature>::ProcessWaypointArrival(Creature* creat
 
         // Inform the AI that the path has ended.
         if (CreatureAI* AI = creature->AI())
-            AI->WaypointPathEnded(waypoint.Id, _path->Id);
+            AI->WaypointPathEnded(_currentNode, _path->Id);
     }
 
     UpdateHomePosition(creature, waypoint);
 
     if (waypoint.EventId && urand(0, 99) < waypoint.EventChance)
     {
-        TC_LOG_DEBUG("maps.script", "Creature movement start script %u at point %u for %s.", waypoint.EventId, waypoint.Id, creature->GetGUID().ToString().c_str());
+        TC_LOG_DEBUG("maps.script", "Creature movement start script %u at point %u for %s.", waypoint.EventId, _currentNode, creature->GetGUID().ToString().c_str());
         creature->ClearUnitState(UNIT_STATE_ROAMING_MOVE);
         creature->GetMap()->ScriptsStart(sWaypointScripts, waypoint.EventId, creature, nullptr);
     }
 
-    creature->UpdateCurrentWaypointInfo(waypoint.Id, _path->Id);
+    creature->UpdateCurrentWaypointInfo(_currentNode, _path->Id);
 
     // inform AI
     if (CreatureAI* AI = creature->AI())
     {
-        AI->MovementInform(WAYPOINT_MOTION_TYPE, waypoint.Id);
-        AI->WaypointReached(waypoint.Id, _path->Id);
+        AI->MovementInform(WAYPOINT_MOTION_TYPE, _currentNode);
+        AI->WaypointReached(_currentNode, _path->Id);
     }
 
     // All hooks called and infos updated. Time to increment the waypoint node id
