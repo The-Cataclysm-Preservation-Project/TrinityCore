@@ -143,7 +143,7 @@ enum MovePoints
     POINT_NONE = 0
 };
 
-enum GossipMenu
+enum GossipMenuOptions
 {
     GOSSIP_OPTION_START_ENCOUNTER = 0
 };
