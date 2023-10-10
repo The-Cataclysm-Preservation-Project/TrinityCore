@@ -27,13 +27,13 @@
 #include "Transport.h"
 #include "WaypointManager.h"
 
-WaypointMovementGenerator<Creature>::WaypointMovementGenerator(uint32 pathId, bool repeating) : _lastSplineId(0), _pathId(pathId), _waypointDelay(0), _pauseTime(0),
-_waypointReached(true), _recalculateSpeed(false), _repeating(repeating), _loadedFromDB(true), _stalled(false), _hasBeenStalled(false), _done(false)
+WaypointMovementGenerator<Creature>::WaypointMovementGenerator(uint32 pathId, bool repeating) : _lastSplineId(0), _pathId(pathId), _waypointDelay(0),
+_waypointReached(false), _recalculateSpeed(false), _repeating(repeating), _loadedFromDB(true), _stalled(false), _hasBeenStalled(false), _done(false)
 {
 }
 
-WaypointMovementGenerator<Creature>::WaypointMovementGenerator(WaypointPath& path, bool repeating) : _lastSplineId(0), _pathId(0), _waypointDelay(0), _pauseTime(0),
-_waypointReached(true), _recalculateSpeed(false), _repeating(repeating), _loadedFromDB(false), _stalled(false), _hasBeenStalled(false), _done(false)
+WaypointMovementGenerator<Creature>::WaypointMovementGenerator(WaypointPath& path, bool repeating) : _lastSplineId(0), _pathId(0), _waypointDelay(0),
+_waypointReached(false), _recalculateSpeed(false), _repeating(repeating), _loadedFromDB(false), _stalled(false), _hasBeenStalled(false), _done(false)
 {
     _path = &path;
 }
@@ -127,6 +127,7 @@ void WaypointMovementGenerator<Creature>::ProcessWaypointArrival(Creature* creat
     if ((_currentNode == _path->Nodes.size() - 1) && !_repeating && !_done)
     {
         _done = true;
+
         creature->UpdateCurrentWaypointInfo(0, 0);
 
         // Inform the AI that the path has ended.
@@ -138,7 +139,7 @@ void WaypointMovementGenerator<Creature>::ProcessWaypointArrival(Creature* creat
 
     if (waypoint.EventId && urand(0, 99) < waypoint.EventChance)
     {
-        TC_LOG_DEBUG("maps.script", "Creature movement start script %u at point %u for %s.", waypoint.EventId, _currentNode, creature->GetGUID().ToString().c_str());
+        TC_LOG_DEBUG("maps.script", "Creature movement start script %u at point %u for %s.", waypoint.EventId, waypoint.Id, creature->GetGUID().ToString().c_str());
         creature->ClearUnitState(UNIT_STATE_ROAMING_MOVE);
         creature->GetMap()->ScriptsStart(sWaypointScripts, waypoint.EventId, creature, nullptr);
     }
@@ -148,7 +149,7 @@ void WaypointMovementGenerator<Creature>::ProcessWaypointArrival(Creature* creat
     // inform AI
     if (CreatureAI* AI = creature->AI())
     {
-        AI->MovementInform(WAYPOINT_MOTION_TYPE, _currentNode);
+        AI->MovementInform(WAYPOINT_MOTION_TYPE, waypoint.Id);
         AI->WaypointReached(waypoint.Id, _path->Id);
     }
 
@@ -191,12 +192,13 @@ void WaypointMovementGenerator<Creature>::StartMove(Creature* creature, bool rel
         if (splineIndex)
             std::advance(itr, splineIndex);
 
-        init.Path().reserve(waypoint.SplinePoints.size() - splineIndex);
-        std::copy(itr, waypoint.SplinePoints.end(), std::back_inserter(init.Path()));
+        Movement::PointsArray& path = init.Path();
+        path.reserve(waypoint.SplinePoints.size() - splineIndex);
+        std::copy(itr, waypoint.SplinePoints.end(), std::back_inserter(path));
 
         // Spline points are appended, now add our starting vertex and destination to the path and we're good to go.
-        init.Path().insert(init.Path().begin(), PositionToVector3(creature->GetPosition()));
-        init.Path().insert(init.Path().end(), PositionToVector3({ waypoint.X, waypoint.Y, waypoint.Z }));
+        path.insert(path.begin(), PositionToVector3(creature->GetPosition()));
+        path.insert(path.end(), PositionToVector3({ waypoint.X, waypoint.Y, waypoint.Z }));
     }
     else
     {
@@ -205,8 +207,10 @@ void WaypointMovementGenerator<Creature>::StartMove(Creature* creature, bool rel
         {
             // We are still running our previous waypoint spline. Use its final destination as starting point for our next path.
             init.MoveTo(creature->movespline->FinalDestination(), PositionToVector3({ waypoint.X, waypoint.Y, waypoint.Z }));
-            if (!init.Path().empty())
-                init.Path().insert(init.Path().begin(), PositionToVector3(creature->GetPosition()));
+
+            Movement::PointsArray& path = init.Path();
+            if (!path.empty())
+                path.insert(path.begin(), PositionToVector3(creature->GetPosition()));
         }
         else
             init.MoveTo(waypoint.X, waypoint.Y, waypoint.Z);
@@ -341,7 +345,7 @@ bool WaypointMovementGenerator<Creature>::GetResetPosition(Unit* /*owner*/, floa
 
 bool WaypointMovementGenerator<Creature>::IsAllowedToMove(Creature* creature) const
 {
-    if (_stalled)
+    if (_stalled || _done)
         return false;
 
     if (_pauseTime.has_value())
