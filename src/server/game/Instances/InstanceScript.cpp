@@ -22,6 +22,7 @@
 #include "CreatureAIImpl.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
+#include "GameEventSender.h"
 #include "GameObject.h"
 #include "Group.h"
 #include "Guild.h"
@@ -120,6 +121,25 @@ ObjectGuid InstanceScript::GetGuidData(uint32 type) const
 {
     return GetObjectGuid(type);
 }
+
+
+void InstanceScript::TriggerGameEvent(uint32 gameEventId, WorldObject* source /*= nullptr*/, WorldObject* target /*= nullptr*/)
+{
+    if (source)
+    {
+        ZoneScript::TriggerGameEvent(gameEventId, source, target);
+        return;
+    }
+
+    ProcessEvent(target, gameEventId, source);
+    instance->DoOnPlayers([gameEventId](Player* player)
+    {
+        GameEvents::TriggerForPlayer(gameEventId, player);
+    });
+
+    GameEvents::TriggerForMap(gameEventId, instance);
+}
+
 
 Creature* InstanceScript::GetCreature(uint32 type)
 {
@@ -609,28 +629,6 @@ void InstanceScript::DoUpdateAchievementCriteria(AchievementCriteriaTypes type, 
         for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
             if (Player* player = i->GetSource())
                 player->UpdateAchievementCriteria(type, miscValue1, miscValue2, 0, unit);
-}
-
-// Start timed achievement for all players in instance
-void InstanceScript::DoStartTimedAchievement(AchievementCriteriaTimedTypes type, uint32 entry)
-{
-    Map::PlayerList const& PlayerList = instance->GetPlayers();
-
-    if (!PlayerList.isEmpty())
-        for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
-            if (Player* player = i->GetSource())
-                player->StartTimedAchievement(type, entry);
-}
-
-// Stop timed achievement for all players in instance
-void InstanceScript::DoStopTimedAchievement(AchievementCriteriaTimedTypes type, uint32 entry)
-{
-    Map::PlayerList const& PlayerList = instance->GetPlayers();
-
-    if (!PlayerList.isEmpty())
-        for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
-            if (Player* player = i->GetSource())
-                player->RemoveTimedAchievement(type, entry);
 }
 
 // Remove Auras due to Spell on all players in instance

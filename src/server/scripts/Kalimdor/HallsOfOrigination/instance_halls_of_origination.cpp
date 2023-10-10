@@ -303,7 +303,7 @@ class instance_halls_of_origination : public InstanceMapScript
                             if (GameObject* door = GetGameObject(DATA_VAULT_OF_LIGHTS_ENTRANCE_DOOR))
                                 door->SetGoState(GO_STATE_ACTIVE);
 
-                            DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_VAULT_OF_LIGHTS_START_EVENT);
+                            TriggerGameEvent(ACHIEV_VAULT_OF_LIGHTS_START_EVENT);
                             _events.ScheduleEvent(EVENT_FAIL_VAULTS_OF_LIGHT_ACHIEVEMENT, 5min);
                         }
                         else if (value == DONE)

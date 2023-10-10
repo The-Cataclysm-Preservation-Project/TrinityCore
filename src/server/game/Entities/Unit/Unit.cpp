@@ -3167,8 +3167,14 @@ void Unit::_ApplyAura(AuraApplication* aurApp, uint8 effMask)
     }
 
     if (Player* player = ToPlayer())
+    {
         if (sConditionMgr->IsSpellUsedInSpellClickConditions(aurApp->GetBase()->GetId()))
             player->UpdateVisibleGameobjectsOrSpellClicks();
+
+        player->FailAchievementCriteria(AchievementCriteriaFailEvent::GainAura, aurApp->GetBase()->GetId());
+        player->StartAchievementCriteria(AchievementCriteriaStartEvent::GainAura, aurApp->GetBase()->GetId());
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, aurApp->GetBase()->GetId());
+    }
 }
 
 // removes aura application from lists and unapplies effects
@@ -3246,8 +3252,12 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator& i, AuraRemoveFlags removeM
     aura->HandleAuraSpecificMods(aurApp, caster, false, false);
 
     if (Player* player = ToPlayer())
+    {
         if (sConditionMgr->IsSpellUsedInSpellClickConditions(aurApp->GetBase()->GetId()))
             player->UpdateVisibleGameobjectsOrSpellClicks();
+
+        player->FailAchievementCriteria(AchievementCriteriaFailEvent::LoseAura, aurApp->GetBase()->GetId());
+    }
 
     i = m_appliedAuras.begin();
 }
@@ -3309,7 +3319,14 @@ void Unit::_RemoveNoStackAurasDueToAura(Aura* aura)
 void Unit::_RegisterAuraEffect(AuraEffect* aurEff, bool apply)
 {
     if (apply)
+    {
         m_modAuras[aurEff->GetAuraType()].push_back(aurEff);
+        if (Player* player = ToPlayer())
+        {
+            player->StartAchievementCriteria(AchievementCriteriaStartEvent::GainAuraEffect, aurEff->GetAuraType());
+            player->FailAchievementCriteria(AchievementCriteriaFailEvent::GainAuraEffect, aurEff->GetAuraType());
+        }
+    }
     else
         m_modAuras[aurEff->GetAuraType()].remove(aurEff);
 }

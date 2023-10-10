@@ -464,7 +464,7 @@ void BattlegroundWS::EventPlayerClickedOnFlag(Player* player, GameObject* target
         //update world state to show correct flag carrier
         UpdateFlagState(HORDE, BG_WS_FLAG_STATE_ON_PLAYER);
         player->CastSpell(player, BG_WS_SPELL_SILVERWING_FLAG, true);
-        player->StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_SPELL_TARGET, BG_WS_SPELL_SILVERWING_FLAG_PICKED);
+        player->StartAchievementCriteria(AchievementCriteriaStartEvent::BeSpellTarget, BG_WS_SPELL_SILVERWING_FLAG_PICKED);
         if (_flagState[1] == BG_WS_FLAG_STATE_ON_PLAYER)
           _bothFlagsKept = true;
     }
@@ -481,7 +481,7 @@ void BattlegroundWS::EventPlayerClickedOnFlag(Player* player, GameObject* target
         //update world state to show correct flag carrier
         UpdateFlagState(ALLIANCE, BG_WS_FLAG_STATE_ON_PLAYER);
         player->CastSpell(player, BG_WS_SPELL_WARSONG_FLAG, true);
-        player->StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_SPELL_TARGET, BG_WS_SPELL_WARSONG_FLAG_PICKED);
+        player->StartAchievementCriteria(AchievementCriteriaStartEvent::BeSpellTarget, BG_WS_SPELL_WARSONG_FLAG_PICKED);
         if (_flagState[0] == BG_WS_FLAG_STATE_ON_PLAYER)
           _bothFlagsKept = true;
     }

@@ -72,8 +72,6 @@ public:
         void Reset() override
         {
             _Reset();
-
-            instance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_MAKE_QUICK_WERK_OF_HIM_STARTING_EVENT);
         }
 
         void KilledUnit(Unit* /*Victim*/) override
@@ -96,7 +94,7 @@ public:
             events.ScheduleEvent(EVENT_HATEFUL, Seconds(1));
             events.ScheduleEvent(EVENT_BERSERK, Minutes(6));
 
-            instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_MAKE_QUICK_WERK_OF_HIM_STARTING_EVENT);
+            instance->TriggerGameEvent(ACHIEV_MAKE_QUICK_WERK_OF_HIM_STARTING_EVENT);
         }
 
         void UpdateAI(uint32 diff) override

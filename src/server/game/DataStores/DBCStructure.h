@@ -58,7 +58,7 @@ struct AchievementCategoryEntry
 struct AchievementCriteriaEntry
 {
     uint32  ID;                                             // 0
-    uint32  ReferredAchievement;                            // 1
+    uint32  AchievementID;                                  // 1
     uint32  Type;                                           // 2
 
     union
@@ -164,25 +164,19 @@ struct AchievementCriteriaEntry
 
         // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE_TYPE = 138
         uint32 GuildChallengeType;
-    } Asset;
+    } Asset;                                 // 3
 
-    uint64 Amount;
-
-    struct
-    {
-        uint32 Type;
-        uint32 Asset;
-    } AdditionalRequirements[MAX_CRITERIA_REQUIREMENTS];
-
+    uint64 Quantity;                                        // 4
+    uint32 StartEvent;                                      // 5
+    int32 StartAsset;                                       // 6
+    uint32 FailEvent;                                       // 7
+    int32 FailAsset;                                        // 8
     char* Description;                                      // 9
-    uint32 Flags;                                          // 10
-    uint32 StartEvent;                                     // 11 Only appears with timed achievements, seems to be the type of starting a timed Achievement, only type 1 and some of type 6 need manual starting
-                                                            //              1: ByEventId(?) (serverside IDs),    2: ByQuestId,   5: ByCastSpellId(?)
-                                                            //              6: BySpellIdTarget(some of these are unknown spells, some not, some maybe spells)
-                                                            //              7: ByKillNpcId,  9: ByUseItemId
-    uint32 StartAsset;                                     // 12 Alway appears with timed events, used internally to start the achievement, store
-    uint32 StartTimer;                                     // 13 time limit in seconds
-    uint32 OrderIndex;                                     // 14 also used in achievement shift-links as index in state bitmask
+    uint32 Flags;                                           // 10
+    uint32 TimerStartEvent;                                 // 11
+    uint32 TimerAsset;                                      // 12
+    uint32 TimerTime;                                       // 13
+    uint32 OrderIndex;                                      // 14
     uint32 RequiredWorldStateID;                            // 15
     int32  RequiredWorldStateValue;                         // 16
     uint32 AdditionalConditionType[MAX_ADDITIONAL_CRITERIA_CONDITIONS];  // 17-19
