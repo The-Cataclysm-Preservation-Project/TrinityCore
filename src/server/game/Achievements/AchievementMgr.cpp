@@ -2824,6 +2824,13 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
 
         switch (AchievementCriteriaAdditionalCondition(reqType))
         {
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_PLAYER_CONDITION: // 2
+            {
+                PlayerConditionEntry const* playerCondition = sPlayerConditionStore.LookupEntry(reqValue);
+                if (!playerCondition || !ConditionMgr::IsPlayerMeetingCondition(referencePlayer, playerCondition))
+                    return false;
+                break;
+            }
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_ITEM_LEVEL: // 3
             {
                 uint64 itemId = (criteria->Type == ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM ? miscValue2 : miscValue1);
@@ -2852,12 +2859,24 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
                 if (!referencePlayer->HasAura(reqValue))
                     return false;
                 break;
+            case CRITERIA_ADDITIONAL_CONDITION_SOURCE_HAS_AURA_TYPE: // 9
+                if (!referencePlayer->HasAuraType(AuraType(reqValue)))
+                    return false;
+                break;
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_HAS_AURA: // 10
                 if (!ref || !ref->IsUnit() || !ref->ToUnit()->HasAura(reqValue))
                     return false;
                 break;
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_HAS_AURA_TYPE: // 11
                 if (!ref || !ref->IsUnit() || !ref->ToUnit()->HasAuraType(AuraType(reqValue)))
+                    return false;
+                break;
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_AURA_STATE: // 12
+                if (!referencePlayer->HasAuraState(AuraStateType(reqValue)))
+                    return false;
+                break;
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_AURA_STATE: // 13
+                if (!ref || !ref->IsUnit() || !ref->ToUnit()->HasAuraState(AuraStateType(reqValue)))
                     return false;
                 break;
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_ITEM_QUALITY_MIN: // 14
@@ -2967,6 +2986,16 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
                 if (!ref || !ref->IsUnit() || ref->ToUnit()->GetHealthPct() >= reqValue)
                     return false;
                 break;
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_PLAYER_CONDITION: // 55
+            {
+                if (!ref || !ref->IsPlayer())
+                    return false;
+
+                PlayerConditionEntry const* playerCondition = sPlayerConditionStore.LookupEntry(reqValue);
+                if (!playerCondition || !ConditionMgr::IsPlayerMeetingCondition(ref->ToPlayer(), playerCondition))
+                    return false;
+                break;
+            }
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_REQUIRES_GUILD_GROUP: // 61
             {
                 Guild* guild = referencePlayer->GetGuild();
