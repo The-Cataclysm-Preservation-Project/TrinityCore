@@ -60,7 +60,7 @@ static bool IsTargetMoving(Unit const* target)
 
 static bool IsFarFromFollowDistance(Unit const* owner, Unit const* target, float followDistance)
 {
-    return owner->GetExactDistSq(target) > square(followDistance;
+    return owner->GetExactDistSq(target) > square(followDistance);
 }
 
 static float GetVelocity(Unit const* owner, Unit const* target, bool catchUp)
