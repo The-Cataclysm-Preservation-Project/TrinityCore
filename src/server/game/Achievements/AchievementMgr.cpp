@@ -2901,6 +2901,12 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
                     return false;
                 break;
             }
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_IS_ALIVE: // 16
+            {
+                if (!referencePlayer->IsAlive())
+                    return false;
+                break;
+            }
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_AREA_OR_ZONE: // 17
             {
                 uint32 zoneId, areaId;
