@@ -2824,6 +2824,12 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
 
         switch (AchievementCriteriaAdditionalCondition(reqType))
         {
+            case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_DRUNK_VALUE: // 1
+            {
+                if (referencePlayer->GetDrunkValue() < reqValue)
+                    return false;
+                break;
+            }
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_PLAYER_CONDITION: // 2
             {
                 PlayerConditionEntry const* playerCondition = sPlayerConditionStore.LookupEntry(reqValue);
