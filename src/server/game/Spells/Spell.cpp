@@ -2930,9 +2930,10 @@ SpellMissInfo Spell::PreprocessSpellHit(Unit* unit, bool scaleAura, TargetInfo& 
 
     if (Player* player = unit->ToPlayer())
     {
-        player->FailAchievementCriteria(AchievementCriteriaFailEvent::BeSpellTarget, m_spellInfo->Id);
-        player->StartAchievementCriteria(AchievementCriteriaStartEvent::BeSpellTarget, m_spellInfo->Id);
-        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, m_spellInfo->Id, 0, 0, m_caster);
+        uint32 baseSpellId = sSpellMgr->GetSpellIdForDifficulty(m_spellInfo->Id, REGULAR_DIFFICULTY);
+        player->FailAchievementCriteria(AchievementCriteriaFailEvent::BeSpellTarget, baseSpellId);
+        player->StartAchievementCriteria(AchievementCriteriaStartEvent::BeSpellTarget, baseSpellId);
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, baseSpellId, 0, 0, m_caster);
     }
 
     if (Player* player = m_caster->ToPlayer())

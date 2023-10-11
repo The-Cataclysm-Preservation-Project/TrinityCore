@@ -176,13 +176,18 @@ void SpellMgr::SetSpellDifficultyId(uint32 spellId, uint32 id)
 
 uint32 SpellMgr::GetSpellIdForDifficulty(uint32 spellId, WorldObject const* caster) const
 {
-    if (!GetSpellInfo(spellId))
-        return spellId;
-
     if (!caster || !caster->GetMap() || !caster->GetMap()->IsDungeon())
         return spellId;
 
-    uint32 mode = uint32(caster->GetMap()->GetSpawnMode());
+    return GetSpellIdForDifficulty(spellId, Difficulty(caster->GetMap()->GetSpawnMode()));
+}
+
+uint32 SpellMgr::GetSpellIdForDifficulty(uint32 spellId, Difficulty difficulty) const
+{
+    if (!GetSpellInfo(spellId))
+        return spellId;
+
+    uint32 mode = difficulty;
     if (mode >= MAX_DIFFICULTY)
     {
         TC_LOG_ERROR("spells", "SpellMgr::GetSpellIdForDifficulty: Incorrect difficulty for spell %u.", spellId);
