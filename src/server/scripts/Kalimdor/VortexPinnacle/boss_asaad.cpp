@@ -97,6 +97,11 @@ enum Data
     DATA_STORM_TARGET_3         = 2
 };
 
+enum Misc
+{
+    GAME_EVENT_ENABLE_ACHIEVEMENT = 26429
+};
+
 float const TRIANGLE_Z      = 646.7143f;
 float const TRIANGLE_TOP_Z  = 654.7143f;
 
@@ -185,6 +190,7 @@ struct boss_asaad : public BossAI
             events.ScheduleEvent(EVENT_STATIC_CLING, 10s);
         events.ScheduleEvent(EVENT_CHAIN_LIGHTNING, 14s);
         events.ScheduleEvent(EVENT_SUPREMACY_OF_THE_STORM, 18s);
+        instance->TriggerGameEvent(GAME_EVENT_ENABLE_ACHIEVEMENT);
     }
 
     void JustDied(Unit* /*killer*/) override
