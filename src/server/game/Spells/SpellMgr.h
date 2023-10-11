@@ -39,6 +39,8 @@ class Unit;
 class ProcEventInfo;
 struct SkillLineAbilityEntry;
 
+enum Difficulty : uint8;
+
 // only used in code
 enum SpellCategories
 {
