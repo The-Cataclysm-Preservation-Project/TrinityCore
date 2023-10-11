@@ -330,7 +330,7 @@ enum AchievementCriteriaTypes : uint8
     ACHIEVEMENT_CRITERIA_TYPE_QUEST_ABANDONED                             = 107,
     ACHIEVEMENT_CRITERIA_TYPE_FLIGHT_PATHS_TAKEN                          = 108,
     ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE                                   = 109,
-    ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2                                 = 110, /// @todo target entry is missing
+    ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET         = 110,
     // UNUSED                                                             = 111, // unused in DBC 4.3.4.15595 name state TBC Classic
     ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LINE                            = 112,
     ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL                         = 113,

@@ -69,7 +69,7 @@ bool AchievementCriteriaData::IsValid(AchievementCriteriaEntry const* criteria)
         case ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL:
         case ACHIEVEMENT_CRITERIA_TYPE_WIN_DUEL:
         case ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE:
-        case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2:
+        case ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET:
         case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
         case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:
         case ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM:
@@ -1197,7 +1197,7 @@ void AchievementMgr<T>::UpdateAchievementCriteria(AchievementCriteriaTypes type,
             case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
             case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:
             case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL:
-            case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2:
+            case ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET:
             case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
             case ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM:
             case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
@@ -1547,7 +1547,7 @@ bool AchievementMgr<T>::IsCompletedCriteria(AchievementCriteriaEntry const* achi
         case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
         case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:
         case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL:
-        case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2:
+        case ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET:
         case ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE:
         case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA:
         case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
@@ -1779,6 +1779,8 @@ void AchievementMgr<T>::SetCriteriaProgress(AchievementCriteriaEntry const* entr
 
     Seconds timeElapsed = Seconds::zero();
 
+    AchievementEntry const* achievement = sAchievementMgr->GetAchievement(entry->AchievementID);
+    bool criteriaComplete = IsCompletedCriteria(entry, achievement);
     if (entry->TimerTime)
     {
         auto startedItr = _startedCriteria.find(entry->ID);
@@ -1787,15 +1789,13 @@ void AchievementMgr<T>::SetCriteriaProgress(AchievementCriteriaEntry const* entr
             // Client expects this in packet
             timeElapsed = duration_cast<Seconds>(Seconds(entry->TimerTime) - startedItr->second);
 
-            AchievementEntry const* achievement = sAchievementMgr->GetAchievement(entry->AchievementID);
-            bool criteriaComplete = IsCompletedCriteria(entry, achievement);
             // Remove the timer, we wont need it anymore
             if (criteriaComplete)
                  _startedCriteria.erase(startedItr);
 		}
     }
 
-    SendCriteriaUpdate(entry, progress, timeElapsed.count(), true);
+    SendCriteriaUpdate(entry, progress, timeElapsed.count(), criteriaComplete);
 }
 
 template<class T>
@@ -2584,11 +2584,11 @@ bool AchievementMgr<T>::RequirementsSatisfied(AchievementCriteriaEntry const* ac
         }
         case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:
         case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:
+        case ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET:
             if (!miscValue1 || miscValue1 != achievementCriteria->Asset.SpellID)
                 return false;
             break;
         case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL:
-        case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2:
             if (!miscValue1 || miscValue1 != achievementCriteria->Asset.SpellID)
                 return false;
             break;
@@ -3200,8 +3200,8 @@ char const* AchievementGlobalMgr::GetCriteriaTypeString(AchievementCriteriaTypes
             return "FLIGHT_PATHS_TAKEN";
         case ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE:
             return "LOOT_TYPE";
-        case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2:
-            return "CAST_SPELL2";
+        case ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET:
+            return "LAND_TARGETED_SPELL_ON_SPELL_TARGET";
         case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LINE:
             return "LEARN_SKILL_LINE";
         case ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL:
@@ -3286,7 +3286,7 @@ inline bool IsAchievementCriteriaTypeStoredByMiscValue(AchievementCriteriaTypes 
         case ACHIEVEMENT_CRITERIA_TYPE_FISH_IN_GAMEOBJECT:
         case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILLLINE_SPELLS:
         case ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE:
-        case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2:
+        case ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET:
         case ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LINE:
             return true;
         default:
@@ -3388,12 +3388,8 @@ void AchievementGlobalMgr::LoadAchievementCriteriaList()
 
     uint32 criterias = 0;
     uint32 guildCriterias = 0;
-    for (uint32 entryId = 0; entryId < sAchievementCriteriaStore.GetNumRows(); ++entryId)
+    for (AchievementCriteriaEntry const* criteria : sAchievementCriteriaStore)
     {
-        AchievementCriteriaEntry const* criteria = sAchievementMgr->GetAchievementCriteria(entryId);
-        if (!criteria)
-            continue;
-
         ASSERT(criteria->Type < ACHIEVEMENT_CRITERIA_TYPE_TOTAL, "ACHIEVEMENT_CRITERIA_TYPE_TOTAL must be greater than or equal to %u but is currently equal to %u",
             criteria->Type + 1, ACHIEVEMENT_CRITERIA_TYPE_TOTAL);
 

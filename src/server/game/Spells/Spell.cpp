@@ -2937,7 +2937,7 @@ SpellMissInfo Spell::PreprocessSpellHit(Unit* unit, bool scaleAura, TargetInfo& 
     }
 
     if (Player* player = m_caster->ToPlayer())
-        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, m_spellInfo->Id, 0, 0, unit);
+        player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET, m_spellInfo->Id, 0, 0, unit);
 
     if (m_caster != unit)
     {
