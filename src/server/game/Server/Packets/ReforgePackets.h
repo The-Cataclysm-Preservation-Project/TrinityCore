@@ -18,6 +18,7 @@
 #ifndef ReforgePackets_h__
 #define ReforgePackets_h__
 
+#include "ObjectGuid.h"
 #include "Packet.h"
 
 namespace WorldPackets
