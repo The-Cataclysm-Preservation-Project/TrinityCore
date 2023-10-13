@@ -56,9 +56,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "Hacks/boost_1_74_fibonacci_heap.h"
-BOOST_1_74_FIBONACCI_HEAP_MSVC_COMPILE_FIX(RespawnListContainer::value_type)
-
 #define DEFAULT_GRID_EXPIRY     300
 #define MAX_GRID_LOAD_TIME      50
 #define MAX_CREATURE_ATTACK_RADIUS  (45.0f * sWorld->getRate(RATE_CREATURE_AGGRO))
