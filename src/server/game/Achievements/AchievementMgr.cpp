@@ -2853,9 +2853,7 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
             }
             case ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_AREA_OR_ZONE: // 17
             {
-                uint32 zoneId, areaId;
-                referencePlayer->GetZoneAndAreaId(zoneId, areaId);
-                if (zoneId != reqValue && areaId != reqValue)
+                if (!DBCManager::IsInArea(referencePlayer->GetAreaId(), reqValue))
                     return false;
                 break;
             }
@@ -2863,9 +2861,7 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(AchievementCriteriaEntry
             {
                 if (!ref)
                     return false;
-                uint32 zoneId, areaId;
-                ref->GetZoneAndAreaId(zoneId, areaId);
-                if (zoneId != reqValue && areaId != reqValue)
+                if (!DBCManager::IsInArea(ref->GetAreaId(), reqValue))
                     return false;
                 break;
             }
