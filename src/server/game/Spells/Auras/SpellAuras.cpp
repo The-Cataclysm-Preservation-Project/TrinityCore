@@ -2426,6 +2426,9 @@ void UnitAura::Remove(AuraRemoveFlags removeMode)
 
 void UnitAura::FillTargetMap(std::unordered_map<Unit*, uint8>& targets, Unit* caster)
 {
+    if (GetSpellInfo()->HasAttribute(SPELL_ATTR7_DISABLE_AURA_WHILE_DEAD) && !GetUnitOwner()->IsAlive())
+        return;
+
     Unit* ref = caster;
     if (!ref)
         ref = GetUnitOwner();
