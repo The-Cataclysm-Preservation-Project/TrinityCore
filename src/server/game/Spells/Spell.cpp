@@ -3377,7 +3377,7 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
     else
         m_casttime = m_spellInfo->CalcCastTime(m_caster->IsUnit() ? m_caster->ToUnit()->getLevel() : 0, this);
 
-    if (m_caster->IsPlayer() && m_caster->ToUnit()->isMoving())
+    if (m_caster->IsUnit() && m_caster->ToUnit()->isMoving())
     {
         result = CheckMovement();
         if (result != SPELL_CAST_OK)
@@ -4076,7 +4076,7 @@ void Spell::update(uint32 difftime)
 
     // check if the player caster has moved before the spell finished
     // with the exception of spells affected with SPELL_AURA_CAST_WHILE_WALKING effect
-    if (m_timer != 0 && m_caster->IsPlayer() && m_caster->ToUnit()->isMoving() && CheckMovement() != SPELL_CAST_OK)
+    if (m_timer != 0 && m_caster->IsUnit() && m_caster->ToUnit()->isMoving() && CheckMovement() != SPELL_CAST_OK)
     {
         // if charmed by creature, trust the AI not to cheat and allow the cast to proceed
         // @todo this is a hack, "creature" movesplines don't differentiate turning/moving right now
@@ -6803,6 +6803,12 @@ SpellCastResult Spell::CheckArenaAndRatedBattlegroundCastRules() const
 SpellCastResult Spell::CheckMovement() const
 {
     if (IsTriggered())
+        return SPELL_CAST_OK;
+
+    // Creatures (not controlled) give priority to spell casting over movement.
+    // We assume that the casting is always valid and the current movement
+    // is stopped by Unit:IsmovementPreventedByCasting to prevent casting interruption.
+    if (m_caster->IsCreature() && !m_caster->ToCreature()->IsControlledByPlayer())
         return SPELL_CAST_OK;
 
     if (Unit* unitCaster = m_caster->ToUnit())
