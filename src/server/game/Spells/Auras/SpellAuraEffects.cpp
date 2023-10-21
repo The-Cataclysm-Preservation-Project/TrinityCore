@@ -5809,7 +5809,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
     if (!GetSpellInfo()->HasAttribute(SPELL_ATTR4_IGNORE_DAMAGE_TAKEN_MODIFIERS))
     {
         if (GetSpellInfo()->Effects[GetEffIndex()].IsTargetingArea() || GetSpellInfo()->Effects[GetEffIndex()].IsAreaAuraEffect() || GetSpellInfo()->Effects[GetEffIndex()].Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA || GetSpellInfo()->HasAttribute(SPELL_ATTR5_TREAT_AS_AREA_EFFECT))
-            damage = target->CalculateAOEAvoidance(damage, m_spellInfo->SchoolMask, GetBase()->GetCasterGUID());
+            damage = target->CalculateAOEAvoidance(damage, m_spellInfo->SchoolMask, (caster && !caster->IsControlledByPlayer()) || GetSpellInfo()->HasAttribute(SPELL_ATTR7_TREAT_AS_NPC_AOE));
     }
 
     int32 dmg = damage;
@@ -5899,7 +5899,7 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
     if (!GetSpellInfo()->HasAttribute(SPELL_ATTR4_IGNORE_DAMAGE_TAKEN_MODIFIERS))
     {
         if (GetSpellInfo()->Effects[GetEffIndex()].IsTargetingArea() || GetSpellInfo()->Effects[GetEffIndex()].IsAreaAuraEffect() || GetSpellInfo()->Effects[GetEffIndex()].Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA || GetSpellInfo()->HasAttribute(SPELL_ATTR5_TREAT_AS_AREA_EFFECT))
-            damage = target->CalculateAOEAvoidance(damage, m_spellInfo->SchoolMask, GetBase()->GetCasterGUID());
+            damage = target->CalculateAOEAvoidance(damage, m_spellInfo->SchoolMask, (caster && !caster->IsControlledByPlayer()) || GetSpellInfo()->HasAttribute(SPELL_ATTR7_TREAT_AS_NPC_AOE));
     }
 
     int32 dmg = damage;

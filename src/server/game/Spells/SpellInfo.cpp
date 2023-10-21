@@ -1138,7 +1138,7 @@ bool SpellInfo::HasTargetType(::Targets target) const
 
 bool SpellInfo::CanBeInterrupted(Unit const* interruptTarget, bool ignoreImmunity /*= false*/) const
 {
-    return HasAttribute(SPELL_ATTR7_CAN_ALWAYS_BE_INTERRUPTED)
+    return HasAttribute(SPELL_ATTR7_NO_UI_NOT_INTERRUPTIBLE)
         || HasChannelInterruptFlag(SpellAuraInterruptFlags::Damage | SpellAuraInterruptFlags::EnteringCombat)
         || (interruptTarget->IsPlayer() && InterruptFlags.HasFlag(SpellInterruptFlags::DamageCancelsPlayerOnly))
         || ((!(interruptTarget->GetMechanicImmunityMask() & (1 << MECHANIC_INTERRUPT)) || ignoreImmunity)
@@ -1975,9 +1975,8 @@ SpellCastResult SpellInfo::CheckTarget(WorldObject const* caster, WorldObject co
         return SPELL_FAILED_BAD_TARGETS;
 
     // Do not allow pet or guardian targets if the spell is a raid buff or may not target pets at all
-    if ((HasAttribute(SPELL_ATTR7_CONSOLIDATED_RAID_BUFF) || HasAttribute(SPELL_ATTR5_NOT_ON_PLAYER_CONTROLLED_NPC)) && (caster->IsCreature() && !caster->ToCreature()->IsPet() && !caster->ToCreature()->IsGuardian()))
-        if ((unitTarget->IsPet() || unitTarget->IsGuardian()))
-            return SPELL_FAILED_BAD_TARGETS;
+    if (HasAttribute(SPELL_ATTR5_NOT_ON_PLAYER_CONTROLLED_NPC) && unitTarget->IsCreature() && unitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        return SPELL_FAILED_BAD_TARGETS;
 
     // checked in Unit::IsValidAttack/AssistTarget, shouldn't be checked for ENTRY targets
     //if (!HasAttribute(SPELL_ATTR6_CAN_TARGET_UNTARGETABLE) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))

@@ -756,6 +756,7 @@ class TC_GAME_API Spell
         bool IsValidDeadOrAliveTarget(Unit const* target) const;
         void HandleLaunchPhase();
         void DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uint8 effIndex);
+        void ResetCombatTimers();
 
         void PrepareTargetProcessing();
         void FinishTargetProcessing();

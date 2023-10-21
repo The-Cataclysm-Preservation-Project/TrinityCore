@@ -2484,7 +2484,7 @@ int32 WorldObject::ModSpellDuration(SpellInfo const* spellInfo, WorldObject cons
         return duration;
 
     // some auras are not affected by duration modifiers
-    if (spellInfo->HasAttribute(SPELL_ATTR7_IGNORE_DURATION_MODS))
+    if (spellInfo->HasAttribute(SPELL_ATTR7_NO_TARGET_DURATION_MOD))
         return duration;
 
     // cut duration only of negative effects
@@ -2583,7 +2583,7 @@ SpellMissInfo WorldObject::MagicSpellHitResult(Unit* victim, SpellInfo const* sp
     if (spellInfo->HasAttribute(SPELL_ATTR3_NO_AVOIDANCE))
         return SPELL_MISS_NONE;
 
-    if (spellInfo->HasAttribute(SPELL_ATTR7_CANT_MISS))
+    if (spellInfo->HasAttribute(SPELL_ATTR7_NO_ATTACK_MISS))
         return SPELL_MISS_NONE;
 
     SpellSchoolMask schoolMask = spellInfo->GetSchoolMask();
@@ -2700,7 +2700,7 @@ SpellMissInfo WorldObject::SpellHitResult(Unit* victim, SpellInfo const* spellIn
         reflectchance += victim->GetTotalAuraModifierByMiscMask(SPELL_AURA_REFLECT_SPELLS_SCHOOL, spellInfo->GetSchoolMask());
 
         if (reflectchance > 0 && roll_chance_i(reflectchance))
-            return SPELL_MISS_REFLECT;
+            return spellInfo->HasAttribute(SPELL_ATTR7_REFLECTION_ONLY_DEFENDS) ? SPELL_MISS_DEFLECT : SPELL_MISS_REFLECT;
     }
 
     if (spellInfo->HasAttribute(SPELL_ATTR3_ALWAYS_HIT))
