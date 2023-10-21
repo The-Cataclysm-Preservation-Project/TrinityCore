@@ -1902,7 +1902,7 @@ class spell_gen_gnomish_transporter : public SpellScriptLoader
 
 enum Interrupt
 {
-    SPELL_GEN_THROW_INTERRUPT = 32747
+    SPELL_GEN_INTERRUPT = 32747
 };
 
 // 32748 - Deadly Throw Interrupt
@@ -1916,13 +1916,13 @@ class spell_gen_interrupt : public SpellScriptLoader
         {
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                return ValidateSpellInfo({ SPELL_GEN_THROW_INTERRUPT });
+                return ValidateSpellInfo({ SPELL_GEN_INTERRUPT });
             }
 
             void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
             {
                 PreventDefaultAction();
-                GetTarget()->CastSpell(eventInfo.GetProcTarget(), SPELL_GEN_THROW_INTERRUPT, aurEff);
+                GetTarget()->CastSpell(eventInfo.GetProcTarget(), SPELL_GEN_INTERRUPT, aurEff);
             }
 
             void Register() override
@@ -5609,6 +5609,34 @@ class spell_gen_dalaran_shop_keeper_greeting_ping : public SpellScript
     }
 };
 
+// 25046 - Arcane Torrent (Racial)
+// 28730 - Arcane Torrent (Racial)
+// 50613 - Arcane Torrent (Racial)
+// 69179 - Arcane Torrent (Racial)
+// 80483 - Arcane Torrent (Racial)
+class spell_gen_arcane_torrent_racial : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfi*/) override
+    {
+        return ValidateSpellInfo({ SPELL_GEN_INTERRUPT });
+    }
+
+    void HandleCreatureInterrupt(SpellEffIndex /*effIndex*/)
+    {
+        Creature* target = GetHitCreature();
+        if (!target)
+            return;
+
+        if (Unit* caster = GetCaster())
+            caster->CastSpell(target, SPELL_GEN_INTERRUPT, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_gen_arcane_torrent_racial::HandleCreatureInterrupt, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     new spell_gen_absorb0_hitlimit1();
@@ -5616,6 +5644,7 @@ void AddSC_generic_spell_scripts()
     new spell_gen_alchemist_stone();
     new spell_gen_allow_cast_from_item_only();
     new spell_gen_animal_blood();
+    RegisterSpellScript(spell_gen_arcane_torrent_racial);
     new spell_gen_aura_of_anger();
     new spell_gen_aura_service_uniform();
     new spell_gen_av_drekthar_presence();
