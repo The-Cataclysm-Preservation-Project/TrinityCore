@@ -918,6 +918,22 @@ void Spell::SelectSpellTargets()
         }
     }
 
+    if (m_targets.HasDst())
+    {
+        if (m_spellInfo->HasAttribute(SPELL_ATTR8_REQUIRES_LOCATION_TO_BE_ON_LIQUID_SURFACE))
+        {
+            ZLiquidStatus status = m_caster->GetMap()->GetLiquidStatus(m_caster->GetPhaseShift(),
+                m_targets.GetDstPos()->GetPositionX(), m_targets.GetDstPos()->GetPositionY(), m_targets.GetDstPos()->GetPositionZ(),
+                map_liquidHeaderTypeFlags::AllLiquids);
+            if (!(status & (LIQUID_MAP_WATER_WALK | LIQUID_MAP_IN_WATER)))
+            {
+                SendCastResult(SPELL_FAILED_NO_LIQUID);
+                finish(false);
+                return;
+            }
+        }
+    }
+
     if (uint64 dstDelay = CalculateDelayMomentForDst())
         m_delayMoment = dstDelay;
 }
@@ -2583,7 +2599,7 @@ void Spell::TargetInfo::DoTargetSpellHit(Spell* spell, uint8 effIndex)
     if (unit->IsAlive() != IsAlive)
         return;
 
-    if (spell->getState() == SPELL_STATE_DELAYED && !spell->IsPositive() && (GameTime::GetGameTimeMS() - TimeDelay) <= unit->m_lastSanctuaryTime)
+    if (!spell->m_spellInfo->HasAttribute(SPELL_ATTR8_IGNORE_SANCTUARY) && spell->getState() == SPELL_STATE_DELAYED && !spell->IsPositive() && (GameTime::GetGameTimeMS() - TimeDelay) <= unit->m_lastSanctuaryTime)
         return;                                             // No missinfo in that case
 
     if (_spellHitTarget)
@@ -4476,9 +4492,8 @@ void Spell::SendSpellStart()
     if (m_spellInfo->RuneCostID && m_spellInfo->PowerType == POWER_RUNE)
         castFlags |= CAST_FLAG_NO_GCD; // not needed, but Blizzard sends it
 
-    if (m_spellInfo->HasAttribute(SPELL_ATTR8_HEAL_PREDICTION))
-        if (m_casttime || m_spellInfo->HasAura(SPELL_AURA_PERIODIC_HEAL))
-            castFlags |= CAST_FLAG_HEAL_PREDICTION;
+    if (m_spellInfo->HasAttribute(SPELL_ATTR8_HEAL_PREDICTION) && m_casttime && m_caster->IsUnit())
+        castFlags |= CAST_FLAG_HEAL_PREDICTION;
 
     WorldPackets::Spells::SpellStart packet;
     WorldPackets::Spells::SpellCastData& castData = packet.Cast;
@@ -4541,7 +4556,7 @@ void Spell::SendSpellStart()
     }
 
     if (castFlags & CAST_FLAG_HEAL_PREDICTION)
-        UpdateSpellHealPrediction(castData.Predict.emplace());
+        UpdateSpellHealPrediction(castData.Predict.emplace(), false);
 
     m_caster->SendMessageToSet(packet.Write(), true);
 }
@@ -4782,61 +4797,81 @@ void Spell::UpdateSpellCastDataAmmo(WorldPackets::Spells::SpellAmmo& ammo)
     ammo.InventoryType = ammoInventoryType;
 }
 
-void Spell::UpdateSpellHealPrediction(WorldPackets::Spells::SpellHealPrediction& predict)
+static std::pair<int32, SpellHealPredictionType> CalcPredictedHealing(SpellInfo const* spellInfo, Unit const* unitCaster, Unit* target, Spell* spell, bool withPeriodic)
 {
-    Unit* target = m_targets.GetUnitTarget() ? m_targets.GetUnitTarget() : m_caster->ToUnit();
-    if (!target)
-        return;
-
-    predict.Type = 0;
-
-    /*
-    * @todo: implement
-    if (AuraEffect const* beaconOfLightEffect = m_caster->GetDummyAuraEffect(SPELLFAMILY_PALADIN, 3032, EFFECT_0))
+    int32 points = 0;
+    SpellHealPredictionType type = SPELL_HEAL_PREDICTION_TARGET;
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (beaconOfLightEffect->GetCasterGUID() == m_caster->GetGUID())
+        SpellEffectInfo const& spellEffectInfo = spellInfo->Effects[i];
+        switch (spellEffectInfo.Effect)
         {
-            predict.Type = 2;
-            predict.BeaconGUID = beaconOfLightEffect->GetBase()->GetUnitOwner()->GetGUID();
+            case SPELL_EFFECT_HEAL:
+            case SPELL_EFFECT_HEAL_PCT:
+                points += unitCaster->SpellHealingBonusDone(target,
+                    spellInfo, spellEffectInfo.CalcValue(unitCaster, nullptr, target),
+                    DIRECT_DAMAGE, i, 1, spell);
+       
+                if (target != unitCaster && (spellEffectInfo.TargetA.GetTarget() == TARGET_UNIT_CASTER || spellEffectInfo.TargetB.GetTarget() == TARGET_UNIT_CASTER))
+                    type = SPELL_HEAL_PREDICTION_TARGET_AND_CASTER;    // Binding Heal-like spells
+                else if (spellEffectInfo.TargetA.GetCheckType() == TARGET_CHECK_PARTY || spellEffectInfo.TargetB.GetCheckType() == TARGET_CHECK_PARTY)
+                    type = SPELL_HEAL_PREDICTION_TARGET_PARTY;         // Prayer of Healing (old party-wide targeting)
+                break;
+            default:
+                break;
         }
-    }
-    */
-
-    if (Unit* unitCaster = m_caster->ToUnit())
-    {
-        for (uint8 effIndex = 0; effIndex < MAX_SPELL_EFFECTS; ++effIndex)
+       
+        if (withPeriodic)
         {
-            SpellEffectInfo const& effect = m_spellInfo->Effects[effIndex];
-            if (!effect.IsEffect())
-                continue;
-
-            switch (effect.Effect)
+            switch (spellEffectInfo.ApplyAuraName)
             {
-                case SPELL_EFFECT_HEAL:
-                case SPELL_EFFECT_HEAL_PCT:
-                    predict.Points += unitCaster->SpellHealingBonusDone(target, m_spellInfo, effect.CalcValue(unitCaster, nullptr, target), HEAL, effIndex);
+                case SPELL_AURA_PERIODIC_HEAL:
+                case SPELL_AURA_OBS_MOD_HEALTH:
+                    points += unitCaster->SpellHealingBonusDone(target,
+                        spellInfo, spellEffectInfo.CalcValue(unitCaster, nullptr, target),
+                        DIRECT_DAMAGE, i, 1, spell) * spellInfo->GetMaxTicks();
                     break;
-                case SPELL_EFFECT_APPLY_AURA:
-                {
-                    switch (effect.ApplyAuraName)
-                    {
-                        case SPELL_AURA_PERIODIC_HEAL:
-                            predict.Points += unitCaster->SpellHealingBonusDone(target, m_spellInfo, effect.CalcValue(unitCaster, nullptr, target), HEAL, effIndex) * m_spellInfo->GetMaxTicks();
-                            break;
-                        case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
-                            if (SpellInfo const* spell = sSpellMgr->GetSpellInfo(effect.TriggerSpell))
-                                for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                                    if (spell->Effects[i].Effect == SPELL_EFFECT_HEAL || spell->Effects[i].Effect == SPELL_EFFECT_HEAL_PCT)
-                                        predict.Points += unitCaster->SpellHealingBonusDone(target, spell, spell->Effects[i].CalcValue(unitCaster, nullptr, target), HEAL, i) * m_spellInfo->GetMaxTicks();
-                            break;
-                        default:
-                            break;
-                    }
+                case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
+                    if (SpellInfo const* triggered = sSpellMgr->GetSpellInfo(spellEffectInfo.TriggerSpell))
+                        points += CalcPredictedHealing(triggered, unitCaster, target, nullptr, withPeriodic).first;
                     break;
-                }
                 default:
                     break;
             }
+        }
+    }
+
+    return { points, type };
+}
+
+void Spell::UpdateSpellHealPrediction(WorldPackets::Spells::SpellHealPrediction& healPrediction, bool withPeriodic)
+{
+    healPrediction.BeaconGUID = ObjectGuid::Empty;
+    healPrediction.Points = 0;
+    healPrediction.Type = SPELL_HEAL_PREDICTION_TARGET;
+
+    Unit const* unitCaster = m_caster->ToUnit();
+
+    if (Unit* target = m_targets.GetUnitTarget())
+    {
+        auto [points, type] = CalcPredictedHealing(m_spellInfo, unitCaster, target, this, withPeriodic);
+        healPrediction.Points = points;
+        healPrediction.Type = type;
+    }
+
+    static constexpr uint32 beaconSpellId = 53651;
+
+    if (healPrediction.Type == SPELL_HEAL_PREDICTION_TARGET && unitCaster->HasAura(beaconSpellId, unitCaster->GetGUID()))
+    {
+        auto beacon = std::find_if(unitCaster->GetSingleCastAuras().begin(), unitCaster->GetSingleCastAuras().end(), [](Aura const* aura)
+        {
+            return aura->GetSpellInfo()->Effects[EFFECT_1].IsEffect() && aura->GetSpellInfo()->Effects[EFFECT_1].TriggerSpell == beaconSpellId;
+        });
+
+        if (beacon != unitCaster->GetSingleCastAuras().end())
+        {
+            healPrediction.BeaconGUID = (*beacon)->GetOwner()->GetGUID();
+            healPrediction.Type = SPELL_HEAL_PREDICTION_TARGET_AND_BEACON;
         }
     }
 }
@@ -5024,26 +5059,7 @@ void Spell::SendChannelStart(uint32 duration)
     if (!unitCaster)
         return;
 
-    WorldPackets::Spells::ChannelStart packet;
-    packet.CasterGUID = m_caster->GetGUID();
-    packet.SpellID = m_spellInfo->Id;
-    packet.ChannelDuration = duration;
-
-    uint32 castFlags = CAST_FLAG_HAS_TRAJECTORY;
-    uint32 schoolImmunityMask = unitCaster->GetSchoolImmunityMask();
-    uint32 mechanicImmunityMask = m_spellInfo->GetMechanicImmunityMask(unitCaster);
-
-    if (schoolImmunityMask || mechanicImmunityMask)
-        castFlags |= CAST_FLAG_IMMUNITY;
-
-    if (castFlags & CAST_FLAG_IMMUNITY)
-    {
-        packet.InterruptImmunities.emplace();
-        packet.InterruptImmunities->SchoolImmunities = schoolImmunityMask; // CastSchoolImmunities
-        packet.InterruptImmunities->Immunities = mechanicImmunityMask; // CastImmunities
-    }
-
-        m_timer = duration;
+    m_timer = duration;
 
     if (!m_targets.HasDst())
     {
@@ -5086,22 +5102,37 @@ void Spell::SendChannelStart(uint32 duration)
     else if (m_spellInfo->HasAttribute(SPELL_ATTR1_IS_SELF_CHANNELLED))
         unitCaster->SetChannelObjectGuid(unitCaster->GetGUID());
 
-
-    if (m_spellInfo->HasAttribute(SPELL_ATTR8_HEAL_PREDICTION))
-    {
-        castFlags |= CAST_FLAG_HEAL_PREDICTION;
-
-        WorldPackets::Spells::SpellHealPrediction predict;
-        UpdateSpellHealPrediction(predict);
-        packet.HealPrediction.emplace(unitCaster->GetChannelObjectGuid(), predict);
-    }
-
-    m_caster->SendMessageToSet(packet.Write(), true);
     m_caster->SetUInt32Value(UNIT_CHANNEL_SPELL, m_spellInfo->Id);
 
     if (Creature* creatureCaster = m_caster->ToCreature())
         if (!creatureCaster->HasSpellFocus(this))
             creatureCaster->SetSpellFocus(this, nullptr);
+
+    WorldPackets::Spells::ChannelStart packet;
+    packet.CasterGUID = m_caster->GetGUID();
+    packet.SpellID = m_spellInfo->Id;
+    packet.ChannelDuration = duration;
+
+    uint32 schoolImmunityMask = unitCaster->GetSchoolImmunityMask();
+    uint32 mechanicImmunityMask = m_spellInfo->GetMechanicImmunityMask(unitCaster);
+
+    if (schoolImmunityMask || mechanicImmunityMask)
+    {
+        packet.InterruptImmunities.emplace();
+        packet.InterruptImmunities->SchoolImmunities = schoolImmunityMask; // CastSchoolImmunities
+        packet.InterruptImmunities->Immunities = mechanicImmunityMask; // CastImmunities
+    }
+
+    if (m_spellInfo->HasAttribute(SPELL_ATTR8_HEAL_PREDICTION) && m_caster->IsUnit())
+    {
+        WorldPackets::Spells::TargetedHealPrediction& healPrediction =  packet.HealPrediction.emplace();
+        if (!unitCaster->GetChannelObjectGuid().IsEmpty() && unitCaster->GetChannelObjectGuid().IsUnit())
+            healPrediction.TargetGUID = unitCaster->GetChannelObjectGuid();
+
+        UpdateSpellHealPrediction(healPrediction.Predict, true);
+    }
+
+    m_caster->SendMessageToSet(packet.Write(), true);
 }
 
 void Spell::SendResurrectRequest(Player* target)
@@ -5648,6 +5679,9 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
         return SPELL_FAILED_CUSTOM_ERROR;
     }
 
+    if (m_spellInfo->HasAttribute(SPELL_ATTR8_ONLY_PLAYERS_CAN_CAST_THIS_SPELL) && !m_caster->IsPlayer())
+        return SPELL_FAILED_CASTER_AURASTATE;
+
     // Check global cooldown
     if (strict && !(_triggeredCastFlags & TRIGGERED_IGNORE_GCD) && HasGlobalCooldown())
         return !m_spellInfo->HasAttribute(SPELL_ATTR0_COOLDOWN_ON_EVENT) ? SPELL_FAILED_NOT_READY : SPELL_FAILED_DONT_REPORT;
@@ -5669,7 +5703,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
             return SPELL_FAILED_ONLY_INDOORS;
     }
 
-    if (m_spellInfo->HasAttribute(SPELL_ATTR8_BATTLE_RESURRECTION) && m_caster->GetMap()->IsRaid())
+    if (m_spellInfo->HasAttribute(SPELL_ATTR8_ENFORCE_IN_COMBAT_RESSURECTION_LIMIT) && m_caster->GetMap()->IsRaid())
         if (InstanceScript* instance = m_caster->GetInstanceScript())
             if (instance->IsEncounterInProgress())
                 if (!instance->GetCombatResurrectionCharges())
@@ -7851,7 +7885,7 @@ bool Spell::IsPositive() const
 bool Spell::IsNeedSendToClient() const
 {
     return m_spellInfo->SpellVisual[0] || m_spellInfo->SpellVisual[1] || m_spellInfo->IsChanneled() ||
-        m_spellInfo->HasAttribute(SPELL_ATTR8_AURA_SEND_AMOUNT) || m_spellInfo->Speed > 0.0f || (!m_triggeredByAuraSpell && !IsTriggered()) ||
+        m_spellInfo->HasAttribute(SPELL_ATTR8_AURA_POINTS_ON_CLIENT) || m_spellInfo->Speed > 0.0f || (!m_triggeredByAuraSpell && !IsTriggered()) ||
         m_spellInfo->HasAttribute(SPELL_ATTR7_ALWAYS_CAST_LOG);
 }
 

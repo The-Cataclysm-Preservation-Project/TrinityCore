@@ -3127,7 +3127,7 @@ bool Player::HandlePassiveSpellLearn(SpellInfo const* spellInfo)
         }
     }
 
-    if (spellInfo->HasAttribute(SPELL_ATTR8_MASTERY_SPECIALIZATION))
+    if (spellInfo->HasAttribute(SPELL_ATTR8_MASTERY_AFFECTS_POINTS))
         need_cast &= IsCurrentSpecMasterySpell(spellInfo);
 
     //Check CasterAuraStates
@@ -26941,7 +26941,7 @@ void Player::UpdateArmorSpecialization()
     for (AuraApplicationMap::iterator itr = m_appliedAuras.begin(); itr != m_appliedAuras.end();)
     {
         SpellInfo const* spell = itr->second->GetBase()->GetSpellInfo();
-        if (spell->AttributesEx8 & SPELL_ATTR8_ARMOR_SPECIALIZATION)
+        if (spell->AttributesEx8 & SPELL_ATTR8_REQUIRES_EQUIPPED_INV_TYPES)
             RemoveAura(itr);
         else
             ++itr;

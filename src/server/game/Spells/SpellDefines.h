@@ -190,6 +190,8 @@ enum TriggerCastFlags : uint32
     TRIGGERED_FULL_DEBUG_MASK                       = 0xFFFFFFFF
 };
 
+DEFINE_ENUM_FLAG(TriggerCastFlags);
+
 struct TC_GAME_API CastSpellExtraArgs
 {
     CastSpellExtraArgs() {}

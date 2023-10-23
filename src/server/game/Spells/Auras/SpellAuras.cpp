@@ -173,7 +173,7 @@ void AuraApplication::_InitFlags(Unit* caster, uint8 effMask)
         return false;
     }();
 
-    if (GetBase()->GetSpellInfo()->HasAttribute(SPELL_ATTR8_AURA_SEND_AMOUNT) || effectNeedsAmount)
+    if (GetBase()->GetSpellInfo()->HasAttribute(SPELL_ATTR8_AURA_POINTS_ON_CLIENT) || effectNeedsAmount)
         _flags |= AFLAG_SCALABLE;
 }
 
