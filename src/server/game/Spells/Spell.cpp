@@ -4865,7 +4865,7 @@ void Spell::UpdateSpellHealPrediction(WorldPackets::Spells::SpellHealPrediction&
     {
         auto beacon = std::find_if(unitCaster->GetSingleCastAuras().begin(), unitCaster->GetSingleCastAuras().end(), [](Aura const* aura)
         {
-            return aura->GetSpellInfo()->Effects[EFFECT_1].IsEffect() && aura->GetSpellInfo()->Effects[EFFECT_1].TriggerSpell == beaconSpellId;
+            return aura->GetSpellInfo()->Effects[EFFECT_0].IsEffect() && aura->GetSpellInfo()->Effects[EFFECT_0].TriggerSpell == beaconSpellId;
         });
 
         if (beacon != unitCaster->GetSingleCastAuras().end())
