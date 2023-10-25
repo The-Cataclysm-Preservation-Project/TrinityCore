@@ -30,6 +30,7 @@
 #include "SpellMgr.h"
 #include "Spell.h"
 #include "TemporarySummon.h"
+#include "NewTemporarySummon.h"
 
 enum PaladinSpells
 {
@@ -271,13 +272,6 @@ class spell_pal_blessing_of_faith : public SpellScript
 // 26573 - Consecration
 class spell_pal_consecration : public AuraScript
 {
-    bool Load() override
-    {
-        // Store the position of the initial Consecration cast for triggering the damage
-        castPos = GetCaster()->GetPosition();
-        return true;
-    }
-
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_PALADIN_CONSECRATION_TRIGGERED });
@@ -289,16 +283,14 @@ class spell_pal_consecration : public AuraScript
         if (GetTarget() != GetCaster())
             return;
 
-        if (Unit* caster = GetCaster())
-            caster->CastSpell({ castPos.GetPositionX(), castPos.GetPositionY(), castPos.GetPositionZ() }, SPELL_PALADIN_CONSECRATION_TRIGGERED, aurEff);
+        if (NewTemporarySummon* consecration = GetTarget()->GetSummonInSlot(SummonPropertiesSlot::Totem1))
+            GetTarget()->CastSpell(consecration, SPELL_PALADIN_CONSECRATION_TRIGGERED, aurEff);
     }
 
     void Register() override
     {
         OnEffectPeriodic.Register(&spell_pal_consecration::HandleEffectPeriodic, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
-private:
-    Position castPos;
 };
 
 // 64205 - Divine Sacrifice
