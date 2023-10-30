@@ -196,6 +196,7 @@ namespace WorldPackets
         class SetEveryoneIsAssistant;
         class PartyInviteClient;
         class PartyInviteResponse;
+        class SetRole;
     }
 
     namespace Quest
@@ -818,7 +819,7 @@ class TC_GAME_API WorldSession
         void HandleGroupUninviteOpcode(WorldPacket& recvPacket);
         void HandleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
         void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
-        void HandleGroupSetRolesOpcode(WorldPacket& recvData);
+        void HandleSetRoleOpcode(WorldPackets::Party::SetRole& packet);
         void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
         void HandleOptOutOfLootOpcode(WorldPacket& recvData);
         void HandleLootMethodOpcode(WorldPacket& recvPacket);
