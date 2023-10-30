@@ -319,7 +319,7 @@ void WorldPackets::Party::SetEveryoneIsAssistant::Read()
 
 WorldPacket const* WorldPackets::Party::PartyCommandResult::Write()
 {
-    _worldPacket.resize(4 + Name.length() + 4 + 4 + 8);
+    _worldPacket.reserve(4 + Name.length() + 4 + 4 + 8);
 
     _worldPacket << uint32(Command);
     _worldPacket << Name;
