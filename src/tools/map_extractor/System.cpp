@@ -1122,6 +1122,7 @@ void ExtractDBCFiles(int locale)
 
         printf("locale %s output path %s\n", localeNames[MpqToWowLocale[locale]], localePath.string().c_str());
 
+        std::string fileName;
         do
         {
             if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_PATCHED_FILE, &dbcFile))
@@ -1130,7 +1131,10 @@ void ExtractDBCFiles(int locale)
                 continue;
             }
 
-            boost::filesystem::path filePath = localePath / boost::filesystem::path(foundFile.cFileName).filename();
+            fileName = foundFile.cFileName;
+            fileName = fileName.substr(fileName.rfind('\\') + 1);
+
+            boost::filesystem::path filePath = localePath / boost::filesystem::path(fileName).filename();
 
             if (!boost::filesystem::exists(filePath))
                 if (ExtractFile(dbcFile, filePath.string()))
@@ -1160,6 +1164,7 @@ void ExtractDB2Files(int locale)
 
         printf("locale %s output path %s\n", localeNames[MpqToWowLocale[locale]], localePath.string().c_str());
 
+        std::string fileName;
         do
         {
             if (!SFileOpenFileEx(LocaleMpq, foundFile.cFileName, SFILE_OPEN_PATCHED_FILE, &dbcFile))
@@ -1168,7 +1173,10 @@ void ExtractDB2Files(int locale)
                 continue;
             }
 
-            boost::filesystem::path filePath = localePath / boost::filesystem::path(foundFile.cFileName).filename();
+            fileName = foundFile.cFileName;
+            fileName = fileName.substr(fileName.rfind('\\') + 1);
+
+            boost::filesystem::path filePath = localePath / boost::filesystem::path(fileName).filename();
 
             if (!boost::filesystem::exists(filePath))
                 if (ExtractFile(dbcFile, filePath.string()))

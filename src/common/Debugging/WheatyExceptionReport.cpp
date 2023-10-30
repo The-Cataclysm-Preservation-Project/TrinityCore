@@ -29,6 +29,9 @@
 #include <comdef.h>
 #include <WbemIdl.h>
 
+#include <comdef.h>
+#include <WbemIdl.h>
+
 #define CrashFolder _T("Crashes")
 #pragma comment(linker, "/DEFAULTLIB:dbghelp.lib")
 #pragma comment(linker, "/DEFAULTLIB:wbemuuid.lib")

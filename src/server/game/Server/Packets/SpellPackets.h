@@ -129,9 +129,6 @@ namespace WorldPackets
 
         struct TargetedHealPrediction
         {
-            TargetedHealPrediction() { }
-            TargetedHealPrediction(ObjectGuid targetGuid, SpellHealPrediction prediction) : TargetGUID(targetGuid), Predict(prediction) { }
-
             ObjectGuid TargetGUID;
             SpellHealPrediction Predict;
         };

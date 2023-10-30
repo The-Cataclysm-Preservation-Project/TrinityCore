@@ -3504,15 +3504,6 @@ void SpellMgr::LoadSpellInfoCorrections()
     });
 
     ApplySpellFix({
-        15487, // Priest - Silence
-        47476, // Deathknight - Strangulate
-        69179  // Arcane Torrent (Rage)
-    }, [](SpellInfo* spellInfo)
-    {
-        spellInfo->AttributesEx7 |= SPELL_ATTR7_INTERRUPT_ONLY_NONPLAYER;
-    });
-
-    ApplySpellFix({
         42490, // Energized!
         42492, // Cast Energized
     }, [](SpellInfo* spellInfo)
@@ -4693,7 +4684,7 @@ void SpellMgr::LoadSpellInfoCorrections()
         100258
     }, [](SpellInfo* spellInfo)
     {
-        spellInfo->AttributesEx7 |= SPELL_ATTR7_CANT_MISS;
+        spellInfo->AttributesEx7 |= SPELL_ATTR7_NO_ATTACK_MISS;
     });
 
     // Entrapping Roots
@@ -5311,13 +5302,13 @@ void SpellMgr::LoadSpellInfoCorrections()
     // Release Aberrations
     ApplySpellFix({ 77569 }, [](SpellInfo* spellInfo)
     {
-        spellInfo->AttributesEx8 |= SPELL_ATTR7_CANT_MISS;
+        spellInfo->AttributesEx8 |= SPELL_ATTR7_NO_ATTACK_MISS;
     });
 
     // Release All Minions
     ApplySpellFix({ 77991 }, [](SpellInfo* spellInfo)
     {
-        spellInfo->AttributesEx8 |= SPELL_ATTR7_CANT_MISS;
+        spellInfo->AttributesEx8 |= SPELL_ATTR7_NO_ATTACK_MISS;
     });
 
     // Debilitating Slime

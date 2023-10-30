@@ -520,7 +520,6 @@ class TC_GAME_API SpellInfo
         bool IsSelfCast() const;
 
         bool IsPassive() const;
-        bool IsRaidMarker() const;
         bool IsAutocastable() const;
         bool IsStackableWithRanks() const;
         bool IsPassiveStackableWithRanks() const;
@@ -583,6 +582,7 @@ class TC_GAME_API SpellInfo
         int32 GetDuration() const;
         int32 GetMaxDuration() const;
 
+        float CalcPeriodicHasteMod(Unit const* caster) const;
         int32 CalcDuration(WorldObject const* caster = nullptr) const;
         int32 CalcPeriod(WorldObject const* caster, SpellEffIndex effIndex, Optional<int32> periodOverride = {}) const;
 

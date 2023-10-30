@@ -110,6 +110,11 @@ enum DKSpellIcons
     DK_ICON_ID_BLOOD_SHIELD_MASTERY             = 2624
 };
 
+enum MiscSpells
+{
+    SPELL_GEN_INTERRUPT                         = 32747
+};
+
 // 48707 - Anti-Magic Shell
 class spell_dk_anti_magic_shell : public AuraScript
 {
@@ -1843,6 +1848,30 @@ class spell_dk_dark_simulacrum : public AuraScript
     }
 };
 
+// 47476 - Strangulate
+class spell_dk_strangulate : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfi*/) override
+    {
+        return ValidateSpellInfo({ SPELL_GEN_INTERRUPT });
+    }
+
+    void HandleCreatureInterrupt(SpellEffIndex /*effIndex*/)
+    {
+        Creature* target = GetHitCreature();
+        if (!target)
+            return;
+
+        if (Unit* caster = GetCaster())
+            caster->CastSpell(target, SPELL_GEN_INTERRUPT, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_dk_strangulate::HandleCreatureInterrupt, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+    }
+};
+
 void AddSC_deathknight_spell_scripts()
 {
     RegisterSpellScript(spell_dk_anti_magic_shell);
@@ -1891,6 +1920,7 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_shadow_infusion);
     RegisterSpellScript(spell_dk_scourge_strike);
     RegisterSpellScript(spell_dk_smoldering_rune);
+    RegisterSpellScript(spell_dk_strangulate);
     RegisterSpellScript(spell_dk_threat_of_thassarian);
     RegisterSpellScript(spell_dk_unoly_blight);
     RegisterSpellScript(spell_dk_unholy_command);

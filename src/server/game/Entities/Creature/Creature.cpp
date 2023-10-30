@@ -3236,21 +3236,10 @@ void Creature::ReacquireSpellFocusTarget()
 
 bool Creature::IsMovementPreventedByCasting() const
 {
-    // Creature is not casting. This state check is needed for scripted casting states which are usually considered hacks but for now we keep it.
-    if (!HasUnitState(UNIT_STATE_CASTING))
+    if (!Unit::IsMovementPreventedByCasting() && !HasSpellFocus())
         return false;
 
-    Spell* spellToCheck = nullptr;
-
-   if (Spell* spell = m_currentSpells[CURRENT_CHANNELED_SPELL]) // Check for active channeled spells
-       spellToCheck = spell;
-   else if (Spell* spell = m_currentSpells[CURRENT_GENERIC_SPELL]) // Check for ongoing spell casts
-       spellToCheck = spell;
-
-    if (!spellToCheck)
-        return false;
-
-    return (spellToCheck->CheckMovement() != SPELL_CAST_OK);
+    return true;
 }
 
 void Creature::StartPickPocketRefillTimer()

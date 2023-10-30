@@ -218,7 +218,7 @@ class TC_GAME_API Group
         typedef MemberSlotList::iterator member_witerator;
         typedef std::set<Player*> InvitesList;
 
-        typedef std::vector<Roll*> Rolls;
+        typedef std::vector<std::unique_ptr<Roll>> Rolls;
 
     public:
         Group();
