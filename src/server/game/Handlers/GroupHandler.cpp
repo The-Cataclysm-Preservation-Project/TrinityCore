@@ -51,7 +51,8 @@ class Aura;
 
 void WorldSession::SendPartyResult(PartyOperation operation, const std::string& member, PartyResult res, uint32 val /* = 0 */)
 {
-    WorldPackets::Party::PartyCommandResult packet(member);
+    WorldPackets::Party::PartyCommandResult packet;
+    packet.Name = member;
     packet.Command = static_cast<uint32>(operation);
     packet.Result = static_cast<uint32>(res);
     packet.ResultData = val;

@@ -106,17 +106,15 @@ namespace WorldPackets
         class PartyCommandResult final : public ServerPacket
         {
         public:
-            PartyCommandResult(std::string const& _name) : ServerPacket(SMSG_PARTY_COMMAND_RESULT, 4 + _name.length() + 4 + 4 + 8),
-                Command(0), Result(0), ResultData(0), Name(_name) { }
+            PartyCommandResult() : ServerPacket(SMSG_PARTY_COMMAND_RESULT, 4 + 1 + 4 + 4 + 8) { }
 
             WorldPacket const* Write() override;
 
-            uint32 Command;
-            uint32 Result;
-            uint32 ResultData;
-            ObjectGuid ResultGUID;
-        private:
             std::string Name;
+            uint32 Command = 0;
+            uint32 Result = 0;
+            uint32 ResultData = 0;
+            ObjectGuid ResultGUID;
         };
 
         class PartyInviteClient final : public ClientPacket
