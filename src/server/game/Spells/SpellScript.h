@@ -646,7 +646,7 @@ class TC_GAME_API SpellScript : public _SpellScript
         // returns: WorldLocation which was selected as a spell destination or nullptr
         WorldLocation const* GetExplTargetDest() const;
 
-        void SetExplTargetDest(WorldLocation& loc);
+        void SetExplTargetDest(WorldLocation const& loc);
 
         // returns: WorldObject which was selected as an explicit spell target or nullptr if there's no target
         WorldObject* GetExplTargetWorldObject() const;

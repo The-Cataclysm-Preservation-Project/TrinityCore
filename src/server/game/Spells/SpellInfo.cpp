@@ -121,7 +121,7 @@ float SpellImplicitTargetInfo::CalcDirectionAngle(SpellEffectInfo const& effectI
         case TARGET_DIR_FRONT_LEFT:
             return static_cast<float>(M_PI/4);
         case TARGET_DIR_RANDOM:
-            return float(rand_norm())*static_cast<float>(2*M_PI);
+            return rand_norm() * static_cast<float>(2 * M_PI);
         case TARGET_DIR_SUMMON:
             // This direction does alter its angle based on what is being summoned.
             // Creatures are being summoned on the left, gameobjects infront
