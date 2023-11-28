@@ -16,6 +16,7 @@
 */
 
 #include "shadowfang_keep.h"
+#include "SpellScript.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"

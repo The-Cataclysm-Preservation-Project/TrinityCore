@@ -370,8 +370,6 @@ class boss_fjola : public CreatureScript
                 TwinPactSpellId = SPELL_LIGHT_TWIN_PACT;
                 TouchSpellId = SPELL_LIGHT_TOUCH;
                 SpikeSpellId = SPELL_LIGHT_TWIN_SPIKE;
-
-                instance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT,  EVENT_START_TWINS_FIGHT);
                 boss_twin_baseAI::Reset();
             }
 
@@ -410,7 +408,7 @@ class boss_fjola : public CreatureScript
 
             void JustEngagedWith(Unit* who) override
             {
-                instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT,  EVENT_START_TWINS_FIGHT);
+                instance->TriggerGameEvent(EVENT_START_TWINS_FIGHT);
                 events.ScheduleEvent(EVENT_SPECIAL_ABILITY, 45 * IN_MILLISECONDS);
                 me->SummonCreature(NPC_BULLET_CONTROLLER, ToCCommonLoc[1].GetPositionX(), ToCCommonLoc[1].GetPositionY(), ToCCommonLoc[1].GetPositionZ(), 0.0f, TEMPSUMMON_MANUAL_DESPAWN);
                 boss_twin_baseAI::JustEngagedWith(who);

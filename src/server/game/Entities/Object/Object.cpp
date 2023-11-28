@@ -25,7 +25,6 @@
 #include "Common.h"
 #include "Creature.h"
 #include "DBCStores.h"
-#include "DynamicTree.h"
 #include "G3DPosition.hpp"
 #include "GameTime.h"
 #include "GridNotifiers.h"
@@ -38,7 +37,6 @@
 #include "MovementPacketBuilder.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
-#include "Opcodes.h"
 #include "OutdoorPvPMgr.h"
 #include "PhasingHandler.h"
 #include "PathGenerator.h"
@@ -1217,7 +1215,7 @@ void WorldObject::ProcessPositionDataChanged(PositionFullTerrainStatus const& da
 {
     m_zoneId = m_areaId = data.areaId;
     if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(m_areaId))
-        if (area->ParentAreaID)
+        if (area->ParentAreaID && area->GetFlags().HasFlag(AreaFlags::IsSubzone))
             m_zoneId = area->ParentAreaID;
     m_outdoors = data.outdoors;
     m_staticFloorZ = data.floorZ;
@@ -1551,8 +1549,8 @@ void WorldObject::GetRandomPoint(const Position &pos, float distance, float &ran
     }
 
     // angle to face `obj` to `this`
-    float angle = (float)rand_norm()*static_cast<float>(2*M_PI);
-    float new_dist = (float)rand_norm() + (float)rand_norm();
+    float angle = rand_norm() * static_cast<float>(2 * M_PI);
+    float new_dist = rand_norm() + rand_norm();
     new_dist = distance * (new_dist > 1 ? new_dist - 2 : new_dist);
 
     rand_x = pos.m_positionX + new_dist * std::cos(angle);
@@ -2486,7 +2484,7 @@ int32 WorldObject::ModSpellDuration(SpellInfo const* spellInfo, WorldObject cons
         return duration;
 
     // some auras are not affected by duration modifiers
-    if (spellInfo->HasAttribute(SPELL_ATTR7_IGNORE_DURATION_MODS))
+    if (spellInfo->HasAttribute(SPELL_ATTR7_NO_TARGET_DURATION_MOD))
         return duration;
 
     // cut duration only of negative effects
@@ -2585,7 +2583,7 @@ SpellMissInfo WorldObject::MagicSpellHitResult(Unit* victim, SpellInfo const* sp
     if (spellInfo->HasAttribute(SPELL_ATTR3_NO_AVOIDANCE))
         return SPELL_MISS_NONE;
 
-    if (spellInfo->HasAttribute(SPELL_ATTR7_CANT_MISS))
+    if (spellInfo->HasAttribute(SPELL_ATTR7_NO_ATTACK_MISS))
         return SPELL_MISS_NONE;
 
     SpellSchoolMask schoolMask = spellInfo->GetSchoolMask();
@@ -2702,7 +2700,7 @@ SpellMissInfo WorldObject::SpellHitResult(Unit* victim, SpellInfo const* spellIn
         reflectchance += victim->GetTotalAuraModifierByMiscMask(SPELL_AURA_REFLECT_SPELLS_SCHOOL, spellInfo->GetSchoolMask());
 
         if (reflectchance > 0 && roll_chance_i(reflectchance))
-            return SPELL_MISS_REFLECT;
+            return spellInfo->HasAttribute(SPELL_ATTR7_REFLECTION_ONLY_DEFENDS) ? SPELL_MISS_DEFLECT : SPELL_MISS_REFLECT;
     }
 
     if (spellInfo->HasAttribute(SPELL_ATTR3_ALWAYS_HIT))
@@ -3105,7 +3103,10 @@ bool WorldObject::IsValidAttackTarget(WorldObject const* target, SpellInfo const
 
     // PvP case - can't attack when attacker or target are in sanctuary
     // however, 13850 client doesn't allow to attack when one of the unit's has sanctuary flag and is pvp
-    if (unitTarget && unitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) && unitOrOwner && unitOrOwner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) && (unitTarget->IsInSanctuary() || unitOrOwner->IsInSanctuary()))
+    if (unitTarget && unitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED)
+        && unitOrOwner && unitOrOwner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED)
+        && (unitTarget->IsInSanctuary() || unitOrOwner->IsInSanctuary())
+        && (!bySpell || bySpell->HasAttribute(SPELL_ATTR8_IGNORE_SANCTUARY)))
         return false;
 
     // additional checks - only PvP case
@@ -3208,8 +3209,8 @@ bool WorldObject::IsValidAssistTarget(WorldObject const* target, SpellInfo const
                 return false;
 
             // can't assist player out of sanctuary from sanctuary if has pvp enabled
-            if (unitTarget->IsPvP())
-                if (unit && unit->IsInSanctuary() && !unitTarget->IsInSanctuary())
+            if (unitTarget->IsPvP() && (!bySpell || bySpell->HasAttribute(SPELL_ATTR8_IGNORE_SANCTUARY)))
+                if (unit->IsInSanctuary() && !unitTarget->IsInSanctuary())
                     return false;
         }
     }
@@ -3368,7 +3369,7 @@ Position WorldObject::GetFirstCollisionPosition(float dist, float angle)
 Position WorldObject::GetRandomNearPosition(float radius)
 {
     Position pos = GetPosition();
-    MovePosition(pos, radius * (float)rand_norm(), (float)rand_norm() * static_cast<float>(2 * M_PI));
+    MovePosition(pos, radius * rand_norm(), rand_norm() * static_cast<float>(2 * M_PI));
     return pos;
 }
 

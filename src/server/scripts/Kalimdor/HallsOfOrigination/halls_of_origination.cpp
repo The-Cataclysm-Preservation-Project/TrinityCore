@@ -701,7 +701,7 @@ struct npc_hoo_whirling_winds : public ScriptedAI
     void InitializeAI() override
     {
         me->SetReactState(REACT_AGGRESSIVE);
-        me->SetDisplayId(me->GetCreatureTemplate()->Modelid1);
+        me->SetDisplayFromModel(0);
     }
 
     void AttackStart(Unit* who) override

@@ -186,7 +186,7 @@ class npc_flash_freeze : public CreatureScript
             {
                 Initialize();
                 instance = me->GetInstanceScript();
-                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+                me->SetDisplayFromModel(1);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED);
                 me->SetControlled(true, UNIT_STATE_ROOT);
             }
@@ -262,7 +262,7 @@ class npc_ice_block : public CreatureScript
             npc_ice_blockAI(Creature* creature) : ScriptedAI(creature)
             {
                 instance = me->GetInstanceScript();
-                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+                me->SetDisplayFromModel(1);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED);
                 me->SetControlled(true, UNIT_STATE_ROOT);
             }
@@ -554,7 +554,7 @@ class npc_icicle : public CreatureScript
             npc_icicleAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
-                me->SetDisplayId(me->GetCreatureTemplate()->Modelid1);
+                me->SetDisplayFromModel(0);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_PACIFIED | UNIT_FLAG_NOT_SELECTABLE);
                 me->SetControlled(true, UNIT_STATE_ROOT);
                 me->SetReactState(REACT_PASSIVE);
@@ -609,7 +609,7 @@ class npc_snowpacked_icicle : public CreatureScript
             npc_snowpacked_icicleAI(Creature* creature) : ScriptedAI(creature)
             {
                 Initialize();
-                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+                me->SetDisplayFromModel(1);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
                 me->SetControlled(true, UNIT_STATE_ROOT);
                 me->SetReactState(REACT_PASSIVE);
@@ -951,7 +951,7 @@ class npc_toasty_fire : public CreatureScript
         {
             npc_toasty_fireAI(Creature* creature) : ScriptedAI(creature)
             {
-                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+                me->SetDisplayFromModel(1);
             }
 
             void Reset() override

@@ -33,7 +33,6 @@ EndContentData */
 #include "MotionMaster.h"
 #include "Player.h"
 #include "ScriptedEscortAI.h"
-#include "ScriptedGossip.h"
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 

@@ -123,7 +123,8 @@ enum PriestSpellIcons
 
 enum MiscSpells
 {
-    SPELL_GEN_REPLENISHMENT                         = 57669
+    SPELL_GEN_REPLENISHMENT                         = 57669,
+    SPELL_GEN_INTERRUPT                             = 32747
 };
 
 class PowerCheck
@@ -1820,6 +1821,30 @@ class spell_pri_psychic_scream : public SpellScript
     }
 };
 
+// 15487 - Silence
+class spell_pri_silence : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfi*/) override
+    {
+        return ValidateSpellInfo({ SPELL_GEN_INTERRUPT });
+    }
+
+    void HandleCreatureInterrupt(SpellEffIndex /*effIndex*/)
+    {
+        Creature* target = GetHitCreature();
+        if (!target)
+            return;
+
+        if (Unit* caster = GetCaster())
+            caster->CastSpell(target, SPELL_GEN_INTERRUPT, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_pri_silence::HandleCreatureInterrupt, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+    }
+};
+
 void AddSC_priest_spell_scripts()
 {
     RegisterSpellScript(spell_pri_archangel);
@@ -1869,6 +1894,7 @@ void AddSC_priest_spell_scripts()
     RegisterSpellScript(spell_pri_renew);
     RegisterSpellScript(spell_pri_shadow_word_death);
     RegisterSpellScript(spell_pri_shadowform);
+    RegisterSpellScript(spell_pri_silence);
     RegisterSpellScript(spell_pri_vampiric_embrace);
     RegisterSpellScript(spell_pri_vampiric_embrace_target);
     RegisterSpellScript(spell_pri_vampiric_touch);

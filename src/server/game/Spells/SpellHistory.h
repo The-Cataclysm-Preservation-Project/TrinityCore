@@ -21,7 +21,6 @@
 #include "SharedDefines.h"
 #include "DatabaseEnvFwd.h"
 #include "GameTime.h"
-#include <deque>
 #include <vector>
 #include <unordered_map>
 

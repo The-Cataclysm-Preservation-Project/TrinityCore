@@ -16,7 +16,6 @@
  */
 
 #include "Map.h"
-#include "CellImpl.h"
 #include "GameTime.h"
 #include "GossipDef.h"
 #include "GridNotifiers.h"
@@ -26,7 +25,6 @@
 #include "MotionMaster.h"
 #include "ObjectMgr.h"
 #include "Pet.h"
-#include "ScriptMgr.h"
 #include "Transport.h"
 #include "WaypointManager.h"
 #include "World.h"

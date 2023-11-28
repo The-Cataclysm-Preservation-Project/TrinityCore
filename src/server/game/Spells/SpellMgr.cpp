@@ -176,13 +176,18 @@ void SpellMgr::SetSpellDifficultyId(uint32 spellId, uint32 id)
 
 uint32 SpellMgr::GetSpellIdForDifficulty(uint32 spellId, WorldObject const* caster) const
 {
-    if (!GetSpellInfo(spellId))
-        return spellId;
-
     if (!caster || !caster->GetMap() || !caster->GetMap()->IsDungeon())
         return spellId;
 
-    uint32 mode = uint32(caster->GetMap()->GetSpawnMode());
+    return GetSpellIdForDifficulty(spellId, Difficulty(caster->GetMap()->GetSpawnMode()));
+}
+
+uint32 SpellMgr::GetSpellIdForDifficulty(uint32 spellId, Difficulty difficulty) const
+{
+    if (!GetSpellInfo(spellId))
+        return spellId;
+
+    uint32 mode = difficulty;
     if (mode >= MAX_DIFFICULTY)
     {
         TC_LOG_ERROR("spells", "SpellMgr::GetSpellIdForDifficulty: Incorrect difficulty for spell %u.", spellId);
@@ -3499,15 +3504,6 @@ void SpellMgr::LoadSpellInfoCorrections()
     });
 
     ApplySpellFix({
-        15487, // Priest - Silence
-        47476, // Deathknight - Strangulate
-        69179  // Arcane Torrent (Rage)
-    }, [](SpellInfo* spellInfo)
-    {
-        spellInfo->AttributesEx7 |= SPELL_ATTR7_INTERRUPT_ONLY_NONPLAYER;
-    });
-
-    ApplySpellFix({
         42490, // Energized!
         42492, // Cast Energized
     }, [](SpellInfo* spellInfo)
@@ -4688,7 +4684,7 @@ void SpellMgr::LoadSpellInfoCorrections()
         100258
     }, [](SpellInfo* spellInfo)
     {
-        spellInfo->AttributesEx7 |= SPELL_ATTR7_CANT_MISS;
+        spellInfo->AttributesEx7 |= SPELL_ATTR7_NO_ATTACK_MISS;
     });
 
     // Entrapping Roots
@@ -5306,13 +5302,13 @@ void SpellMgr::LoadSpellInfoCorrections()
     // Release Aberrations
     ApplySpellFix({ 77569 }, [](SpellInfo* spellInfo)
     {
-        spellInfo->AttributesEx8 |= SPELL_ATTR7_CANT_MISS;
+        spellInfo->AttributesEx8 |= SPELL_ATTR7_NO_ATTACK_MISS;
     });
 
     // Release All Minions
     ApplySpellFix({ 77991 }, [](SpellInfo* spellInfo)
     {
-        spellInfo->AttributesEx8 |= SPELL_ATTR7_CANT_MISS;
+        spellInfo->AttributesEx8 |= SPELL_ATTR7_NO_ATTACK_MISS;
     });
 
     // Debilitating Slime

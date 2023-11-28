@@ -116,7 +116,6 @@ namespace ClientPatcher
         Sleep(1000);
         if (fp != nullptr)
             fclose(fp);
-        FreeConsole();
         CreateThread(0, 0, EjectThread, 0, 0, 0);
         return;
     }

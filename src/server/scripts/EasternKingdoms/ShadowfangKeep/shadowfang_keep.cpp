@@ -20,7 +20,6 @@
 #include "MotionMaster.h"
 #include "GridNotifiersImpl.h"
 #include "ScriptedCreature.h"
-#include "ScriptedGossip.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "ScriptedEscortAI.h"

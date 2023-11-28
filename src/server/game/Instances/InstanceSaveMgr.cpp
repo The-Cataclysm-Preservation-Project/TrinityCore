@@ -351,7 +351,7 @@ void InstanceSaveManager::LoadResetTimes()
             MapDifficulty const* mapDiff = sDBCManager.GetMapDifficultyData(mapid, difficulty);
             if (!mapDiff)
             {
-                TC_LOG_ERROR("misc", "InstanceSaveManager::LoadResetTimes: invalid mapid(%u)/difficulty(%u) pair in instance_reset!", mapid, difficulty);
+                TC_LOG_ERROR("misc", "InstanceSaveManager::LoadResetTimes: invalid mapid(%u)/difficulty(%u) pair in instance_reset!", mapid, uint32(difficulty));
 
                 CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GLOBAL_INSTANCE_RESETTIME);
                 stmt->setUInt16(0, uint16(mapid));

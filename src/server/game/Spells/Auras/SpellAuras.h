@@ -22,7 +22,6 @@
 #include "EventProcessor.h"
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"
-#include <typeinfo>
 
 class SpellInfo;
 struct SpellModifier;

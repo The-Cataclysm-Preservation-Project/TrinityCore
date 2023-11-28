@@ -24,7 +24,6 @@
 #include "Player.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
-#include "Spell.h"
 #include "SpellAuras.h"
 #include "SpellScript.h"
 #include "TemporarySummon.h"

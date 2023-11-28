@@ -24,7 +24,6 @@
 #include "MoveSplineInit.h"
 #include "PassiveAI.h"
 #include "Spell.h"
-#include "Vehicle.h"
 #include "Map.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
@@ -566,7 +565,7 @@ private:
         if (Creature* warden = DoSummon(NPC_GROVE_WARDEN, GroveWardenSummonPositions[spawnIndex], 20000))
         {
             warden->DespawnOrUnsummon(3min);
-            warden->SetDisplayId(warden->GetCreatureTemplate()->Modelid1);
+            warden->SetDisplayFromModel(0);
             Position waypointPos = GroveWardenWaypointPosition1;
             Position homePos = me->GetHomePosition();
             if (me->GetExactDist2d(GroveWardenWaypointPosition1) < me->GetExactDist2d(GroveWardenWaypointPosition2))

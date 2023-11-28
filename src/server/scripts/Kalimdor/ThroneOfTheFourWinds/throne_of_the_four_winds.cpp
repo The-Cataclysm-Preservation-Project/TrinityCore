@@ -22,7 +22,6 @@
 #include "SpellAuraEffects.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
-#include "MoveSplineInit.h"
 #include "Player.h"
 #include "Vehicle.h"
 #include "InstanceScript.h"

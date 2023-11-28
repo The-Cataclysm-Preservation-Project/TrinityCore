@@ -197,7 +197,7 @@ class boss_razorscale_controller : public CreatureScript
             boss_razorscale_controllerAI(Creature* creature) : ScriptedAI(creature), summons(me)
             {
                 instance = creature->GetInstanceScript();
-                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+                me->SetDisplayFromModel(1);
             }
 
             InstanceScript* instance;

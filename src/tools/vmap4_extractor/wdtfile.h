@@ -21,6 +21,7 @@
 #include "mpqfile.h"
 #include <string>
 #include <memory>
+#include <vector>
 
 class ADTFile;
 

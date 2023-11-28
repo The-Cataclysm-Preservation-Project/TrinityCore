@@ -32,7 +32,6 @@
 #include "SpellHistory.h"
 #include "TemporarySummon.h"
 #include "Vehicle.h"
-#include "World.h"
 
 //Disable CreatureAI when charmed
 void CreatureAI::OnCharmed(bool isNew)

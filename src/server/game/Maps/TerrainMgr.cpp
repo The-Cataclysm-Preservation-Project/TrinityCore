@@ -387,7 +387,7 @@ void TerrainInfo::GetFullTerrainStatusForPosition(PhaseShift const& phaseShift, 
         data.outdoors = true;
         data.areaId = gridAreaId;
         if (AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(data.areaId))
-            data.outdoors = (areaEntry->Flags & (AREA_FLAG_INSIDE | AREA_FLAG_OUTSIDE)) != AREA_FLAG_INSIDE;
+            data.outdoors = areaEntry->GetFlags().HasFlag(AreaFlags::ForceOutdoors) || !areaEntry->GetFlags().HasFlag(AreaFlags::ForceIndoors);
     }
 
     if (!data.areaId)
@@ -619,7 +619,7 @@ uint32 TerrainInfo::GetZoneId(PhaseShift const& phaseShift, uint32 mapId, float 
 {
     uint32 areaId = GetAreaId(phaseShift, mapId, x, y, z);
     if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(areaId))
-        if (area->ParentAreaID)
+        if (area->ParentAreaID && area->GetFlags().HasFlag(AreaFlags::IsSubzone))
             return area->ParentAreaID;
 
     return areaId;
@@ -629,7 +629,7 @@ void TerrainInfo::GetZoneAndAreaId(PhaseShift const& phaseShift, uint32 mapId, u
 {
     areaid = zoneid = GetAreaId(phaseShift, mapId, x, y, z);
     if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(areaid))
-        if (area->ParentAreaID)
+        if (area->ParentAreaID && area->GetFlags().HasFlag(AreaFlags::IsSubzone))
             zoneid = area->ParentAreaID;
 }
 

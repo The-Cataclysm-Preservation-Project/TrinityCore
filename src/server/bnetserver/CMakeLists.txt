@@ -70,6 +70,15 @@ set_target_properties(bnetserver
       FOLDER
         "server")
 
+if(UNITY_BUILDS)
+  set_target_properties(bnetserver
+      PROPERTIES UNITY_BUILD ON)
+  set_target_properties(bnetserver
+      PROPERTIES
+        UNITY_BUILD_MODE BATCH
+        UNITY_BUILD_BATCH_SIZE 8)
+endif()
+
 if (WIN32)
   if ("${CMAKE_MAKE_PROGRAM}" MATCHES "MSBuild")
     add_custom_command(TARGET bnetserver

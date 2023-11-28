@@ -319,7 +319,7 @@ void WorldPackets::Party::SetEveryoneIsAssistant::Read()
 
 WorldPacket const* WorldPackets::Party::PartyCommandResult::Write()
 {
-    _worldPacket.resize(4 + Name.length() + 4 + 4 + 8);
+    _worldPacket.reserve(4 + Name.length() + 4 + 4 + 8);
 
     _worldPacket << uint32(Command);
     _worldPacket << Name;
@@ -546,6 +546,73 @@ WorldPacket const* WorldPackets::Party::SummonRaidMemberValidateFailed::Write()
         _worldPacket.WriteByteSeq(reason.Member[3]);
         _worldPacket.WriteByteSeq(reason.Member[1]);
     }
+
+    return &_worldPacket;
+}
+
+void WorldPackets::Party::SetRole::Read()
+{
+    _worldPacket >> Role;
+
+    ChangedUnit[2] = _worldPacket.ReadBit();
+    ChangedUnit[6] = _worldPacket.ReadBit();
+    ChangedUnit[3] = _worldPacket.ReadBit();
+    ChangedUnit[7] = _worldPacket.ReadBit();
+    ChangedUnit[5] = _worldPacket.ReadBit();
+    ChangedUnit[1] = _worldPacket.ReadBit();
+    ChangedUnit[0] = _worldPacket.ReadBit();
+    ChangedUnit[4] = _worldPacket.ReadBit();
+
+    _worldPacket.ReadByteSeq(ChangedUnit[6]);
+    _worldPacket.ReadByteSeq(ChangedUnit[4]);
+    _worldPacket.ReadByteSeq(ChangedUnit[1]);
+    _worldPacket.ReadByteSeq(ChangedUnit[3]);
+    _worldPacket.ReadByteSeq(ChangedUnit[0]);
+    _worldPacket.ReadByteSeq(ChangedUnit[5]);
+    _worldPacket.ReadByteSeq(ChangedUnit[3]);
+    _worldPacket.ReadByteSeq(ChangedUnit[7]);
+}
+
+WorldPacket const* WorldPackets::Party::RoleChangedInform::Write()
+{
+    _worldPacket.WriteBit(From[1]);
+    _worldPacket.WriteBit(ChangedUnit[0]);
+    _worldPacket.WriteBit(ChangedUnit[2]);
+    _worldPacket.WriteBit(ChangedUnit[4]);
+    _worldPacket.WriteBit(ChangedUnit[7]);
+    _worldPacket.WriteBit(ChangedUnit[3]);
+    _worldPacket.WriteBit(From[7]);
+    _worldPacket.WriteBit(ChangedUnit[5]);
+    _worldPacket.WriteBit(From[5]);
+    _worldPacket.WriteBit(From[4]);
+    _worldPacket.WriteBit(From[3]);
+    _worldPacket.WriteBit(ChangedUnit[6]);
+    _worldPacket.WriteBit(From[2]);
+    _worldPacket.WriteBit(From[6]);
+    _worldPacket.WriteBit(ChangedUnit[1]);
+    _worldPacket.WriteBit(From[0]);
+
+    _worldPacket.WriteByteSeq(From[7]);
+    _worldPacket.WriteByteSeq(ChangedUnit[3]);
+    _worldPacket.WriteByteSeq(From[6]);
+    _worldPacket.WriteByteSeq(ChangedUnit[4]);
+    _worldPacket.WriteByteSeq(ChangedUnit[0]);
+
+    _worldPacket << uint32(NewRole);
+
+    _worldPacket.WriteByteSeq(ChangedUnit[6]);
+    _worldPacket.WriteByteSeq(ChangedUnit[2]);
+    _worldPacket.WriteByteSeq(From[0]);
+    _worldPacket.WriteByteSeq(From[4]);
+    _worldPacket.WriteByteSeq(ChangedUnit[1]);
+    _worldPacket.WriteByteSeq(From[3]);
+    _worldPacket.WriteByteSeq(From[5]);
+    _worldPacket.WriteByteSeq(From[2]);
+    _worldPacket.WriteByteSeq(ChangedUnit[6]);
+    _worldPacket.WriteByteSeq(ChangedUnit[7]);
+    _worldPacket.WriteByteSeq(From[1]);
+
+    _worldPacket << uint32(OldRole);
 
     return &_worldPacket;
 }

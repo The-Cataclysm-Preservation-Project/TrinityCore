@@ -327,7 +327,7 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
             break;
         }
         case CONDITION_AREAID:
-            condMeets = object->GetAreaId() == ConditionValue1;
+            condMeets = DBCManager::IsInArea(object->GetAreaId(), ConditionValue1);
             break;
         case CONDITION_SPELL:
         {
@@ -2071,7 +2071,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
                 return false;
             }
 
-            if (areaEntry->ParentAreaID != 0)
+            if (areaEntry->ParentAreaID != 0 && areaEntry->GetFlags().HasFlag(AreaFlags::IsSubzone))
             {
                 TC_LOG_ERROR("sql.sql", "%s requires to be in area (%u) which is a subzone but zone expected, skipped.", cond->ToString(true).c_str(), cond->ConditionValue1);
                 return false;

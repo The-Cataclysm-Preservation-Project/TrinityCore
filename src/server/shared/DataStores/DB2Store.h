@@ -23,7 +23,6 @@
 #include "Common.h"
 #include "Errors.h"
 #include "ByteBuffer.h"
-#include <vector>
 
 /// Interface class for common access
 class DB2StorageBase

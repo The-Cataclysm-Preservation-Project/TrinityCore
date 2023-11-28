@@ -245,6 +245,30 @@ namespace WorldPackets
 
             std::vector<SummonRaidMemberValidateReason> Members;
         };
+
+        class SetRole final : public ClientPacket
+        {
+        public:
+            SetRole(WorldPacket&& packet) : ClientPacket(CMSG_SET_ROLE, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid ChangedUnit;
+            uint32 Role = 0;
+        };
+
+        class RoleChangedInform final : public ServerPacket
+        {
+        public:
+            RoleChangedInform() : ServerPacket(SMSG_GROUP_DECLINE, 8 + 8 + 4 + 4) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid ChangedUnit;
+            ObjectGuid From;
+            uint32 NewRole = 0;
+            uint32 OldRole = 0;
+        };
     }
 }
 

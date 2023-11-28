@@ -16,7 +16,6 @@
  */
 
 #include "halls_of_origination.h"
-#include "CreatureAIImpl.h"
 #include "PassiveAI.h"
 #include "Player.h"
 #include "ScriptMgr.h"

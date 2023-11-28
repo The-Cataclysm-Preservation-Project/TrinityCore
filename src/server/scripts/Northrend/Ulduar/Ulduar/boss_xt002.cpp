@@ -203,8 +203,6 @@ class boss_xt002 : public CreatureScript
                 DoCastSelf(SPELL_STAND);
 
                 Initialize();
-
-                instance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_MUST_DECONSTRUCT_FASTER);
             }
 
             void EnterEvadeMode(EvadeReason /*why*/) override
@@ -224,7 +222,7 @@ class boss_xt002 : public CreatureScript
                 //Tantrum is cast a bit slower the first time.
                 events.ScheduleEvent(EVENT_TYMPANIC_TANTRUM, urand(TIMER_TYMPANIC_TANTRUM_MIN, TIMER_TYMPANIC_TANTRUM_MAX) * 2);
 
-                instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_MUST_DECONSTRUCT_FASTER);
+                instance->TriggerGameEvent(ACHIEV_MUST_DECONSTRUCT_FASTER);
             }
 
             void DoAction(int32 action) override

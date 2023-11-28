@@ -309,7 +309,7 @@ struct npc_pet_dk_rune_weapon : public AggressorAI
         if (!summoner)
             return;
 
-        me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+        me->SetDisplayFromModel(1);
         for (uint32 spellId : { SPELL_COPY_WEAPON_1, SPELL_COPY_WEAPON_2 })
             DoCast(summoner, spellId, true);
 

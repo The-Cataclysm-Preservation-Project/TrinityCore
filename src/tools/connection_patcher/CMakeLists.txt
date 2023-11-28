@@ -25,6 +25,15 @@ target_link_libraries(connection_patcher
     common
 )
 
+if(UNITY_BUILDS)
+  set_target_properties(connection_patcher
+      PROPERTIES UNITY_BUILD ON)
+  set_target_properties(connection_patcher
+      PROPERTIES
+        UNITY_BUILD_MODE BATCH
+        UNITY_BUILD_BATCH_SIZE 2)
+endif()
+
 if (UNIX)
   install(TARGETS connection_patcher DESTINATION bin)
 elseif (WIN32)

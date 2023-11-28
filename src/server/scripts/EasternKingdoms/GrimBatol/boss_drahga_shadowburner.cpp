@@ -21,7 +21,6 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
-#include "MoveSplineInit.h"
 #include "Player.h"
 #include "MotionMaster.h"
 #include "InstanceScript.h"

@@ -82,7 +82,7 @@ struct boss_loken : public BossAI
         events.ScheduleEvent(EVENT_ARC_LIGHTNING, 15s);
         events.ScheduleEvent(EVENT_LIGHTNING_NOVA, 20s);
         events.ScheduleEvent(EVENT_RESUME_PULSING_SHOCKWAVE, 1s);
-        instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMELY_DEATH_START_EVENT);
+        instance->TriggerGameEvent(ACHIEV_TIMELY_DEATH_START_EVENT);
         me->SetStandState(UNIT_STAND_STATE_STAND);
     }
 
@@ -95,7 +95,6 @@ struct boss_loken : public BossAI
 
     void EnterEvadeMode(EvadeReason /*why*/) override
     {
-        instance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMELY_DEATH_START_EVENT);
         _DespawnAtEvade();
     }
 

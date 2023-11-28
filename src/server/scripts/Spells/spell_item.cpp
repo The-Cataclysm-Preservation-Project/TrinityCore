@@ -3249,9 +3249,8 @@ class spell_item_nitro_boosts : public SpellScriptLoader
             void HandleDummy(SpellEffIndex /* effIndex */)
             {
                 Unit* caster = GetCaster();
-                AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(caster->GetAreaId());
                 bool success = true;
-                if (areaEntry && areaEntry->IsFlyable() && !caster->GetMap()->IsDungeon())
+                if (!caster->GetMap()->IsDungeon())
                     success = roll_chance_i(95); // nitro boosts can only fail in flying-enabled locations on 4.3.4
                 caster->CastSpell(caster, success ? SPELL_NITRO_BOOSTS_SUCCESS : SPELL_NITRO_BOOSTS_BACKFIRE, GetCastItem());
             }
@@ -5141,6 +5140,39 @@ class spell_item_obsidian_armor : public AuraScript
     }
 };
 
+static constexpr std::array<uint32, 3> const NoKaledProcSpellIdsLFR = { 109867, 109869, 109871 };
+static constexpr std::array<uint32, 3> const NoKaledProcSpellIdsNormal = { 107787, 107789, 107785 };
+static constexpr std::array<uint32, 3> const NoKaledProcSpellIdsHeroic = { 109868, 109870, 109872 };
+
+// 109866, 107786, 109873 - Item - Dragon Soul - Proc - Agi Melee 1H Axe LFR
+class spell_item_dragon_soul_proc_agi_melee_1h_axe : public AuraScript
+{
+public:
+    spell_item_dragon_soul_proc_agi_melee_1h_axe(std::array<uint32, 3> const& procSpellIds) : AuraScript(), _procSpellIds(procSpellIds) { }
+
+    bool Validate(SpellInfo const* /*spell*/) override
+    {
+        return ValidateSpellInfo(_procSpellIds);
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        uint32 spellId = Trinity::Containers::SelectRandomContainerElement(_procSpellIds);
+        GetTarget()->CastSpell(eventInfo.GetProcTarget(), spellId, aurEff);
+
+    }
+
+    void Register() override
+    {
+        OnEffectProc.Register(&spell_item_dragon_soul_proc_agi_melee_1h_axe::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+
+private:
+    std::array<uint32, 3> _procSpellIds;
+};
+
 void AddSC_item_spell_scripts()
 {
     // 23074 Arcanite Dragonling
@@ -5278,4 +5310,7 @@ void AddSC_item_spell_scripts()
     RegisterSpellScript(spell_item_satisfied);
     RegisterSpellScript(spell_item_blaze_of_life);
     RegisterSpellScript(spell_item_obsidian_armor);
+    RegisterSpellScriptWithArgs(spell_item_dragon_soul_proc_agi_melee_1h_axe, "spell_item_nokaled_the_elements_of_death_lfr", NoKaledProcSpellIdsLFR);
+    RegisterSpellScriptWithArgs(spell_item_dragon_soul_proc_agi_melee_1h_axe, "spell_item_nokaled_the_elements_of_death_normal", NoKaledProcSpellIdsNormal);
+    RegisterSpellScriptWithArgs(spell_item_dragon_soul_proc_agi_melee_1h_axe, "spell_item_nokaled_the_elements_of_death_heroic", NoKaledProcSpellIdsHeroic);
 }

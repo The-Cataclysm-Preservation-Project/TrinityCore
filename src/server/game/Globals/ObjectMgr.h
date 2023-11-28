@@ -1013,8 +1013,8 @@ class TC_GAME_API ObjectMgr
         CreatureTemplate const* GetCreatureTemplate(uint32 entry) const;
         CreatureTemplateContainer const* GetCreatureTemplates() const { return &_creatureTemplateStore; }
         CreatureModelInfo const* GetCreatureModelInfo(uint32 modelId) const;
-        CreatureModelInfo const* GetCreatureModelRandomGender(uint32* displayID) const;
-        static uint32 ChooseDisplayId(CreatureTemplate const* cinfo, CreatureData const* data = nullptr);
+        CreatureModelInfo const* GetCreatureModelRandomGender(CreatureModel* model, CreatureTemplate const* creatureTemplate) const;
+        static CreatureModel const* ChooseDisplayId(CreatureTemplate const* cinfo, CreatureData const* data = nullptr);
         static void ChooseCreatureFlags(CreatureTemplate const* cinfo, uint32& npcflag, uint32& unit_flags, uint32& dynamicflags, CreatureData const* data = nullptr);
         EquipmentInfo const* GetEquipmentInfo(uint32 entry, int8& id) const;
         CreatureAddon const* GetCreatureAddon(ObjectGuid::LowType lowguid) const;
@@ -1187,6 +1187,7 @@ class TC_GAME_API ObjectMgr
         void LoadCreatureTemplateAddons();
         void LoadCreatureSparringTemplate();
         void LoadCreatureTemplate(Field* fields);
+        void LoadCreatureTemplateModels();
         void CheckCreatureTemplate(CreatureTemplate const* cInfo);
         void CheckCreatureMovement(char const* table, uint64 id, CreatureMovementData& creatureMovement);
         void LoadGameObjectQuestItems();
@@ -1324,15 +1325,9 @@ class TC_GAME_API ObjectMgr
             return nullptr;
         }
 
-        CellObjectGuids const& GetCellObjectGuids(uint16 mapid, uint8 spawnMode, uint32 cell_id)
-        {
-            return _mapObjectGuidsStore[MAKE_PAIR32(mapid, spawnMode)][cell_id];
-        }
+        CellObjectGuids const* GetCellObjectGuids(uint32 mapid, uint8 spawnMode, uint32 cell_id);
 
-        CellObjectGuidsMap const& GetMapObjectGuids(uint16 mapid, uint8 spawnMode)
-        {
-            return _mapObjectGuidsStore[MAKE_PAIR32(mapid, spawnMode)];
-        }
+        CellObjectGuidsMap const* GetMapObjectGuids(uint32 mapid, uint8 spawnMode);
 
         /**
          * Gets temp summon data for all creatures of specified group.

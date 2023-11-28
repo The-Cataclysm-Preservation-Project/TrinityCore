@@ -19,7 +19,6 @@
 #include "CreatureAIImpl.h"
 #include "CreatureGroups.h"
 #include "GameEventMgr.h"
-#include "GameTime.h"
 #include "GridNotifiersImpl.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"

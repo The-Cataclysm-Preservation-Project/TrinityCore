@@ -26,13 +26,11 @@
 #include "Database/DatabaseEnv.h"
 #include "GameTime.h"
 #include "World.h"
-#include "Player.h"
 #include "Util.h"
 #include "WardenWin.h"
 #include "WardenModuleWin.h"
 #include "WardenCheckMgr.h"
 #include "Random.h"
-#include <openssl/md5.h>
 
 WardenWin::WardenWin() : Warden(), _serverTicks(0) {}
 

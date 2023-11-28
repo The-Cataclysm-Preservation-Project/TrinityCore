@@ -189,8 +189,7 @@ bool Pet::LoadPetData(Player* owner, uint32 petEntry, uint32 petnumber, bool cur
 
     m_charmInfo->SetPetNumber(petId, IsPermanentPetFor(owner));
 
-    SetDisplayId(playerPetData->DisplayId);
-    SetNativeDisplayId(playerPetData->DisplayId);
+    SetDisplayId(playerPetData->DisplayId, true);
     uint32 petlevel = playerPetData->Petlevel;
     SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
     SetName(playerPetData->Name);
@@ -1962,9 +1961,9 @@ float Pet::GetNativeObjectScale() const
     return Guardian::GetNativeObjectScale();
 }
 
-void Pet::SetDisplayId(uint32 modelId)
+void Pet::SetDisplayId(uint32 modelId, bool setNative /*= false*/)
 {
-    Guardian::SetDisplayId(modelId);
+    Guardian::SetDisplayId(modelId, setNative);
 
     if (!isControlled())
         return;

@@ -20,7 +20,6 @@
 #include "Map.h"
 #include "Player.h"
 #include "SpellMgr.h"
-#include "Transport.h"
 #include "Unit.h"
 #include "Weather.h"
 #include "ObjectMgr.h"

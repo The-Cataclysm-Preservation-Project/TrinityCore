@@ -20,11 +20,10 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "Spell.h"
+#include "SpellScript.h"
 #include "SpellAuras.h"
-#include "SpellAuraEffects.h"
 #include "Player.h"
 #include "InstanceScript.h"
-#include "CreatureAIImpl.h"
 #include "ObjectAccessor.h"
 
 enum Texts

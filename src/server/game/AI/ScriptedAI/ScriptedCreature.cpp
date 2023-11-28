@@ -26,7 +26,6 @@
 #include "Log.h"
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
-#include "Spell.h"
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 

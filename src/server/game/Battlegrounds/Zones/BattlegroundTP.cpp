@@ -567,7 +567,7 @@ void BattlegroundTP::EventPlayerClickedOnFlag(Player* player, GameObject* target
         UpdateFlagState(HORDE, BG_TP_FLAG_STATE_ON_PLAYER);
         UpdateWorldState(BG_TP_FLAG_UNK_ALLIANCE, 1);
         player->CastSpell(player, BG_TP_SPELL_ALLIANCE_FLAG, true);
-        player->StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_SPELL_TARGET, BG_TP_SPELL_ALLIANCE_FLAG_PICKED);
+        player->StartAchievementCriteria(AchievementCriteriaStartEvent::BeSpellTarget, BG_TP_SPELL_ALLIANCE_FLAG_PICKED);
         if (_flagState[1] == BG_TP_FLAG_STATE_ON_PLAYER)
             _bothFlagsKept = true;
     }
@@ -585,7 +585,7 @@ void BattlegroundTP::EventPlayerClickedOnFlag(Player* player, GameObject* target
         UpdateFlagState(ALLIANCE, BG_TP_FLAG_STATE_ON_PLAYER);
         UpdateWorldState(BG_TP_FLAG_UNK_HORDE, 1);
         player->CastSpell(player, BG_TP_SPELL_HORDE_FLAG, true);
-        player->StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_SPELL_TARGET, BG_TP_SPELL_HORDE_FLAG_PICKED);
+        player->StartAchievementCriteria(AchievementCriteriaStartEvent::BeSpellTarget, BG_TP_SPELL_HORDE_FLAG_PICKED);
         if (_flagState[0] == BG_TP_FLAG_STATE_ON_PLAYER)
             _bothFlagsKept = true;
     }

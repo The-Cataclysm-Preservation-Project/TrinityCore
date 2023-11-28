@@ -20,7 +20,6 @@
 #include "InstanceScript.h"
 #include "Map.h"
 #include "MotionMaster.h"
-#include "ObjectAccessor.h"
 #include "scarlet_monastery.h"
 #include "ScriptedCreature.h"
 #include "Spell.h"

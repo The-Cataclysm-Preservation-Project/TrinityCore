@@ -19,8 +19,8 @@
 #define _ARCHAEOLOGY_H
 
 #include "ArchaeologyMgr.h"
-#include "Common.h"
 #include "WorldSession.h"
+#include <array>
 
 #define DIGS_PER_SITE 3
 class Player;

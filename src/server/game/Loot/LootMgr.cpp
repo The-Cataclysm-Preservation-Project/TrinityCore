@@ -399,7 +399,7 @@ LootStoreItem const* LootTemplate::LootGroup::Roll(Loot& loot, uint16 lootMode) 
 
     if (!possibleLoot.empty())                             // First explicitly chanced entries are checked
     {
-        float roll = (float)rand_chance();
+        float roll = rand_chance();
 
         for (LootStoreItemList::const_iterator itr = possibleLoot.begin(); itr != possibleLoot.end(); ++itr)   // check each explicitly chanced entry in the template and modify its chance based on quality.
         {

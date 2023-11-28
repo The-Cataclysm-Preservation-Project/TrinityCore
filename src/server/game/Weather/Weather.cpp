@@ -22,14 +22,12 @@
 #include "Weather.h"
 #include "GameTime.h"
 #include "Log.h"
-#include "Opcodes.h"
 #include "MiscPackets.h"
 #include "Player.h"
 #include "Random.h"
 #include "ScriptMgr.h"
 #include "Util.h"
 #include "World.h"
-#include "WorldPacket.h"
 
 /// Create the Weather object
 Weather::Weather(uint32 zone, WeatherData const* weatherChances)
@@ -176,16 +174,16 @@ bool Weather::ReGenerate()
     }
     else if (u < 90)
     {
-        m_grade = (float)rand_norm() * 0.3333f;
+        m_grade = rand_norm() * 0.3333f;
     }
     else
     {
         // Severe change, but how severe?
         rnd = urand(0, 99);
         if (rnd < 50)
-            m_grade = (float)rand_norm() * 0.3333f + 0.3334f;
+            m_grade = rand_norm() * 0.3333f + 0.3334f;
         else
-            m_grade = (float)rand_norm() * 0.3333f + 0.6667f;
+            m_grade = rand_norm() * 0.3333f + 0.6667f;
     }
 
     // return true only in case weather changes

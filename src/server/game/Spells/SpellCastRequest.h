@@ -15,23 +15,28 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ADDONHANDLER_H
-#define __ADDONHANDLER_H
+#ifndef SpellCastRequest_h__
+#define SpellCastRequest_h__
 
-#include "Common.h"
-#include "Config.h"
-#include "WorldPacket.h"
+#include "SpellPacketsCommon.h"
 
-class AddonHandler
+struct SpellCastRequestItemData
 {
-    public:
-        static AddonHandler* instance();
+    SpellCastRequestItemData(uint8 bagSlot, uint8 slot, ObjectGuid castItem) :
+        BagSlot(bagSlot), Slot(slot), CastItem(castItem) { }
 
-        bool BuildAddonPacket(WorldPacket* Source, WorldPacket* Target);
-
-    private:
-        AddonHandler() { }
-        ~AddonHandler() { }
+    uint8 BagSlot = 0;
+    uint8 Slot = 0;
+    ObjectGuid CastItem;
 };
-#define sAddOnHandler AddonHandler::instance()
-#endif
+
+struct PendingSpellCastRequest
+{
+    PendingSpellCastRequest(WorldPackets::Spells::SpellCastRequest&& castRequest, Optional<SpellCastRequestItemData> castItemData = { }) :
+        CastRequest(castRequest), CastItemData(castItemData) { }
+
+    WorldPackets::Spells::SpellCastRequest CastRequest;
+    Optional<SpellCastRequestItemData> CastItemData;
+};
+
+#endif // SpellCastRequest_h__

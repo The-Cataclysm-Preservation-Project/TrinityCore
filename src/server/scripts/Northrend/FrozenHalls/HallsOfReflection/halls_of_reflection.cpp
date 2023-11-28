@@ -812,7 +812,6 @@ class npc_jaina_or_sylvanas_escape_hor : public CreatureScript
                 _events.Reset();
                 _icewall = 0;
                 _events.ScheduleEvent(EVENT_ESCAPE, 1000);
-                _instance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_NOT_RETREATING_EVENT);
             }
 
             void JustDied(Unit* /*killer*/) override
@@ -1062,7 +1061,7 @@ class npc_jaina_or_sylvanas_escape_hor : public CreatureScript
                                 }
                             }
                             _invincibility = false;
-                            _instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_NOT_RETREATING_EVENT);
+                            _instance->TriggerGameEvent(ACHIEV_NOT_RETREATING_EVENT);
                             _events.ScheduleEvent(EVENT_ESCAPE_7, 1000);
                             break;
                         case EVENT_ESCAPE_7:
@@ -2585,7 +2584,7 @@ class npc_quel_delar_sword : public CreatureScript
             npc_quel_delar_swordAI(Creature* creature) : ScriptedAI(creature)
             {
                 _instance = me->GetInstanceScript();
-                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
+                me->SetDisplayFromModel(1);
                 _intro = true;
             }
 

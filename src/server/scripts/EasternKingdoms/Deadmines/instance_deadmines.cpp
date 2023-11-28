@@ -24,7 +24,6 @@
 #include "MotionMaster.h"
 #include "TemporarySummon.h"
 #include "VehicleDefines.h"
-#include "WorldPacket.h"
 #include "Player.h"
 #include "CreatureAIImpl.h"
 

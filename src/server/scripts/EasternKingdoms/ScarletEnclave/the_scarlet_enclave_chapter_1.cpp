@@ -382,7 +382,7 @@ struct npc_eye_of_acherus : public ScriptedAI
 {
     npc_eye_of_acherus(Creature* creature) : ScriptedAI(creature)
     {
-        creature->SetDisplayId(creature->GetCreatureTemplate()->Modelid1);
+        creature->SetDisplayFromModel(0);
         creature->SetReactState(REACT_PASSIVE);
     }
 

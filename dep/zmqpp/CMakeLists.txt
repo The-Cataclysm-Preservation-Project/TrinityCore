@@ -33,3 +33,12 @@ target_compile_definitions(zmqpp
     -DBUILD_VERSION_MINOR=2
     -DBUILD_VERSION_REVISION=0
     -DBUILD_VERSION="3.2.0")
+
+if(UNITY_BUILDS)
+  set_target_properties(zmqpp
+      PROPERTIES UNITY_BUILD ON)
+  set_target_properties(zmqpp
+      PROPERTIES
+        UNITY_BUILD_MODE BATCH
+        UNITY_BUILD_BATCH_SIZE 6)
+endif()

@@ -22,8 +22,6 @@
 #include "Optional.h"
 #include "MovementInfo.h"
 #include "Position.h"
-#include "SharedDefines.h"
-#include <array>
 
 namespace WorldPackets
 {

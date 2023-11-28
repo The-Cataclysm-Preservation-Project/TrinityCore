@@ -534,6 +534,10 @@ inline void Battleground::_ProcessJoin(uint32 diff)
         SetStatus(STATUS_IN_PROGRESS);
         SetStartDelayTime(StartDelayTimes[BG_STARTING_EVENT_FOURTH]);
 
+        for (auto const& [guid, _] : GetPlayers())
+            if (Player* player = ObjectAccessor::GetPlayer(GetBgMap(), guid))
+                player->StartAchievementCriteria(AchievementCriteriaStartEvent::StartBattleground, GetBgMap()->GetId());
+
         // Remove preparation
         if (isArena())
         {
@@ -1021,7 +1025,7 @@ void Battleground::RemovePlayerAtLeave(ObjectGuid guid, bool Transport, bool Sen
         player->SetBGTeam(0);
 
         // remove all criterias on bg leave
-        player->ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_CONDITION_BG_MAP, GetMapId(), true);
+        player->FailAchievementCriteria(AchievementCriteriaFailEvent::LeaveBattleground, 0);
 
         player->RemoveBattlegroundQueueJoinTime(bgTypeId);
 
@@ -1140,9 +1144,6 @@ void Battleground::AddPlayer(Player* player)
             player->SendDirectMessage(packet.Write());
         }
     }
-
-    // reset all map criterias on map enter
-    player->ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_CONDITION_BG_MAP, GetMapId(), true);
 
     // setup BG group membership
     PlayerAddedToBGCheckIfBGIsRunning(player);

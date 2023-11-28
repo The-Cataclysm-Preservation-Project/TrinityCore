@@ -24,14 +24,12 @@
 #include "SpellDefines.h"
 #include "ThreatManager.h"
 #include "Timer.h"
-#include "SpellPacketsCommon.h"
 #include "UnitDefines.h"
 #include "Util.h"
 #include <array>
 #include <map>
 #include <memory>
 #include <stack>
-#include <queue>
 
 #define WORLD_TRIGGER   12999
 
@@ -68,6 +66,7 @@ struct FactionTemplateEntry;
 struct LiquidData;
 struct LiquidTypeEntry;
 struct MountCapabilityEntry;
+struct PendingSpellCastRequest;
 struct SpellValue;
 
 class Aura;
@@ -772,29 +771,6 @@ struct PositionUpdateInfo
     bool Turned = false;
 };
 
-struct SpellCastRequestItemData
-{
-    SpellCastRequestItemData(uint8 bagSlot, uint8 slot, ObjectGuid castItem) :
-        BagSlot(bagSlot), Slot(slot), CastItem(castItem)
-    {
-    }
-
-    uint8 BagSlot = 0;
-    uint8 Slot = 0;
-    ObjectGuid CastItem;
-};
-
-struct PendingSpellCastRequest
-{
-    PendingSpellCastRequest(WorldPackets::Spells::SpellCastRequest&& castRequest, Optional<SpellCastRequestItemData> castItemData = {}) :
-        CastRequest(castRequest), CastItemData(castItemData)
-    {
-    }
-
-    WorldPackets::Spells::SpellCastRequest CastRequest;
-    Optional<SpellCastRequestItemData> CastItemData;
-};
-
 // delay time next attack to prevent client attack animation problems
 #define ATTACK_DISPLAY_DELAY 200
 #define MAX_PLAYER_STEALTH_DETECT_RANGE 30.0f               // max distance for detection targets by player
@@ -1058,7 +1034,7 @@ class TC_GAME_API Unit : public WorldObject
         virtual bool CanApplyResilience() const;
         static void ApplyResilience(Unit const* victim, int32* damage);
 
-        int32 CalculateAOEAvoidance(int32 damage, uint32 schoolMask, ObjectGuid const& casterGuid) const;
+        int32 CalculateAOEAvoidance(int32 damage, uint32 schoolMask, bool npcCaster) const;
 
         float MeleeSpellMissChance(Unit const* victim, WeaponAttackType attType, SpellInfo const* spellInfo = nullptr) const override;
         SpellMissInfo MeleeSpellHitResult(Unit* victim, SpellInfo const* spellInfo) const override;
@@ -1307,7 +1283,7 @@ class TC_GAME_API Unit : public WorldObject
         void _ApplyAura(AuraApplication* aurApp, uint8 effMask);
         void _UnapplyAura(AuraApplicationMap::iterator& i, AuraRemoveFlags removeMode);
         void _UnapplyAura(AuraApplication* aurApp, AuraRemoveFlags removeMode);
-        void _RemoveNoStackAurasDueToAura(Aura* aura);
+        void _RemoveNoStackAurasDueToAura(Aura* aura, bool owned);
         void _RegisterAuraEffect(AuraEffect* aurEff, bool apply);
 
         // m_ownedAuras container management
@@ -1462,7 +1438,7 @@ class TC_GAME_API Unit : public WorldObject
         Spell* GetCurrentSpell(uint32 spellType) const { return m_currentSpells[spellType]; }
         Spell* FindCurrentSpellBySpellId(uint32 spell_id) const;
         int32 GetCurrentSpellCastTime(uint32 spell_id) const;
-        SpellInfo const* GetCastSpellInfo(SpellInfo const* spellInfo) const;
+        SpellInfo const* GetCastSpellInfo(SpellInfo const* spellInfo, TriggerCastFlags& triggerFlag) const;
 
         virtual bool HasSpellFocus(Spell const* /*focusSpell*/ = nullptr) const { return false; }
         virtual bool IsMovementPreventedByCasting() const;
@@ -1563,10 +1539,9 @@ class TC_GAME_API Unit : public WorldObject
         virtual float GetNativeObjectScale() const { return 1.0f; }
         virtual void RecalculateObjectScale();
         uint32 GetDisplayId() const { return GetUInt32Value(UNIT_FIELD_DISPLAYID); }
-        virtual void SetDisplayId(uint32 modelId);
+        virtual void SetDisplayId(uint32 modelId, bool setNative = false);
         uint32 GetNativeDisplayId() const { return GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID); }
         void RestoreDisplayId();
-        void SetNativeDisplayId(uint32 modelId) { SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, modelId); }
         void setTransForm(uint32 spellid) { m_transform = spellid;}
         uint32 getTransForm() const { return m_transform;}
 
@@ -1805,7 +1780,7 @@ class TC_GAME_API Unit : public WorldObject
         void SetIgnoringCombat(bool apply) { _isIgnoringCombat = apply; }
 
         // Queues up a spell cast request that has been received via packet and processes it whenever possible.
-        void RequestSpellCast(PendingSpellCastRequest castRequest, SpellInfo const* spellInfo);
+        void RequestSpellCast(std::unique_ptr<PendingSpellCastRequest> castRequest, SpellInfo const* spellInfo);
         void CancelPendingCastRequest();
         bool CanRequestSpellCast(SpellInfo const* spell) const;
 
@@ -1958,7 +1933,7 @@ class TC_GAME_API Unit : public WorldObject
 
         bool _isIgnoringCombat;
 
-        Optional<PendingSpellCastRequest> _pendingSpellCastRequest;
+        std::unique_ptr<PendingSpellCastRequest> _pendingSpellCastRequest;
         void ProcessPendingSpellCastRequest();
         void ProcessItemCast(PendingSpellCastRequest const& castRequest, SpellCastTargets const& targets);
         bool CanExecutePendingSpellCastRequest(SpellInfo const* spellInfo) const;

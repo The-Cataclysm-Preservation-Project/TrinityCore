@@ -23,7 +23,6 @@
 #include "mpqfile.h"
 #include "VMapDefinitions.h"
 #include <G3D/Quat.h>
-#include <algorithm>
 #include <cstdio>
 #include <limits>
 

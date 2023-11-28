@@ -21,6 +21,7 @@
 #include "DatabaseEnvFwd.h"
 #include "DBCEnums.h"
 #include "DBCStores.h"
+#include "Duration.h"
 #include "ObjectGuid.h"
 #include <string>
 #include <unordered_map>
@@ -36,7 +37,6 @@ typedef std::vector<AchievementEntry const*>         AchievementEntryList;
 
 typedef std::unordered_map<uint32, AchievementCriteriaEntryList> AchievementCriteriaListByAchievement;
 typedef std::unordered_map<uint32, AchievementCriteriaEntryList> AchievementCriteriaListByMiscValue;
-typedef std::unordered_map<uint32, AchievementCriteriaEntryList> AchievementCriteriaListByCondition;
 typedef std::unordered_map<uint32, AchievementEntryList>         AchievementListByReferencedId;
 
 struct CriteriaProgress
@@ -266,7 +266,6 @@ class TC_GAME_API AchievementMgr
         static void DeleteFromDB(ObjectGuid lowguid);
         void LoadFromDB(PreparedQueryResult achievementResult, PreparedQueryResult criteriaResult);
         void SaveToDB(CharacterDatabaseTransaction& trans);
-        void ResetAchievementCriteria(AchievementCriteriaCondition condition, uint64 value, bool evenIfCriteriaComplete);
         void UpdateAchievementCriteria(AchievementCriteriaTypes type, uint64 miscValue1 = 0, uint64 miscValue2 = 0, uint64 miscValue3 = 0, WorldObject const* ref = nullptr, Player* referencePlayer = nullptr, GameObject* go = nullptr);
         void CompletedAchievement(AchievementEntry const* entry, Player* referencePlayer);
         void CheckAllAchievementCriteria(Player* referencePlayer);
@@ -277,9 +276,9 @@ class TC_GAME_API AchievementMgr
         CompletedAchievementData* GetCompletedDataForAchievement(uint32 achievementId);
         T* GetOwner() const { return _owner; }
 
-        void UpdateTimedAchievements(uint32 timeDiff);
-        void StartTimedAchievement(AchievementCriteriaTimedTypes type, uint32 entry, uint32 timeLost = 0);
-        void RemoveTimedAchievement(AchievementCriteriaTimedTypes type, uint32 entry);   // used for quest and scripted timed achievements
+        void UpdateTimedAchievementCriteria(Milliseconds timeDiff);
+        void StartAchievementCriteria(AchievementCriteriaStartEvent startEvent, uint32 asset, Milliseconds timeLost = Milliseconds::zero());
+        void FailAchievementCriteria(AchievementCriteriaFailEvent failEvent, uint32 asset);
 
         uint32 GetAchievementPoints() const { return _achievementPoints; }
     private:
@@ -301,9 +300,9 @@ class TC_GAME_API AchievementMgr
         T* _owner;
         CriteriaProgressMap m_criteriaProgress;
         CompletedAchievementMap m_completedAchievements;
-        typedef std::map<uint32, uint32> TimedAchievementMap;
-        TimedAchievementMap m_timedAchievements;      // Criteria id/time left in MS
         uint32 _achievementPoints;
+
+        std::unordered_map<uint32 /*criteriaID*/, Milliseconds /*time left*/> _startedCriteria;
 };
 
 class TC_GAME_API AchievementGlobalMgr
@@ -319,16 +318,9 @@ class TC_GAME_API AchievementGlobalMgr
 
         AchievementCriteriaEntryList const& GetAchievementCriteriaByType(AchievementCriteriaTypes type, uint32 miscValue, bool guild = false) const;
 
-        AchievementCriteriaEntryList const& GetTimedAchievementCriteriaByType(AchievementCriteriaTimedTypes type) const
-        {
-            return m_AchievementCriteriasByTimedType[type];
-        }
+        AchievementCriteriaEntryList const* GetAchievementCriteriaByStartEvent(AchievementCriteriaStartEvent startEvent, int32 asset) const;
 
-        AchievementCriteriaEntryList const* GetAchievementCriteriaByCondition(AchievementCriteriaCondition condition, uint32 val)
-        {
-            AchievementCriteriaListByCondition::const_iterator itr = m_AchievementCriteriasByCondition[condition].find(val);
-            return itr != m_AchievementCriteriasByCondition[condition].end() ? &itr->second : nullptr;
-        }
+        AchievementCriteriaEntryList const* GetAchievementCriteriaByFailEvent(AchievementCriteriaFailEvent startEvent, int32 asset) const;
 
         AchievementCriteriaEntryList const* GetAchievementCriteriaByAchievement(uint32 id) const
         {
@@ -399,9 +391,8 @@ class TC_GAME_API AchievementGlobalMgr
         AchievementCriteriaListByMiscValue m_AchievementCriteriasByMiscValue[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
         AchievementCriteriaListByMiscValue m_GuildAchievementCriteriasByMiscValue[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 
-        AchievementCriteriaEntryList m_AchievementCriteriasByTimedType[ACHIEVEMENT_TIMED_TYPE_MAX];
-
-        AchievementCriteriaListByCondition m_AchievementCriteriasByCondition[ACHIEVEMENT_CRITERIA_CONDITION_MAX];
+        std::unordered_map<int32, AchievementCriteriaEntryList> _criteriasByStartEvent[size_t(AchievementCriteriaStartEvent::Count)];
+        std::unordered_map<int32, AchievementCriteriaEntryList> _criteriasByFailEvent[size_t(AchievementCriteriaFailEvent::Count)];
 
         // store achievement criterias by achievement to speed up lookup
         AchievementCriteriaListByAchievement m_AchievementCriteriaListByAchievement;

@@ -39,6 +39,8 @@ class Unit;
 class ProcEventInfo;
 struct SkillLineAbilityEntry;
 
+enum Difficulty : uint8;
+
 // only used in code
 enum SpellCategories
 {
@@ -616,6 +618,7 @@ class TC_GAME_API SpellMgr
         uint32 GetSpellDifficultyId(uint32 spellId) const;
         void SetSpellDifficultyId(uint32 spellId, uint32 id);
         uint32 GetSpellIdForDifficulty(uint32 spellId, WorldObject const* caster) const;
+        uint32 GetSpellIdForDifficulty(uint32 spellId, Difficulty difficulty) const;
         SpellInfo const* GetSpellForDifficultyFromSpell(SpellInfo const* spell, WorldObject const* caster) const;
 
         // Spell Ranks table

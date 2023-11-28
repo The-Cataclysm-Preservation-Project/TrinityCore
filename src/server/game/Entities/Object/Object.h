@@ -35,7 +35,6 @@
 #include "UpdateFields.h"
 #include "UpdateMask.h"
 #include <list>
-#include <set>
 #include <unordered_map>
 
 class AreaTrigger;

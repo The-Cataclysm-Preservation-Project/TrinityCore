@@ -121,7 +121,7 @@ float SpellImplicitTargetInfo::CalcDirectionAngle(SpellEffectInfo const& effectI
         case TARGET_DIR_FRONT_LEFT:
             return static_cast<float>(M_PI/4);
         case TARGET_DIR_RANDOM:
-            return float(rand_norm())*static_cast<float>(2*M_PI);
+            return rand_norm() * static_cast<float>(2 * M_PI);
         case TARGET_DIR_SUMMON:
             // This direction does alter its angle based on what is being summoned.
             // Creatures are being summoned on the left, gameobjects infront
@@ -449,7 +449,7 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Uni
     if (Scaling.Coefficient != 0.0f)
     {
         int32 level = _spellInfo->SpellLevel;
-        if (target && _spellInfo->IsPositiveEffect(_effIndex) && (Effect == SPELL_EFFECT_APPLY_AURA || Effect == SPELL_EFFECT_APPLY_AURA_2))
+        if (target && _spellInfo->HasAttribute(SPELL_ATTR8_USE_TARGETS_LEVEL_FOR_SPELL_SCALING))
             level = target->getLevel();
         else if (casterUnit)
             level = casterUnit->getLevel();
@@ -492,7 +492,12 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Uni
     {
         if (casterUnit && basePointsPerLevel != 0.0f)
         {
-            int32 level = int32(casterUnit->getLevel());
+            int32 level = 1;
+            if (target && _spellInfo->HasAttribute(SPELL_ATTR8_USE_TARGETS_LEVEL_FOR_SPELL_SCALING))
+                level = target->getLevel();
+            else if (caster && caster->IsUnit())
+                level = casterUnit->getLevel();
+
             if (level > int32(_spellInfo->MaxLevel) && _spellInfo->MaxLevel > 0)
                 level = int32(_spellInfo->MaxLevel);
             else if (level < int32(_spellInfo->BaseLevel))
@@ -1138,7 +1143,7 @@ bool SpellInfo::HasTargetType(::Targets target) const
 
 bool SpellInfo::CanBeInterrupted(Unit const* interruptTarget, bool ignoreImmunity /*= false*/) const
 {
-    return HasAttribute(SPELL_ATTR7_CAN_ALWAYS_BE_INTERRUPTED)
+    return HasAttribute(SPELL_ATTR7_NO_UI_NOT_INTERRUPTIBLE)
         || HasChannelInterruptFlag(SpellAuraInterruptFlags::Damage | SpellAuraInterruptFlags::EnteringCombat)
         || (interruptTarget->IsPlayer() && InterruptFlags.HasFlag(SpellInterruptFlags::DamageCancelsPlayerOnly))
         || ((!(interruptTarget->GetMechanicImmunityMask() & (1 << MECHANIC_INTERRUPT)) || ignoreImmunity)
@@ -1318,11 +1323,6 @@ bool SpellInfo::IsSelfCast() const
 bool SpellInfo::IsPassive() const
 {
     return HasAttribute(SPELL_ATTR0_PASSIVE);
-}
-
-bool SpellInfo::IsRaidMarker() const
-{
-    return AttributesEx8 & SPELL_ATTR8_RAID_MARKER;
 }
 
 bool SpellInfo::IsAutocastable() const
@@ -1732,8 +1732,9 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         while (groupEntry)
         {
             for (uint8 i = 0; i < MAX_GROUP_AREA_IDS; ++i)
-                if (groupEntry->AreaID[i] == zone_id || groupEntry->AreaID[i] == area_id)
+                if (DBCManager::IsInArea(area_id, groupEntry->AreaID[i]))
                     found = true;
+
             if (found || !groupEntry->NextAreaID)
                 break;
             // Try search in next group
@@ -1747,16 +1748,16 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
     // continent limitation (virtual continent)
     if (HasAttribute(SPELL_ATTR4_ONLY_FLYING_AREAS))
     {
-        uint32 mountFlags = 0;
+        EnumFlag<AreaMountFlags> mountFlags = AreaMountFlags::None;
         if (player && player->HasAuraType(SPELL_AURA_MOUNT_RESTRICTIONS))
         {
             for (AuraEffect const* auraEffect : player->GetAuraEffectsByType(SPELL_AURA_MOUNT_RESTRICTIONS))
-                mountFlags |= auraEffect->GetMiscValue();
+                mountFlags |= AreaMountFlags(auraEffect->GetMiscValue());
         }
         else if (AreaTableEntry const* areaTable = sAreaTableStore.LookupEntry(area_id))
-            mountFlags = areaTable->MountFlags;
+            mountFlags = areaTable->GetMountFlags();
 
-        if (!(mountFlags & AREA_MOUNT_FLAG_FLYING_ALLOWED))
+        if (!(mountFlags.HasFlag(AreaMountFlags::AllowFlyingMounts)))
             return SPELL_FAILED_INCORRECT_AREA;
     }
 
@@ -1766,6 +1767,20 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
         if (!mapEntry || mapEntry->IsRaid())
             return SPELL_FAILED_NOT_IN_RAID_INSTANCE;
+    }
+
+    if (HasAttribute(SPELL_ATTR8_REMOVE_OUTSIDE_DUNGEONS_AND_RAIDS))
+    {
+        MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
+        if (!mapEntry || !mapEntry->IsDungeon())
+            return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
+    }
+
+    if (HasAttribute(SPELL_ATTR8_NOT_IN_BATTLEGROUND))
+    {
+        MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
+        if (!mapEntry || mapEntry->IsBattleground())
+            return SPELL_FAILED_NOT_IN_BATTLEGROUND;
     }
 
     // DB base check (if non empty then must fit at least single for allow)
@@ -1887,6 +1902,13 @@ SpellCastResult SpellInfo::CheckTarget(WorldObject const* caster, WorldObject co
 
     Unit const* unitTarget = target->ToUnit();
 
+    /*
+    * @todo: 4.x - old hold due to an upcoming tempsummon rework
+    if (HasAttribute(SPELL_ATTR8_ONLY_TARGET_IF_SAME_CREATOR))
+        if (caster != target && caster->GetGUID() != target->GetOwnerGUID())
+            return SPELL_FAILED_BAD_TARGETS;
+    */
+
     // creature/player specific target checks
     if (unitTarget)
     {
@@ -1937,6 +1959,10 @@ SpellCastResult SpellInfo::CheckTarget(WorldObject const* caster, WorldObject co
                 }
             }
         }
+
+        if (HasAttribute(SPELL_ATTR8_ONLY_TARGET_OWN_SUMMONS))
+            if (!unitTarget->IsSummon() || unitTarget->ToTempSummon()->GetSummonerGUID() != caster->GetGUID())
+                return SPELL_FAILED_BAD_TARGETS;
     }
     // corpse specific target checks
     else if (Corpse const* corpseTarget = target->ToCorpse())
@@ -1974,9 +2000,8 @@ SpellCastResult SpellInfo::CheckTarget(WorldObject const* caster, WorldObject co
         return SPELL_FAILED_BAD_TARGETS;
 
     // Do not allow pet or guardian targets if the spell is a raid buff or may not target pets at all
-    if ((HasAttribute(SPELL_ATTR7_CONSOLIDATED_RAID_BUFF) || HasAttribute(SPELL_ATTR5_NOT_ON_PLAYER_CONTROLLED_NPC)) && (caster->IsCreature() && !caster->ToCreature()->IsPet() && !caster->ToCreature()->IsGuardian()))
-        if ((unitTarget->IsPet() || unitTarget->IsGuardian()))
-            return SPELL_FAILED_BAD_TARGETS;
+    if (HasAttribute(SPELL_ATTR5_NOT_ON_PLAYER_CONTROLLED_NPC) && unitTarget->IsCreature() && unitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+        return SPELL_FAILED_BAD_TARGETS;
 
     // checked in Unit::IsValidAttack/AssistTarget, shouldn't be checked for ENTRY targets
     //if (!HasAttribute(SPELL_ATTR6_CAN_TARGET_UNTARGETABLE) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
@@ -3390,6 +3415,17 @@ int32 SpellInfo::GetMaxDuration() const
     return (DurationEntry->MaxDuration == -1) ? -1 : abs(DurationEntry->MaxDuration);
 }
 
+float SpellInfo::CalcPeriodicHasteMod(Unit const* caster) const
+{
+    float hasteMod = 1.f;
+    if (HasAttribute(SPELL_ATTR5_SPELL_HASTE_AFFECTS_PERIODIC))
+        hasteMod = caster->GetFloatValue(UNIT_MOD_CAST_HASTE);
+    else if (HasAttribute(SPELL_ATTR8_MELEE_HASTE_AFFECTS_PERIODIC) && caster->IsPlayer())
+        hasteMod = caster->GetFloatValue(PLAYER_FIELD_MOD_HASTE);
+
+    return hasteMod;
+}
+
 int32 SpellInfo::CalcDuration(WorldObject const* caster /*= nullptr*/) const
 {
     if (!DurationEntry)
@@ -3443,13 +3479,14 @@ int32 SpellInfo::CalcDuration(WorldObject const* caster /*= nullptr*/) const
             return false;
         }();
 
-        if (hasPeriodicEffect && HasAttribute(SPELL_ATTR5_SPELL_HASTE_AFFECTS_PERIODIC) && !HasAttribute(SPELL_ATTR3_IGNORE_CASTER_MODIFIERS))
+        if (hasPeriodicEffect && !HasAttribute(SPELL_ATTR3_IGNORE_CASTER_MODIFIERS) && (HasAttribute(SPELL_ATTR5_SPELL_HASTE_AFFECTS_PERIODIC) || HasAttribute(SPELL_ATTR8_MELEE_HASTE_AFFECTS_PERIODIC)))
         {
-            float hasteMod = unitCaster->GetFloatValue(UNIT_MOD_CAST_HASTE);
+            float hasteMod = CalcPeriodicHasteMod(unitCaster);
             if (hasteMod > 0.001f)
             {
                 if (HasAttribute(SPELL_ATTR8_HASTE_AFFECTS_DURATION))
                     return int32(duration * hasteMod);
+
                 int32 period = CalcPeriod(caster, periodicEffectIndex);
                 if (period > 0)
                     duration = int32(period * (duration / (float)period));
@@ -3480,9 +3517,9 @@ int32 SpellInfo::CalcPeriod(WorldObject const* caster, SpellEffIndex effIndex, O
     if (Player const* modOwner = unitCaster->GetSpellModOwner())
         modOwner->ApplySpellMod(Id, SpellModOp::Period, period);
 
-    if (HasAttribute(SPELL_ATTR5_SPELL_HASTE_AFFECTS_PERIODIC) && !HasAttribute(SPELL_ATTR3_IGNORE_CASTER_MODIFIERS))
+    if (!HasAttribute(SPELL_ATTR3_IGNORE_CASTER_MODIFIERS) && (HasAttribute(SPELL_ATTR5_SPELL_HASTE_AFFECTS_PERIODIC) || HasAttribute(SPELL_ATTR8_MELEE_HASTE_AFFECTS_PERIODIC)))
     {
-        float hasteMod = unitCaster->GetFloatValue(UNIT_MOD_CAST_HASTE);
+        float hasteMod = CalcPeriodicHasteMod(unitCaster);
         if (hasteMod > 0.001f)
             period = ((float)period * hasteMod);
     }

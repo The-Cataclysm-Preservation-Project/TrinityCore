@@ -84,14 +84,6 @@ Group::~Group()
         else if (m_bgGroup->GetBgRaid(HORDE) == this) m_bgGroup->SetBgRaid(HORDE, nullptr);
         else TC_LOG_ERROR("misc", "Group::~Group: battleground group is not linked to the correct battleground.");
     }
-    Rolls::iterator itr;
-    while (!RollId.empty())
-    {
-        itr = RollId.begin();
-        Roll *r = *itr;
-        RollId.erase(itr);
-        delete(r);
-    }
 
     // this may unload some instance saves
     for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)
@@ -499,6 +491,8 @@ bool Group::AddMember(Player* player)
     if (isRaidGroup())
         player->UpdateVisibleGameobjectsOrSpellClicks();
 
+    player->FailAchievementCriteria(AchievementCriteriaFailEvent::ModifyPartyStatus, 0);
+
     {
         // Broadcast new player group member fields to rest of the group
         player->SetFieldNotifyFlag(UF_FLAG_PARTY_MEMBER);
@@ -579,6 +573,9 @@ bool Group::RemoveMember(ObjectGuid guid, const RemoveMethod& method /*= GROUP_R
     if (isLFGGroup() && method == GROUP_REMOVEMETHOD_KICK)
         return !m_memberSlots.empty();
 
+    if (player)
+        player->FailAchievementCriteria(AchievementCriteriaFailEvent::ModifyPartyStatus, 0);
+
     // remove member and change leader (if need) only if strong more 2 members _before_ member remove (BG/BF allow 1 member group)
     if (GetMembersCount() > ((isBGGroup() || isLFGGroup() || isBFGroup()) ? 1u : 2u))
     {
@@ -629,7 +626,7 @@ bool Group::RemoveMember(ObjectGuid guid, const RemoveMethod& method /*= GROUP_R
         // Remove player from loot rolls
         for (Rolls::iterator it = RollId.begin(); it != RollId.end(); ++it)
         {
-            Roll* roll = *it;
+            Roll* roll = it->get();
             Roll::PlayerVote::iterator itr2 = roll->playerVote.find(guid);
             if (itr2 == roll->playerVote.end())
                 continue;
@@ -1066,7 +1063,7 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
         {
             ObjectGuid newitemGUID = ObjectGuid::Create<HighGuid::Item>(sObjectMgr->GetGenerator<HighGuid::Item>().Generate());
 
-            Roll* r = new Roll(newitemGUID, *i);
+            std::unique_ptr<Roll> r = std::make_unique<Roll>(newitemGUID, *i);
 
             //a vector is filled with only near party members
             for (GroupReference* itr = GetFirstMember(); itr != nullptr; itr = itr->next())
@@ -1112,7 +1109,7 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
 
                 SendLootStartRoll(60000, pLootedObject->GetMapId(), *r);
 
-                RollId.push_back(r);
+                RollId.push_back(std::move(r));
 
                 if (Creature* creature = pLootedObject->ToCreature())
                 {
@@ -1125,8 +1122,6 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
                     go->lootingGroupLowGUID = GetLowGUID();
                 }
             }
-            else
-                delete r;
         }
         else
             i->is_underthreshold = true;
@@ -1146,7 +1141,7 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
 
         ObjectGuid newitemGUID = ObjectGuid::Create<HighGuid::Item>(sObjectMgr->GetGenerator<HighGuid::Item>().Generate());
 
-        Roll* r = new Roll(newitemGUID, *i);
+        std::unique_ptr<Roll> r = std::make_unique<Roll>(newitemGUID, *i);
 
         //a vector is filled with only near party members
         for (GroupReference* itr = GetFirstMember(); itr != nullptr; itr = itr->next())
@@ -1171,7 +1166,7 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
 
             SendLootStartRoll(60000, pLootedObject->GetMapId(), *r);
 
-            RollId.push_back(r);
+            RollId.push_back(std::move(r));
 
             if (Creature* creature = pLootedObject->ToCreature())
             {
@@ -1184,8 +1179,6 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
                 go->lootingGroupLowGUID = GetLowGUID();
             }
         }
-        else
-            delete r;
     }
 }
 
@@ -1205,7 +1198,7 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
         {
             ObjectGuid newitemGUID = ObjectGuid::Create<HighGuid::Item>(sObjectMgr->GetGenerator<HighGuid::Item>().Generate());
 
-            Roll* r = new Roll(newitemGUID, *i);
+            std::unique_ptr<Roll> r = std::make_unique<Roll>(newitemGUID, *i);
 
             for (GroupReference* itr = GetFirstMember(); itr != nullptr; itr = itr->next())
             {
@@ -1252,7 +1245,7 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
                         SendLootStartRollToPlayer(60000, lootedObject->GetMapId(), p, p->CanRollNeedForItem(item), *r);
                 }
 
-                RollId.push_back(r);
+                RollId.push_back(std::move(r));
 
                 if (Creature* creature = lootedObject->ToCreature())
                 {
@@ -1265,8 +1258,6 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
                     go->lootingGroupLowGUID = GetLowGUID();
                 }
             }
-            else
-                delete r;
         }
         else
             i->is_underthreshold = true;
@@ -1280,7 +1271,7 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
         item = sObjectMgr->GetItemTemplate(i->itemid);
         ObjectGuid newitemGUID = ObjectGuid::Create<HighGuid::Item>(sObjectMgr->GetGenerator<HighGuid::Item>().Generate());
 
-        Roll* r = new Roll(newitemGUID, *i);
+        std::unique_ptr<Roll> r = std::make_unique<Roll>(newitemGUID, *i);
 
         for (GroupReference* itr = GetFirstMember(); itr != nullptr; itr = itr->next())
         {
@@ -1315,7 +1306,7 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
                     SendLootStartRollToPlayer(60000, lootedObject->GetMapId(), p, p->CanRollNeedForItem(item) == EQUIP_ERR_OK, *r);
             }
 
-            RollId.push_back(r);
+            RollId.push_back(std::move(r));
 
             if (Creature* creature = lootedObject->ToCreature())
             {
@@ -1328,8 +1319,6 @@ void Group::NeedBeforeGreed(Loot* loot, WorldObject* lootedObject)
                 go->lootingGroupLowGUID = GetLowGUID();
             }
         }
-        else
-            delete r;
     }
 }
 
@@ -1386,7 +1375,7 @@ void Group::CountRollVote(ObjectGuid playerGUID, ObjectGuid Guid, uint8 Choice)
     Rolls::iterator rollI = GetRoll(Guid);
     if (rollI == RollId.end())
         return;
-    Roll* roll = *rollI;
+    Roll* roll = rollI->get();
 
     Roll::PlayerVote::iterator itr = roll->playerVote.find(playerGUID);
     // this condition means that player joins to the party after roll begins
@@ -1441,11 +1430,10 @@ void Group::EndRoll(Loot* pLoot, Map* allowedMap)
 
 void Group::CountTheRoll(Rolls::iterator rollI, Map* allowedMap)
 {
-    Roll* roll = *rollI;
+    Roll* roll = rollI->get();
     if (!roll->isValid())                                   // is loot already deleted ?
     {
         RollId.erase(rollI);
-        delete roll;
         return;
     }
 
@@ -1623,7 +1611,6 @@ void Group::CountTheRoll(Rolls::iterator rollI, Map* allowedMap)
     }
 
     RollId.erase(rollI);
-    delete roll;
 }
 
 void Group::SetTargetIcon(uint8 id, ObjectGuid whoGuid, ObjectGuid targetGuid)

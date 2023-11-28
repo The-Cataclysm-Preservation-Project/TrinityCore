@@ -625,6 +625,77 @@ class spell_gilneas_worgen_intro_completion : public SpellScript
     }
 };
 
+enum GaspingForBreath
+{
+    NPC_DROWNING_WATCHMAN_CREDIT        = 36450,
+
+    SPELL_RESCUE_DROWNING_WATCHMAN      = 68735,
+    SPELL_SAVE_DROWNING_MILITA_EFFECT   = 68737,
+    SPELL_DROWNING_MILITA_DUMMY         = 68739,
+    SPELL_DROWNING_VEHICLE_EXIT_DUMMY   = 68741
+
+};
+
+// 68737 Save Drowning Militia Effect
+class spell_gilneas_save_drowning_milita_effect : public SpellScript
+{
+    void HandleScript(SpellEffIndex effIndex)
+    {
+        PreventHitDefaultEffect(effIndex);
+
+        if (Player* player = GetHitPlayer())
+            player->KilledMonsterCredit(NPC_DROWNING_WATCHMAN_CREDIT);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_gilneas_save_drowning_milita_effect::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
+};
+
+// 68737 Drowning Vehicle Exit Dummy
+class spell_gilneas_drowning_vehicle_exit_dummy : public SpellScript
+{
+    void HandleScript(SpellEffIndex effIndex)
+    {
+        PreventHitDefaultEffect(effIndex);
+
+        if (Player* player = GetHitPlayer())
+            player->RemoveAurasDueToSpell(SPELL_RESCUE_DROWNING_WATCHMAN);
+    }
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* unit = GetHitUnit())
+            unit->ExitVehicle();
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_gilneas_drowning_vehicle_exit_dummy::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+        OnEffectHitTarget.Register(&spell_gilneas_drowning_vehicle_exit_dummy::HandleHit, EFFECT_1, SPELL_EFFECT_DUMMY);
+    }
+};
+
+class at_gasping_for_breath : public AreaTriggerScript
+{
+public:
+    at_gasping_for_breath() : AreaTriggerScript("at_gasping_for_breath") { }
+
+    bool OnTrigger(Player* player, AreaTriggerEntry const* /*areaTrigger*/) override
+    {
+        if (Vehicle* vehicle = player->GetVehicleKit())
+            if (Unit* passenger = vehicle->GetPassenger(SEAT_0))
+            {
+                player->CastSpell(passenger, SPELL_DROWNING_MILITA_DUMMY);
+                player->CastSpell(passenger, SPELL_DROWNING_VEHICLE_EXIT_DUMMY);
+                player->CastSpell(nullptr, SPELL_SAVE_DROWNING_MILITA_EFFECT);
+            }
+
+        return true;
+    }
+};
+
 void AddSC_gilneas_chapter_2()
 {
     RegisterGameObjectAI(go_gilneas_invasion_camera);
@@ -637,4 +708,7 @@ void AddSC_gilneas_chapter_2()
     RegisterSpellScript(spell_gilneas_call_attack_mastiff);
     RegisterSpellScript(spell_gilneas_forcecast_cataclysm_1);
     RegisterSpellScript(spell_gilneas_worgen_intro_completion);
+    RegisterSpellScript(spell_gilneas_save_drowning_milita_effect);
+    RegisterSpellScript(spell_gilneas_drowning_vehicle_exit_dummy);
+    new at_gasping_for_breath();
 }

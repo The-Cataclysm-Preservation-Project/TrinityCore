@@ -39,6 +39,7 @@
 #include "PetPackets.h"
 #include "QuestPackets.h"
 #include "QueryPackets.h"
+#include "ReforgePackets.h"
 #include "SpellPackets.h"
 #include "SystemPackets.h"
 #include "TicketPackets.h"

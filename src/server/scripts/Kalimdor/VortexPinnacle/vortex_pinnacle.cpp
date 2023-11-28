@@ -19,7 +19,6 @@
 #include "AreaBoundary.h"
 #include "InstanceScript.h"
 #include "MotionMaster.h"
-#include "MoveSplineInit.h"
 #include "PassiveAI.h"
 #include "Player.h"
 #include "ScriptedCreature.h"

@@ -22,17 +22,13 @@
 #include "DBCStores.h"
 #include "Group.h"
 #include "InstanceSaveMgr.h"
-#include "Language.h"
 #include "Log.h"
 #include "Map.h"
 #include "ObjectMgr.h"
-#include "Opcodes.h"
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "World.h"
 #include "WorldStateMgr.h"
-#include "WorldPacket.h"
-#include "WorldSession.h"
 #include <boost/dynamic_bitset.hpp>
 #include <numeric>
 

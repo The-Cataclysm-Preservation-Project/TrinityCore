@@ -100,41 +100,27 @@ enum AchievementFlags
 
 enum AchievementCriteriaLimits
 {
-    MAX_CRITERIA_REQUIREMENTS          = 2,
     MAX_ADDITIONAL_CRITERIA_CONDITIONS = 3
-};
-
-enum AchievementCriteriaCondition
-{
-    ACHIEVEMENT_CRITERIA_CONDITION_NONE            = 0,
-    ACHIEVEMENT_CRITERIA_CONDITION_NO_DEATH        = 1,    // reset progress on death
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK2            = 2,    // only used in "Complete a daily quest every day for five consecutive days"
-    ACHIEVEMENT_CRITERIA_CONDITION_BG_MAP          = 3,    // requires you to be on specific map, reset at change
-    ACHIEVEMENT_CRITERIA_CONDITION_NO_LOSE         = 4,    // only used in "Win 10 arenas without losing"
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK5            = 5,    // Have spell?
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK8            = 8,
-    ACHIEVEMENT_CRITERIA_CONDITION_NO_SPELL_HIT    = 9,    // requires the player not to be hit by specific spell
-    ACHIEVEMENT_CRITERIA_CONDITION_NOT_IN_GROUP    = 10,   // requires the player not to be in group
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK13           = 13,    // unk
-
-    ACHIEVEMENT_CRITERIA_CONDITION_MAX
 };
 
 enum AchievementCriteriaAdditionalCondition
 {
-    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_DRUNK_VALUE          = 1, // NYI
-    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_UNK2                        = 2,
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_DRUNK_VALUE          = 1,
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_PLAYER_CONDITION     = 2,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_ITEM_LEVEL                  = 3,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_CREATURE_ENTRY       = 4,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_MUST_BE_PLAYER       = 5,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_MUST_BE_DEAD         = 6,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_MUST_BE_ENEMY        = 7,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_HAS_AURA             = 8,
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_HAS_AURA_TYPE        = 9,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_HAS_AURA             = 10,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_HAS_AURA_TYPE        = 11,
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_AURA_STATE           = 12,
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_AURA_STATE           = 13,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_ITEM_QUALITY_MIN            = 14,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_ITEM_QUALITY_EQUALS         = 15,
-    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_UNK16                       = 16,
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_IS_ALIVE             = 16,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_AREA_OR_ZONE         = 17,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_AREA_OR_ZONE         = 18,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_MAP_DIFFICULTY              = 20,
@@ -149,15 +135,15 @@ enum AchievementCriteriaAdditionalCondition
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_MAP                  = 32,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_ITEM_CLASS                  = 33,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_ITEM_SUBCLASS               = 34,
-    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_COMPLETE_QUEST_NOT_IN_GROUP = 35, // NYI
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_COMPLETE_QUEST_NOT_IN_GROUP = 35,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_MIN_PERSONAL_RATING         = 37, // NYI (when implementing don't forget about ACHIEVEMENT_CRITERIA_CONDITION_NO_LOSE)
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TITLE_BIT_INDEX             = 38,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_SOURCE_LEVEL                = 39,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_LEVEL                = 40,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_ZONE                 = 41,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_HEALTH_PERCENT_BELOW = 46,
-    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_UNK55                       = 55,
-    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_MIN_ACHIEVEMENT_POINTS      = 56, // NYI
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_TARGET_PLAYER_CONDITION     = 55,
+    ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_MIN_ACHIEVEMENT_POINTS      = 56,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_REQUIRES_LFG_GROUP          = 58, // NYI
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_UNK60                       = 60,
     ACHIEVEMENT_CRITERIA_ADDITIONAL_CONDITION_REQUIRES_GUILD_GROUP        = 61,
@@ -177,17 +163,57 @@ enum AchievementCriteriaFlags
     ACHIEVEMENT_CRITERIA_FLAG_MONEY_COUNTER     = 0x00000020          // Displays counter as money
 };
 
-enum AchievementCriteriaTimedTypes : uint8
+enum class AchievementCriteriaFailEvent : uint8
 {
-    ACHIEVEMENT_TIMED_TYPE_EVENT            = 1,    // Timer is started by internal event with id in timerStartEvent
-    ACHIEVEMENT_TIMED_TYPE_QUEST            = 2,    // Timer is started by accepting quest with entry in timerStartEvent
-    ACHIEVEMENT_TIMED_TYPE_SPELL_CASTER     = 5,    // Timer is started by casting a spell with entry in timerStartEvent
-    ACHIEVEMENT_TIMED_TYPE_SPELL_TARGET     = 6,    // Timer is started by being target of spell with entry in timerStartEvent
-    ACHIEVEMENT_TIMED_TYPE_CREATURE         = 7,    // Timer is started by killing creature with entry in timerStartEvent
-    ACHIEVEMENT_TIMED_TYPE_ITEM             = 9,    // Timer is started by using item with entry in timerStartEvent
-    ACHIEVEMENT_TIMED_TYPE_UNK              = 10,   // Unknown
+    None                                = 0,
+    Death                               = 1,    // Death
+    Hours24WithoutCompletingDailyQuest  = 2,    // 24 hours without completing a daily quest
+    LeaveBattleground                   = 3,    // Leave a battleground
+    LoseRankedArenaMatchWithTeamSize    = 4,    // Lose a ranked arena match with team size {#Team Size}
+    LoseAura                            = 5,    // Lose aura "{Spell}"
+    GainAura                            = 6,    // Gain aura "{Spell}"
+    GainAuraEffect                      = 7,    // Gain aura effect "{SpellAuraNames.EnumID}"
+    CastSpell                           = 8,    // Cast spell "{Spell}"
+    BeSpellTarget                       = 9,    // Have spell "{Spell}" cast on you
+    ModifyPartyStatus                   = 10,   // Modify your party status
 
-    ACHIEVEMENT_TIMED_TYPE_MAX
+    Count
+};
+
+enum class AchievementCriteriaStartEvent : uint8
+{
+    None                            = 0, // - NONE -
+    ReachLevel                      = 1, // Reach level {#Level}
+    CompleteDailyQuest              = 2, // Complete daily quest "{QuestV2}"
+    StartBattleground               = 3, // Start battleground "{Map}"
+    WinRankedArenaMatchWithTeamSize = 4, // Win a ranked arena match with team size {#Team Size}
+    GainAura                        = 5, // Gain aura "{Spell}"
+    GainAuraEffect                  = 6, // Gain aura effect "{SpellAuraNames.EnumID}"
+    CastSpell                       = 7, // Cast spell "{Spell}"
+    BeSpellTarget                   = 8, // Have spell "{Spell}" cast on you
+    AcceptQuest                     = 9, // Accept quest "{QuestV2}"
+    KillNPC                         = 10, // Kill NPC "{Creature}"
+    KillPlayer                      = 11, // Kill player
+    UseItem                         = 12, // Use item "{Item}"
+    SendEvent                       = 13, // Send event "{GameEvents}" (player-sent/instance only)
+
+    Count
+};
+
+enum class AchievementCriteriaTimerStartEvent : uint8
+{
+    None        = 0,
+    SendEvent   = 1,
+    AcceptQuest = 2,
+    Unused3     = 3,
+    Unused4     = 4,
+    CastSpell   = 5,
+    GainAura    = 6,
+    KillNPC     = 7,
+    Unused8     = 8,
+    UseItem     = 9,
+
+    Count
 };
 
 enum AchievementCriteriaTypes : uint8
@@ -304,7 +330,7 @@ enum AchievementCriteriaTypes : uint8
     ACHIEVEMENT_CRITERIA_TYPE_QUEST_ABANDONED                             = 107,
     ACHIEVEMENT_CRITERIA_TYPE_FLIGHT_PATHS_TAKEN                          = 108,
     ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE                                   = 109,
-    ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2                                 = 110, /// @todo target entry is missing
+    ACHIEVEMENT_CRITERIA_TYPE_LAND_TARGETED_SPELL_ON_SPELL_TARGET         = 110,
     // UNUSED                                                             = 111, // unused in DBC 4.3.4.15595 name state TBC Classic
     ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LINE                            = 112,
     ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL                         = 113,
@@ -349,47 +375,55 @@ enum AchievementCriteriaTypes : uint8
 
 #define ACHIEVEMENT_CRITERIA_TYPE_TOTAL 151
 
-enum AreaFlags
+enum class AreaFlags : uint32
 {
-    AREA_FLAG_SNOW                  = 0x00000001,                // snow (only Dun Morogh, Naxxramas, Razorfen Downs and Winterspring)
-    AREA_FLAG_UNK1                  = 0x00000002,                // Razorfen Downs, Naxxramas and Acherus: The Ebon Hold (3.3.5a)
-    AREA_FLAG_UNK2                  = 0x00000004,                // Only used for areas on map 571 (development before)
-    AREA_FLAG_SLAVE_CAPITAL         = 0x00000008,                // city and city subzones
-    AREA_FLAG_UNK3                  = 0x00000010,                // can't find common meaning
-    AREA_FLAG_SLAVE_CAPITAL2        = 0x00000020,                // slave capital city flag?
-    AREA_FLAG_ALLOW_DUELS           = 0x00000040,                // allow to duel here
-    AREA_FLAG_ARENA                 = 0x00000080,                // arena, both instanced and world arenas
-    AREA_FLAG_CAPITAL               = 0x00000100,                // main capital city flag
-    AREA_FLAG_CITY                  = 0x00000200,                // only for one zone named "City" (where it located?)
-    AREA_FLAG_OUTLAND               = 0x00000400,                // expansion zones? (only Eye of the Storm not have this flag, but have 0x00004000 flag)
-    AREA_FLAG_SANCTUARY             = 0x00000800,                // sanctuary area (PvP disabled)
-    AREA_FLAG_NEED_FLY              = 0x00001000,                // Respawn alive at the graveyard without corpse
-    AREA_FLAG_UNUSED1               = 0x00002000,                // Unused in 3.3.5a
-    AREA_FLAG_OUTLAND2              = 0x00004000,                // expansion zones? (only Circle of Blood Arena not have this flag, but have 0x00000400 flag)
-    AREA_FLAG_OUTDOOR_PVP           = 0x00008000,                // pvp objective area? (Death's Door also has this flag although it's no pvp object area)
-    AREA_FLAG_ARENA_INSTANCE        = 0x00010000,                // used by instanced arenas only
-    AREA_FLAG_UNUSED2               = 0x00020000,                // Unused in 3.3.5a
-    AREA_FLAG_CONTESTED_AREA        = 0x00040000,                // On PvP servers these areas are considered contested, even though the zone it is contained in is a Horde/Alliance territory.
-    AREA_FLAG_UNK6                  = 0x00080000,                // Valgarde and Acherus: The Ebon Hold
-    AREA_FLAG_LOWLEVEL              = 0x00100000,                // used for some starting areas with area_level <= 15
-    AREA_FLAG_TOWN                  = 0x00200000,                // small towns with Inn
-    AREA_FLAG_REST_ZONE_HORDE       = 0x00400000,                // Warsong Hold, Acherus: The Ebon Hold, New Agamand Inn, Vengeance Landing Inn, Sunreaver Pavilion (Something to do with team?)
-    AREA_FLAG_REST_ZONE_ALLIANCE    = 0x00800000,                // Valgarde, Acherus: The Ebon Hold, Westguard Inn, Silver Covenant Pavilion (Something to do with team?)
-    AREA_FLAG_COMBAT                = 0x01000000,                // "combat" area (Script_GetZonePVPInfo), used
-    AREA_FLAG_INSIDE                = 0x02000000,                // used for determinating spell related inside/outside questions in Map::IsOutdoors
-    AREA_FLAG_OUTSIDE               = 0x04000000,                // used for determinating spell related inside/outside questions in Map::IsOutdoors
-    AREA_FLAG_CAN_HEARTH_AND_RESURRECT = 0x08000000,             // Can Hearth And Resurrect From Area
-    AREA_FLAG_NO_FLY_ZONE           = 0x20000000,                // Marks zones where you cannot fly
-    AREA_FLAG_UNK9                  = 0x40000000
+    EmitBreathParticles                     = 0x00000001,
+    BreathParticlesOverrideParent           = 0x00000002,
+    OnMapDungeon                            = 0x00000004,
+    AllowTradeChannel                       = 0x00000008,
+    EnemiesPvPFlagged                       = 0x00000010,
+    AllowResting                            = 0x00000020,
+    AllowDueling                            = 0x00000040,
+    FreeForAllPvP                           = 0x00000080,
+    LinkedChat                              = 0x00000100, // Set in cities
+    LinkedChatSpecialArea                   = 0x00000200,
+    ForceThisAreaWhenOnDynamicTransport     = 0x00000400,
+    NoPvP                                   = 0x00000800,
+    NoGhostOnRelease                        = 0x00001000,
+    SubZoneAmbientMultiplier                = 0x00002000,
+    EnableFlightBoundsOnMap                 = 0x00004000,
+    PVPPOI                                  = 0x00008000,
+    NoChatChannels                          = 0x00010000,
+    AreaNotInUse                            = 0x00020000,
+    Contested                               = 0x00040000,
+    NoPlayerSummoning                       = 0x00080000,
+    NoDuelingIfTournamentRealm              = 0x00100000,
+    PlayersCallGuards                       = 0x00200000,
+    HordeResting                            = 0x00400000,
+    AllianceResting                         = 0x00800000,
+    CombatZone                              = 0x01000000,
+    ForceIndoors                            = 0x02000000,
+    ForceOutdoors                           = 0x04000000,
+    AllowHearthAndRessurectFromArea         = 0x08000000,
+    NoLocalDefenseChannel                   = 0x10000000,
+    OnlyEvaluateGhostBindOnce               = 0x20000000,
+    IsSubzone                               = 0x40000000,
+    DontEvaluateGraveyardFromClient         = 0x80000000
 };
 
-enum AreaMountFlags
+DEFINE_ENUM_FLAG(AreaFlags);
+
+enum class AreaMountFlags : uint8
 {
-    AREA_MOUNT_FLAG_GROUND_ALLOWED      = 0x1,
-    AREA_MOUNT_FLAG_FLYING_ALLOWED      = 0x2,
-    AREA_MOUNT_FLAG_FLOAT_ALLOWED       = 0x4,
-    AREA_MOUNT_FLAG_UNDERWATER_ALLOWED  = 0x8
+    None                            = 0x0,
+    AllowGroundMounts               = 0x1,
+    AllowFlyingMounts               = 0x2,
+    AllowSurfaceSwimmingMounts      = 0x4,
+    AllowUnderwaterSwimmingMounts   = 0x8,
+    ClientEnforcesMount             = 0x10
 };
+
+DEFINE_ENUM_FLAG(AreaMountFlags);
 
 enum Difficulty : uint8
 {

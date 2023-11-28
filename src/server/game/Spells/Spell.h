@@ -114,6 +114,14 @@ enum SpellCastFlags
     CAST_FLAG_UNKNOWN_32         = 0x80000000
 };
 
+enum SpellHealPredictionType : uint8
+{
+    SPELL_HEAL_PREDICTION_TARGET            = 0,
+    SPELL_HEAL_PREDICTION_TARGET_AND_CASTER = 1,
+    SPELL_HEAL_PREDICTION_TARGET_AND_BEACON = 2,
+    SPELL_HEAL_PREDICTION_TARGET_PARTY      = 3,
+};
+
 enum SpellRangeFlag
 {
     SPELL_RANGE_DEFAULT             = 0,
@@ -756,6 +764,7 @@ class TC_GAME_API Spell
         bool IsValidDeadOrAliveTarget(Unit const* target) const;
         void HandleLaunchPhase();
         void DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uint8 effIndex);
+        void ResetCombatTimers();
 
         void PrepareTargetProcessing();
         void FinishTargetProcessing();
@@ -806,7 +815,7 @@ class TC_GAME_API Spell
         void CalculateJumpSpeeds(uint8 i, float dist, float & speedxy, float & speedz);
         void UpdateSpellCastDataTargets(WorldPackets::Spells::SpellHitInfo& data);
         void UpdateSpellCastDataAmmo(WorldPackets::Spells::SpellAmmo& data);
-        void UpdateSpellHealPrediction(WorldPackets::Spells::SpellHealPrediction& predict);
+        void UpdateSpellHealPrediction(WorldPackets::Spells::SpellHealPrediction& predict, bool withPeriodic);
 
         SpellCastResult CanOpenLock(uint32 effIndex, uint32 lockid, SkillType& skillid, int32& reqSkillValue, int32& skillValue);
         // -------------------------------------------

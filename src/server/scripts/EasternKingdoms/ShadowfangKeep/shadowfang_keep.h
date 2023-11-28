@@ -19,7 +19,7 @@
 #define DEF_SHADOWFANG_H
 
 #include "CreatureAIImpl.h"
-#include "SpellScript.h"
+#include "Creature.h"
 
 #define DataHeader "SK"
 #define SKScriptName "instance_shadowfang_keep"

@@ -16,7 +16,6 @@
  */
 
 #include "Common.h"
-#include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Log.h"
 #include "DatabaseEnv.h"

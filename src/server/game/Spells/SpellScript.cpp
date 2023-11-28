@@ -23,7 +23,6 @@
 #include "SpellAuras.h"
 #include "SpellMgr.h"
 #include "Unit.h"
-#include <sstream>
 #include <string>
 
 bool _SpellScript::_Validate(SpellInfo const* entry)
@@ -243,7 +242,7 @@ WorldLocation const* SpellScript::GetExplTargetDest() const
     return nullptr;
 }
 
-void SpellScript::SetExplTargetDest(WorldLocation& loc)
+void SpellScript::SetExplTargetDest(WorldLocation const& loc)
 {
     m_spell->m_targets.SetDst(loc);
 }

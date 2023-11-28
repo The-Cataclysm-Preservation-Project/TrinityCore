@@ -1031,7 +1031,7 @@ void Player::Update(uint32 p_time)
         }
     }
 
-    m_achievementMgr->UpdateTimedAchievements(p_time);
+    m_achievementMgr->UpdateTimedAchievementCriteria(Milliseconds(p_time));
 
     if (HasUnitState(UNIT_STATE_MELEE_ATTACKING) && !HasUnitState(UNIT_STATE_CASTING))
     {
@@ -1350,7 +1350,7 @@ void Player::setDeathState(DeathState s)
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_IN_DUNGEON, 1);
 
         // reset all death criterias
-        ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_CONDITION_NO_DEATH, 0);
+        FailAchievementCriteria(AchievementCriteriaFailEvent::Death, 0);
     }
 
     Unit::setDeathState(s);
@@ -2340,6 +2340,7 @@ void Player::GiveLevel(uint8 level)
         CharacterDatabase.CommitTransaction(trans);
     }
 
+    StartAchievementCriteria(AchievementCriteriaStartEvent::ReachLevel, level);
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 
     // Refer-A-Friend
@@ -3126,7 +3127,7 @@ bool Player::HandlePassiveSpellLearn(SpellInfo const* spellInfo)
         }
     }
 
-    if (spellInfo->HasAttribute(SPELL_ATTR8_MASTERY_SPECIALIZATION))
+    if (spellInfo->HasAttribute(SPELL_ATTR8_MASTERY_AFFECTS_POINTS))
         need_cast &= IsCurrentSpecMasterySpell(spellInfo);
 
     //Check CasterAuraStates
@@ -4051,7 +4052,8 @@ void Player::BuildPlayerRepop()
     data << GetPackGUID();
     SendDirectMessage(&data);
 
-    if (getRace() == RACE_NIGHTELF)
+    // If the player has the Wisp racial then cast the Wisp aura on them
+    if (HasSpell(20585))
         CastSpell(this, 20584, true);
     CastSpell(this, 8326, true);
 
@@ -4543,7 +4545,7 @@ void Player::RepopAtGraveyard()
     AreaTableEntry const* zone = sAreaTableStore.LookupEntry(GetAreaId());
 
     // Such zones are considered unreachable as a ghost and the player must be automatically revived
-    if ((!IsAlive() && zone && zone->Flags & AREA_FLAG_NEED_FLY) || GetTransport() || GetPositionZ() < GetMap()->GetMinHeight(GetPhaseShift(), GetPositionX(), GetPositionY()))
+    if ((!IsAlive() && zone && zone->GetFlags().HasFlag(AreaFlags::NoGhostOnRelease)) || GetTransport() || GetPositionZ() < GetMap()->GetMinHeight(GetPhaseShift(), GetPositionX(), GetPositionY()))
     {
         ResurrectPlayer(0.5f);
         SpawnCorpseBones();
@@ -4587,10 +4589,10 @@ void Player::RepopAtGraveyard()
 
 bool Player::CanJoinConstantChannelInZone(ChatChannelsEntry const* channel, AreaTableEntry const* zone) const
 {
-    if (channel->Flags & CHANNEL_DBC_FLAG_ZONE_DEP && zone->Flags & AREA_FLAG_ARENA_INSTANCE)
+    if (channel->Flags & CHANNEL_DBC_FLAG_ZONE_DEP && zone->GetFlags().HasFlag(AreaFlags::NoChatChannels))
         return false;
 
-    if ((channel->Flags & CHANNEL_DBC_FLAG_CITY_ONLY) && (!(zone->Flags & AREA_FLAG_SLAVE_CAPITAL)))
+    if ((channel->Flags & CHANNEL_DBC_FLAG_CITY_ONLY) && (!(zone->GetFlags().HasFlag(AreaFlags::AllowTradeChannel))))
         return false;
 
     if ((channel->Flags & CHANNEL_DBC_FLAG_GUILD_REQ) && GetGuildId())
@@ -6993,7 +6995,7 @@ void Player::UpdateArea(uint32 newArea)
 
     AreaTableEntry const* area = sAreaTableStore.LookupEntry(newArea);
     bool oldFFAPvPArea = pvpInfo.IsInFFAPvPArea;
-    pvpInfo.IsInFFAPvPArea = area && (area->Flags & AREA_FLAG_ARENA);
+    pvpInfo.IsInFFAPvPArea = area && (area->GetFlags().HasFlag(AreaFlags::FreeForAllPvP));
     UpdatePvPState(true);
 
     // check if we were in ffa arena and we left
@@ -7015,8 +7017,8 @@ void Player::UpdateArea(uint32 newArea)
     else
         RemoveByteFlag(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, UNIT_BYTE2_FLAG_SANCTUARY);
 
-    uint32 const areaRestFlag = (GetTeam() == ALLIANCE) ? AREA_FLAG_REST_ZONE_ALLIANCE : AREA_FLAG_REST_ZONE_HORDE;
-    if (area && area->Flags & areaRestFlag)
+    AreaFlags const areaRestFlag = (GetTeam() == ALLIANCE) ? AreaFlags::AllianceResting : AreaFlags::HordeResting;
+    if (area && area->GetFlags().HasFlag(areaRestFlag))
         SetRestFlag(REST_FLAG_IN_FACTION_AREA);
     else
         RemoveRestFlag(REST_FLAG_IN_FACTION_AREA);
@@ -7063,7 +7065,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 
     UpdateHostileAreaState(zone);
 
-    if (zone->Flags & AREA_FLAG_CAPITAL)                     // Is in a capital city
+    if (zone->GetFlags().HasFlag(AreaFlags::LinkedChat)) // Is in a capital city
     {
         if (!pvpInfo.IsHostile || zone->IsSanctuary())
             SetRestFlag(REST_FLAG_IN_CITY);
@@ -7107,17 +7109,17 @@ void Player::UpdateHostileAreaState(AreaTableEntry const* area)
 
     if (area->IsSanctuary()) // sanctuary and arena cannot be overriden
         pvpInfo.IsInHostileArea = false;
-    else if (area->Flags & AREA_FLAG_ARENA)
+    else if (area->GetFlags().HasFlag(AreaFlags::FreeForAllPvP))
         pvpInfo.IsInHostileArea = true;
     else
     {
         if (area)
         {
-            if (InBattleground() || area->Flags & AREA_FLAG_COMBAT || (area->PvpCombatWorldStateID != -1 && sWorldStateMgr->GetValue(area->PvpCombatWorldStateID, GetMap()) != 0))
+            if (InBattleground() || area->GetFlags().HasFlag(AreaFlags::CombatZone) || (area->PvpCombatWorldStateID != -1 && sWorldStateMgr->GetValue(area->PvpCombatWorldStateID, GetMap()) != 0))
                 pvpInfo.IsInHostileArea = true;
-            else if (sWorld->IsPvPRealm() || (area->Flags & AREA_FLAG_UNK3))
+            else if (sWorld->IsPvPRealm() || (area->GetFlags().HasFlag(AreaFlags::EnemiesPvPFlagged)))
             {
-                if (area->Flags & AREA_FLAG_CONTESTED_AREA)
+                if (area->GetFlags().HasFlag(AreaFlags::Contested))
                     pvpInfo.IsInHostileArea = sWorld->IsPvPRealm();
                 else
                 {
@@ -14188,7 +14190,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
 
     m_QuestStatusSave[quest_id] = QUEST_DEFAULT_SAVE_TYPE;
 
-    StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_QUEST, quest_id);
+    StartAchievementCriteria(AchievementCriteriaStartEvent::AcceptQuest, quest_id);
 
     SendQuestUpdate(quest_id);
 
@@ -14409,6 +14411,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
         SetDailyQuestStatus(quest_id);
         if (quest->IsDaily())
         {
+            StartAchievementCriteria(AchievementCriteriaStartEvent::CompleteDailyQuest, 0);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST, quest_id);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST_DAILY, quest_id);
         }
@@ -15653,7 +15656,7 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
             real_entry = killed->GetEntry();
     }
 
-    StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_CREATURE, real_entry);   // MUST BE CALLED FIRST
+    StartAchievementCriteria(AchievementCriteriaStartEvent::KillNPC, real_entry);   // MUST BE CALLED FIRST
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, real_entry, addkillcount, 0, killed);
 
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
@@ -15709,6 +15712,7 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
 
 void Player::KilledPlayerCredit(uint16 count)
 {
+    StartAchievementCriteria(AchievementCriteriaStartEvent::KillPlayer, 0);
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
         uint32 questid = GetQuestSlotQuestId(i);
@@ -21381,12 +21385,10 @@ void Player::InitDisplayIds()
     switch (gender)
     {
         case GENDER_FEMALE:
-            SetDisplayId(info->displayId_f);
-            SetNativeDisplayId(info->displayId_f);
+            SetDisplayId(info->displayId_f, true);
             break;
         case GENDER_MALE:
-            SetDisplayId(info->displayId_m);
-            SetNativeDisplayId(info->displayId_m);
+            SetDisplayId(info->displayId_m, true);
             break;
         default:
             TC_LOG_ERROR("entities.player", "Player::InitDisplayIds: Player '%s' (%s) has invalid gender %u", GetName().c_str(), GetGUID().ToString().c_str(), gender);
@@ -23359,7 +23361,6 @@ void Player::ResetWeeklyQuestStatus()
     m_weeklyquests.clear();
     // DB data deleted in caller
     m_WeeklyQuestChanged = false;
-
 }
 
 void Player::ResetSeasonalQuestStatus(uint16 event_id, time_t eventStartTime)
@@ -25321,19 +25322,14 @@ bool Player::HasAchieved(uint32 achievementId) const
     return m_achievementMgr->HasAchieved(achievementId);
 }
 
-void Player::StartTimedAchievement(AchievementCriteriaTimedTypes type, uint32 entry, uint32 timeLost/* = 0*/)
+void Player::StartAchievementCriteria(AchievementCriteriaStartEvent startEvent, uint32 entry, Milliseconds timeLost/* = Milliseconds::zero()*/)
 {
-    m_achievementMgr->StartTimedAchievement(type, entry, timeLost);
+    m_achievementMgr->StartAchievementCriteria(startEvent, entry, timeLost);
 }
 
-void Player::RemoveTimedAchievement(AchievementCriteriaTimedTypes type, uint32 entry)
+void Player::FailAchievementCriteria(AchievementCriteriaFailEvent failEvent, int32 failAsset)
 {
-    m_achievementMgr->RemoveTimedAchievement(type, entry);
-}
-
-void Player::ResetAchievementCriteria(AchievementCriteriaCondition condition, uint64 value, bool evenIfCriteriaComplete /* = false*/)
-{
-    m_achievementMgr->ResetAchievementCriteria(condition, value, evenIfCriteriaComplete);
+    m_achievementMgr->FailAchievementCriteria(failEvent, failAsset);
 }
 
 void Player::UpdateAchievementCriteria(AchievementCriteriaTypes type, uint64 miscValue1 /*= 0*/, uint64 miscValue2 /*= 0*/, uint64 miscValue3 /*= 0*/, WorldObject* ref /*= nullptr*/, GameObject* go /*= nullptr*/)
@@ -26945,7 +26941,7 @@ void Player::UpdateArmorSpecialization()
     for (AuraApplicationMap::iterator itr = m_appliedAuras.begin(); itr != m_appliedAuras.end();)
     {
         SpellInfo const* spell = itr->second->GetBase()->GetSpellInfo();
-        if (spell->AttributesEx8 & SPELL_ATTR8_ARMOR_SPECIALIZATION)
+        if (spell->AttributesEx8 & SPELL_ATTR8_REQUIRES_EQUIPPED_INV_TYPES)
             RemoveAura(itr);
         else
             ++itr;
@@ -27070,8 +27066,9 @@ std::string Player::GetMapAreaAndZoneString() const
     {
         int locale = GetSession()->GetSessionDbcLocale();
         areaName = area->AreaName[locale];
-        if (AreaTableEntry const* zone = sAreaTableStore.LookupEntry(area->ParentAreaID))
-            zoneName = zone->AreaName[locale];
+        if (area->GetFlags().HasFlag(AreaFlags::IsSubzone))
+            if (AreaTableEntry const* zone = sAreaTableStore.LookupEntry(area->ParentAreaID))
+                zoneName = zone->AreaName[GetSession()->GetSessionDbcLocale()];
     }
 
     std::ostringstream str;

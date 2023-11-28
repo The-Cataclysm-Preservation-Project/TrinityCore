@@ -20,14 +20,12 @@
 #include "DatabaseEnv.h"
 #include "Log.h"
 #include "ObjectMgr.h"
-#include "Util.h"
 #include "DBCStores.h"
 #include "Random.h"
 #include "Timer.h"
 
 #include <list>
 #include <vector>
-#include <stdlib.h>
 
 struct EnchStoreItem
 {

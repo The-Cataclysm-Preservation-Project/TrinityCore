@@ -56,7 +56,7 @@ void GameEvents::TriggerForPlayer(uint32 gameEventId, Player* source)
 {
     Map* map = source->GetMap();
     if (map->Instanceable())
-        source->StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, gameEventId);
+        source->StartAchievementCriteria(AchievementCriteriaStartEvent::SendEvent, gameEventId);
 }
 
 void GameEvents::TriggerForMap(uint32 gameEventId, Map* map, WorldObject* source, WorldObject* target)

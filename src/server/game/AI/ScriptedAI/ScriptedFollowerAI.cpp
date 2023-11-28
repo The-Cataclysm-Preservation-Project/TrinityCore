@@ -33,7 +33,7 @@ EndScriptData */
 
 float const MAX_PLAYER_DISTANCE = 100.0f;
 
-enum Points
+enum ScriptedFollowerPoints
 {
     POINT_COMBAT_START  = 0xFFFFFF
 };
