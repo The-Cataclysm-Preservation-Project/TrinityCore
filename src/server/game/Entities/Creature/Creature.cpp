@@ -1247,16 +1247,6 @@ Group* Creature::GetLootRecipientGroup() const
     return sGroupMgr->GetGroupByGUID(m_lootRecipientGroup);
 }
 
-uint32 Creature::GetGossipMenuId() const
-{
-    return _gossipMenuId;
-}
-
-void Creature::SetGossipMenuId(uint32 gossipMenuID)
-{
-    _gossipMenuId = gossipMenuID;
-}
-
 void Creature::SetLootRecipient(Unit* unit, bool withGroup)
 {
     // set the player whose group should receive the right
