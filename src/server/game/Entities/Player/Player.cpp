@@ -14598,7 +14598,7 @@ void Player::AbandonQuest(uint32 questId)
 
         // If Quest has a Abandon Spell cast it now
         if (quest->GetQuestAbandonSpell() != 0)
-            CastSpell(this, quest->GetQuestAbandonSpell(), true)
+            CastSpell(this, quest->GetQuestAbandonSpell(), true);
     }
 }
 
