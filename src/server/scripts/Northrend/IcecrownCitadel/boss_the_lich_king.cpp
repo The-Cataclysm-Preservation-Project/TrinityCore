@@ -363,7 +363,9 @@ enum MiscData
 enum Misc
 {
     DATA_PLAGUE_STACK           = 70337,
-    DATA_VILE                   = 45814622
+    DATA_VILE                   = 45814622,
+
+    GOSSIP_MENU_START_INTRO = 10993
 };
 
 class NecroticPlagueTargetCheck
@@ -1204,7 +1206,7 @@ class npc_tirion_fordring_tft : public CreatureScript
 
             bool GossipSelect(Player* /*player*/, uint32 menuId, uint32 gossipListId) override
             {
-                if (me->GetCreatureTemplate()->GossipMenuId == menuId && !gossipListId)
+                if (menuId == GOSSIP_MENU_START_INTRO && !gossipListId)
                 {
                     _events.SetPhase(PHASE_INTRO);
                     me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
