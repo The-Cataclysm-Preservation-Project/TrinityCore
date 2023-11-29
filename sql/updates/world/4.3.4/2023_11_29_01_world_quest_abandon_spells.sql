@@ -1,10 +1,6 @@
 --
-CREATE TABLE `quest_abandon_spells` (
-	`QuestID` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	`SpellID` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	`Description` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	PRIMARY KEY (`QuestID`) USING BTREE
-)
-COLLATE='utf8mb4_unicode_ci'
-ENGINE=InnoDB
-;
+ALTER TABLE `quest_template_addon`
+	ADD COLUMN `AbandonSpellID` INT(10) UNSIGNED NOT NULL DEFAULT '0' AFTER `TimeAllowed`;
+	
+-- Example
+UPDATE `quest_template_addon` SET `AbandonSpellID` = 74113 WHERE `ID` = 24958; -- Volcanoth!

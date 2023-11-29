@@ -232,16 +232,12 @@ void Quest::LoadQuestTemplateAddon(Field* fields)
 
     _allowableRaces = fields[18].GetUInt32();
     _timeAllowed = fields[19].GetInt32();
+    _questAbandonSpell = fields[20].GetUInt32();
 }
 
 void Quest::LoadQuestMailSender(Field* fields)
 {
     _rewardMailSenderEntry = fields[1].GetUInt32();
-}
-
-void Quest::LoadQuestAbandonSpells(Field* fields)
-{
-    _questAbandonSpell = fields[1].GetUInt32();
 }
 
 uint32 Quest::GetXPReward(Player const* player) const

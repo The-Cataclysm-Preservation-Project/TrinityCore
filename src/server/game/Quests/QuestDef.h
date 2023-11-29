@@ -235,7 +235,6 @@ class TC_GAME_API Quest
         void LoadQuestOfferReward(Field* fields);
         void LoadQuestTemplateAddon(Field* fields);
         void LoadQuestMailSender(Field* fields);
-        void LoadQuestAbandonSpells(Field* fields);
 
         uint32 GetXPReward(Player const* player) const;
         static uint32 CalcXPReward(uint8 playerLevel, int32 targetLevel, uint8 xpDifficulty);
@@ -477,7 +476,7 @@ class TC_GAME_API Quest
         uint32 _specialFlags            = 0; // custom flags, not sniffed/WDB
         uint32 _allowableRaces          = 0;
         uint32 _timeAllowed             = 0;
-        uint32 _questAbandonSpell = 0;
+        uint32 _questAbandonSpell       = 0;
 };
 
 struct QuestStatusData
