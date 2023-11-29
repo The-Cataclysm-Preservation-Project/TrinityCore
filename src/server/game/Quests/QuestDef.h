@@ -235,6 +235,7 @@ class TC_GAME_API Quest
         void LoadQuestOfferReward(Field* fields);
         void LoadQuestTemplateAddon(Field* fields);
         void LoadQuestMailSender(Field* fields);
+        void LoadQuestAbandonSpells(Field* fields);
 
         uint32 GetXPReward(Player const* player) const;
         static uint32 CalcXPReward(uint8 playerLevel, int32 targetLevel, uint8 xpDifficulty);
@@ -371,6 +372,7 @@ class TC_GAME_API Quest
         uint32 GetRewItemsCount() const { return _rewItemsCount; }
         uint32 GetRewCurrencyCount() const { return _rewCurrencyCount; }
         uint32 GetReqCurrencyCount() const { return _reqCurrencyCount; }
+        uint32 GetQuestAbandonSpell() const { return _questAbandonSpell; }
 
         void SetEventIdForQuest(uint16 eventId) { _eventIdForQuest = eventId; }
         uint16 GetEventIdForQuest() const { return _eventIdForQuest; }
@@ -475,6 +477,7 @@ class TC_GAME_API Quest
         uint32 _specialFlags            = 0; // custom flags, not sniffed/WDB
         uint32 _allowableRaces          = 0;
         uint32 _timeAllowed             = 0;
+        uint32 _questAbandonSpell = 0;
 };
 
 struct QuestStatusData

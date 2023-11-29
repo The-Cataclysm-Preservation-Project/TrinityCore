@@ -4096,7 +4096,10 @@ void ObjectMgr::LoadQuests()
         " RequiredSkillID, RequiredSkillPoints, RequiredMinRepFaction, RequiredMaxRepFaction, RequiredMinRepValue, RequiredMaxRepValue, ProvidedItemCount, SpecialFlags, AllowableRaces, TimeAllowed", "quest_template_addon", "template addons",     &Quest::LoadQuestTemplateAddon },
 
         // 0        1
-        { "QuestId, RewardMailSenderEntry",                                                                                                                               "quest_mail_sender",    "mail sender entries", &Quest::LoadQuestMailSender    }
+        { "QuestId, RewardMailSenderEntry",                                                                                                                               "quest_mail_sender",    "mail sender entries", &Quest::LoadQuestMailSender    },
+
+        //  0           1
+        { "QuestID, SpellID",                                                                                                                                             "quest_abandon_spells", "abandon spells",      &Quest::LoadQuestAbandonSpells }
     };
 
     for (QuestLoaderHelper const& loader : QuestLoaderHelpers)
@@ -4754,6 +4757,23 @@ void ObjectMgr::LoadQuests()
             {
                 TC_LOG_ERROR("sql.sql", "Quest %u has `RewardSkillPoints` = %u but `RewardSkillId` is 0",
                     qinfo->GetQuestId(), qinfo->_rewardSkillPoints);
+            }
+        }
+
+        if (qinfo->_questAbandonSpell)
+        {
+            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(qinfo->_questAbandonSpell);
+            if (!spellInfo)
+            {
+                TC_LOG_ERROR("sql.sql", "Quest %u has `QuestAbandonSpell` = %u but spell %u doesn't exist, quest abandon Spell can't be work.",
+                    qinfo->GetQuestId(), qinfo->_questAbandonSpell, qinfo->_questAbandonSpell);
+                qinfo->_questAbandonSpell = 0;                        // quest can't be done for this requirement
+            }
+            else if (!SpellMgr::IsSpellValid(spellInfo))
+            {
+                TC_LOG_ERROR("sql.sql", "Quest %u has `QuestAbandonSpell` = %u but spell %u is broken, quest abandon Spell can't be work",
+                    qinfo->GetQuestId(), qinfo->_questAbandonSpell, qinfo->_questAbandonSpell);
+                qinfo->_questAbandonSpell = 0;                        // quest can't be done for this requirement
             }
         }
 

@@ -239,6 +239,11 @@ void Quest::LoadQuestMailSender(Field* fields)
     _rewardMailSenderEntry = fields[1].GetUInt32();
 }
 
+void Quest::LoadQuestAbandonSpells(Field* fields)
+{
+    _questAbandonSpell = fields[1].GetUInt32();
+}
+
 uint32 Quest::GetXPReward(Player const* player) const
 {
     if (!player)

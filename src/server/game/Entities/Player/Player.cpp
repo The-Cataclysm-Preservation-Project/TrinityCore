@@ -14595,6 +14595,10 @@ void Player::AbandonQuest(uint32 questId)
             if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(quest->ItemDrop[i]))
                 if (quest->ItemDropQuantity[i] > 0 && itemTemplate->GetBonding() == BIND_QUEST)
                     DestroyItemCount(quest->ItemDrop[i], 9999, true);
+
+        // If Quest has a Abandon Spell cast it now
+        if (quest->GetQuestAbandonSpell() != 0)
+            CastSpell(this, quest->GetQuestAbandonSpell(), true)
     }
 }
 
