@@ -485,11 +485,11 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         bool _isMissingSwimmingFlagOutOfCombat;
 
-        uint32 _gossipMenuId;
-
         CreatureMovementInfo _creatureMovementInfo;
 
         float _noNpcDamageBelowPctHealth;
+
+        uint32 _gossipMenuId;
 };
 
 class TC_GAME_API AssistDelayEvent : public BasicEvent
