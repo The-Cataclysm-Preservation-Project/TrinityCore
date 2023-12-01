@@ -260,7 +260,7 @@ namespace WorldPackets
         class RoleChangedInform final : public ServerPacket
         {
         public:
-            RoleChangedInform() : ServerPacket(SMSG_GROUP_DECLINE, 8 + 8 + 4 + 4) { }
+            RoleChangedInform() : ServerPacket(SMSG_ROLE_CHANGED_INFORM, 8 + 8 + 4 + 4) { }
 
             WorldPacket const* Write() override;
 
