@@ -371,6 +371,7 @@ class TC_GAME_API Quest
         uint32 GetRewItemsCount() const { return _rewItemsCount; }
         uint32 GetRewCurrencyCount() const { return _rewCurrencyCount; }
         uint32 GetReqCurrencyCount() const { return _reqCurrencyCount; }
+        uint32 GetQuestAbandonSpell() const { return _questAbandonSpell; }
 
         void SetEventIdForQuest(uint16 eventId) { _eventIdForQuest = eventId; }
         uint16 GetEventIdForQuest() const { return _eventIdForQuest; }
@@ -475,6 +476,7 @@ class TC_GAME_API Quest
         uint32 _specialFlags            = 0; // custom flags, not sniffed/WDB
         uint32 _allowableRaces          = 0;
         uint32 _timeAllowed             = 0;
+        uint32 _questAbandonSpell       = 0;
 };
 
 struct QuestStatusData

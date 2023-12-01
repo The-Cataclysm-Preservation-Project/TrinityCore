@@ -232,6 +232,7 @@ void Quest::LoadQuestTemplateAddon(Field* fields)
 
     _allowableRaces = fields[18].GetUInt32();
     _timeAllowed = fields[19].GetInt32();
+    _questAbandonSpell = fields[20].GetUInt32();
 }
 
 void Quest::LoadQuestMailSender(Field* fields)
