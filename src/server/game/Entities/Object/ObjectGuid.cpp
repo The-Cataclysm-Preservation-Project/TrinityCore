@@ -17,7 +17,7 @@
 
 #include "ObjectGuid.h"
 #include "Errors.h"
-#include "Hash.h"
+#include "ByteBuffer.h"
 #include "Log.h"
 #include "World.h"
 #include <iomanip>
@@ -83,6 +83,22 @@ ObjectGuid ObjectGuid::MapSpecific(HighGuid type, uint32 entry, LowType counter)
     return ObjectGuid(type, entry, counter);
 }
 
+void PackedGuid::Set(ObjectGuid guid)
+{
+    _packedSize = 1;
+    uint64 raw = guid.GetRawValue();
+    for (uint8 i = 0; i < 8; ++i)
+    {
+        uint8 byte = (raw >> (i * 8)) & 0xFF;
+        _packedGuid[_packedSize] = byte;
+        if (byte)
+        {
+            _packedGuid[0] |= uint8(1 << i);
+            ++_packedSize;
+        }
+    }
+}
+
 ByteBuffer& operator<<(ByteBuffer& buf, ObjectGuid const& guid)
 {
     buf << uint64(guid.GetRawValue());
@@ -97,7 +113,7 @@ ByteBuffer& operator>>(ByteBuffer& buf, ObjectGuid& guid)
 
 ByteBuffer& operator<<(ByteBuffer& buf, PackedGuid const& guid)
 {
-    buf.append(guid._packedGuid);
+    buf.append(guid._packedGuid.data(), guid._packedSize);
     return buf;
 }
 
