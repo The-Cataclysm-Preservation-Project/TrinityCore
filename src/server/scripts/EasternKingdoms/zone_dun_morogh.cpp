@@ -19,13 +19,77 @@
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
+enum FrostmaneBuilder
+{
+    SPELL_EQUALIZE_VIEWPOINT = 93773,
+    QUEST_FROSTMANE_BUILDER_CREDIT = 50606
+};
+
 enum FrozenMountaineer
 {
-    DATA_SET_ICE_BROKEN      = 1,
-    EVENT_RUN_AWAY           = 1,
-    SAY_MONSTEREMOTE         = 0,
+    DATA_SET_ICE_BROKEN = 1,
+    EVENT_RUN_AWAY = 1,
+    SAY_MONSTEREMOTE = 0,
     SPELL_SUMMON_FROZEN_TOMB = 77906,
-    SPELL_FREEZE_ANIM        = 77910
+    SPELL_FREEZE_ANIM = 77910
+};
+
+/*######
+# npc_frostmane_builder
+######*/
+
+class npc_frostmane_builder : public CreatureScript
+{
+public:
+    npc_frostmane_builder() : CreatureScript("npc_frostmane_builder") {}
+    struct npc_frostmane_builderAI : public ScriptedAI
+    {
+        npc_frostmane_builderAI(Creature* creature) : ScriptedAI(creature), _hitBySpell(false)
+        {
+            Initialize();
+        }
+
+        void Initialize()
+        {
+            _hitBySpell = false;
+        }
+
+        void Reset() override
+        {
+            Initialize();
+        }
+
+
+        void SpellHit(Unit* caster, SpellInfo const* spell) override
+        {
+            if (!_hitBySpell)
+                _hitBySpell = true;
+
+            if (spell->Id == SPELL_EQUALIZE_VIEWPOINT)
+            {
+                if (Player* player = caster->ToPlayer())
+                    player->KilledMonsterCredit(QUEST_FROSTMANE_BUILDER_CREDIT);
+            }
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (!_hitBySpell)
+                return;
+
+            _events.Update(diff);
+        }
+
+    private:
+        EventMap _events;
+        ObjectGuid _playerGUID;
+        bool _hitBySpell;
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new npc_frostmane_builderAI(creature);
+    }
 };
 
 /*######
@@ -86,4 +150,5 @@ public:
 void AddSC_dun_morogh()
 {
     new npc_frozen_mountaineer();
+    new npc_frostmane_builder();
 }
