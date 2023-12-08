@@ -30,6 +30,8 @@
 #include "Vehicle.h"
 #include "WorldPacket.h"
 
+namespace Ulduar
+{
 static BossBoundaryData const boundaries =
 {
     { DATA_FLAME_LEVIATHAN, new RectangleBoundary(148.0f, 401.3f, -155.0f, 90.0f) },
@@ -211,7 +213,7 @@ class instance_ulduar : public InstanceMapScript
                 if (_summonAlgalon)
                 {
                     _summonAlgalon = false;
-                    TempSummon* algalon = instance->SummonCreature(NPC_ALGALON, AlgalonLandPos);
+                    TempSummon* algalon = instance->SummonCreature(NPC_ALGALON, AlgalonTheObserver::AlgalonLandPos);
                     if (_algalonTimer && _algalonTimer <= 60)
                         algalon->AI()->DoAction(ACTION_INIT_ALGALON);
                     else
@@ -222,33 +224,33 @@ class instance_ulduar : public InstanceMapScript
                 if (GetBossState(DATA_FREYA) == DONE && _summonObservationRingKeeper[0] && !KeeperGUIDs[0])
                 {
                     _summonObservationRingKeeper[0] = false;
-                    instance->SummonCreature(NPC_FREYA_OBSERVATION_RING, ObservationRingKeepersPos[0]);
+                    instance->SummonCreature(NPC_FREYA_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[0]);
                 }
                 if (GetBossState(DATA_HODIR) == DONE && _summonObservationRingKeeper[1] && !KeeperGUIDs[1])
                 {
                     _summonObservationRingKeeper[1] = false;
-                    instance->SummonCreature(NPC_HODIR_OBSERVATION_RING, ObservationRingKeepersPos[1]);
+                    instance->SummonCreature(NPC_HODIR_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[1]);
                 }
                 if (GetBossState(DATA_THORIM) == DONE && _summonObservationRingKeeper[2] && !KeeperGUIDs[2])
                 {
                     _summonObservationRingKeeper[2] = false;
-                    instance->SummonCreature(NPC_THORIM_OBSERVATION_RING, ObservationRingKeepersPos[2]);
+                    instance->SummonCreature(NPC_THORIM_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[2]);
                 }
                 if (GetBossState(DATA_MIMIRON) == DONE && _summonObservationRingKeeper[3] && !KeeperGUIDs[3])
                 {
                     _summonObservationRingKeeper[3] = false;
-                    instance->SummonCreature(NPC_MIMIRON_OBSERVATION_RING, ObservationRingKeepersPos[3]);
+                    instance->SummonCreature(NPC_MIMIRON_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[3]);
                 }
 
                 // Keepers in Yogg-Saron's room
                 if (_summonYSKeeper[0])
-                    instance->SummonCreature(NPC_FREYA_YS, YSKeepersPos[0]);
+                    instance->SummonCreature(NPC_FREYA_YS, YoggSaron::YSKeepersPos[0]);
                 if (_summonYSKeeper[1])
-                    instance->SummonCreature(NPC_HODIR_YS, YSKeepersPos[1]);
+                    instance->SummonCreature(NPC_HODIR_YS, YoggSaron::YSKeepersPos[1]);
                 if (_summonYSKeeper[2])
-                    instance->SummonCreature(NPC_THORIM_YS, YSKeepersPos[2]);
+                    instance->SummonCreature(NPC_THORIM_YS, YoggSaron::YSKeepersPos[2]);
                 if (_summonYSKeeper[3])
-                    instance->SummonCreature(NPC_MIMIRON_YS, YSKeepersPos[3]);
+                    instance->SummonCreature(NPC_MIMIRON_YS, YoggSaron::YSKeepersPos[3]);
             }
 
             // This hook is being called when the instance is created for the first time without a instance save. Handle the Assembly of Iron initial spawn procedure in here.
@@ -637,11 +639,11 @@ class instance_ulduar : public InstanceMapScript
                         break;
                     case DATA_MIMIRON:
                         if (state == DONE)
-                            instance->SummonCreature(NPC_MIMIRON_OBSERVATION_RING, ObservationRingKeepersPos[3]);
+                            instance->SummonCreature(NPC_MIMIRON_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[3]);
                         break;
                     case DATA_FREYA:
                         if (state == DONE)
-                            instance->SummonCreature(NPC_FREYA_OBSERVATION_RING, ObservationRingKeepersPos[0]);
+                            instance->SummonCreature(NPC_FREYA_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[0]);
                         break;
                     case DATA_IRONBRANCH:
                     case DATA_STONEBARK:
@@ -670,7 +672,7 @@ class instance_ulduar : public InstanceMapScript
                             if (GameObject* HodirChest = instance->GetGameObject(HodirChestGUID))
                                 HodirChest->SetRespawnTime(HodirChest->GetRespawnDelay());
 
-                            instance->SummonCreature(NPC_HODIR_OBSERVATION_RING, ObservationRingKeepersPos[1]);
+                            instance->SummonCreature(NPC_HODIR_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[1]);
                         }
                         break;
                     case DATA_THORIM:
@@ -686,7 +688,7 @@ class instance_ulduar : public InstanceMapScript
                                 }
                             }
 
-                            instance->SummonCreature(NPC_THORIM_OBSERVATION_RING, ObservationRingKeepersPos[2]);
+                            instance->SummonCreature(NPC_THORIM_OBSERVATION_RING, YoggSaron::ObservationRingKeepersPos[2]);
                         }
                         else
                         {
@@ -1121,9 +1123,11 @@ class spell_ulduar_teleporter : public SpellScriptLoader
             return new spell_ulduar_teleporter_SpellScript();
         }
 };
+}
 
 void AddSC_instance_ulduar()
 {
+    using namespace Ulduar;
     new instance_ulduar();
     new spell_ulduar_teleporter();
 }

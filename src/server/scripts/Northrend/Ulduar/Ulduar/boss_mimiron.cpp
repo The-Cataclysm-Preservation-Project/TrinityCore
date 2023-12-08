@@ -29,6 +29,8 @@
 #include "ulduar.h"
 #include "Vehicle.h"
 
+namespace Ulduar::Mimiron
+{
 enum Yells
 {
     SAY_AGGRO                                   = 0,
@@ -2734,9 +2736,12 @@ class achievement_firefighter : public AchievementCriteriaScript
             return target && target->GetAI()->GetData(DATA_FIREFIGHTER);
         }
 };
+}
 
 void AddSC_boss_mimiron()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::Mimiron;
     new boss_aerial_command_unit();
     new boss_leviathan_mk_ii();
     new boss_mimiron();

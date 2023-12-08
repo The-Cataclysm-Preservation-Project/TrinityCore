@@ -26,6 +26,8 @@
 #include "TemporarySummon.h"
 #include "ulduar.h"
 
+namespace Ulduar::Hodir
+{
 /* @todo Achievements
           Storm Cloud (Shaman ability)
           Destroying of Toasty Fires
@@ -1061,9 +1063,12 @@ public:
         return new spell_biting_cold_dot_AuraScript();
     }
 };
+}
 
 void AddSC_boss_hodir()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::Hodir;
     new boss_hodir();
     new npc_icicle();
     new npc_snowpacked_icicle();

@@ -24,6 +24,9 @@
 #include "SpellScript.h"
 #include "violet_hold.h"
 
+namespace VioletHold::Xevozz
+{
+
 /*
  * TODO:
  * - Implement Ethereal Summon Target
@@ -280,9 +283,12 @@ class spell_xevozz_summon_players : public SpellScriptLoader
             return new spell_xevozz_summon_players_SpellScript();
         }
 };
+}
 
 void AddSC_boss_xevozz()
 {
+    using namespace VioletHold;
+    using namespace VioletHold::Xevozz;
     new boss_xevozz();
     new npc_ethereal_sphere();
     new spell_xevozz_summon_players();

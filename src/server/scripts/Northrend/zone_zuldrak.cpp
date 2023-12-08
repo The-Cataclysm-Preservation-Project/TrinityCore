@@ -29,6 +29,8 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace Zuldrak
+{
 /*####
 ## npc_drakuru_shackles
 ####*/
@@ -944,9 +946,11 @@ public:
         return new npc_storm_cloudAI(creature);
     }
 };
+}
 
 void AddSC_zuldrak()
 {
+    using namespace Zuldrak;
     new npc_drakuru_shackles();
     new npc_captured_rageclaw();
     new npc_released_offspring_harkoa();

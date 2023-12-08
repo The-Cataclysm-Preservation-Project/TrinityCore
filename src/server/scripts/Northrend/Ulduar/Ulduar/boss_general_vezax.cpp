@@ -25,6 +25,8 @@
 #include "SpellScript.h"
 #include "ulduar.h"
 
+namespace Ulduar::GeneralVezax
+{
 enum VezaxYells
 {
     SAY_AGGRO                                    = 0,
@@ -579,9 +581,12 @@ class achievement_smell_saronite : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_general_vezax()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::GeneralVezax;
     new boss_general_vezax();
     new boss_saronite_animus();
     new npc_saronite_vapors();

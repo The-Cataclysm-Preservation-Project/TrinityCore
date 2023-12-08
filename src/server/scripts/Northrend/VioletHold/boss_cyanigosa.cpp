@@ -21,6 +21,8 @@
 #include "ScriptedCreature.h"
 #include "violet_hold.h"
 
+namespace VioletHold::Cyanigosa
+{
 enum Spells
 {
     SPELL_SUMMON_PLAYER                         = 21150,
@@ -172,9 +174,12 @@ class spell_cyanigosa_arcane_vacuum : public SpellScriptLoader
             return new spell_cyanigosa_arcane_vacuum_SpellScript();
         }
 };
+}
 
 void AddSC_boss_cyanigosa()
 {
+    using namespace VioletHold;
+    using namespace VioletHold::Cyanigosa;
     new boss_cyanigosa();
     new achievement_defenseless();
     new spell_cyanigosa_arcane_vacuum();

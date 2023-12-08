@@ -26,6 +26,8 @@
 #include "TemporarySummon.h"
 #include "utgarde_pinnacle.h"
 
+namespace UtgardePinnacle::Palehoof
+{
 enum Spells
 {
     // Palehoof
@@ -699,9 +701,12 @@ class spell_palehoof_awaken_gortok : public SpellScriptLoader
             return new spell_palehoof_awaken_gortok_SpellScript();
         }
 };
+}
 
 void AddSC_boss_palehoof()
 {
+    using namespace UtgardePinnacle;
+    using namespace UtgardePinnacle::Palehoof;
     new boss_palehoof();
     new boss_ravenous_furbolg();
     new boss_frenzied_worgen();

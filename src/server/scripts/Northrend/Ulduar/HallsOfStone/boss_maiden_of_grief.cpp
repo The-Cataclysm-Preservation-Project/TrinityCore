@@ -20,6 +20,8 @@
 #include "InstanceScript.h"
 #include "ScriptedCreature.h"
 
+namespace HallsOfStone::MaidenOfGrief
+{
 enum Yells
 {
     SAY_AGGRO                           = 0,
@@ -142,8 +144,11 @@ class boss_maiden_of_grief : public CreatureScript
             return GetHallsOfStoneAI<boss_maiden_of_griefAI>(creature);
         }
 };
+}
 
 void AddSC_boss_maiden_of_grief()
 {
+    using namespace HallsOfStone;
+    using namespace HallsOfStone::MaidenOfGrief;
     new boss_maiden_of_grief();
 }

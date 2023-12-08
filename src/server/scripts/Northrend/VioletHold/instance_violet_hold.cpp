@@ -26,6 +26,8 @@
 #include "violet_hold.h"
 #include "WorldPacket.h"
 
+namespace VioletHold
+{
 /*
  * TODO:
  * - replace bosses by dummy npcs also after grid unload
@@ -940,8 +942,10 @@ class instance_violet_hold : public InstanceMapScript
             return new instance_violet_hold_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_violet_hold()
 {
+    using namespace VioletHold;
     new instance_violet_hold();
 }

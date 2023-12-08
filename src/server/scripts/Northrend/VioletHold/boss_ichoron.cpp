@@ -23,6 +23,8 @@
 #include "SpellScript.h"
 #include "violet_hold.h"
 
+namespace VioletHold::Ichoron
+{
 enum Spells
 {
     SPELL_WATER_BLAST                           = 54237,
@@ -475,9 +477,12 @@ class achievement_dehydration : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_ichoron()
 {
+    using namespace VioletHold;
+    using namespace VioletHold::Ichoron;
     new boss_ichoron();
     new npc_ichor_globule();
     new spell_ichoron_drained();

@@ -22,6 +22,8 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace HallsOfStone::Sjonnir
+{
 enum Spells
 {
     SPELL_LIGHTING_RING                               = 51849, // Periodic Trigger (interval 2s) spell = 50841
@@ -317,9 +319,12 @@ class achievement_abuse_the_ooze : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_sjonnir()
 {
+    using namespace HallsOfStone;
+    using namespace HallsOfStone::Sjonnir;
     new boss_sjonnir();
     new npc_malformed_ooze();
     new npc_iron_sludge();

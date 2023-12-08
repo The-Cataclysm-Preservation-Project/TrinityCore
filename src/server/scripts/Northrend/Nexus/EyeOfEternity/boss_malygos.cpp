@@ -37,6 +37,8 @@ Script Data End */
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace EyeOfEternity::Malygos
+{
 enum Events
 {
     // =========== INTRO BEFORE WE START ENCOUNTER ===============
@@ -2399,9 +2401,12 @@ class achievement_denyin_the_scion : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_malygos()
 {
+    using namespace EyeOfEternity;
+    using namespace EyeOfEternity::Malygos;
     new boss_malygos();
     new npc_portal_eoe();
     new npc_power_spark();

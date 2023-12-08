@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace HallsOfStone
+{
 #define HoSScriptName "instance_halls_of_stone"
 #define DataHeader    "HOS"
 
@@ -73,6 +75,7 @@ template <class AI, class T>
 inline AI* GetHallsOfStoneAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, HoSScriptName);
+}
 }
 
 #endif // HALLS_OF_STONE_H_

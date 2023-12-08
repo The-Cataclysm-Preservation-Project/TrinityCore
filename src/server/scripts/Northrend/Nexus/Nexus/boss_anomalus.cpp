@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace Nexus::Anomalus
+{
 enum Spells
 {
     SPELL_SPARK                                   = 47751,
@@ -288,9 +290,12 @@ class achievement_chaos_theory : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_anomalus()
 {
+    using namespace Nexus;
+    using namespace Nexus::Anomalus;
     new boss_anomalus();
     new npc_chaotic_rift();
     new achievement_chaos_theory();

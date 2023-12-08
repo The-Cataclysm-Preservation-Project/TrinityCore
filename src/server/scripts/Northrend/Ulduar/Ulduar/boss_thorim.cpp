@@ -32,6 +32,8 @@
 #include "ulduar.h"
 #include <G3D/Vector3.h>
 
+namespace Ulduar::Thorim
+{
 enum Spells
 {
     // Thorim
@@ -2166,9 +2168,12 @@ class condition_thorim_arena_leap : public ConditionScript
     private:
         HeightPositionCheck _check;
 };
+}
 
 void AddSC_boss_thorim()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::Thorim;
     new boss_thorim();
     new npc_thorim_pre_phase();
     new npc_thorim_arena_phase();

@@ -26,6 +26,8 @@
 #include "TemporarySummon.h"
 #include "utgarde_pinnacle.h"
 
+namespace UtgardePinnacle::Svala
+{
 enum Spells
 {
     SPELL_SVALA_TRANSFORMING1                     = 54140,
@@ -607,9 +609,12 @@ class achievement_incredible_hulk : public AchievementCriteriaScript
             return target && target->GetAI() && target->GetAI()->GetData(DATA_INCREDIBLE_HULK);
         }
 };
+}
 
 void AddSC_boss_svala()
 {
+    using namespace UtgardePinnacle;
+    using namespace UtgardePinnacle::Svala;
     new boss_svala();
     new npc_ritual_channeler();
     new npc_spectator();

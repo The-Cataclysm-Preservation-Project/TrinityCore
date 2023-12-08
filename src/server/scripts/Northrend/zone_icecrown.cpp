@@ -26,6 +26,8 @@
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 
+namespace Icecrown
+{
 /*######
 ## npc_argent_valiant
 ######*/
@@ -780,9 +782,11 @@ class npc_frostbrood_skytalon : public CreatureScript
             return new npc_frostbrood_skytalonAI(creature);
         }
 };
+}
 
 void AddSC_icecrown()
 {
+    using namespace Icecrown;
     new npc_argent_valiant;
     new npc_guardian_pavilion;
     new npc_tournament_training_dummy;

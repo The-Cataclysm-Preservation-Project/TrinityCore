@@ -21,6 +21,8 @@
 #include "InstanceScript.h"
 #include "utgarde_keep.h"
 
+namespace UtgardeKeep
+{
 DoorData const doorData[] =
 {
     { GO_GIANT_PORTCULLIS_1,    DATA_INGVAR,    DOOR_TYPE_PASSAGE },
@@ -200,8 +202,10 @@ class instance_utgarde_keep : public InstanceMapScript
            return new instance_utgarde_keep_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_utgarde_keep()
 {
+    using namespace UtgardeKeep;
     new instance_utgarde_keep();
 }

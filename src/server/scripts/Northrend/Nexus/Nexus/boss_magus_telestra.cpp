@@ -24,6 +24,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace Nexus::MagusTelestra
+{
 enum Spells
 {
     SPELL_ICE_NOVA                                = 47772,
@@ -378,9 +380,12 @@ class achievement_split_personality : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_magus_telestra()
 {
+    using namespace Nexus;
+    using namespace Nexus::MagusTelestra;
     new boss_magus_telestra();
     new achievement_split_personality();
 }

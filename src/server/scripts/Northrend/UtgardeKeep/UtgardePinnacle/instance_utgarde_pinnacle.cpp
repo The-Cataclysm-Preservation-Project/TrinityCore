@@ -21,6 +21,8 @@
 #include "InstanceScript.h"
 #include "utgarde_pinnacle.h"
 
+namespace UtgardePinnacle
+{
 BossBoundaryData const boundaries =
 {
     { DATA_KING_YMIRON, new RectangleBoundary(340.0f, 443.0f, -412.0f, -275.0f) }
@@ -107,8 +109,10 @@ class instance_utgarde_pinnacle : public InstanceMapScript
             return new instance_utgarde_pinnacle_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_utgarde_pinnacle()
 {
+    using namespace UtgardePinnacle;
     new instance_utgarde_pinnacle();
 }

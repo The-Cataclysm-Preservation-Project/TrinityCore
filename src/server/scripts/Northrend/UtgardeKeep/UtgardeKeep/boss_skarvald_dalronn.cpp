@@ -28,6 +28,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "utgarde_keep.h"
 
+namespace UtgardeKeep::SkarvaldDalronn
+{
 enum Texts
 {
     // Texts are common for both bosses and their ghosts.
@@ -294,9 +296,12 @@ class boss_dalronn_the_controller : public CreatureScript
             return GetUtgardeKeepAI<boss_dalronn_the_controllerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_skarvald_dalronn()
 {
+    using namespace UtgardeKeep;
+    using namespace UtgardeKeep::SkarvaldDalronn;
     new boss_skarvald_the_constructor();
     new boss_dalronn_the_controller();
 }

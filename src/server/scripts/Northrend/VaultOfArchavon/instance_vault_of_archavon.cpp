@@ -20,6 +20,8 @@
 #include "InstanceScript.h"
 #include "vault_of_archavon.h"
 
+namespace VaultOfArchavon
+{
 /* Vault of Archavon encounters:
 1 - Archavon the Stone Watcher event
 2 - Emalon the Storm Watcher event
@@ -116,8 +118,10 @@ class instance_vault_of_archavon : public InstanceMapScript
             return new instance_vault_of_archavon_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_vault_of_archavon()
 {
+    using namespace VaultOfArchavon;
     new instance_vault_of_archavon();
 }

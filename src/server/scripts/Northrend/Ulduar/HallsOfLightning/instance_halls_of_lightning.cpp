@@ -23,6 +23,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace HallsOfLightning
+{
 DoorData const doorData[] =
 {
     { GO_VOLKHAN_DOOR, DATA_VOLKHAN, DOOR_TYPE_PASSAGE },
@@ -110,8 +112,10 @@ class instance_halls_of_lightning : public InstanceMapScript
             return new instance_halls_of_lightning_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_halls_of_lightning()
 {
+    using namespace HallsOfLightning;
     new instance_halls_of_lightning();
 }

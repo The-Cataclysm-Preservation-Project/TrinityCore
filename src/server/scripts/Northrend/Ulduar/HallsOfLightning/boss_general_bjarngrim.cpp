@@ -28,6 +28,8 @@
 #include "SpellHistory.h"
 #include "SpellMgr.h"
 
+namespace HallsOfLightning::GeneralBjarngrim
+{
 enum Spells
 {
     // General Bjarngrim
@@ -490,9 +492,12 @@ class spell_bjarngrim_arc_weld : public AuraScript
         OnEffectPeriodic.Register(&spell_bjarngrim_arc_weld::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
+}
 
 void AddSC_boss_general_bjarngrim()
 {
+    using namespace HallsOfLightning;
+    using namespace HallsOfLightning::GeneralBjarngrim;
     RegisterHallsOfLightningCreatureAI(boss_general_bjarngrim);
     RegisterHallsOfLightningCreatureAI(npc_bjarngrim_stormforged_lieutenant);
     RegisterSpellScriptWithArgs(spell_bjarngrim_stance_dummy, "spell_bjarngrim_defensive_stance_dummy", STANCE_DEFENSIVE);

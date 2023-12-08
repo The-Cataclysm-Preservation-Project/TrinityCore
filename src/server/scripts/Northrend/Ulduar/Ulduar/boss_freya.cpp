@@ -26,6 +26,8 @@
 #include "TemporarySummon.h"
 #include "ulduar.h"
 
+namespace Ulduar::Freya
+{
 enum FreyaYells
 {
     // Freya
@@ -1637,9 +1639,12 @@ class achievement_knock_knock_knock_on_wood : public AchievementCriteriaScript
            return target && target->GetAI()->GetData(DATA_KNOCK_ON_WOOD) == 3;
        }
 };
+}
 
 void AddSC_boss_freya()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::Freya;
     new boss_freya();
     new boss_elder_brightleaf();
     new boss_elder_ironbranch();

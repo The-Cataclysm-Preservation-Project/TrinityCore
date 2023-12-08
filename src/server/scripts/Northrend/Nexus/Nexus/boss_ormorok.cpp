@@ -21,6 +21,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace Nexus::Ormorok
+{
 enum Spells
 {
     SPELL_SPELL_REFLECTION                      = 47981,
@@ -292,9 +294,12 @@ class spell_crystal_spike : public SpellScriptLoader
             return new spell_crystal_spike_AuraScript();
         }
 };
+}
 
 void AddSC_boss_ormorok()
 {
+    using namespace Nexus;
+    using namespace Nexus::Ormorok;
     new boss_ormorok();
     new npc_crystal_spike_trigger();
     new spell_crystal_spike();

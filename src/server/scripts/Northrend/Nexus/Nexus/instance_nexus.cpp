@@ -23,6 +23,8 @@
 #include "nexus.h"
 #include "Player.h"
 
+namespace Nexus
+{
 class instance_nexus : public InstanceMapScript
 {
     public:
@@ -188,8 +190,10 @@ class instance_nexus : public InstanceMapScript
             return new instance_nexus_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_nexus()
 {
+    using namespace Nexus;
     new instance_nexus();
 }

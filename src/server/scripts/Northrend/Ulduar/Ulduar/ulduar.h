@@ -20,12 +20,21 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Ulduar
+{
 #define UlduarScriptName "instance_ulduar"
 #define DataHeader "UU"
 
-extern Position const ObservationRingKeepersPos[4];
-extern Position const YSKeepersPos[4];
-extern Position const AlgalonLandPos;
+    namespace YoggSaron
+    {
+        extern Position const ObservationRingKeepersPos[4];
+        extern Position const YSKeepersPos[4];
+    }
+
+    namespace AlgalonTheObserver
+    {
+        extern Position const AlgalonLandPos;
+    }
 
 static constexpr uint8 const MAX_ENCOUNTER = 17;
 
@@ -534,5 +543,6 @@ class PlayerOrPetCheck
             return true;
         }
 };
+}
 
 #endif

@@ -29,6 +29,8 @@
 #include "SpellScript.h"
 #include "Vehicle.h"
 
+namespace Oculus
+{
 enum GossipNPCs
 {
     GOSSIP_MENU_VERDISA                 = 9573,
@@ -670,9 +672,11 @@ class spell_oculus_dream_funnel : public SpellScriptLoader
             return new spell_oculus_dream_funnel_AuraScript();
         }
 };
+}
 
 void AddSC_oculus()
 {
+    using namespace Oculus;
     new npc_verdisa_beglaristrasz_eternos();
     new npc_image_belgaristrasz();
     new npc_ruby_emerald_amber_drake();

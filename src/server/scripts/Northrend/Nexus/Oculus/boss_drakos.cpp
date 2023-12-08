@@ -21,6 +21,8 @@
 #include "oculus.h"
 #include "ScriptedCreature.h"
 
+namespace Oculus::Drakos
+{
 enum Spells
 {
     SPELL_MAGIC_PULL                              = 51336,
@@ -206,9 +208,12 @@ class npc_unstable_sphere : public CreatureScript
             return GetOculusAI<npc_unstable_sphereAI>(creature);
         }
 };
+}
 
 void AddSC_boss_drakos()
 {
+    using namespace Oculus;
+    using namespace Oculus::Drakos;
     new boss_drakos();
     new npc_unstable_sphere();
 }

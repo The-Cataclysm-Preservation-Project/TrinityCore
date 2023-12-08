@@ -27,6 +27,8 @@
 #include "TemporarySummon.h"
 #include "utgarde_pinnacle.h"
 
+namespace UtgardePinnacle::Skadi
+{
 enum Spells
 {
     // Skadi Spells
@@ -930,9 +932,12 @@ class at_skadi_gaunlet : public AreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_boss_skadi()
 {
+    using namespace UtgardePinnacle;
+    using namespace UtgardePinnacle::Skadi;
     new boss_skadi();
     new npc_grauf();
     new npc_ymirjar_warrior();

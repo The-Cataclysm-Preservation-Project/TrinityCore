@@ -24,6 +24,8 @@
 #include "TemporarySummon.h"
 #include "utgarde_pinnacle.h"
 
+namespace UtgardePinnacle::Ymiron
+{
 enum Spells
 {
     SPELL_BANE                                = 48294,
@@ -344,9 +346,12 @@ class achievement_kings_bane : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_ymiron()
 {
+    using namespace UtgardePinnacle;
+    using namespace UtgardePinnacle::Ymiron;
     new boss_ymiron();
     RegisterSpellScript(spell_dark_slash);
     new achievement_kings_bane();

@@ -32,6 +32,8 @@
 #include "TemporarySummon.h"
 #include "ulduar.h"
 
+namespace Ulduar::Razorscale
+{
 enum Says
 {
     // Expedition Commander
@@ -1175,9 +1177,12 @@ class achievement_quick_shave : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_razorscale()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::Razorscale;
     new boss_razorscale_controller();
     new go_razorscale_harpoon();
     new boss_razorscale();

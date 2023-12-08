@@ -25,6 +25,8 @@
 #include "Map.h"
 #include "Player.h"
 
+namespace EyeOfEternity
+{
 BossBoundaryData const boundaries =
 {
     { DATA_MALYGOS_EVENT, new CircleBoundary(Position(754.362f, 1301.609985f), 280.0) } // sanity check boundary
@@ -281,8 +283,10 @@ public:
         Position exitPortalPosition;
     };
 };
+}
 
 void AddSC_instance_eye_of_eternity()
 {
+    using namespace EyeOfEternity;
     new instance_eye_of_eternity();
 }

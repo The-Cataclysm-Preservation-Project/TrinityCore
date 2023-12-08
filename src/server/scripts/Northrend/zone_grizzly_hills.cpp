@@ -25,6 +25,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace GrizzlyHills
+{
 /*######
 ## Quest 12027: Mr. Floppy's Perilous Adventure
 ######*/
@@ -1088,9 +1090,11 @@ public:
         return new spell_warhead_fuse_AuraScript();
     }
 };
+}
 
 void AddSC_grizzly_hills()
 {
+    using namespace GrizzlyHills;
     new npc_emily();
     new npc_mrfloppy();
     new npc_outhouse_bunny();

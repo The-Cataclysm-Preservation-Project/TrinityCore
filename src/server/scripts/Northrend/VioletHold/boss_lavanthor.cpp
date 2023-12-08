@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "violet_hold.h"
 
+namespace VioletHold::Lavanthor
+{
 enum Spells
 {
     SPELL_CAUTERIZING_FLAMES                    = 59466, // Only in heroic
@@ -100,8 +102,11 @@ class boss_lavanthor : public CreatureScript
             return GetVioletHoldAI<boss_lavanthorAI>(creature);
         }
 };
+}
 
 void AddSC_boss_lavanthor()
 {
+    using namespace VioletHold;
+    using namespace VioletHold::Lavanthor;
     new boss_lavanthor();
 }

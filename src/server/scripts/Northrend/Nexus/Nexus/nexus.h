@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Nexus
+{
 #define NexusScriptName "instance_nexus"
 #define DataHeader "NEX"
 
@@ -69,6 +71,7 @@ template <class AI, class T>
 inline AI* GetNexusAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, NexusScriptName);
+}
 }
 
 #endif

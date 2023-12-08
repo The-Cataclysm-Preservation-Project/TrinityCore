@@ -24,6 +24,8 @@
 // Types of drake mounts: Ruby (Tank), Amber (DPS), Emerald (Healer)
 // Two Repeating phases
 
+namespace Oculus::Eregos
+{
 enum Events
 {
     EVENT_ARCANE_BARRAGE = 1,
@@ -300,12 +302,15 @@ class achievement_gen_eregos_void : public AchievementCriteriaScript
     private:
         uint32 _data;
 };
+}
 
- void AddSC_boss_eregos()
- {
+void AddSC_boss_eregos()
+{
+    using namespace Oculus;
+    using namespace Oculus::Eregos;
     new boss_eregos();
     new spell_eregos_planar_shift();
     new achievement_gen_eregos_void("achievement_ruby_void", DATA_RUBY_VOID);
     new achievement_gen_eregos_void("achievement_emerald_void", DATA_EMERALD_VOID);
     new achievement_gen_eregos_void("achievement_amber_void", DATA_AMBER_VOID);
- }
+}

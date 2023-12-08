@@ -22,6 +22,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace HallsOfLightning::Loken
+{
 enum Texts
 {
     SAY_INTRO_1                                   = 0,
@@ -203,9 +205,12 @@ class spell_loken_pulsing_shockwave : public SpellScript
         OnEffectHitTarget.Register(&spell_loken_pulsing_shockwave::CalculateDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
+}
 
 void AddSC_boss_loken()
 {
+    using namespace HallsOfLightning;
+    using namespace HallsOfLightning::Loken;
     RegisterHallsOfLightningCreatureAI(boss_loken);
     RegisterSpellScript(spell_loken_pulsing_shockwave);
 }

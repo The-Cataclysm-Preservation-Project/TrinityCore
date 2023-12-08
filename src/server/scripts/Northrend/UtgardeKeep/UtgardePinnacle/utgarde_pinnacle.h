@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace UtgardePinnacle
+{
 #define UPScriptName "instance_utgarde_pinnacle"
 #define DataHeader "UP"
 
@@ -101,6 +103,7 @@ template <class AI, class T>
 inline AI* GetUtgardePinnacleAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, UPScriptName);
+}
 }
 
 #endif // UTGARDE_PINNACLE_H_

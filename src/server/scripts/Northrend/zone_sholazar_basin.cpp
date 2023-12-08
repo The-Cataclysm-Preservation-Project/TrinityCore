@@ -44,6 +44,8 @@ EndContentData */
 #include "SpellScript.h"
 #include "Vehicle.h"
 
+namespace SholazarBasin
+{
 /*######
 ## npc_engineer_helice
 ######*/
@@ -758,9 +760,11 @@ public:
         return new spell_shango_tracks_SpellScript();
     }
 };
+}
 
 void AddSC_sholazar_basin()
 {
+    using namespace SholazarBasin;
     new npc_engineer_helice();
     new npc_jungle_punch_target();
     new spell_q12620_the_lifewarden_wrath();

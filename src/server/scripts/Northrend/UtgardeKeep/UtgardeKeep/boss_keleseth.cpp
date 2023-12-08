@@ -31,6 +31,8 @@ EndScriptData */
 #include "SpellScript.h"
 #include "utgarde_keep.h"
 
+namespace UtgardeKeep::Keleseth
+{
 enum KelsethEncounter
 {
     SPELL_SHADOWBOLT                         = 43667,
@@ -373,9 +375,12 @@ class achievement_on_the_rocks : public AchievementCriteriaScript
             return target && target->GetAI() && target->GetAI()->GetData(DATA_ON_THE_ROCKS);
         }
 };
+}
 
 void AddSC_boss_keleseth()
 {
+    using namespace UtgardeKeep;
+    using namespace UtgardeKeep::Keleseth;
     new boss_keleseth();
     new npc_frost_tomb();
     new npc_vrykul_skeleton();

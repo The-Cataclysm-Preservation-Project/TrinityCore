@@ -37,6 +37,8 @@ EndContentData */
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace DragonBlight
+{
 /*#####
 # npc_commander_eligor_dawnbringer
 #####*/
@@ -722,9 +724,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_dragonblight()
 {
+    using namespace DragonBlight;
     new npc_commander_eligor_dawnbringer();
     new spell_q12096_q12092_dummy();
     new spell_q12096_q12092_bark();

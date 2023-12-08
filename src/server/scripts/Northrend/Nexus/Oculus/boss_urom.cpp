@@ -28,6 +28,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace Oculus::Urom
+{
 enum Spells
 {
     SPELL_ARCANE_SHIELD                           = 53813, //Dummy --> Channeled, shields the caster from damage.
@@ -345,8 +347,11 @@ class boss_urom : public CreatureScript
             return GetOculusAI<boss_uromAI>(creature);
         }
 };
+}
 
 void AddSC_boss_urom()
 {
+    using namespace Oculus;
+    using namespace Oculus::Urom;
     new boss_urom();
 }

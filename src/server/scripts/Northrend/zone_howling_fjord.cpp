@@ -36,6 +36,8 @@ EndContentData */
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace HowlingFjord
+{
 /*######
 ## npc_apothecary_hanes
 ######*/
@@ -653,9 +655,11 @@ public:
         return new npc_riven_widow_cocoonAI(creature);
     }
 };
+}
 
 void AddSC_howling_fjord()
 {
+    using namespace HowlingFjord;
     new npc_apothecary_hanes();
     new npc_plaguehound_tracker();
     new npc_razael_and_lyana();

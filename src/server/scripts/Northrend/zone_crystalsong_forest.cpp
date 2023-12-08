@@ -28,6 +28,8 @@ Script Data End */
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace CrystalsongForest
+{
 /*******************************************************
  * npc_warmage_violetstand
  *******************************************************/
@@ -107,8 +109,10 @@ public:
         return new npc_warmage_violetstandAI(creature);
     }
 };
+}
 
 void AddSC_crystalsong_forest()
 {
+    using namespace CrystalsongForest;
     new npc_warmage_violetstand;
 }

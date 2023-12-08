@@ -48,6 +48,8 @@ EndContentData */
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
+namespace BoreanTundra
+{
 /*######
 ## npc_sinkhole_kill_credit
 ######*/
@@ -2467,9 +2469,11 @@ public:
         return new npc_bloodmage_laurithAI(creature);
     }
 };
+}
 
 void AddSC_borean_tundra()
 {
+    using namespace BoreanTundra;
     new npc_sinkhole_kill_credit();
     new npc_khunok_the_behemoth();
     new npc_corastrasza();

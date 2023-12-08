@@ -21,6 +21,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace HallsOfStone::Krystallus
+{
 enum Spells
 {
     SPELL_BOULDER_TOSS                          = 50843,
@@ -202,9 +204,12 @@ class spell_krystallus_shatter_effect : public SpellScriptLoader
             return new spell_krystallus_shatter_effect_SpellScript();
         }
 };
+}
 
 void AddSC_boss_krystallus()
 {
+    using namespace HallsOfStone;
+    using namespace HallsOfStone::Krystallus;
     new boss_krystallus();
     new spell_krystallus_shatter();
     new spell_krystallus_shatter_effect();

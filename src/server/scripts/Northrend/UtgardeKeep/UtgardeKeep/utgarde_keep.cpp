@@ -24,6 +24,8 @@
 #include "SpellScript.h"
 #include "utgarde_keep.h"
 
+namespace UtgardeKeep
+{
 uint32 ForgeSearch[3] =
 {
     GO_GLOWING_ANVIL_1,
@@ -336,9 +338,11 @@ class npc_enslaved_proto_drake : public CreatureScript
             return GetUtgardeKeepAI<npc_enslaved_proto_drakeAI>(creature);
         }
 };
+}
 
 void AddSC_utgarde_keep()
 {
+    using namespace UtgardeKeep;
     new npc_dragonflayer_forge_master();
     new npc_enslaved_proto_drake();
     new spell_ticking_time_bomb();

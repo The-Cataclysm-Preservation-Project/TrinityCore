@@ -25,6 +25,8 @@
 #include "ulduar.h"
 #include "Vehicle.h"
 
+namespace Ulduar::Ignis
+{
 enum Yells
 {
     SAY_AGGRO       = 0,
@@ -497,9 +499,12 @@ class achievement_ignis_shattered : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_ignis()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::Ignis;
     new boss_ignis();
     new npc_iron_construct();
     new npc_scorch_ground();

@@ -21,6 +21,8 @@
 #include "ScriptedCreature.h"
 #include "vault_of_archavon.h"
 
+namespace VaultOfArchavon::Toravon
+{
 enum Spells
 {
     // Toravon
@@ -291,9 +293,12 @@ class npc_frozen_orb_stalker : public CreatureScript
             return GetVaultOfArchavonAI<npc_frozen_orb_stalkerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_toravon()
 {
+    using namespace VaultOfArchavon;
+    using namespace VaultOfArchavon::Toravon;
     new boss_toravon();
     new npc_frost_warder();
     new npc_frozen_orb();

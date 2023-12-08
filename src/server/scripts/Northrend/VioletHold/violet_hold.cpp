@@ -29,6 +29,8 @@
 #include "TemporarySummon.h"
 #include "violet_hold.h"
 
+namespace VioletHold
+{
 /*
  * TODO:
  * - add missing trash emotes
@@ -1409,9 +1411,11 @@ class spell_violet_hold_teleport_player : public SpellScriptLoader
             return new spell_violet_hold_teleport_player_SpellScript();
         }
 };
+}
 
 void AddSC_violet_hold()
 {
+    using namespace VioletHold;
     new npc_sinclari_vh();
     new npc_violet_hold_teleportation_portal();
     new npc_violet_hold_teleportation_portal_elite();

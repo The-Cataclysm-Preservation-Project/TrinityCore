@@ -26,6 +26,8 @@ Script Data End */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Nexus::CommanderStoutbeard
+{
 enum CommanderStoutbeard
 {
     SPELL_BATTLE_SHOUT              = 31403,
@@ -64,8 +66,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_commander_stoutbeard()
 {
+    using namespace Nexus;
+    using namespace Nexus::CommanderStoutbeard;
     new boss_commander_stoutbeard();
 }

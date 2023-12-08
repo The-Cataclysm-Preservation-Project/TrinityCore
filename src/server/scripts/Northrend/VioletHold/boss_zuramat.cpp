@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "violet_hold.h"
 
+namespace VioletHold::Zuramat
+{
 enum Spells
 {
     SPELL_SHROUD_OF_DARKNESS                    = 54524,
@@ -222,10 +224,14 @@ class achievement_void_dance : public AchievementCriteriaScript
 
             return false;
         }
+
 };
+}
 
 void AddSC_boss_zuramat()
 {
+    using namespace VioletHold;
+    using namespace VioletHold::Zuramat;
     new boss_zuramat();
     new npc_void_sentry();
     new achievement_void_dance();

@@ -22,6 +22,8 @@
 #include "SpellScript.h"
 #include "violet_hold.h"
 
+namespace VioletHold::Moragg
+{
 enum Spells
 {
     SPELL_CORROSIVE_SALIVA                     = 54527,
@@ -180,9 +182,12 @@ public:
         return new spell_moragg_optic_link_AuraScript();
     }
 };
+}
 
 void AddSC_boss_moragg()
 {
+    using namespace VioletHold;
+    using namespace VioletHold::Moragg;
     new boss_moragg();
     new spell_moragg_ray();
     new spell_moragg_optic_link();

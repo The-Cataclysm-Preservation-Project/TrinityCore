@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "violet_hold.h"
 
+namespace VioletHold::Erekem
+{
 enum Spells
 {
     SPELL_BLOODLUST                             = 54516,
@@ -315,9 +317,12 @@ class npc_erekem_guard : public CreatureScript
             return GetVioletHoldAI<npc_erekem_guardAI>(creature);
         }
 };
+}
 
 void AddSC_boss_erekem()
 {
+    using namespace VioletHold;
+    using namespace VioletHold::Erekem;
     new boss_erekem();
     new npc_erekem_guard();
 }

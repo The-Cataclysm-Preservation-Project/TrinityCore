@@ -26,6 +26,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace Nexus::Keristrasza
+{
 enum Spells
 {
     //Spells
@@ -306,9 +308,12 @@ class achievement_intense_cold : public AchievementCriteriaScript
             return true;
         }
 };
+}
 
 void AddSC_boss_keristrasza()
 {
+    using namespace Nexus;
+    using namespace Nexus::Keristrasza;
     new boss_keristrasza();
     new containment_sphere();
     new achievement_intense_cold();

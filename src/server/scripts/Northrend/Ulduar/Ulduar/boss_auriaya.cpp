@@ -22,6 +22,8 @@
 #include "SpellScript.h"
 #include "ulduar.h"
 
+namespace Ulduar::Auriaya
+{
 enum AuriayaSpells
 {
     // Auriaya
@@ -587,9 +589,12 @@ class achievement_crazy_cat_lady : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_auriaya()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::Auriaya;
     new boss_auriaya();
     new npc_auriaya_seeping_trigger();
     new npc_feral_defender();

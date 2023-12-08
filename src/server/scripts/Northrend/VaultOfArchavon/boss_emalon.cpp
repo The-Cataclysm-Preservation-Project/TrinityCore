@@ -22,6 +22,8 @@
 #include "SpellAuras.h"
 #include "vault_of_archavon.h"
 
+namespace VaultOfArchavon::Emalon
+{
 enum Spells
 {
     SPELL_OVERCHARGE            = 64218,    // Cast every 45 sec on a random Tempest Minion
@@ -282,9 +284,12 @@ class npc_tempest_minion : public CreatureScript
             return GetVaultOfArchavonAI<npc_tempest_minionAI>(creature);
         }
 };
+}
 
 void AddSC_boss_emalon()
 {
+    using namespace VaultOfArchavon;
+    using namespace VaultOfArchavon::Emalon;
     new boss_emalon();
     new npc_tempest_minion();
 }

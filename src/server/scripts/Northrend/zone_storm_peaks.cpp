@@ -29,6 +29,8 @@
 #include "Vehicle.h"
 #include "WorldSession.h"
 
+namespace StormPeaks
+{
 /////////////////////
 ///npc_injured_goblin
 /////////////////////
@@ -1409,9 +1411,11 @@ class spell_player_mount_wyrm : public SpellScriptLoader
             return new spell_player_mount_wyrm_AuraScript();
         }
 };
+}
 
 void AddSC_storm_peaks()
 {
+    using namespace StormPeaks;
     new npc_injured_goblin();
     new npc_roxi_ramrocket();
     new npc_brunnhildar_prisoner();

@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace VioletHold
+{
 #define VioletHoldScriptName "instance_violet_hold"
 #define DataHeader "VH"
 
@@ -157,6 +159,7 @@ template <class AI, class T>
 inline AI* GetVioletHoldAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, VioletHoldScriptName);
+}
 }
 
 #endif // VIOLET_HOLD_H_

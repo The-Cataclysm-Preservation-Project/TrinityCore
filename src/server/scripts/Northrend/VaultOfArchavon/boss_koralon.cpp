@@ -20,6 +20,8 @@
 #include "SpellScript.h"
 #include "vault_of_archavon.h"
 
+namespace VaultOfArchavon::Koralon
+{
 enum Events
 {
     // Koralon
@@ -284,9 +286,12 @@ class spell_flame_warder_meteor_fists : public SpellScriptLoader
             return new spell_flame_warder_meteor_fists_AuraScript();
         }
 };
+}
 
 void AddSC_boss_koralon()
 {
+    using namespace VaultOfArchavon;
+    using namespace VaultOfArchavon::Koralon;
     new boss_koralon();
     new npc_flame_warder();
     new spell_koralon_meteor_fists();

@@ -19,6 +19,8 @@
 #include "nexus.h"
 #include "ScriptedCreature.h"
 
+namespace Nexus::NexusCommander
+{
 enum Spells
 {
     SPELL_BATTLE_SHOUT           = 31403,
@@ -103,8 +105,11 @@ class boss_nexus_commanders : public CreatureScript
             return GetNexusAI<boss_nexus_commandersAI>(creature);
         }
 };
+}
 
 void AddSC_boss_nexus_commanders()
 {
+    using namespace Nexus;
+    using namespace Nexus::NexusCommander;
     new boss_nexus_commanders();
 }

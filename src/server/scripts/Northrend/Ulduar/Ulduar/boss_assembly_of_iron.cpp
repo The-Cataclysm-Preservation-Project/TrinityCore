@@ -29,6 +29,8 @@
 #include "TemporarySummon.h"
 #include "ulduar.h"
 
+namespace Ulduar::AssemblyOfIron
+{
 enum Spells
 {
     // General
@@ -893,9 +895,12 @@ class achievement_assembly_i_choose_you : public AchievementCriteriaScript
             return target && target->GetAI()->GetData(DATA_PHASE_3);
         }
 };
+}
 
 void AddSC_boss_assembly_of_iron()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::AssemblyOfIron;
     RegisterUlduarCreatureAI(boss_steelbreaker);
     RegisterUlduarCreatureAI(boss_runemaster_molgeim);
     RegisterUlduarCreatureAI(boss_stormcaller_brundir);

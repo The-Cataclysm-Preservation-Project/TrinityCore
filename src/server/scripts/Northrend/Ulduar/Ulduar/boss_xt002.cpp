@@ -35,6 +35,8 @@
 #include "Vehicle.h"
 #include "WorldPacket.h"
 
+namespace Ulduar::XT002
+{
 enum Spells
 {
     SPELL_TYMPANIC_TANTRUM                      = 62776,
@@ -1090,9 +1092,12 @@ class achievement_nerf_gravity_bombs : public AchievementCriteriaScript
             return !(target->GetAI()->GetData(DATA_GRAVITY_BOMB_CASUALTY));
         }
 };
+}
 
 void AddSC_boss_xt002()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::XT002;
     new npc_xt002_heart();
     new npc_scrapbot();
     new npc_pummeller();

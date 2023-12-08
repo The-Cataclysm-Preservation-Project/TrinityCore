@@ -27,6 +27,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace HallsOfLightning::Volkhan
+{
 enum Texts
 {
     // Volkhan
@@ -494,9 +496,12 @@ class achievement_shatter_resistant : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_volkhan()
 {
+    using namespace HallsOfLightning;
+    using namespace HallsOfLightning::Volkhan;
     RegisterHallsOfLightningCreatureAI(boss_volkhan);
     RegisterHallsOfLightningCreatureAI(npc_volkhan_molten_golem);
     RegisterSpellScript(spell_volkhan_temper_dummy);

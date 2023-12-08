@@ -24,6 +24,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Oculus::Varos
+{
 enum Says
 {
     SAY_AGGRO           = 0,
@@ -395,9 +397,12 @@ class spell_varos_energize_core_area_entry : public SpellScriptLoader
             return new spell_varos_energize_core_area_entrySpellScript();
         }
 };
+}
 
 void AddSC_boss_varos()
 {
+    using namespace Oculus;
+    using namespace Oculus::Varos;
     new boss_varos();
     new npc_azure_ring_captain();
     new spell_varos_centrifuge_shield();

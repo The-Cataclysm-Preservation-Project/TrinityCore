@@ -24,6 +24,8 @@
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 
+namespace HallsOfStone
+{
 enum Texts
 {
     SAY_KILL                            = 0,
@@ -733,9 +735,11 @@ class achievement_brann_spankin_new : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_halls_of_stone()
 {
+    using namespace HallsOfStone;
     new npc_brann_hos();
     new npc_tribuna_controller();
     new achievement_brann_spankin_new();

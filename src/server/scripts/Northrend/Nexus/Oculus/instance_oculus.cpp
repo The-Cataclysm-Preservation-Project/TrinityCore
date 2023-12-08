@@ -27,6 +27,8 @@
 #include "TemporarySummon.h"
 #include "WorldPacket.h"
 
+namespace Oculus
+{
 DoorData const doorData[] =
 {
     { GO_DRAGON_CAGE_DOOR,  DATA_DRAKOS,    DOOR_TYPE_PASSAGE },
@@ -316,8 +318,10 @@ class instance_oculus : public InstanceMapScript
             return new instance_oculus_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_oculus()
 {
+    using namespace Oculus;
     new instance_oculus();
 }

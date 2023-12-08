@@ -27,6 +27,8 @@
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace HallsOfLightning::Ionar
+{
 enum Spells
 {
     SPELL_BALL_LIGHTNING                          = 52780,
@@ -381,9 +383,12 @@ public:
         return GetHallsOfLightningAI<npc_spark_of_ionarAI>(creature);
     }
 };
+}
 
 void AddSC_boss_ionar()
 {
+    using namespace HallsOfLightning;
+    using namespace HallsOfLightning::Ionar;
     new boss_ionar();
     new npc_spark_of_ionar();
 }

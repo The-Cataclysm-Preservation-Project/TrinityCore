@@ -20,6 +20,8 @@
 #include "SpellScript.h"
 #include "vault_of_archavon.h"
 
+namespace VaultOfArchavon::Archavon
+{
 enum Emotes
 {
     EMOTE_BERSERK           = 0,
@@ -262,9 +264,12 @@ class spell_archavon_rock_shards : public SpellScriptLoader
             return new spell_archavon_rock_shards_SpellScript();
         }
 };
+}
 
 void AddSC_boss_archavon()
 {
+    using namespace VaultOfArchavon;
+    using namespace VaultOfArchavon::Archavon;
     new boss_archavon();
     new npc_archavon_warder();
     new spell_archavon_rock_shards();

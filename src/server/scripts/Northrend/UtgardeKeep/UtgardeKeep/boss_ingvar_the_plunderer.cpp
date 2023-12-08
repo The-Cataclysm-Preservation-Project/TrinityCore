@@ -31,6 +31,8 @@ EndScriptData */
 #include "SpellScript.h"
 #include "utgarde_keep.h"
 
+namespace UtgardeKeep::IngvarThePlunderer
+{
 enum Yells
 {
     // Ingvar (Human/Undead)
@@ -479,9 +481,12 @@ class spell_ingvar_woe_strike : public SpellScriptLoader
             return new spell_ingvar_woe_strike_AuraScript();
         }
 };
+}
 
 void AddSC_boss_ingvar_the_plunderer()
 {
+    using namespace UtgardeKeep;
+    using namespace UtgardeKeep::IngvarThePlunderer;
     new boss_ingvar_the_plunderer();
     new npc_annhylde_the_caller();
     new npc_ingvar_throw_dummy();

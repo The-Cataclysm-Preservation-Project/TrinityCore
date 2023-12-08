@@ -33,6 +33,8 @@
 #include "TemporarySummon.h"
 #include "ulduar.h"
 
+namespace Ulduar::YoggSaron
+{
 enum Yells
 {
     // Sara
@@ -3080,9 +3082,12 @@ class spell_yogg_saron_hodirs_protective_gaze : public SpellScriptLoader     // 
             return new spell_yogg_saron_hodirs_protective_gaze_AuraScript();
         }
 };
+}
 
 void AddSC_boss_yogg_saron()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::YoggSaron;
     new boss_voice_of_yogg_saron();
     new boss_sara();
     new boss_yogg_saron();

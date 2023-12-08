@@ -39,6 +39,8 @@
 #include "ulduar.h"
 #include "Vehicle.h"
 
+namespace Ulduar::FlameLeviathan
+{
 enum Spells
 {
     SPELL_PURSUED                  = 62374,
@@ -1719,9 +1721,12 @@ class spell_vehicle_throw_passenger : public SpellScriptLoader
             return new spell_vehicle_throw_passenger_SpellScript();
         }
 };
+}
 
 void AddSC_boss_flame_leviathan()
 {
+    using namespace Ulduar;
+    using namespace Ulduar::FlameLeviathan;
     new boss_flame_leviathan();
     new boss_flame_leviathan_seat();
     new boss_flame_leviathan_defense_turret();

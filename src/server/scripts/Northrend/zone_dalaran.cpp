@@ -36,6 +36,8 @@ Script Data End */
  * npc_mageguard_dalaran
  *******************************************************/
 
+namespace Dalaran
+{
 enum Spells
 {
     SPELL_TRESPASSER_A                     = 54028,
@@ -238,9 +240,11 @@ class npc_minigob_manabonk : public CreatureScript
         return new npc_minigob_manabonkAI(creature);
     }
 };
+}
 
 void AddSC_dalaran()
 {
+    using namespace Dalaran;
     new npc_mageguard_dalaran();
     new npc_minigob_manabonk();
 }
