@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace TheSlavePens
+{
 uint32 const EncounterCount               = 3;
 
 #define SPScriptName "instance_the_slave_pens"
@@ -73,5 +75,5 @@ inline AI* GetSlavePensAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, SPScriptName);
 }
-
+}
 #endif // SLAVE_PENS_H

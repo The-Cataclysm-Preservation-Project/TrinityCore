@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace GruulsLair
+{
 #define GLScriptName "instance_gruuls_lair"
 #define DataHeader   "GL"
 
@@ -52,5 +54,5 @@ inline AI* GetGruulsLairAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, GLScriptName);
 }
-
+}
 #endif // GRUULS_LAIR_H_

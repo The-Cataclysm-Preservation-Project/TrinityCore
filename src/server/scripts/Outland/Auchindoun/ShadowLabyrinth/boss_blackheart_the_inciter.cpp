@@ -26,6 +26,8 @@
 #include "SpellScript.h"
 #include "shadow_labyrinth.h"
 
+namespace ShadowLabyrinth::BlackheartTheInciter
+{
 enum BlackheartTheInciter
 {
     SPELL_INCITE_CHAOS      = 33676,
@@ -220,9 +222,12 @@ class spell_blackheart_incite_chaos : public SpellScript
     }
 };
 const uint32 spell_blackheart_incite_chaos::INCITE_SPELLS[spell_blackheart_incite_chaos::NUM_INCITE_SPELLS] = { 33677,33680,33681,33682,33683 };
+}
 
 void AddSC_boss_blackheart_the_inciter()
 {
+    using namespace ShadowLabyrinth;
+    using namespace ShadowLabyrinth::BlackheartTheInciter;
     RegisterCreatureAIWithFactory(boss_blackheart_the_inciter, GetShadowLabyrinthAI);
     RegisterCreatureAIWithFactory(boss_blackheart_the_inciter_mc_dummy, GetShadowLabyrinthAI);
     RegisterSpellScript(spell_blackheart_incite_chaos);

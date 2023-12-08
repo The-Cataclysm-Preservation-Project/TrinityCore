@@ -25,6 +25,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace BlackTemple::IllidariCouncil
+{
 enum Says
 {
     SAY_COUNCIL_AGRO     = 0,
@@ -773,9 +775,12 @@ class spell_illidari_dampen_magic : public AuraScript
         OnEffectRemove.Register(&spell_illidari_dampen_magic::OnRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_illidari_council()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::IllidariCouncil;
     RegisterBlackTempleCreatureAI(boss_illidari_council);
     RegisterBlackTempleCreatureAI(boss_gathios_the_shatterer);
     RegisterBlackTempleCreatureAI(boss_lady_malande);

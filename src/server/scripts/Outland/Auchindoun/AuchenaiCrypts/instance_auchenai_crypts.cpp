@@ -19,6 +19,8 @@
 #include "auchenai_crypts.h"
 #include "InstanceScript.h"
 
+namespace AuchenaiCrypts
+{
 class instance_auchenai_crypts : public InstanceMapScript
 {
     public:
@@ -38,8 +40,10 @@ class instance_auchenai_crypts : public InstanceMapScript
             return new instance_auchenai_crypts_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_auchenai_crypts()
 {
+    using namespace AuchenaiCrypts;
     new instance_auchenai_crypts();
 }

@@ -23,6 +23,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace BlackTemple::GurtoggBloodboil
+{
 enum Says
 {
     SAY_AGGRO     = 0,
@@ -353,9 +355,12 @@ class spell_gurtogg_bloodboil_insignificance : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_gurtogg_bloodboil_insignificance::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
+}
 
 void AddSC_boss_gurtogg_bloodboil()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::GurtoggBloodboil;
     RegisterBlackTempleCreatureAI(boss_gurtogg_bloodboil);
     RegisterBlackTempleCreatureAI(npc_fel_geyser);
     RegisterSpellScript(spell_gurtogg_bloodboil_bloodboil);

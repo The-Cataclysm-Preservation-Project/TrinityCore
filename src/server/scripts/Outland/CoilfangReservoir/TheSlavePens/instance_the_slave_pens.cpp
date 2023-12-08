@@ -27,6 +27,8 @@ gets instead the deserter debuff.
 #include "InstanceScript.h"
 #include "the_slave_pens.h"
 
+namespace TheSlavePens
+{
 class instance_the_slave_pens : public InstanceMapScript
 {
 public:
@@ -152,8 +154,9 @@ public:
         return new instance_the_slave_pens_InstanceMapScript(map);
     }
 };
-
+}
 void AddSC_instance_the_slave_pens()
 {
+    using namespace TheSlavePens;
     new instance_the_slave_pens();
 }

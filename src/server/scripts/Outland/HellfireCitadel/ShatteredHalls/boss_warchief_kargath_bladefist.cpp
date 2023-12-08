@@ -33,6 +33,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "shattered_halls.h"
 
+namespace ShatteredHalls::WarchiefKargathBladefist
+{
 enum Says
 {
     SAY_AGGRO                      = 0,
@@ -336,8 +338,11 @@ class boss_warchief_kargath_bladefist : public CreatureScript
             return GetShatteredHallsAI<boss_warchief_kargath_bladefistAI>(creature);
         }
 };
+}
 
 void AddSC_boss_warchief_kargath_bladefist()
 {
+    using namespace ShatteredHalls;
+    using namespace ShatteredHalls::WarchiefKargathBladefist;
     new boss_warchief_kargath_bladefist();
 }

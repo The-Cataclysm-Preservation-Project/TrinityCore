@@ -21,6 +21,8 @@
 #include "InstanceScript.h"
 #include "sethekk_halls.h"
 
+namespace SethekkHalls
+{
 DoorData const doorData[] =
 {
     { GO_IKISS_DOOR, DATA_TALON_KING_IKISS, DOOR_TYPE_PASSAGE },
@@ -88,8 +90,10 @@ class instance_sethekk_halls : public InstanceMapScript
             return new instance_sethekk_halls_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_sethekk_halls()
 {
+    using namespace SethekkHalls;
     new instance_sethekk_halls();
 }

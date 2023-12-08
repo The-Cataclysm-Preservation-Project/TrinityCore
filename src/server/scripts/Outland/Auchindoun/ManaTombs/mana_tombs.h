@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace ManaTombs
+{
 #define MTScriptName "instance_mana_tombs"
 #define DataHeader "MT"
 
@@ -38,6 +40,7 @@ template <class AI, class T>
 inline AI* GetManaTombsAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, MTScriptName);
+}
 }
 
 #endif // MANA_TOMBS_H_

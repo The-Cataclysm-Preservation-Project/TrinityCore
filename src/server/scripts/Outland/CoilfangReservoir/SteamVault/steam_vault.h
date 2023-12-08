@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace SteamVault
+{
 #define SteamVaultScriptName "instance_steam_vault"
 #define DataHeader "SV"
 
@@ -56,5 +58,5 @@ inline AI* GetSteamVaultAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, SteamVaultScriptName);
 }
-
+}
 #endif

@@ -28,6 +28,8 @@ EndScriptData */
 #include "SpellInfo.h"
 #include "steam_vault.h"
 
+namespace SteamVault::WarlordKalithresh
+{ 
 enum NagaDistiller
 {
     SAY_INTRO                   = 0,
@@ -200,9 +202,12 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_warlord_kalithresh()
 {
+    using namespace SteamVault;
+    using namespace SteamVault::WarlordKalithresh;
     new npc_naga_distiller();
     new boss_warlord_kalithresh();
 }

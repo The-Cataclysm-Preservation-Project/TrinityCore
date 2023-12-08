@@ -24,6 +24,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace BlackTemple
+{
 DoorData const doorData[] =
 {
     { GO_NAJENTUS_GATE,         DATA_HIGH_WARLORD_NAJENTUS, DOOR_TYPE_PASSAGE },
@@ -237,8 +239,10 @@ class instance_black_temple : public InstanceMapScript
             return new instance_black_temple_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_black_temple()
 {
+    using namespace BlackTemple;
     new instance_black_temple();
 }

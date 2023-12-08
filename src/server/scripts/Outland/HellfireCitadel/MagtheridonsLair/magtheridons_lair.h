@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace MagtheridonsLair
+{
 #define MLScriptName "instance_magtheridons_lair"
 #define DataHeader "ML"
 
@@ -78,6 +80,7 @@ template <class AI, class T>
 inline AI* GetMagtheridonsLairAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, MLScriptName);
+}
 }
 
 #endif

@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "sethekk_halls.h"
 
+namespace SethekkHalls::DearkweaverSyth
+{
 enum Says
 {
     SAY_SUMMON                  = 0,
@@ -436,9 +438,12 @@ public:
         return GetSethekkHallsAI<npc_syth_shadowAI>(creature);
     }
 };
+}
 
 void AddSC_boss_darkweaver_syth()
 {
+    using namespace SethekkHalls;
+    using namespace SethekkHalls::DearkweaverSyth;
     new boss_darkweaver_syth();
     new npc_syth_fire();
     new npc_syth_arcane();

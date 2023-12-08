@@ -22,6 +22,8 @@
 #include "PassiveAI.h"
 #include "ScriptedCreature.h"
 
+namespace BlackTemple::Supremus
+{
 enum Texts
 {
     EMOTE_NEW_TARGET          = 0,
@@ -218,9 +220,12 @@ struct npc_volcano : public NullCreatureAI
 private:
     TaskScheduler _scheduler;
 };
+}
 
 void AddSC_boss_supremus()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::Supremus;
     RegisterBlackTempleCreatureAI(boss_supremus);
     RegisterBlackTempleCreatureAI(npc_molten_flame);
     RegisterBlackTempleCreatureAI(npc_volcano);

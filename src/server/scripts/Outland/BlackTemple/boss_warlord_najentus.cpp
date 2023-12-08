@@ -26,6 +26,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace BlackTemple::WarlordNajentus
+{
 enum Texts
 {
     SAY_AGGRO   = 0,
@@ -223,9 +225,12 @@ class spell_najentus_needle_spine : public SpellScript
         OnEffectHitTarget.Register(&spell_najentus_needle_spine::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_boss_najentus()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::WarlordNajentus;
     RegisterBlackTempleCreatureAI(boss_najentus);
     RegisterGameObjectAI(go_najentus_spine);
     RegisterSpellScript(spell_najentus_needle_spine);

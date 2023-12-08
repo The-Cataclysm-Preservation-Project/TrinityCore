@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "the_slave_pens.h"
 
+namespace TheSlavePens::RokmarTheCrackler
+{
 enum Spells
 {
     SPELL_GRIEVOUS_WOUND            = 31956,
@@ -131,8 +133,11 @@ class boss_rokmar_the_crackler : public CreatureScript
             return GetSlavePensAI<boss_rokmar_the_cracklerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_rokmar_the_crackler()
 {
+    using namespace TheSlavePens;
+    using namespace TheSlavePens::RokmarTheCrackler;
     new boss_rokmar_the_crackler();
 }

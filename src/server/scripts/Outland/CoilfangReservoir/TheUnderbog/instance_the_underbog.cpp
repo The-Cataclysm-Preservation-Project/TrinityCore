@@ -26,6 +26,8 @@ gets instead the deserter debuff.
 #include "InstanceScript.h"
 #include "the_underbog.h"
 
+namespace TheUnderbog
+{
 class instance_the_underbog : public InstanceMapScript
 {
 public:
@@ -41,8 +43,10 @@ public:
         instance_the_underbog_InstanceMapScript(InstanceMap* map) : InstanceScript(map) { }
     };
 };
+}
 
 void AddSC_instance_the_underbog()
 {
+    using namespace TheUnderbog;
     new instance_the_underbog();
 }

@@ -29,6 +29,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace BlackTemple::ShadeOfAkama
+{
 enum Says
 {
     // Akama
@@ -1116,9 +1118,12 @@ class spell_shade_soul_channel : public AuraScript
         AfterEffectApply.Register(&spell_shade_soul_channel::OnApply, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
+}
 
 void AddSC_boss_shade_of_akama()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::ShadeOfAkama;
     RegisterBlackTempleCreatureAI(boss_shade_of_akama);
     RegisterBlackTempleCreatureAI(npc_akama_shade);
     RegisterBlackTempleCreatureAI(npc_ashtongue_channeler);

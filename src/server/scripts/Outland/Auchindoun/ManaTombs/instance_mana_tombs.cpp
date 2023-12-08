@@ -19,6 +19,8 @@
 #include "InstanceScript.h"
 #include "mana_tombs.h"
 
+namespace ManaTombs
+{
 class instance_mana_tombs : public InstanceMapScript
 {
     public:
@@ -38,8 +40,10 @@ class instance_mana_tombs : public InstanceMapScript
             return new instance_mana_tombs_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_mana_tombs()
 {
+    using namespace ManaTombs;
     new instance_mana_tombs();
 }

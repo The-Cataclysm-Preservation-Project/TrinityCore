@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blood_furnace.h"
 
+namespace BloodFurnace::TheMaker
+{
 enum Yells
 {
     SAY_AGGRO                   = 0,
@@ -107,8 +109,11 @@ class boss_the_maker : public CreatureScript
             return GetBloodFurnaceAI<boss_the_makerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_the_maker()
 {
+    using namespace BloodFurnace;
+    using namespace BloodFurnace::TheMaker;
     new boss_the_maker();
 }

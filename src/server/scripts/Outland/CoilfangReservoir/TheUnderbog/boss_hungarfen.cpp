@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "the_underbog.h"
 
+namespace TheUnderbog::Hungarfen
+{
 enum Spells
 {
     SPELL_FOUL_SPORES           = 31673,
@@ -173,9 +175,12 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_hungarfen()
 {
+    using namespace TheUnderbog;
+    using namespace TheUnderbog::Hungarfen;
     new boss_hungarfen();
     new npc_underbog_mushroom();
 }

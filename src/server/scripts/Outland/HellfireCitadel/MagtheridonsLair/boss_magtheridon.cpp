@@ -26,6 +26,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace MagtheridonsLair::Magtheridon
+{
 enum Yells
 {
     SAY_TAUNT           = 0,
@@ -594,9 +596,12 @@ class spell_magtheridon_shadow_grasp_visual : public SpellScriptLoader
             return new spell_magtheridon_shadow_grasp_visual_AuraScript();
         }
 };
+}
 
 void AddSC_boss_magtheridon()
 {
+    using namespace MagtheridonsLair;
+    using namespace MagtheridonsLair::Magtheridon;
     new boss_magtheridon();
     new npc_hellfire_channeler();
     new npc_magtheridon_room();

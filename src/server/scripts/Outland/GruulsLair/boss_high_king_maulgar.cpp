@@ -29,6 +29,8 @@ EndScriptData */
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace GruulsLair::HighKingMaulgar
+{
 enum HighKingMaulgar
 {
     SAY_AGGRO                   = 0,
@@ -577,9 +579,12 @@ public:
         return GetGruulsLairAI<boss_krosh_firehandAI>(creature);
     }
 };
+}
 
 void AddSC_boss_high_king_maulgar()
 {
+    using namespace GruulsLair;
+    using namespace GruulsLair::HighKingMaulgar;
     new boss_high_king_maulgar();
     new boss_kiggler_the_crazed();
     new boss_blindeye_the_seer();

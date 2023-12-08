@@ -30,6 +30,8 @@ EndScriptData */
 #include "serpent_shrine.h"
 #include "TemporarySummon.h"
 
+namespace SerpentShrine::FathomlordKarathress
+{
 enum FathomlordKarathress
 {
     SAY_AGGRO                       = 0,
@@ -713,9 +715,12 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_fathomlord_karathress()
 {
+    using namespace SerpentShrine;
+    using namespace SerpentShrine::FathomlordKarathress;
     new boss_fathomlord_karathress();
     new boss_fathomguard_sharkkis();
     new boss_fathomguard_tidalvess();

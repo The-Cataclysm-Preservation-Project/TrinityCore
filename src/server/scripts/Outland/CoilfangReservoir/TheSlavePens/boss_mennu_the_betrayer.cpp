@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "the_slave_pens.h"
 
+namespace TheSlavePens::MennuTheBetrayer
+{
 enum Say
 {
     SAY_AGGRO                       = 0,
@@ -137,8 +139,11 @@ class boss_mennu_the_betrayer : public CreatureScript
             return GetSlavePensAI<boss_mennu_the_betrayerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_mennu_the_betrayer()
 {
+    using namespace TheSlavePens;
+    using namespace TheSlavePens::MennuTheBetrayer;
     new boss_mennu_the_betrayer();
 }

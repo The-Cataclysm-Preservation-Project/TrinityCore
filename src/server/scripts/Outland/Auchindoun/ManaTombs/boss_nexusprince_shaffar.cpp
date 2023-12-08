@@ -27,6 +27,8 @@ EndScriptData */
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
+namespace ManaTombs::NexusPrinceShaffar
+{
 enum Yells
 {
     SAY_INTRO                       = 0,
@@ -384,9 +386,12 @@ public:
         return GetManaTombsAI<npc_yorAI>(creature);
     }
 };
+}
 
 void AddSC_boss_nexusprince_shaffar()
 {
+    using namespace ManaTombs;
+    using namespace ManaTombs::NexusPrinceShaffar;
     new boss_nexusprince_shaffar();
     new npc_ethereal_beacon();
     new npc_ethereal_apprentice();

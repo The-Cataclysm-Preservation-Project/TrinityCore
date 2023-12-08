@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "the_underbog.h"
 
+namespace TheUnderbog::TheBlackStalker
+{
 enum Spells
 {
     SPELL_LEVITATE              = 31704,
@@ -194,8 +196,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_the_black_stalker()
 {
+    using namespace TheUnderbog;
+    using namespace TheUnderbog::TheBlackStalker;
     new boss_the_black_stalker();
 }

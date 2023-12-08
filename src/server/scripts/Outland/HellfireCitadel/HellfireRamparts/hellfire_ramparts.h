@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace HellfireRamparts
+{
 #define HRScriptName "instance_ramparts"
 #define DataHeader "HR"
 
@@ -52,6 +54,7 @@ template <class AI, class T>
 inline AI* GetHellfireRampartsAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, HRScriptName);
+}
 }
 
 #endif

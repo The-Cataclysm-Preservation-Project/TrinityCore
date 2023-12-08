@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace BloodFurnace
+{
 #define BFScriptName "instance_blood_furnace"
 #define DataHeader   "BF"
 
@@ -86,6 +88,7 @@ template <class AI, class T>
 inline AI* GetBloodFurnaceAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, BFScriptName);
+}
 }
 
 #endif // BLOOD_FURNACE_H_

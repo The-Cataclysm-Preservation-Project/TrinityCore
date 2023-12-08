@@ -26,6 +26,8 @@ EndScriptData */
 #include "hellfire_ramparts.h"
 #include "ScriptedCreature.h"
 
+namespace HellfireRamparts::WatchkeeperGargolmar
+{
 enum Says
 {
     SAY_TAUNT              = 0,
@@ -177,8 +179,11 @@ class boss_watchkeeper_gargolmar : public CreatureScript
             return GetHellfireRampartsAI<boss_watchkeeper_gargolmarAI>(creature);
         }
 };
+}
 
 void AddSC_boss_watchkeeper_gargolmar()
 {
+    using namespace HellfireRamparts;
+    using namespace HellfireRamparts::WatchkeeperGargolmar;
     new boss_watchkeeper_gargolmar();
 }

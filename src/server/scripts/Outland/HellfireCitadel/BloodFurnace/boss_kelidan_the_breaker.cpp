@@ -22,6 +22,8 @@
 #include "SpellAuras.h"
 #include "TemporarySummon.h"
 
+namespace BloodFurnace::KelidanTheBreaker
+{
 enum Kelidan
 {
     SAY_WAKE                    = 0,
@@ -367,9 +369,12 @@ class npc_shadowmoon_channeler : public CreatureScript
             return GetBloodFurnaceAI<npc_shadowmoon_channelerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_kelidan_the_breaker()
 {
+    using namespace BloodFurnace;
+    using namespace BloodFurnace::KelidanTheBreaker;
     new boss_kelidan_the_breaker();
     new npc_shadowmoon_channeler();
 }

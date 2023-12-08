@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace ShatteredHalls
+{
 #define SHScriptName "instance_shattered_halls"
 #define DataHeader "SH"
 
@@ -116,6 +118,7 @@ template <class AI, class T>
 inline AI* GetShatteredHallsAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, SHScriptName);
+}
 }
 
 #endif

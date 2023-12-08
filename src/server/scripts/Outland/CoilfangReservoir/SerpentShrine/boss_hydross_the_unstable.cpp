@@ -29,6 +29,8 @@ EndScriptData */
 #include "serpent_shrine.h"
 #include "TemporarySummon.h"
 
+namespace SerpentShrine::HydrossTheUnstable
+{
 enum HydrossTheUnstable
 {
     SAY_AGGRO                   = 0,
@@ -404,8 +406,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_hydross_the_unstable()
 {
+    using namespace SerpentShrine;
+    using namespace SerpentShrine::HydrossTheUnstable;
     new boss_hydross_the_unstable();
 }

@@ -25,6 +25,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace BlackTemple::ReliquaryOfSouls
+{
 enum Says
 {
     // Essence of Suffering
@@ -798,9 +800,12 @@ class spell_reliquary_of_souls_frenzy : public SpellScript
         AfterCast.Register(&spell_reliquary_of_souls_frenzy::HandleAfterCast);
     }
 };
+}
 
 void AddSC_boss_reliquary_of_souls()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::ReliquaryOfSouls;
     RegisterBlackTempleCreatureAI(boss_reliquary_of_souls);
     RegisterBlackTempleCreatureAI(boss_essence_of_suffering);
     RegisterBlackTempleCreatureAI(boss_essence_of_desire);

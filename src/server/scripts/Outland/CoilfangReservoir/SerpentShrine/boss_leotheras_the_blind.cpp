@@ -32,6 +32,8 @@ EndScriptData */
 #include "serpent_shrine.h"
 #include "TemporarySummon.h"
 
+namespace SerpentShrine::LeotherasTheBlind
+{
 enum LeotherasTheBlind
 {
     // Spells used by Leotheras The Blind
@@ -810,9 +812,12 @@ public:
         void JustDied(Unit* /*killer*/) override { }
     };
 };
+}
 
 void AddSC_boss_leotheras_the_blind()
 {
+    using namespace SerpentShrine;
+    using namespace SerpentShrine::LeotherasTheBlind;
     new boss_leotheras_the_blind();
     new boss_leotheras_the_blind_demonform();
     new npc_greyheart_spellbinder();

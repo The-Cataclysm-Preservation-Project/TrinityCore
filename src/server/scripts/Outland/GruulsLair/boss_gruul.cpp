@@ -29,6 +29,8 @@ EndScriptData */
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace GruulsLair::Gruul
+{
 enum Yells
 {
     SAY_AGGRO                   = 0,
@@ -330,9 +332,12 @@ class spell_gruul_shatter_effect : public SpellScriptLoader
             return new spell_gruul_shatter_effect_SpellScript();
         }
 };
+}
 
 void AddSC_boss_gruul()
 {
+    using namespace GruulsLair;
+    using namespace GruulsLair::Gruul;
     new boss_gruul();
     new spell_gruul_shatter();
     new spell_gruul_shatter_effect();

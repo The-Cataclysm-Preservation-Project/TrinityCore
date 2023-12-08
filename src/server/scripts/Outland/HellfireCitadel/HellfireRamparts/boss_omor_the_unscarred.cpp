@@ -28,6 +28,8 @@ EndScriptData */
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace HellfireRamparts::OmorTheUnscarred
+{
 enum Says
 {
     SAY_AGGRO                    = 0,
@@ -233,8 +235,11 @@ class boss_omor_the_unscarred : public CreatureScript
             return GetHellfireRampartsAI<boss_omor_the_unscarredAI>(creature);
         }
 };
+}
 
 void AddSC_boss_omor_the_unscarred()
 {
+    using namespace HellfireRamparts;
+    using namespace HellfireRamparts::OmorTheUnscarred;
     new boss_omor_the_unscarred();
 }

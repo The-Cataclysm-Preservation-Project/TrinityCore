@@ -20,6 +20,8 @@
 #include "gruuls_lair.h"
 #include "InstanceScript.h"
 
+namespace GruulsLair
+{
 DoorData const doorData[] =
 {
     { GO_MAULGAR_DOOR,  DATA_MAULGAR,   DOOR_TYPE_PASSAGE },
@@ -86,8 +88,10 @@ class instance_gruuls_lair : public InstanceMapScript
             return new instance_gruuls_lair_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_gruuls_lair()
 {
+    using namespace GruulsLair;
     new instance_gruuls_lair();
 }

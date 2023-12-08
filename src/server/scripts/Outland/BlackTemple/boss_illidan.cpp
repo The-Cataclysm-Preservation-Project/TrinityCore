@@ -31,6 +31,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace BlackTemple::Illidan
+{
 enum IllidanSay
 {
     // Illidan
@@ -2313,9 +2315,12 @@ class spell_illidan_despawn_akama : public SpellScript
         OnEffectHitTarget.Register(&spell_illidan_despawn_akama::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_boss_illidan()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::Illidan;
     RegisterBlackTempleCreatureAI(boss_illidan_stormrage);
     RegisterBlackTempleCreatureAI(npc_akama_illidan);
     RegisterBlackTempleCreatureAI(npc_parasitic_shadowfiend);

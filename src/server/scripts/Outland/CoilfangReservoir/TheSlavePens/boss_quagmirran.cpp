@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "the_slave_pens.h"
 
+namespace TheSlavePens::Quagmirran
+{
 enum Spells
 {
     SPELL_ACID_SPRAY                = 38153,
@@ -120,8 +122,11 @@ class boss_quagmirran : public CreatureScript
             return GetSlavePensAI<boss_quagmirranAI>(creature);
         }
 };
+}
 
 void AddSC_boss_quagmirran()
 {
+    using namespace TheSlavePens;
+    using namespace TheSlavePens::Quagmirran;
     new boss_quagmirran();
 }

@@ -35,6 +35,8 @@ EndScriptData */
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
+namespace SerpentShrine::LadyVashj
+{
 enum LadyVashj
 {
     SAY_INTRO                   = 0,
@@ -955,9 +957,12 @@ public:
     }
 
 };
+}
 
 void AddSC_boss_lady_vashj()
 {
+    using namespace SerpentShrine;
+    using namespace SerpentShrine::LadyVashj;
     new boss_lady_vashj();
     new npc_enchanted_elemental();
     new npc_tainted_elemental();

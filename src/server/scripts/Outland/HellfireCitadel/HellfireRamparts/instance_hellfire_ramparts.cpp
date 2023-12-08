@@ -28,6 +28,8 @@ EndScriptData */
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace HellfireRamparts
+{
 class instance_ramparts : public InstanceMapScript
 {
     public:
@@ -80,8 +82,10 @@ class instance_ramparts : public InstanceMapScript
             return new instance_ramparts_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_ramparts()
 {
+    using namespace HellfireRamparts;
     new instance_ramparts;
 }

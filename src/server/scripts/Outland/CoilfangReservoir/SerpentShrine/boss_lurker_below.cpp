@@ -34,6 +34,8 @@ EndScriptData */
 #include "Spell.h"
 #include "TemporarySummon.h"
 
+namespace SerpentShrine::LurkerBelow
+{
 enum Spells
 {
     SPELL_SPOUT             = 37433,
@@ -481,9 +483,12 @@ class go_strange_pool : public GameObjectScript
             return GetSerpentshrineCavernAI<go_strange_poolAI>(go);
         }
 };
+}
 
 void AddSC_boss_the_lurker_below()
 {
+    using namespace SerpentShrine;
+    using namespace SerpentShrine::LurkerBelow;
     new boss_the_lurker_below();
     new npc_coilfang_ambusher();
     new go_strange_pool();

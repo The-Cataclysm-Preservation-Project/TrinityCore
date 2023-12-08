@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "mana_tombs.h"
 
+namespace ManaTombs::Pandemonius
+{
 enum Texts
 {
     SAY_AGGRO                       = 0,
@@ -118,8 +120,11 @@ public:
         return GetManaTombsAI<boss_pandemoniusAI>(creature);
     }
 };
+}
 
 void AddSC_boss_pandemonius()
 {
+    using namespace ManaTombs;
+    using namespace ManaTombs::Pandemonius;
     new boss_pandemonius();
 }

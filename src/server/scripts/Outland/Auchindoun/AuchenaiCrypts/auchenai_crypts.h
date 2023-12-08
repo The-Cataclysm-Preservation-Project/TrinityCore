@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace AuchenaiCrypts
+{
 #define ACScriptName "instance_auchenai_crypts"
 #define DataHeader   "AC"
 
@@ -36,6 +38,7 @@ template <class AI, class T>
 inline AI* GetAuchenaiCryptsAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, ACScriptName);
+}
 }
 
 #endif // AUCHENAI_CRYPTS_H_

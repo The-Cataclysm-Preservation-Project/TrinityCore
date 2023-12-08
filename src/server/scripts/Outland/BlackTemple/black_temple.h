@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace BlackTemple
+{
 #define BTScriptName "instance_black_temple"
 #define DataHeader   "BT"
 
@@ -148,5 +150,6 @@ inline AI* GetBlackTempleAI(T* obj)
 }
 
 #define RegisterBlackTempleCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetBlackTempleAI)
+}
 
 #endif // BLACK_TEMPLE_H_

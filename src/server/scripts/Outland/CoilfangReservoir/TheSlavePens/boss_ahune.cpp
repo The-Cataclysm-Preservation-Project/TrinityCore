@@ -33,6 +33,8 @@
 #include "TemporarySummon.h"
 #include "the_slave_pens.h"
 
+namespace TheSlavePens::Ahune
+{
 enum Spells
 {
     // Ahune
@@ -1012,9 +1014,12 @@ public:
         return new spell_ice_bombardment_dest_picker_SpellScript();
     }
 };
+}
 
 void AddSC_boss_ahune()
 {
+    using namespace TheSlavePens;
+    using namespace TheSlavePens::Ahune;
     new boss_ahune();
     new npc_frozen_core();
     new npc_earthen_ring_flamecaller();

@@ -20,6 +20,8 @@
 #include "SpellScript.h"
 #include "sethekk_halls.h"
 
+namespace SethekkHalls::TalonKingIkiss
+{
 enum Says
 {
     SAY_INTRO                   = 0,
@@ -202,9 +204,12 @@ class spell_talon_king_ikiss_blink : public SpellScriptLoader
             return new spell_talon_king_ikiss_blink_SpellScript();
         }
 };
+}
 
 void AddSC_boss_talon_king_ikiss()
 {
+    using namespace SethekkHalls;
+    using namespace SethekkHalls::TalonKingIkiss;
     new boss_talon_king_ikiss();
     new spell_talon_king_ikiss_blink();
 }

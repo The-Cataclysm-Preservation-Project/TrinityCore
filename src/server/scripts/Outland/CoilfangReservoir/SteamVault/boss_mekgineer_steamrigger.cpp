@@ -28,6 +28,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "steam_vault.h"
 
+namespace SteamVault::MekgineerSteamrigger
+{
 enum Yells
 {
     SAY_MECHANICS               = 0,
@@ -271,9 +273,12 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_mekgineer_steamrigger()
 {
+    using namespace SteamVault;
+    using namespace SteamVault::MekgineerSteamrigger;
     new boss_mekgineer_steamrigger();
     new npc_steamrigger_mechanic();
 }

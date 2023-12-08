@@ -30,6 +30,8 @@ EndScriptData */
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 
+namespace HellfireRamparts::VazrudenTheHerald
+{
 enum Says
 {
     SAY_INTRO                     = 0,
@@ -519,8 +521,12 @@ class npc_hellfire_sentry : public CreatureScript
             return GetHellfireRampartsAI<npc_hellfire_sentryAI>(creature);
         }
 };
+}
+
 void AddSC_boss_vazruden_the_herald()
 {
+    using namespace HellfireRamparts;
+    using namespace HellfireRamparts::VazrudenTheHerald;
     new boss_vazruden_the_herald();
     new boss_vazruden();
     new boss_nazan();

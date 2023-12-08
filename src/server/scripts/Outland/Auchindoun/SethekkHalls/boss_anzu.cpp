@@ -26,6 +26,8 @@ Category: Auchindoun, Sethekk Halls
 #include "ScriptedCreature.h"
 #include "sethekk_halls.h"
 
+namespace SethekkHalls::Anzu
+{
 enum Says
 {
     SAY_SUMMON_BROOD            = 0,
@@ -170,8 +172,11 @@ class boss_anzu : public CreatureScript
             return GetSethekkHallsAI<boss_anzuAI>(creature);
         }
 };
+}
 
 void AddSC_boss_anzu()
 {
+    using namespace SethekkHalls;
+    using namespace SethekkHalls::Anzu;
     new boss_anzu();
 }

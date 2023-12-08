@@ -25,6 +25,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace ShatteredHalls
+{
 class at_nethekurse_exit : public AreaTriggerScript
 {
     public:
@@ -245,9 +247,11 @@ class spell_remove_kargath_executioner : public SpellScriptLoader
             return new spell_remove_kargath_executioner_SpellScript();
         }
 };
+}
 
 void AddSC_shattered_halls()
 {
+    using namespace ShatteredHalls;
     new at_nethekurse_exit();
     new boss_shattered_executioner();
     new spell_kargath_executioner();

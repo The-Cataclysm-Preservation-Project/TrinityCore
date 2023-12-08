@@ -23,6 +23,8 @@
 #include "Log.h"
 #include "steam_vault.h"
 
+namespace SteamVault
+{
 class go_main_chambers_access_panel : public GameObjectScript
 {
     public:
@@ -190,9 +192,11 @@ class instance_steam_vault : public InstanceMapScript
             return new instance_steam_vault_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_steam_vault()
 {
+    using namespace SteamVault;
     new go_main_chambers_access_panel();
     new instance_steam_vault();
 }

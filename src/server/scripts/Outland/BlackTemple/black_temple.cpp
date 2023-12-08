@@ -22,6 +22,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace BlackTemple
+{
 enum Spells
 {
     // Wrathbone Flayer
@@ -268,9 +270,11 @@ class spell_illidari_nightlord_shadow_inferno : public AuraScript
         OnEffectPeriodic.Register(&spell_illidari_nightlord_shadow_inferno::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
+}
 
 void AddSC_black_temple()
 {
+    using namespace BlackTemple;
     RegisterBlackTempleCreatureAI(npc_wrathbone_flayer);
     RegisterBlackTempleCreatureAI(npc_angered_soul_fragment);
     RegisterSpellScript(spell_soul_fragment_anger);

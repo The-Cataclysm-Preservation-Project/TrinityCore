@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "steam_vault.h"
 
+namespace SteamVault::HydromancerThespia
+{
 enum Yells
 {
     SAY_SUMMON                  = 0,
@@ -178,9 +180,12 @@ class npc_coilfang_waterelemental : public CreatureScript
             return GetSteamVaultAI<npc_coilfang_waterelementalAI>(creature);
         }
 };
+}
 
 void AddSC_boss_hydromancer_thespia()
 {
+    using namespace SteamVault;
+    using namespace SteamVault::HydromancerThespia;
     new boss_hydromancer_thespia();
     new npc_coilfang_waterelemental();
 }

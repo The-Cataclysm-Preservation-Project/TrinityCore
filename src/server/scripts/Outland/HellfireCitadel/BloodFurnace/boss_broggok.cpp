@@ -25,6 +25,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace BloodFurnace::Broggok
+{
 enum Yells
 {
     SAY_AGGRO                   = 0
@@ -194,9 +196,12 @@ class spell_broggok_poison_cloud : public SpellScriptLoader
             return new spell_broggok_poison_cloud_AuraScript();
         }
 };
+}
 
 void AddSC_boss_broggok()
 {
+    using namespace BloodFurnace;
+    using namespace BloodFurnace::Broggok;
     new boss_broggok();
     new go_broggok_lever();
     new spell_broggok_poison_cloud();

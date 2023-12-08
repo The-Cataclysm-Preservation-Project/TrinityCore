@@ -26,6 +26,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace BlackTemple::TeronGorefiend
+{
 enum Says
 {
     SAY_INTRO      = 0,
@@ -434,9 +436,12 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_boss_teron_gorefiend()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::TeronGorefiend;
     RegisterBlackTempleCreatureAI(boss_teron_gorefiend);
     RegisterBlackTempleCreatureAI(npc_doom_blossom);
     RegisterBlackTempleCreatureAI(npc_shadowy_construct);

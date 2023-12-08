@@ -29,6 +29,8 @@ EndScriptData */
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace AuchenaiCrypts::ShirrakTheDeadWatcher
+{
 enum Spells
 {
     SPELL_INHIBITMAGIC          = 32264,
@@ -223,9 +225,12 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_shirrak_the_dead_watcher()
 {
+    using namespace AuchenaiCrypts;
+    using namespace AuchenaiCrypts::ShirrakTheDeadWatcher;
     new boss_shirrak_the_dead_watcher();
     new npc_focus_fire();
 }

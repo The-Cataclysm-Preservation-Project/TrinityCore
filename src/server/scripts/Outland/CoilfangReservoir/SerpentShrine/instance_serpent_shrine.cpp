@@ -32,6 +32,8 @@ EndScriptData */
 #include "serpent_shrine.h"
 #include "TemporarySummon.h"
 
+namespace SerpentShrine
+{
 #define MAX_ENCOUNTER 6
 
 enum Misc
@@ -445,9 +447,11 @@ class instance_serpent_shrine : public InstanceMapScript
             return new instance_serpentshrine_cavern_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_serpentshrine_cavern()
 {
+    using namespace SerpentShrine;
     new instance_serpent_shrine();
     new go_bridge_console();
 }

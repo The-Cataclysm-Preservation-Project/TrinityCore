@@ -22,6 +22,8 @@
 #include "Map.h"
 #include "ScriptedCreature.h"
 
+namespace BloodFurnace
+{
 DoorData const doorData[] =
 {
     { GO_PRISON_DOOR_01, DATA_KELIDAN_THE_BREAKER, DOOR_TYPE_PASSAGE },
@@ -317,8 +319,10 @@ class instance_blood_furnace : public InstanceMapScript
             return new instance_blood_furnace_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_blood_furnace()
 {
+    using namespace BloodFurnace;
     new instance_blood_furnace();
 }

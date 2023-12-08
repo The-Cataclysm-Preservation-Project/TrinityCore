@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedEscortAI.h"
 #include "shadow_labyrinth.h"
 
+namespace ShadowLabyrinth::AmbassadorHellmaw
+{
 enum Yells
 {
     SAY_INTRO       = 0,
@@ -185,8 +187,11 @@ class boss_ambassador_hellmaw : public CreatureScript
             return GetShadowLabyrinthAI<boss_ambassador_hellmawAI>(creature);
         }
 };
+}
 
 void AddSC_boss_ambassador_hellmaw()
 {
+    using namespace ShadowLabyrinth;
+    using namespace ShadowLabyrinth::AmbassadorHellmaw;
     new boss_ambassador_hellmaw();
 }

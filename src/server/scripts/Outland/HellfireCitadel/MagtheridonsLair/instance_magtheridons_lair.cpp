@@ -24,6 +24,8 @@
 #include "magtheridons_lair.h"
 #include "Map.h"
 
+namespace MagtheridonsLair
+{
 BossBoundaryData const boundaries =
 {
     { DATA_MAGTHERIDON, new CircleBoundary(Position(-18.70f, 2.24f), 52.30) }
@@ -141,8 +143,10 @@ class instance_magtheridons_lair : public InstanceMapScript
             return new instance_magtheridons_lair_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_magtheridons_lair()
 {
+    using namespace MagtheridonsLair;
     new instance_magtheridons_lair();
 }

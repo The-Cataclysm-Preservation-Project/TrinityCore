@@ -28,6 +28,8 @@ EndScriptData */
 #include "shadow_labyrinth.h"
 #include "SpellScript.h"
 
+namespace ShadowLabyrinth::Murmur
+{
 enum Murmur
 {
     // Spell
@@ -252,9 +254,12 @@ class spell_murmur_thundering_storm : public SpellScriptLoader
             return new spell_murmur_thundering_storm_SpellScript();
         }
 };
+}
 
 void AddSC_boss_murmur()
 {
+    using namespace ShadowLabyrinth;
+    using namespace ShadowLabyrinth::Murmur;
     new boss_murmur();
     new spell_murmur_sonic_boom();
     new spell_murmur_sonic_boom_effect();

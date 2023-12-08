@@ -29,6 +29,8 @@ EndScriptData */
 #include "serpent_shrine.h"
 #include "TemporarySummon.h"
 
+namespace SerpentShrine::MorogrimTidewalker
+{
 enum Yells
 {
     // Yell
@@ -364,9 +366,12 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_morogrim_tidewalker()
 {
+    using namespace SerpentShrine;
+    using namespace SerpentShrine::MorogrimTidewalker;
     new boss_morogrim_tidewalker();
     new npc_water_globule();
 }

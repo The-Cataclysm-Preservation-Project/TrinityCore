@@ -23,6 +23,8 @@
 #include "SpellAuraEffects.h"
 #include "GridNotifiers.h"
 
+namespace BlackTemple::MotherShahraz
+{
 enum Texts
 {
     SAY_TAUNT     = 0,
@@ -306,9 +308,12 @@ class spell_mother_shahraz_random_periodic : public AuraScript
         OnEffectPeriodic.Register(&spell_mother_shahraz_random_periodic::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
+}
 
 void AddSC_boss_mother_shahraz()
 {
+    using namespace BlackTemple;
+    using namespace BlackTemple::MotherShahraz;
     RegisterBlackTempleCreatureAI(boss_mother_shahraz);
     RegisterSpellScript(spell_mother_shahraz_fatal_attraction);
     RegisterSpellScript(spell_mother_shahraz_fatal_attraction_link);

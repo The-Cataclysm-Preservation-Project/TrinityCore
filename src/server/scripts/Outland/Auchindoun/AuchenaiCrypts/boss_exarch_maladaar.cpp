@@ -33,6 +33,8 @@ EndContentData */
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace AuchenaiCrypts::ExarchMaladaar
+{
 enum Spells
 {
     SPELL_MOONFIRE              = 37328,
@@ -362,9 +364,12 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_exarch_maladaar()
 {
+    using namespace AuchenaiCrypts;
+    using namespace AuchenaiCrypts::ExarchMaladaar;
     new boss_exarch_maladaar();
     new npc_avatar_of_martyred();
     new npc_stolen_soul();

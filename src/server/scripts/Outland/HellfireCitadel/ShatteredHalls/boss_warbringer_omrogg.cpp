@@ -33,6 +33,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "shattered_halls.h"
 
+namespace ShatteredHalls::WarbringerOmrogg
+{
 enum Yells
 {
     YELL_DIE_L                  = 0,
@@ -447,9 +449,12 @@ class npc_omrogg_heads : public CreatureScript
             return GetShatteredHallsAI<npc_omrogg_headsAI>(creature);
         }
 };
+}
 
 void AddSC_boss_warbringer_omrogg()
 {
+    using namespace ShatteredHalls;
+    using namespace ShatteredHalls::WarbringerOmrogg;
     new boss_warbringer_omrogg();
     new npc_omrogg_heads();
 }

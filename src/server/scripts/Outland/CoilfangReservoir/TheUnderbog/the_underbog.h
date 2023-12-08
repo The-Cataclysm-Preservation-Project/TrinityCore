@@ -20,12 +20,15 @@
 
 #include "CreatureAIImpl.h"
 
+namespace TheUnderbog
+{
 #define TheUndebogScriptName "instance_the_underbog"
 
 template <class AI, class T>
 inline AI* GetTheUnderbogAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, TheUndebogScriptName);
+}
 }
 
 #endif // the_underbog_h__

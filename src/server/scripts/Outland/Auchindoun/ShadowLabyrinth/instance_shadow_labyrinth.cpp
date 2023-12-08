@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "shadow_labyrinth.h"
 
+namespace ShadowLabyrinth
+{
 DoorData const doorData[] =
 {
     { GO_REFECTORY_DOOR,        DATA_BLACKHEART_THE_INCITER,    DOOR_TYPE_PASSAGE },
@@ -186,8 +188,10 @@ GuidUnorderedSet const* GetBlackheartDummies(InstanceScript const* s)
     return nullptr;
 
 }
+}
 
 void AddSC_instance_shadow_labyrinth()
 {
+    using namespace ShadowLabyrinth;
     new instance_shadow_labyrinth();
 }

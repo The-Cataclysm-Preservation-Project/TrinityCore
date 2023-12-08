@@ -21,6 +21,8 @@
 #include "SpellAuraEffects.h"
 #include "Unit.h"
 
+namespace ShadowLabyrinth
+{
 enum Spells
 {
     SPELL_MARK_OF_MALICE_TRIGGERED = 33494
@@ -59,8 +61,10 @@ class spell_mark_of_malice : public SpellScriptLoader
             return new spell_mark_of_malice_AuraScript();
         }
 };
+}
 
 void AddSC_shadow_labyrinth()
 {
+    using namespace ShadowLabyrinth;
     new spell_mark_of_malice();
 }

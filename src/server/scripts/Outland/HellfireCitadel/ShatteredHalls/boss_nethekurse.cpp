@@ -34,6 +34,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "shattered_halls.h"
 
+namespace ShatteredHalls::Nethekurse
+{
 enum Says
 {
     SAY_INTRO          = 0,
@@ -396,9 +398,12 @@ class npc_lesser_shadow_fissure : public CreatureScript
             return GetShatteredHallsAI<npc_lesser_shadow_fissureAI>(creature);
         }
 };
+}
 
 void AddSC_boss_grand_warlock_nethekurse()
 {
+    using namespace ShatteredHalls;
+    using namespace ShatteredHalls::Nethekurse;
     new boss_grand_warlock_nethekurse();
     new npc_fel_orc_convert();
     new npc_lesser_shadow_fissure();

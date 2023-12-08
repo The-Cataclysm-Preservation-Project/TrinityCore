@@ -31,6 +31,8 @@ Category: Auchindoun, Shadow Labyrinth
 #include "shadow_labyrinth.h"
 #include "TemporarySummon.h"
 
+namespace ShadowLabyrinth::GrandmasterVorpil
+{
 enum GrandmasterVorpil
 {
     SAY_INTRO                   = 0,
@@ -292,9 +294,12 @@ class npc_voidtraveler : public CreatureScript
             return GetShadowLabyrinthAI<npc_voidtravelerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_grandmaster_vorpil()
 {
+    using namespace ShadowLabyrinth;
+    using namespace ShadowLabyrinth::GrandmasterVorpil;
     new boss_grandmaster_vorpil();
     new npc_voidtraveler();
 }
