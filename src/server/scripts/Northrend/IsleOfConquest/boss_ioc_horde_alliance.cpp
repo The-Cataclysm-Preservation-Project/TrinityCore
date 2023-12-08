@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "BattlegroundIC.h"
 
+namespace IsleOfConquest
+{
 enum BossSpells
 {
     SPELL_BRUTAL_STRIKE       = 58460,
@@ -126,8 +128,10 @@ public:
         return new boss_ioc_horde_allianceAI(creature);
     }
 };
+}
 
 void AddSC_boss_ioc_horde_alliance()
 {
+    using namespace IsleOfConquest;
     new boss_ioc_horde_alliance();
 }

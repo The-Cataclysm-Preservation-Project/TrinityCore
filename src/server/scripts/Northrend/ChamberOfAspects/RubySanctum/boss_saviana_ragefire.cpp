@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace RubySanctum::SavianaRagefire
+{
 enum Texts
 {
     SAY_AGGRO                   = 0, // You will sssuffer for this intrusion! (17528)
@@ -284,9 +286,12 @@ class spell_saviana_conflagration_throwback : public SpellScriptLoader
             return new spell_saviana_conflagration_throwback_SpellScript();
         }
 };
+}
 
 void AddSC_boss_saviana_ragefire()
 {
+    using namespace RubySanctum;
+    using namespace RubySanctum::SavianaRagefire;
     new boss_saviana_ragefire();
     new spell_saviana_conflagration_init();
     new spell_saviana_conflagration_throwback();

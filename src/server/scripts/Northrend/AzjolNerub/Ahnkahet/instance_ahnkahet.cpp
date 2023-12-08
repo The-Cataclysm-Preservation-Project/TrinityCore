@@ -26,6 +26,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Ankahet
+{
 DoorData const doorData[] =
 {
     { GO_PRINCE_TALDARAM_GATE, DATA_PRINCE_TALDARAM, DOOR_TYPE_PASSAGE },
@@ -301,9 +303,11 @@ class spell_combined_toxins : public AuraScript
         DoCheckEffectProc.Register(&spell_combined_toxins::CheckProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_DAMAGE);
     }
 };
+}
 
 void AddSC_instance_ahnkahet()
 {
+    using namespace Ankahet;
     new instance_ahnkahet();
     RegisterSpellScript(spell_combined_toxins);
 }

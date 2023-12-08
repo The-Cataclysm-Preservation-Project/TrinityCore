@@ -27,6 +27,8 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace Ankahet::JedogaShadowseeker
+{
 enum Yells
 {
     TEXT_AGGRO          = 0,
@@ -603,9 +605,12 @@ class achievement_volunteer_work : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_jedoga_shadowseeker()
 {
+    using namespace Ankahet;
+    using namespace Ankahet::JedogaShadowseeker;
     new boss_jedoga_shadowseeker();
     new npc_jedoga_initiand();
     new npc_jedogas_aufseher_trigger();

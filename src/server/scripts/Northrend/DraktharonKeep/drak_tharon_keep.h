@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace DrakTharonKeep
+{
 #define DrakTharonKeepScriptName "instance_drak_tharon_keep"
 #define DataHeader               "DTK"
 
@@ -90,6 +92,7 @@ template <class AI, class T>
 inline AI* GetDrakTharonKeepAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, DrakTharonKeepScriptName);
+}
 }
 
 #endif // DRAK_THARON_KEEP_H_

@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Ankahet
+{
 #define AhnKahetScriptName "instance_ahnkahet"
 #define DataHeader         "AK"
 
@@ -86,6 +88,7 @@ template <class AI, class T>
 inline AI* GetAhnKahetAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, AhnKahetScriptName);
+}
 }
 
 #endif // AHNKAHET_H_

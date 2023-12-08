@@ -27,6 +27,8 @@
 #include "SpellMgr.h"
 #include "Transport.h"
 
+namespace IcecrownCitadel
+{
 static std::vector<uint32> const TeleportSpells =
 {
     LIGHT_S_HAMMER_TELEPORT,        // 0
@@ -106,9 +108,11 @@ class at_frozen_throne_teleport : public AreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_icecrown_citadel_teleport()
 {
+    using namespace IcecrownCitadel;
     new icecrown_citadel_teleport();
     new at_frozen_throne_teleport();
 }

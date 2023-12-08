@@ -24,6 +24,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace DrakTharonKeep::Novos
+{
 enum Yells
 {
     SAY_AGGRO                       = 0,
@@ -396,9 +398,12 @@ class spell_novos_summon_minions : public SpellScriptLoader
             return new spell_novos_summon_minions_SpellScript();
         }
 };
+}
 
 void AddSC_boss_novos()
 {
+    using namespace DrakTharonKeep;
+    using namespace DrakTharonKeep::Novos;
     new boss_novos();
     new npc_crystal_channel_target();
     new spell_novos_summon_minions();

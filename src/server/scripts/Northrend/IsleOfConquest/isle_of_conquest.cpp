@@ -28,6 +28,8 @@
 #include "SpellScript.h"
 #include "Vehicle.h"
 
+namespace IsleOfConquest
+{
 // TO-DO: This should be done with SmartAI, but yet it does not correctly support vehicles's AIs.
 //        Even adding ReactState Passive we still have issues using SmartAI.
 
@@ -302,9 +304,11 @@ class spell_ioc_seaforium_blast_credit : public SpellScriptLoader
             return new spell_ioc_seaforium_blast_credit_SpellScript();
         }
 };
+}
 
 void AddSC_isle_of_conquest()
 {
+    using namespace IsleOfConquest;
     new npc_four_car_garage();
     new npc_ioc_gunship_captain();
     new spell_ioc_gunship_portal();

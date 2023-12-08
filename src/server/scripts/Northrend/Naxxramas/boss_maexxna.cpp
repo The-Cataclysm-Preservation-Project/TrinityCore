@@ -25,6 +25,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::Maexxna
+{
 enum Spells
 {
     SPELL_WEB_WRAP              = 28622,
@@ -248,9 +250,12 @@ public:
         return GetNaxxramasAI<npc_webwrapAI>(creature);
     }
 };
+}
 
 void AddSC_boss_maexxna()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Maexxna;
     new boss_maexxna();
     new npc_webwrap();
 }

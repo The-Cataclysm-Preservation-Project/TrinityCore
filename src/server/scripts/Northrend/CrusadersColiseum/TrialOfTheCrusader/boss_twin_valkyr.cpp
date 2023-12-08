@@ -32,6 +32,8 @@
 #include "SpellScript.h"
 #include "trial_of_the_crusader.h"
 
+namespace TrialOfTheCrusader::TwinValkyr
+{
 enum Texts
 {
     SAY_AGGRO               = 0,
@@ -869,9 +871,12 @@ class spell_power_of_the_twins : public SpellScriptLoader
             return new spell_power_of_the_twins_AuraScript();
         }
 };
+}
 
 void AddSC_boss_twin_valkyr()
 {
+    using namespace TrialOfTheCrusader;
+    using namespace TrialOfTheCrusader::TwinValkyr;
     new boss_fjola();
     new boss_eydis();
     new npc_unleashed_light();

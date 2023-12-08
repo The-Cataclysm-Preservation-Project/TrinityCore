@@ -21,6 +21,8 @@
 #include "CreatureAIImpl.h"
 #include "EventProcessor.h"
 
+namespace PitOfSaron
+{
 #define PoSScriptName "instance_pit_of_saron"
 #define DataHeader "POS"
 
@@ -125,6 +127,7 @@ template <class AI, class T>
 inline AI* GetPitOfSaronAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, PoSScriptName);
+}
 }
 
 #endif // PIT_OF_SARON_H_

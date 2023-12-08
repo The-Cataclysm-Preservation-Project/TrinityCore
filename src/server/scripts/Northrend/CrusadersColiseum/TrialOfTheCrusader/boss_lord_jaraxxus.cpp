@@ -24,6 +24,8 @@
 #include "SpellScript.h"
 #include "trial_of_the_crusader.h"
 
+namespace TrialOfTheCrusader::LordJaraxxus
+{
 enum Yells
 {
     SAY_INTRO               = 0,
@@ -607,9 +609,12 @@ public:
         return new spell_fel_streak_visual_SpellScript();
     }
 };
+}
 
 void AddSC_boss_jaraxxus()
 {
+    using namespace TrialOfTheCrusader;
+    using namespace TrialOfTheCrusader::LordJaraxxus;
     new boss_jaraxxus();
     new npc_legion_flame();
     new npc_infernal_volcano();

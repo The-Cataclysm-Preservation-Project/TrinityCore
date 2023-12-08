@@ -25,6 +25,8 @@
 #include "naxxramas.h"
 #include "TemporarySummon.h"
 
+namespace Naxxramas
+{
 BossBoundaryData const boundaries =
 {
     /* Arachnid Quarter */
@@ -608,8 +610,10 @@ class instance_naxxramas : public InstanceMapScript
             return new instance_naxxramas_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_naxxramas()
 {
+    using namespace Naxxramas;
     new instance_naxxramas();
 }

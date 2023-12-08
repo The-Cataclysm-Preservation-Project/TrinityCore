@@ -22,6 +22,8 @@
 #include "SpellAuras.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::Loatheb
+{
 enum Spells
 {
     SPELL_NECROTIC_AURA                     = 55593,
@@ -193,9 +195,12 @@ class spell_loatheb_deathbloom : public SpellScriptLoader
             return new spell_loatheb_deathbloom_AuraScript();
         }
 };
+}
 
 void AddSC_boss_loatheb()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Loatheb;
     new boss_loatheb();
     new achievement_spore_loser();
     new spell_loatheb_deathbloom();

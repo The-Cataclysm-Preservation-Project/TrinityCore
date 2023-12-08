@@ -31,6 +31,8 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace IcecrownCitadel::ProfessorPutricide
+{
 enum Say
 {
     // Festergut
@@ -1607,9 +1609,12 @@ class spell_stinky_precious_decimate : public SpellScriptLoader
             return new spell_stinky_precious_decimate_SpellScript();
         }
 };
+}
 
 void AddSC_boss_professor_putricide()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::ProfessorPutricide;
     new boss_professor_putricide();
     new npc_volatile_ooze();
     new npc_gas_cloud();

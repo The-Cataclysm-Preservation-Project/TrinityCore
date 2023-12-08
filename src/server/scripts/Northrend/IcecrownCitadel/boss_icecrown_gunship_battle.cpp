@@ -37,6 +37,8 @@
 #include "TransportMgr.h"
 #include "Vehicle.h"
 
+namespace IcecrownCitadel::IcecrownGunshipBattle
+{
 enum Texts
 {
     // High Overlord Saurfang
@@ -2432,9 +2434,12 @@ class achievement_im_on_a_boat : public AchievementCriteriaScript
             return target->GetAI() && target->GetAI()->GetData(ACTION_SHIP_VISITS) <= 2;
         }
 };
+}
 
 void AddSC_boss_icecrown_gunship_battle()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::IcecrownGunshipBattle;
     new npc_gunship();
     new npc_high_overlord_saurfang_igb();
     new npc_muradin_bronzebeard_igb();

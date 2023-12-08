@@ -19,6 +19,8 @@
 #include "halls_of_reflection.h"
 #include "InstanceScript.h"
 
+namespace HallsOfReflection::FarlicAndMarwyn
+{
 boss_horAI::boss_horAI(Creature* creature, uint32 bossId) : BossAI(creature, bossId)
 {
 }
@@ -50,4 +52,5 @@ void boss_horAI::DoAction(int32 actionId)
 void boss_horAI::JustSummoned(Creature* summon)
 {
     summons.Summon(summon);
+}
 }

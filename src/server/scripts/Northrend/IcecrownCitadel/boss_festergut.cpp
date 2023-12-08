@@ -26,6 +26,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace IcecrownCitadel::Festergut
+{
 enum ScriptTexts
 {
     SAY_STINKY_DEAD             = 0,
@@ -480,9 +482,12 @@ class achievement_flu_shot_shortage : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_festergut()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::Festergut;
     new boss_festergut();
     new npc_stinky_icc();
     new spell_festergut_pungent_blight();

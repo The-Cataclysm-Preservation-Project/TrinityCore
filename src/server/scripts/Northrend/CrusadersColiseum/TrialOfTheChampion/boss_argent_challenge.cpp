@@ -30,6 +30,9 @@ EndScriptData */
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 #include "trial_of_the_champion.h"
+
+namespace TrialOfTheChampion::ArgentChallenge
+{
 /*
 enum Yells
 {
@@ -679,9 +682,12 @@ class spell_paletress_summon_memory : public SpellScriptLoader
             return new spell_paletress_summon_memory_SpellScript();
         }
 };
+}
 
 void AddSC_boss_argent_challenge()
 {
+    using namespace TrialOfTheChampion;
+    using namespace TrialOfTheChampion::ArgentChallenge;
     new boss_eadric();
     new spell_eadric_radiance();
     new boss_paletress();

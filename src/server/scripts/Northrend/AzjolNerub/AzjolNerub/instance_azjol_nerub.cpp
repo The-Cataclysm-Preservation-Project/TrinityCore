@@ -22,6 +22,8 @@
 #include "CreatureAI.h"
 #include "InstanceScript.h"
 
+namespace AzjolNerub
+{
 DoorData const doorData[] =
 {
     { GO_KRIKTHIR_DOOR,     DATA_KRIKTHIR, DOOR_TYPE_PASSAGE },
@@ -131,8 +133,10 @@ class instance_azjol_nerub : public InstanceMapScript
             return new instance_azjol_nerub_InstanceScript(map);
         }
 };
+}
 
 void AddSC_instance_azjol_nerub()
 {
-   new instance_azjol_nerub();
+    using namespace AzjolNerub;
+    new instance_azjol_nerub();
 }

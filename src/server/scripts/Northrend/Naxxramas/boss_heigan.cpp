@@ -26,6 +26,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::Heigan
+{
 enum Spells
 {
     SPELL_DECREPIT_FEVER    = 29998, // 25-man: 55011
@@ -273,9 +275,12 @@ class achievement_safety_dance : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_heigan()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Heigan;
     new boss_heigan();
     new spell_heigan_eruption();
     new achievement_safety_dance();

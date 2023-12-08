@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Naxxramas
+{
 #define NaxxramasScriptName "instance_naxxramas"
 #define DataHeader "NAX"
 
@@ -219,5 +221,6 @@ inline AI* GetNaxxramasAI(T* obj)
     return GetInstanceAI<AI>(obj, NaxxramasScriptName);
 }
 #define RegisterNaxxramasCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetNaxxramasAI)
+}
 
 #endif

@@ -39,6 +39,8 @@ EndContentData */
 #include "trial_of_the_champion.h"
 #include "Vehicle.h"
 
+namespace TrialOfTheChampion
+{
 enum Yells
 {
     SAY_INTRO_1         = 0,
@@ -493,8 +495,10 @@ public:
         return GetTrialOfTheChampionAI<npc_announcer_toc5AI>(creature);
     }
 };
+}
 
 void AddSC_trial_of_the_champion()
 {
+    using namespace TrialOfTheChampion;
     new npc_announcer_toc5();
 }

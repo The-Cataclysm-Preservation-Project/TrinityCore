@@ -27,6 +27,8 @@
 #include "SpellAuras.h"
 #include "SpellScript.h"
 
+namespace IcecrownCitadel::DeathbringerSaurfang
+{
 enum ScriptTexts
 {
     // Deathbringer Saurfang
@@ -1367,9 +1369,12 @@ class achievement_ive_gone_and_made_a_mess : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_deathbringer_saurfang()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::DeathbringerSaurfang;
     new boss_deathbringer_saurfang();
     new npc_high_overlord_saurfang_icc();
     new npc_muradin_bronzebeard_icc();

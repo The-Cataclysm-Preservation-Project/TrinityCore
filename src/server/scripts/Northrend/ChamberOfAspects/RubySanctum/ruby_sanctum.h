@@ -23,6 +23,8 @@
 #define RSScriptName "instance_ruby_sanctum"
 #define DataHeader "RS"
 
+namespace RubySanctum
+{
 uint32 const EncounterCount = 4;
 
 enum RSDataTypes
@@ -133,6 +135,7 @@ template <class AI, class T>
 inline AI* GetRubySanctumAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, RSScriptName);
+}
 }
 
 #endif // RUBY_SANCTUM_H_

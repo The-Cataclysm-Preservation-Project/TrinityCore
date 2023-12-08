@@ -21,6 +21,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Gundrak::Moorabi
+{
 enum Spells
 {
     SPELL_SUMMON_PHANTOM           = 55205,
@@ -246,9 +248,12 @@ class spell_moorabi_mojo_frenzy : public SpellScriptLoader
             return new spell_moorabi_mojo_frenzy_AuraScript();
         }
 };
+}
 
 void AddSC_boss_moorabi()
 {
+    using namespace Gundrak;
+    using namespace Gundrak::Moorabi;
     new boss_moorabi();
     new achievement_less_rabi();
     new spell_moorabi_mojo_frenzy();

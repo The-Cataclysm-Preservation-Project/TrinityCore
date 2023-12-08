@@ -25,6 +25,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace ForgeOfSouls::Bronjahm
+{
 enum Yells
 {
     SAY_AGGRO           = 0,
@@ -394,9 +396,12 @@ class achievement_bronjahm_soul_power : public AchievementCriteriaScript
             return target && target->GetAI()->GetData(DATA_SOUL_POWER) >= 4;
         }
 };
+}
 
 void AddSC_boss_bronjahm()
 {
+    using namespace ForgeOfSouls;
+    using namespace ForgeOfSouls::Bronjahm;
     new boss_bronjahm();
     new npc_corrupted_soul_fragment();
     new spell_bronjahm_magic_bane();

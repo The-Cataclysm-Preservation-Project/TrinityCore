@@ -28,6 +28,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Naxxramas::Kelthuzard
+{
 enum Texts
 {
     SAY_AGGRO                                              = 7,
@@ -985,9 +987,12 @@ class achievement_just_cant_get_enough : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_kelthuzad()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Kelthuzard;
     new boss_kelthuzad();
     new npc_kelthuzad_skeleton();
     new npc_kelthuzad_banshee();

@@ -19,6 +19,8 @@
 #include "gundrak.h"
 #include "ScriptedCreature.h"
 
+namespace Gundrak::Eck
+{
 enum Texts
 {
     EMOTE_SPAWN                 = 0
@@ -118,8 +120,11 @@ class boss_eck : public CreatureScript
             return GetGundrakAI<boss_eckAI>(creature);
         }
 };
+}
 
 void AddSC_boss_eck()
 {
+    using namespace Gundrak;
+    using namespace Gundrak::Eck;
     new boss_eck();
 }

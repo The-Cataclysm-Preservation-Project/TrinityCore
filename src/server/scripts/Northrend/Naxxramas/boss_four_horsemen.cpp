@@ -28,6 +28,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::FourHorsemen
+{
 enum Horseman
 {
     THANE   = DATA_THANE,
@@ -742,9 +744,12 @@ class spell_four_horsemen_mark : public SpellScriptLoader
             return new spell_four_horsemen_mark_AuraScript();
         }
 };
+}
 
 void AddSC_boss_four_horsemen()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::FourHorsemen;
     new boss_four_horsemen_baron();
     new boss_four_horsemen_thane();
     new boss_four_horsemen_lady();

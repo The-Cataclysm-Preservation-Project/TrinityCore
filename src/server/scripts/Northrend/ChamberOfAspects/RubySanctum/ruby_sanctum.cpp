@@ -24,6 +24,8 @@
 #include "ScriptedGossip.h"
 #include "SpellScript.h"
 
+namespace RubySanctum
+{
 enum Texts
 {
     SAY_XERESTRASZA_EVENT       = 0,
@@ -214,9 +216,11 @@ class spell_ruby_sanctum_rallying_shout : public SpellScriptLoader
             return new spell_ruby_sanctum_rallying_shout_SpellScript();
         }
 };
+}
 
 void AddSC_ruby_sanctum()
 {
+    using namespace RubySanctum;
     new npc_xerestrasza();
     new at_baltharus_plateau();
     new spell_ruby_sanctum_rallying_shout();

@@ -28,6 +28,8 @@
 #include "trial_of_the_crusader.h"
 #include "Vehicle.h"
 
+namespace TrialOfTheCrusader::NorthrendBeats
+{
 enum Yells
 {
     // Gormok
@@ -1418,9 +1420,12 @@ public:
         return new spell_jormungars_paralysis_AuraScript();
     }
 };
+}
 
 void AddSC_boss_northrend_beasts()
 {
+    using namespace TrialOfTheCrusader;
+    using namespace TrialOfTheCrusader::NorthrendBeats;
     new boss_gormok();
     new npc_snobold_vassal();
     new npc_firebomb();

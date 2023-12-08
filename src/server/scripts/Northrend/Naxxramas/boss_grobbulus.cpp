@@ -21,6 +21,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::Grobbulus
+{
 enum Spells
 {
     SPELL_BOMBARD_SLIME         = 28280,
@@ -210,9 +212,12 @@ class spell_grobbulus_poison_cloud : public SpellScriptLoader
             return new spell_grobbulus_poison_cloud_AuraScript();
         }
 };
+}
 
 void AddSC_boss_grobbulus()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Grobbulus;
     new boss_grobbulus();
     new npc_grobbulus_poison_cloud();
     new spell_grobbulus_mutating_injection();

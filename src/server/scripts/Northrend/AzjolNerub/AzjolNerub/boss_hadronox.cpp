@@ -26,6 +26,8 @@
 #include "SpellAuraEffects.h"
 #include "TemporarySummon.h"
 
+namespace AzjolNerub::Hadronox
+{
 enum Events
 {
     // Hadronox
@@ -1124,9 +1126,12 @@ class achievement_hadronox_denied : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_hadronox()
 {
+    using namespace AzjolNerub;
+    using namespace AzjolNerub::Hadronox;
     new boss_hadronox();
 
     new npc_anub_ar_crusher();

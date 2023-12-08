@@ -22,6 +22,8 @@
 #include "EventProcessor.h"
 #include "ObjectGuid.h"
 
+namespace HallsOfReflection
+{
 #define HoRScriptName "instance_halls_of_reflection"
 #define DataHeader    "HOR"
 
@@ -223,6 +225,7 @@ template <class AI, class T>
 inline AI* GetHallsOfReflectionAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, HoRScriptName);
+}
 }
 
 #endif // HALLS_OF_REFLECTION_H_

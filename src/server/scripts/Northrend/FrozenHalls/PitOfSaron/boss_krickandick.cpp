@@ -28,6 +28,8 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace PitOfSaron::KrickAndIck
+{
 enum Spells
 {
     SPELL_MIGHTY_KICK                           = 69021, //ick's spell
@@ -716,9 +718,12 @@ class spell_krick_pursuit_confusion : public SpellScriptLoader
             return new spell_krick_pursuit_confusion_AuraScript();
         }
 };
+}
 
 void AddSC_boss_ick()
 {
+    using namespace PitOfSaron;
+    using namespace PitOfSaron::KrickAndIck;
     new boss_ick();
     new boss_krick();
     new spell_krick_explosive_barrage();

@@ -23,6 +23,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::Gluth
+{
 enum Texts
 {
     EMOTE_SPOTS_ONE                     = 0,
@@ -470,9 +472,12 @@ public:
         return GetNaxxramasAI<npc_zombie_chowAI>(creature);
     }
 };
+}
 
 void AddSC_boss_gluth()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Gluth;
     new boss_gluth();
     new spell_gluth_decimate();
     new spell_gluth_zombiechow_search();

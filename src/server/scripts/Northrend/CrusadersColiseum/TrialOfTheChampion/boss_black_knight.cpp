@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedEscortAI.h"
 #include "trial_of_the_champion.h"
 
+namespace TrialOfTheChampion::BlackKnight
+{
 enum Spells
 {
     //phase 1
@@ -377,9 +379,12 @@ public:
         return GetTrialOfTheChampionAI<npc_black_knight_skeletal_gryphonAI>(creature);
     }
 };
+}
 
 void AddSC_boss_black_knight()
 {
+    using namespace TrialOfTheChampion;
+    using namespace TrialOfTheChampion::BlackKnight;
     new boss_black_knight();
     new npc_risen_ghoul();
     new npc_black_knight_skeletal_gryphon();

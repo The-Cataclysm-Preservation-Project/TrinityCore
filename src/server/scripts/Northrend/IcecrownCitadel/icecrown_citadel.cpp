@@ -29,6 +29,8 @@
 #include "TemporarySummon.h"
 #include "VehicleDefines.h"
 
+namespace IcecrownCitadel
+{
 enum ICCTexts
 {
     // Highlord Tirion Fordring (at Light's Hammer)
@@ -1976,9 +1978,11 @@ class at_icc_start_frostwing_gauntlet : public AreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_icecrown_citadel()
 {
+    using namespace IcecrownCitadel;
     new npc_highlord_tirion_fordring_lh();
     new npc_frost_freeze_trap();
     new boss_sister_svalna();

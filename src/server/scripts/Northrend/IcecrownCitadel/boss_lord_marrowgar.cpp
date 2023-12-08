@@ -28,6 +28,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace IcecrownCitadel::LordMarrowgar
+{
 enum ScriptTexts
 {
     SAY_ENTER_ZONE              = 0,
@@ -758,9 +760,12 @@ class at_lord_marrowgar_entrance : public OnlyOnceAreaTriggerScript
         }
 
 };
+}
 
 void AddSC_boss_lord_marrowgar()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::LordMarrowgar;
     new boss_lord_marrowgar();
     new npc_coldflame();
     new npc_bone_spike();

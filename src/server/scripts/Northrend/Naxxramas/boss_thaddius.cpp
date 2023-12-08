@@ -26,6 +26,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::Thaddius
+{
 enum Phases
 {
     PHASE_NOT_ENGAGED       = 1,
@@ -1245,10 +1247,12 @@ class achievement_thaddius_shocking : public AchievementCriteriaScript
             return target && target->GetAI() && target->GetAI()->GetData(DATA_POLARITY_CROSSED);
         }
 };
-
+}
 
 void AddSC_boss_thaddius()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Thaddius;
     new boss_thaddius();
     new npc_stalagg();
     new npc_feugen();

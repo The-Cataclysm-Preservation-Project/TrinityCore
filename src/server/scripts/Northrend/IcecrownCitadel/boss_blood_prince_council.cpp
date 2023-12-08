@@ -29,6 +29,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace IcecrownCitadel::BloodPrinceCouncil
+{
 enum Texts
 {
     // Blood Queen Lana'Thel
@@ -1506,9 +1508,12 @@ class at_blood_prince_council_start_intro : public AreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_boss_blood_prince_council()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::BloodPrinceCouncil;
     new boss_blood_council_controller();
     new boss_prince_keleseth_icc();
     new boss_prince_taldaram_icc();

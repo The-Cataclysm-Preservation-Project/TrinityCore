@@ -24,6 +24,8 @@
 struct Position;
 enum TriggerCastFlags : uint32;
 
+namespace IcecrownCitadel
+{
 #define ICCScriptName "instance_icecrown_citadel"
 #define DataHeader    "IC"
 
@@ -31,11 +33,17 @@ uint32 const EncounterCount = 13;
 uint32 const WeeklyNPCs = 9;
 
 // Defined in boss_sindragosa.cpp
-extern Position const SindragosaSpawnPos;
+namespace Sindragosa
+{
+    extern Position const SindragosaSpawnPos;
+}
 // Defined in boss_the_lich_king.cpp
-extern Position const TerenasSpawn;
-extern Position const TerenasSpawnHeroic;
-extern Position const SpiritWardenSpawn;
+namespace TheLichKing
+{
+    extern Position const TerenasSpawn;
+    extern Position const TerenasSpawnHeroic;
+    extern Position const SpiritWardenSpawn;
+}
 
 // Shared spells used by more than one script
 enum ICSharedSpells
@@ -503,6 +511,7 @@ template <class AI, class T>
 inline AI* GetIcecrownCitadelAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, ICCScriptName);
+}
 }
 
 #endif // ICECROWN_CITADEL_H_

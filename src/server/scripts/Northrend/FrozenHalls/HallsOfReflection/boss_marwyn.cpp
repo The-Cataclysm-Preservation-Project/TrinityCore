@@ -22,6 +22,10 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace HallsOfReflection::Marwyn
+{
+using namespace HallsOfReflection::FarlicAndMarwyn;
+
 enum Texts
 {
     SAY_AGGRO                                     = 0,
@@ -164,9 +168,12 @@ class spell_marwyn_shared_suffering : public SpellScriptLoader
             return new spell_marwyn_shared_suffering_AuraScript();
         }
 };
+}
 
 void AddSC_boss_marwyn()
 {
+    using namespace HallsOfReflection;
+    using namespace HallsOfReflection::Marwyn;
     new boss_marwyn();
     new spell_marwyn_shared_suffering();
 }

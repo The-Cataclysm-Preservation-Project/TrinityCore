@@ -30,6 +30,8 @@
 #include "TemporarySummon.h"
 #include "trial_of_the_crusader.h"
 
+namespace TrialOfTheCrusader
+{
 enum Yells
 {
     // Highlord Tirion Fordring - 34996
@@ -1048,9 +1050,11 @@ class npc_varian_toc : public CreatureScript
             return GetTrialOfTheCrusaderAI<npc_varian_tocAI>(creature);
         }
 };
+}
 
 void AddSC_trial_of_the_crusader()
 {
+    using namespace TrialOfTheCrusader;
     new boss_lich_king_toc();
     new npc_announcer_toc10();
     new npc_fizzlebang_toc();

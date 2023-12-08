@@ -28,6 +28,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace ForgeOfSouls::DevourerOfSouls
+{
 /*
  * @todo
  * - Fix model id during unleash soul -> seems DB issue 36503 is missing (likewise 36504 is also missing).
@@ -496,9 +498,12 @@ class achievement_three_faced : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_devourer_of_souls()
 {
+    using namespace ForgeOfSouls;
+    using namespace ForgeOfSouls::DevourerOfSouls;
     new boss_devourer_of_souls();
     new spell_devourer_of_souls_mirrored_soul();
     new spell_devourer_of_souls_mirrored_soul_proc();

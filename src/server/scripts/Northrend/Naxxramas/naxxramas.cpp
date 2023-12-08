@@ -25,6 +25,8 @@
 #include "TemporarySummon.h"
 #include "naxxramas.h"
 
+namespace Naxxramas
+{
 /*
     According to sniffs there are multiple spawn groups (5 to be precise) since Living Poisons with the same initial spline
     destination are only getting spawned in 31 seconds intervals. For the sake of readability we will stick
@@ -126,8 +128,10 @@ private:
         slime->GetMotionMaster()->LaunchMoveSpline(std::move(init));
     }
 };
+}
 
 void AddSC_naxxramas()
 {
+    using namespace Naxxramas;
     RegisterNaxxramasCreatureAI(npc_frogger_trigger_naxx);
 }

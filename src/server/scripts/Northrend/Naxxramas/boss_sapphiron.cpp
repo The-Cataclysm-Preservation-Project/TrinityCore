@@ -28,6 +28,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Naxxramas::Sapphiron
+{
 enum Yells
 {
     EMOTE_AIR_PHASE         = 0,
@@ -634,9 +636,12 @@ class achievement_the_hundred_club : public AchievementCriteriaScript
             return target && target->GetAI()->GetData(DATA_THE_HUNDRED_CLUB);
         }
 };
+}
 
 void AddSC_boss_sapphiron()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Sapphiron;
     new boss_sapphiron();
     RegisterNaxxramasCreatureAI(npc_sapphiron_blizzard);
     new go_sapphiron_birth();

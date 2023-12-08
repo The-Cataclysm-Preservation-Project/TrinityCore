@@ -26,6 +26,8 @@
 #include "TemporarySummon.h"
 #include "trial_of_the_crusader.h"
 
+namespace TrialOfTheCrusader
+{
 BossBoundaryData const boundaries =
 {
     { BOSS_BEASTS, new CircleBoundary(Position(563.26f, 139.6f), 75.0) },
@@ -733,8 +735,10 @@ class instance_trial_of_the_crusader : public InstanceMapScript
             return new instance_trial_of_the_crusader_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_trial_of_the_crusader()
 {
+    using namespace TrialOfTheCrusader;
     new instance_trial_of_the_crusader();
 }

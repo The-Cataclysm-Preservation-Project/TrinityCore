@@ -24,6 +24,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace RubySanctum
+{
 Position const HalionControllerSpawnPos = { 3156.037f, 533.2656f, 72.97205f, 0.0f };
 
 BossBoundaryData const boundaries =
@@ -206,8 +208,10 @@ class instance_ruby_sanctum : public InstanceMapScript
             return new instance_ruby_sanctum_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_ruby_sanctum()
 {
+    using namespace RubySanctum;
     new instance_ruby_sanctum();
 }

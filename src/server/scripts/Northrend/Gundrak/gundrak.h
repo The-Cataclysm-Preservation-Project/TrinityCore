@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Gundrak
+{
 #define GundrakScriptName "instance_gundrak"
 #define DataHeader "GD"
 
@@ -97,6 +99,7 @@ template <class AI, class T>
 inline AI* GetGundrakAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, GundrakScriptName);
+}
 }
 
 #endif // GUNDRAK_H_

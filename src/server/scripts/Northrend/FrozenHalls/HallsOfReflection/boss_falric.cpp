@@ -21,6 +21,10 @@
 #include "InstanceScript.h"
 #include "SpellMgr.h"
 
+namespace HallsOfReflection::Falric
+{
+using namespace HallsOfReflection::FarlicAndMarwyn;
+
 enum Texts
 {
     SAY_AGGRO                                     = 0,
@@ -154,8 +158,11 @@ class boss_falric : public CreatureScript
             return GetHallsOfReflectionAI<boss_falricAI>(creature);
         }
 };
+}
 
 void AddSC_boss_falric()
 {
+    using namespace HallsOfReflection;
+    using namespace HallsOfReflection::Falric;
     new boss_falric();
 }

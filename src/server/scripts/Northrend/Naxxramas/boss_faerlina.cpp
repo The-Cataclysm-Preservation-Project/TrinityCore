@@ -24,6 +24,8 @@
 #include "SpellAuras.h"
 #include "SpellInfo.h"
 
+namespace Naxxramas::Faerlina
+{
 enum Yells
 {
     SAY_GREET           = 0,
@@ -278,9 +280,12 @@ class at_faerlina_entrance : public OnlyOnceAreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_boss_faerlina()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Faerlina;
     new boss_faerlina();
     new npc_faerlina_add();
     new at_faerlina_entrance();

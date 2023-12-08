@@ -26,6 +26,8 @@
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace Gundrak::DrakkariColossus
+{
 enum Texts
 {
     // Drakkari Elemental
@@ -479,9 +481,12 @@ public:
         return GetGundrakAI<npc_living_mojoAI>(creature);
     }
 };
+}
 
 void AddSC_boss_drakkari_colossus()
 {
+    using namespace Gundrak;
+    using namespace Gundrak::DrakkariColossus;
     new boss_drakkari_colossus();
     new boss_drakkari_elemental();
     new npc_living_mojo();

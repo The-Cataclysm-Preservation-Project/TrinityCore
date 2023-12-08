@@ -28,6 +28,8 @@
 #include "TemporarySummon.h"
 #include "trial_of_the_crusader.h"
 
+namespace TrialOfTheCrusader::FactionChampions
+{
 enum Yells
 {
     SAY_KILL_PLAYER     = 6
@@ -2393,9 +2395,12 @@ class spell_toc_heroism : public SpellScriptLoader
             return new spell_toc_heroism_SpellScript();
         }
 };
+}
 
 void AddSC_boss_faction_champions()
 {
+    using namespace TrialOfTheCrusader;
+    using namespace TrialOfTheCrusader::FactionChampions;
     new boss_toc_champion_controller();
     new npc_toc_druid();
     new npc_toc_shaman();

@@ -31,6 +31,8 @@
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 
+namespace Ankahet::HeraldVolazj
+{
 enum Spells
 {
     SPELL_INSANITY                                = 57496, //Dummy
@@ -296,8 +298,11 @@ public:
         return GetAhnKahetAI<boss_volazjAI>(creature);
     }
 };
+}
 
 void AddSC_boss_volazj()
 {
+    using namespace Ankahet;
+    using namespace Ankahet::HeraldVolazj;
     new boss_volazj();
 }

@@ -27,6 +27,8 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace PitOfSaron::ScourgelordTyrannus
+{
 enum Yells
 {
     // Gorkun
@@ -544,9 +546,12 @@ class at_tyrannus_event_starter : public AreaTriggerScript
             return false;
         }
 };
+}
 
 void AddSC_boss_tyrannus()
 {
+    using namespace PitOfSaron;
+    using namespace PitOfSaron::ScourgelordTyrannus;
     new boss_tyrannus();
     new boss_rimefang();
     new spell_tyrannus_overlord_brand();

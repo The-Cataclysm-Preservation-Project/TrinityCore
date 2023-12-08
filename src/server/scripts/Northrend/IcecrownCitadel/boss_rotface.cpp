@@ -26,6 +26,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace IcecrownCitadel::Rotface
+{
 // KNOWN BUGS:
 // ~ No Slime Spray animation directly at target spot
 
@@ -852,9 +854,12 @@ class spell_rotface_vile_gas_trigger : public SpellScriptLoader
             return new spell_rotface_vile_gas_trigger_SpellScript();
         }
 };
+}
 
 void AddSC_boss_rotface()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::Rotface;
     new boss_rotface();
     new npc_little_ooze();
     new npc_big_ooze();

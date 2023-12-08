@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace TrialOfTheChampion
+{
 #define ToCScriptName "instance_trial_of_the_champion"
 #define DataHeader "TC"
 
@@ -133,6 +135,7 @@ template <class AI, class T>
 inline AI* GetTrialOfTheChampionAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, ToCScriptName);
+}
 }
 
 #endif

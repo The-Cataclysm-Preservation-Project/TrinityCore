@@ -26,6 +26,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace ObsidianSanctum
+{
 enum Enums
 {
     //Mini bosses common spells
@@ -1049,9 +1051,11 @@ class achievement_twilight_zone : public AchievementCriteriaScript
             return target && target->GetAI()->GetData(TWILIGHT_ACHIEVEMENTS) == 3;
         }
 };
+}
 
 void AddSC_obsidian_sanctum()
 {
+    using namespace ObsidianSanctum;
     new npc_vesperon();
     new npc_shadron();
     new npc_tenebron();

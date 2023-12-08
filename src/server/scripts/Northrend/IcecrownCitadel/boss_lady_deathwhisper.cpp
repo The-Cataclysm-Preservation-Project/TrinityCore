@@ -27,6 +27,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace IcecrownCitadel::LadyDeathwhisper
+{
 enum ScriptTexts
 {
     // Lady Deathwhisper
@@ -883,9 +885,12 @@ class spell_deathwhisper_summon_spirits : public SpellScriptLoader
             return new spell_deathwhisper_summon_spirits_SpellScript();
         }
 };
+}
 
 void AddSC_boss_lady_deathwhisper()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::LadyDeathwhisper;
     new boss_lady_deathwhisper();
     new npc_cult_fanatic();
     new npc_cult_adherent();

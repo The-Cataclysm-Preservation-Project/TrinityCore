@@ -29,6 +29,8 @@
 #include "TemporarySummon.h"
 #include "Transport.h"
 
+namespace HallsOfReflection
+{
 enum Text
 {
     SAY_JAINA_INTRO_1                   = 0,
@@ -2857,9 +2859,11 @@ class spell_hor_quel_delars_will : public SpellScript
         OnEffectHitTarget.Register(&spell_hor_quel_delars_will::HandleReagent, EFFECT_0, SPELL_EFFECT_FORCE_CAST);
     }
 };
+}
 
 void AddSC_halls_of_reflection()
 {
+    using namespace HallsOfReflection;
     new at_hor_intro_start();
     new at_hor_waves_restarter();
     new at_hor_impenetrable_door();

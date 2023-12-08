@@ -28,6 +28,8 @@
 #include "Spell.h"
 #include "SpellScript.h"
 
+namespace Ankahet::PrinceTaldaram
+{
 enum Spells
 {
     SPELL_BLOODTHIRST                       = 55968, // Trigger Spell + add aura
@@ -494,9 +496,12 @@ class spell_prince_taldaram_flame_sphere_summon : public SpellScriptLoader
             return new spell_prince_taldaram_flame_sphere_summon_SpellScript();
         }
 };
+}
 
 void AddSC_boss_taldaram()
 {
+    using namespace Ankahet;
+    using namespace Ankahet::PrinceTaldaram;
     new boss_prince_taldaram();
     new npc_prince_taldaram_flame_sphere();
     new go_prince_taldaram_sphere();

@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace DrakTharonKeep::TharonJa
+{
 /*
  * Known Issues: Spell 49356 and 53463 will be interrupted for an unknown reason
  */
@@ -235,9 +237,12 @@ class spell_tharon_ja_clear_gift_of_tharon_ja : public SpellScriptLoader
             return new spell_tharon_ja_clear_gift_of_tharon_ja_SpellScript();
         }
 };
+}
 
 void AddSC_boss_tharon_ja()
 {
+    using namespace DrakTharonKeep;
+    using namespace DrakTharonKeep::TharonJa;
     new boss_tharon_ja();
     new spell_tharon_ja_clear_gift_of_tharon_ja();
 }

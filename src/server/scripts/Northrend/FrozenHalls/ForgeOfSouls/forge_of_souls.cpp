@@ -21,6 +21,8 @@
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 
+namespace ForgeOfSouls
+{
 enum Events
 {
     EVENT_NONE,
@@ -275,9 +277,11 @@ public:
         return GetForgeOfSoulsAI<npc_jaina_fosAI>(creature);
     }
 };
+}
 
 void AddSC_forge_of_souls()
 {
+    using namespace ForgeOfSouls;
     new npc_sylvanas_fos();
     new npc_jaina_fos();
 }

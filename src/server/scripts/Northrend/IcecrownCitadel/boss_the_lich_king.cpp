@@ -32,6 +32,8 @@
 #include "Vehicle.h"
 #include "Weather.h"
 
+namespace IcecrownCitadel::TheLichKing
+{
 enum Texts
 {
     // The Lich King
@@ -3154,9 +3156,12 @@ class achievement_neck_deep_in_vile : public AchievementCriteriaScript
             return !target->GetAI()->GetData(DATA_VILE);
         }
 };
+}
 
 void AddSC_boss_the_lich_king()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::TheLichKing;
     new boss_the_lich_king();
     new npc_tirion_fordring_tft();
     new npc_shambling_horror_icc();

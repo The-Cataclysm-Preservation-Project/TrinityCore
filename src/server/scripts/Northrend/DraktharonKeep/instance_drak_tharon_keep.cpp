@@ -22,6 +22,8 @@
 #include "Map.h"
 #include "ScriptedCreature.h"
 
+namespace DrakTharonKeep
+{
 class instance_drak_tharon_keep : public InstanceMapScript
 {
     public:
@@ -169,8 +171,10 @@ class instance_drak_tharon_keep : public InstanceMapScript
             return new instance_drak_tharon_keep_InstanceScript(map);
         }
 };
+}
 
 void AddSC_instance_drak_tharon_keep()
 {
+    using namespace DrakTharonKeep;
     new instance_drak_tharon_keep();
 }

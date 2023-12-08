@@ -22,6 +22,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Gundrak::GalDarah
+{
 enum Spells
 {
     SPELL_IMPALING_CHARGE                   = 54956,
@@ -323,9 +325,12 @@ class achievement_share_the_love : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_gal_darah()
 {
+    using namespace Gundrak;
+    using namespace Gundrak::GalDarah;
     new boss_gal_darah();
     new spell_gal_darah_impaling_charge();
     new spell_gal_darah_stampede_charge();

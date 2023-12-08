@@ -23,7 +23,8 @@
 #include "Map.h"
 #include "Player.h"
 
-
+namespace ForgeOfSouls
+{
 BossBoundaryData const boundaries =
 {
     { DATA_BRONJAHM,  new CircleBoundary(Position(5297.3f, 2506.45f), 100.96) },
@@ -129,8 +130,10 @@ class instance_forge_of_souls : public InstanceMapScript
             return new instance_forge_of_souls_InstanceScript(map);
         }
 };
+}
 
 void AddSC_instance_forge_of_souls()
 {
+    using namespace ForgeOfSouls;
     new instance_forge_of_souls();
 }

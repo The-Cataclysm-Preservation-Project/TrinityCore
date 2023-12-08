@@ -28,6 +28,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace IcecrownCitadel::ValithriaDreamwalker
+{
 enum Texts
 {
     // The Lich King
@@ -1449,9 +1451,12 @@ class achievement_portal_jockey : public AchievementCriteriaScript
             return target && !target->GetAI()->GetData(MISSED_PORTALS);
         }
 };
+}
 
 void AddSC_boss_valithria_dreamwalker()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::ValithriaDreamwalker;
     new boss_valithria_dreamwalker();
     new npc_green_dragon_combat_trigger();
     new npc_the_lich_king_controller();

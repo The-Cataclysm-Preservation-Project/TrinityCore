@@ -22,6 +22,8 @@
 #include "SpellAuras.h"
 #include "SpellScript.h"
 
+namespace RubySanctum::BaltharusTheWarmorn
+{
 enum Texts
 {
     SAY_BALTHARUS_INTRO         = 0,    // Your power wanes, ancient one.... Soon you will join your friends.
@@ -357,9 +359,11 @@ class spell_baltharus_enervating_brand_trigger : public SpellScriptLoader
             return new spell_baltharus_enervating_brand_trigger_SpellScript();
         }
 };
+}
 
 void AddSC_boss_baltharus_the_warborn()
 {
+    using namespace RubySanctum::BaltharusTheWarmorn;
     new boss_baltharus_the_warborn();
     new npc_baltharus_the_warborn_clone();
     new spell_baltharus_enervating_brand_trigger();

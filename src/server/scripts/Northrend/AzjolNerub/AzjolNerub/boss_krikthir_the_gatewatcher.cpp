@@ -29,6 +29,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace AzjolNerub::KrikthirTheGatewatcher
+{
 enum Events
 {
     // Krik'thir the Gatewatcher
@@ -1047,9 +1049,12 @@ class achievement_watch_him_die : public AchievementCriteriaScript
             return true;
         }
 };
+}
 
 void AddSC_boss_krik_thir()
 {
+    using namespace AzjolNerub;
+    using namespace AzjolNerub::KrikthirTheGatewatcher;
     new boss_krik_thir();
 
     new npc_watcher_gashra();

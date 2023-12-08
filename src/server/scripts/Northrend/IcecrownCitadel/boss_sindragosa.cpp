@@ -29,6 +29,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace IcecrownCitadel::Sindragosa
+{
 enum Texts
 {
     SAY_AGGRO                           = 0, // You are fools to have come to this place! The icy winds of Northrend will consume your souls!
@@ -1630,9 +1632,12 @@ class achievement_all_you_can_eat : public AchievementCriteriaScript
             return target->GetAI()->GetData(DATA_MYSTIC_BUFFET_STACK) <= 5;
         }
 };
+}
 
 void AddSC_boss_sindragosa()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::Sindragosa;
     new boss_sindragosa();
     new npc_ice_tomb();
     new npc_spinestalker();

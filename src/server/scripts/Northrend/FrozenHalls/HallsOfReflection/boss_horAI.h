@@ -20,6 +20,8 @@
 
 #include "ScriptedCreature.h"
 
+namespace HallsOfReflection::FarlicAndMarwyn
+{
  // Base class for FALRIC and MARWYN
 struct boss_horAI : BossAI
 {
@@ -28,5 +30,6 @@ struct boss_horAI : BossAI
     void DoAction(int32 actionId) override;
     void JustSummoned(Creature* summon) override;
 };
+}
 
 #endif // boss_horAI_h__

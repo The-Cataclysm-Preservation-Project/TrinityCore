@@ -26,6 +26,8 @@
 #include "SpellScript.h"
 #include "Vehicle.h"
 
+namespace PitOfSaron
+{
 enum Spells
 {
     SPELL_FIREBALL              = 69583, //Ymirjar Flamebearer
@@ -379,9 +381,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_pit_of_saron()
 {
+    using namespace PitOfSaron;
     new npc_ymirjar_flamebearer();
     new npc_iceborn_protodrake();
     new npc_geist_ambusher();

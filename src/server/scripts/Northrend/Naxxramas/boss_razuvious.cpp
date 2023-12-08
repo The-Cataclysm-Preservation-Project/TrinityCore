@@ -23,6 +23,8 @@
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace Naxxramas::Razuvious
+{
 enum Yells
 {
     SAY_AGGRO = 0,
@@ -232,9 +234,12 @@ class npc_dk_understudy : public CreatureScript
             return GetNaxxramasAI<npc_dk_understudyAI>(creature);
         }
 };
+}
 
 void AddSC_boss_razuvious()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Razuvious;
     new boss_razuvious();
     new npc_dk_understudy();
 }

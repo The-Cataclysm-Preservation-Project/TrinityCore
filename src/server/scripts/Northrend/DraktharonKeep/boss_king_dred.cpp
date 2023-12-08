@@ -25,6 +25,8 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace DrakTharonKeep::KingDread
+{
 enum Spells
 {
     SPELL_BELLOWING_ROAR                          = 22686, // fears the group, can be resisted/dispelled
@@ -301,9 +303,12 @@ class achievement_king_dred : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_king_dred()
 {
+    using namespace DrakTharonKeep;
+    using namespace DrakTharonKeep::KingDread;
     new boss_king_dred();
     new npc_drakkari_gutripper();
     new npc_drakkari_scytheclaw();

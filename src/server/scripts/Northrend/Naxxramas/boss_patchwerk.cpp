@@ -20,6 +20,8 @@
 #include "naxxramas.h"
 #include "ScriptedCreature.h"
 
+namespace Naxxramas::Patchwerk
+{
 enum Spells
 {
     SPELL_HATEFUL_STRIKE                        = 28308,
@@ -183,8 +185,11 @@ public:
         return GetNaxxramasAI<boss_patchwerkAI>(creature);
     }
 };
+}
 
 void AddSC_boss_patchwerk()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Patchwerk;
     new boss_patchwerk();
 }

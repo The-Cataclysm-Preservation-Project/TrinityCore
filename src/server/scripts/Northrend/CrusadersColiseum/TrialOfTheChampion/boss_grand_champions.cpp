@@ -31,6 +31,8 @@ EndScriptData */
 #include "trial_of_the_champion.h"
 #include "Vehicle.h"
 
+namespace TrialOfTheChampion::GrandChampions
+{
 enum Spells
 {
     //Vehicle
@@ -1026,9 +1028,12 @@ public:
         return GetTrialOfTheChampionAI<boss_rouge_toc5AI>(creature);
     }
 };
+}
 
 void AddSC_boss_grand_champions()
 {
+    using namespace TrialOfTheChampion;
+    using namespace TrialOfTheChampion::GrandChampions;
     new generic_vehicleAI_toc5();
     new boss_warrior_toc5();
     new boss_mage_toc5();

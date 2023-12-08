@@ -31,6 +31,8 @@
 #include "TemporarySummon.h"
 #include "trial_of_the_crusader.h"
 
+namespace TrialOfTheCrusader::AnubarakTrial
+{
 enum Yells
 {
     SAY_INTRO               = 0,
@@ -900,9 +902,12 @@ class spell_anubarak_leeching_swarm : public SpellScriptLoader
             return new spell_anubarak_leeching_swarm_AuraScript();
         }
 };
+}
 
 void AddSC_boss_anubarak_trial()
 {
+    using namespace TrialOfTheCrusader;
+    using namespace TrialOfTheCrusader::AnubarakTrial;
     new boss_anubarak_trial();
     new npc_swarm_scarab();
     new npc_nerubian_burrower();

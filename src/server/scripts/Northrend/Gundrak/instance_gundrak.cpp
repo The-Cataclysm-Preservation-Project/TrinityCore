@@ -24,6 +24,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace Gundrak
+{
 DoorData const doorData[] =
 {
     { GO_GAL_DARAH_DOOR_1,              DATA_GAL_DARAH,         DOOR_TYPE_PASSAGE },
@@ -377,9 +379,11 @@ class go_gundrak_altar : public GameObjectScript
             return new go_gundrak_altarAI(go);
         }
 };
+}
 
 void AddSC_instance_gundrak()
 {
+    using namespace Gundrak;
     new instance_gundrak();
     new go_gundrak_altar();
 }

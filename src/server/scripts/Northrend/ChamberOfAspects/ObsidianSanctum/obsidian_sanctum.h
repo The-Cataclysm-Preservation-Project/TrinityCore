@@ -23,6 +23,8 @@
 #define OSScriptName "instance_obsidian_sanctum"
 #define DataHeader "OS"
 
+namespace ObsidianSanctum
+{
 uint32 const EncounterCount = 5;
 
 enum OSDataTypes
@@ -52,6 +54,7 @@ template <class AI, class T>
 inline AI* GetObsidianSanctumAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, OSScriptName);
+}
 }
 
 #endif // OBSIDIAN_SANCTUM_H_

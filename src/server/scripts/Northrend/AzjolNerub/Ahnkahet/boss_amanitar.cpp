@@ -21,6 +21,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace Ankahet::Armanitar
+{
 enum Spells
 {
     SPELL_BASH                                    = 57094, // Victim
@@ -232,9 +234,12 @@ public:
         return GetAhnKahetAI<npc_amanitar_mushroomsAI>(creature);
     }
 };
+}
 
 void AddSC_boss_amanitar()
 {
+    using namespace Ankahet;
+    using namespace Ankahet::Armanitar;
     new boss_amanitar();
     new npc_amanitar_mushrooms();
 }

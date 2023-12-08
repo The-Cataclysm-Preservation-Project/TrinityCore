@@ -27,6 +27,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace IcecrownCitadel::BloodQueenLanaThel
+{
 enum Texts
 {
     SAY_AGGRO                   = 0,
@@ -814,9 +816,12 @@ class achievement_once_bitten_twice_shy_v : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_blood_queen_lana_thel()
 {
+    using namespace IcecrownCitadel;
+    using namespace IcecrownCitadel::BloodQueenLanaThel;
     new boss_blood_queen_lana_thel();
     new spell_blood_queen_vampiric_bite();
     new spell_blood_queen_frenzied_bloodthirst();

@@ -20,6 +20,8 @@
 #include "naxxramas.h"
 #include "ScriptedCreature.h"
 
+namespace Naxxramas::Noth
+{
 enum Phases
 {
     PHASE_NONE,
@@ -342,8 +344,11 @@ public:
         return GetNaxxramasAI<boss_nothAI>(creature);
     }
 };
+}
 
 void AddSC_boss_noth()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Noth;
     new boss_noth();
 }

@@ -28,6 +28,8 @@
 #include "Transport.h"
 #include "TransportMgr.h"
 
+namespace IcecrownCitadel
+{
 enum EventIds
 {
     EVENT_PLAYERS_GUNSHIP_SPAWN     = 22663,
@@ -389,8 +391,8 @@ class instance_icecrown_citadel : public InstanceMapScript
                         FrostwyrmGUIDs.erase(creature->GetSpawnId());
                         if (FrostwyrmGUIDs.empty())
                         {
-                            instance->LoadGrid(SindragosaSpawnPos.GetPositionX(), SindragosaSpawnPos.GetPositionY());
-                            if (Creature* boss = instance->SummonCreature(NPC_SINDRAGOSA, SindragosaSpawnPos))
+                            instance->LoadGrid(Sindragosa::SindragosaSpawnPos.GetPositionX(), Sindragosa::SindragosaSpawnPos.GetPositionY());
+                            if (Creature* boss = instance->SummonCreature(NPC_SINDRAGOSA, Sindragosa::SindragosaSpawnPos))
                                 boss->AI()->DoAction(ACTION_START_FROSTWYRM);
                         }
                         break;
@@ -1251,7 +1253,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                         }
                         break;
                     case EVENT_TELEPORT_TO_FROSTMOURNE: // Harvest Soul (normal mode)
-                        if (Creature* terenas = instance->SummonCreature(NPC_TERENAS_MENETHIL_FROSTMOURNE, TerenasSpawn, SummonCreatureExtraArgs().SetSummonDuration(63000)))
+                        if (Creature* terenas = instance->SummonCreature(NPC_TERENAS_MENETHIL_FROSTMOURNE, TheLichKing::TerenasSpawn, SummonCreatureExtraArgs().SetSummonDuration(63000)))
                         {
                             terenas->AI()->DoAction(ACTION_FROSTMOURNE_INTRO);
                             std::list<Creature*> triggers;
@@ -1263,7 +1265,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                                 visual->CastSpell(visual, SPELL_FROSTMOURNE_TELEPORT_VISUAL, true);
                             }
 
-                            if (Creature* warden = instance->SummonCreature(NPC_SPIRIT_WARDEN, SpiritWardenSpawn, SummonCreatureExtraArgs().SetSummonDuration(63000)))
+                            if (Creature* warden = instance->SummonCreature(NPC_SPIRIT_WARDEN, TheLichKing::SpiritWardenSpawn, SummonCreatureExtraArgs().SetSummonDuration(63000)))
                             {
                                 terenas->AI()->AttackStart(warden);
                                 warden->GetThreatManager().AddThreat(terenas, 300000.0f, nullptr, true, true);
@@ -1346,8 +1348,10 @@ class instance_icecrown_citadel : public InstanceMapScript
             return new instance_icecrown_citadel_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_icecrown_citadel()
 {
+    using namespace IcecrownCitadel;
     new instance_icecrown_citadel();
 }

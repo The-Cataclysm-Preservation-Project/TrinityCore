@@ -25,6 +25,8 @@
 #include "SpellAuras.h"
 #include "SpellScript.h"
 
+namespace PitOfSaron::ForgemasterGarfrost
+{
 enum Yells
 {
     SAY_AGGRO                   = 0,
@@ -331,9 +333,12 @@ class achievement_doesnt_go_to_eleven : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_garfrost()
 {
+    using namespace PitOfSaron;
+    using namespace PitOfSaron::ForgemasterGarfrost;
     new boss_garfrost();
     new spell_garfrost_permafrost();
     new achievement_doesnt_go_to_eleven();

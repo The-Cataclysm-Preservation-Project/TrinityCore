@@ -24,6 +24,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace DrakTharonKeep::Trollgore
+{
 enum Spells
 {
     SPELL_INFECTED_WOUND                = 49637,
@@ -345,9 +347,12 @@ class achievement_consumption_junction : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_trollgore()
 {
+    using namespace DrakTharonKeep;
+    using namespace DrakTharonKeep::Trollgore;
     new boss_trollgore();
     new npc_drakkari_invader();
     new spell_trollgore_consume();

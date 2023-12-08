@@ -27,6 +27,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace AzjolNerub::Anubarak
+{
 enum Spells
 {
     SPELL_EMERGE                = 53500,
@@ -697,9 +699,12 @@ class spell_anubarak_carrion_beetles : public SpellScriptLoader
             return new spell_anubarak_carrion_beetles_AuraScript();
         }
 };
+}
 
 void AddSC_boss_anub_arak()
 {
+    using namespace AzjolNerub;
+    using namespace AzjolNerub::Anubarak;
     new boss_anub_arak();
 
     new npc_anubarak_anub_ar_darter();

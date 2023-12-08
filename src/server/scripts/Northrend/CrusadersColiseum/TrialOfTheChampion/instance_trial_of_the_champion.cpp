@@ -32,6 +32,8 @@ EndScriptData */
 #include "Player.h"
 #include "trial_of_the_champion.h"
 
+namespace TrialOfTheChampion
+{
 #define MAX_ENCOUNTER  4
 
 class instance_trial_of_the_champion : public InstanceMapScript
@@ -338,8 +340,10 @@ public:
         return new instance_trial_of_the_champion_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_trial_of_the_champion()
 {
+    using namespace TrialOfTheChampion;
     new instance_trial_of_the_champion();
 }

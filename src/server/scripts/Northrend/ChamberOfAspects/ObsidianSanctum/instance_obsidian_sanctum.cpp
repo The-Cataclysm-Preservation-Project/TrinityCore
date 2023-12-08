@@ -25,6 +25,8 @@
 0 - Sartharion
 */
 
+namespace ObsidianSanctum
+{
 BossBoundaryData const boundaries =
 {
     { DATA_SARTHARION, new RectangleBoundary(3218.86f, 3275.69f, 484.68f, 572.4f) }
@@ -117,8 +119,10 @@ public:
         return new instance_obsidian_sanctum_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_obsidian_sanctum()
 {
+    using namespace ObsidianSanctum;
     new instance_obsidian_sanctum();
 }

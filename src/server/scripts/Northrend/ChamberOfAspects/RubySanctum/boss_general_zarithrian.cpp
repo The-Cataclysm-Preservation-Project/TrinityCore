@@ -22,6 +22,8 @@
 #include "ruby_sanctum.h"
 #include "ScriptedCreature.h"
 
+namespace RubySanctum::GeneralZarithrian
+{
 enum Texts
 {
     SAY_AGGRO                   = 0,    // Alexstrasza has chosen capable allies.... A pity that I must END YOU!
@@ -272,9 +274,12 @@ class npc_onyx_flamecaller : public CreatureScript
             return GetRubySanctumAI<npc_onyx_flamecallerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_general_zarithrian()
 {
+    using namespace RubySanctum;
+    using namespace RubySanctum::GeneralZarithrian;
     new boss_general_zarithrian();
     new npc_onyx_flamecaller();
 }

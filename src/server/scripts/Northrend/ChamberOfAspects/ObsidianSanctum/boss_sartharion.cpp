@@ -25,6 +25,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace ObsidianSanctum::Sartharion
+{
 enum Enums
 {
     //Sartharion Yell
@@ -517,8 +519,11 @@ public:
         return GetObsidianSanctumAI<boss_sartharionAI>(creature);
     }
 };
+}
 
 void AddSC_boss_sartharion()
 {
+    using namespace ObsidianSanctum;
+    using namespace ObsidianSanctum::Sartharion;
     new boss_sartharion();
 }

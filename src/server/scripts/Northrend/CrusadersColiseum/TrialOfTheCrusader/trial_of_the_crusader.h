@@ -20,10 +20,12 @@
 
 #include "CreatureAIImpl.h"
 
+struct Position;
+
+namespace TrialOfTheCrusader
+{
 #define ToCrScriptName "instance_trial_of_the_crusader"
 #define DataHeader "TCR"
-
-struct Position;
 
 enum TCRDataTypes
 {
@@ -223,6 +225,7 @@ template <class AI, class T>
 inline AI* GetTrialOfTheCrusaderAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, ToCrScriptName);
+}
 }
 
 #endif

@@ -28,6 +28,8 @@
 #include "Transport.h"
 #include "TransportMgr.h"
 
+namespace HallsOfReflection
+{
 Position const JainaSpawnPos           = { 5236.659f, 1929.894f, 707.7781f, 0.8726646f }; // Jaina Spawn Position
 Position const SylvanasSpawnPos        = { 5236.667f, 1929.906f, 707.7781f, 0.8377581f }; // Sylvanas Spawn Position (sniffed)
 Position const JainaSpawnPos2          = { 5549.011f, 2257.041f, 733.0120f, 1.153993f  }; // Jaina Spawn Position 2
@@ -798,8 +800,10 @@ class instance_halls_of_reflection : public InstanceMapScript
             return new instance_halls_of_reflection_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_halls_of_reflection()
 {
+    using namespace HallsOfReflection;
     new instance_halls_of_reflection();
 }

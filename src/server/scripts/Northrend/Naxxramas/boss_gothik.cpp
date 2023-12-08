@@ -26,6 +26,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace Naxxramas::Gothik
+{
 /* Constants */
 enum Yells
 {
@@ -991,9 +993,12 @@ class spell_gothik_shadow_bolt_volley : public SpellScriptLoader
             return new spell_gothik_shadow_bolt_volley_SpellScript();
         }
 };
+}
 
 void AddSC_boss_gothik()
 {
+    using namespace Naxxramas;
+    using namespace Naxxramas::Gothik;
     new boss_gothik();
     new npc_gothik_minion_livingtrainee();
     new npc_gothik_minion_livingknight();

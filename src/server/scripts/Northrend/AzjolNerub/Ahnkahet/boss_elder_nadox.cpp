@@ -21,6 +21,8 @@
 #include "SpellAuras.h"
 #include "SpellScript.h"
 
+namespace Ankahet::ElderNadox
+{
 enum Yells
 {
     SAY_AGGRO       = 0,
@@ -287,9 +289,12 @@ class achievement_respect_your_elders : public AchievementCriteriaScript
             return target && target->GetAI()->GetData(DATA_RESPECT_YOUR_ELDERS);
         }
 };
+}
 
 void AddSC_boss_elder_nadox()
 {
+    using namespace Ankahet;
+    using namespace Ankahet::ElderNadox;
     new boss_elder_nadox();
     new npc_ahnkahar_nerubian();
     new spell_ahn_kahet_swarm();

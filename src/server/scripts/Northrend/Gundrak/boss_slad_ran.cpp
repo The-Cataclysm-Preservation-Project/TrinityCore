@@ -23,6 +23,8 @@
 #include "SpellAuras.h"
 #include "TemporarySummon.h"
 
+namespace Gundrak::SladRan
+{
 enum Spells
 {
     SPELL_POISON_NOVA                             = 55081,
@@ -311,9 +313,12 @@ class achievement_snakes_whyd_it_have_to_be_snakes : public AchievementCriteriaS
             return false;
         }
 };
+}
 
 void AddSC_boss_slad_ran()
 {
+    using namespace Gundrak;
+    using namespace Gundrak::SladRan;
     new boss_slad_ran();
     new npc_slad_ran_constrictor();
     new npc_slad_ran_viper();
