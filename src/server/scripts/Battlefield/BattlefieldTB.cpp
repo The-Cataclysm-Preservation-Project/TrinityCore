@@ -35,6 +35,8 @@
 #include "World.h"
 #include "WorldStateMgr.h"
 
+namespace Battlefields::TB
+{
 const uint32 TBFactions[BG_TEAMS_COUNT] = { 1610, 1732 };
 
 // Stalker
@@ -984,8 +986,10 @@ public:
         return new BattlefieldTB(map);
     }
 };
+}
 
 void AddSC_BF_tol_barad()
 {
+    using namespace Battlefields::TB;
     new Battlefield_tol_barad();
 }

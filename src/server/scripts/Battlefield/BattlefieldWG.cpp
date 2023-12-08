@@ -40,6 +40,8 @@
 #include "WorldSession.h"
 #include "WorldStateMgr.h"
 
+namespace Battlefields::WG
+{
 struct BfWGCoordGY
 {
     Position Pos;
@@ -1801,9 +1803,11 @@ public:
         return new npc_wg_give_promotion_creditAI(creature);
     }
 };
+}
 
 void AddSC_BF_wintergrasp()
 {
+    using namespace Battlefields::WG;
     new Battlefield_wintergrasp();
     new npc_wg_give_promotion_credit();
 }

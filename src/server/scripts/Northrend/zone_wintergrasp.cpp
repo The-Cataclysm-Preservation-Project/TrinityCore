@@ -30,6 +30,10 @@
 #include "Vehicle.h"
 #include "WorldSession.h"
 
+namespace Wintergrasp
+{
+using namespace Battlefields::WG;
+
 #define GOSSIP_HELLO_DEMO1  "Build catapult."
 #define GOSSIP_HELLO_DEMO2  "Build demolisher."
 #define GOSSIP_HELLO_DEMO3  "Build siege engine."
@@ -575,9 +579,11 @@ class condition_is_wintergrasp_alliance : public ConditionScript
             return false;
         }
 };
+}
 
 void AddSC_wintergrasp()
 {
+    using namespace Wintergrasp;
     new npc_wg_queue();
     new npc_wg_spirit_guide();
     new npc_wg_demolisher_engineer();

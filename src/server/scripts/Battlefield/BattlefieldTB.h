@@ -20,9 +20,6 @@
 
 #include "Battlefield.h"
 
-class BattlefieldTB;
-class TolBaradCapturePoint;
-
 namespace WorldPackets
 {
     namespace WorldState
@@ -30,6 +27,11 @@ namespace WorldPackets
         class InitWorldStates;
     }
 }
+
+namespace Battlefields::TB
+{
+class BattlefieldTB;
+class TolBaradCapturePoint;
 
 enum TolBaradInfo
 {
@@ -416,5 +418,6 @@ class BattlefieldTB : public Battlefield
         ObjectGuid m_gateDBlockGUID;
         ObjectGuid m_gateCursedDepthsGUID;
 };
+}
 
 #endif

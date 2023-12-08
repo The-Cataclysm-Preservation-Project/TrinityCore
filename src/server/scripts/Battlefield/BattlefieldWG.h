@@ -21,14 +21,6 @@
 #include "Battlefield.h"
 
 class Group;
-class BattlefieldWG;
-class WintergraspCapturePoint;
-
-struct BfWGGameObjectBuilding;
-struct WintergraspWorkshop;
-struct StaticWintergraspTowerInfo;
-struct StaticWintergraspWorkshopInfo;
-struct WintergraspObjectPositionData;
 
 namespace WorldPackets
 {
@@ -37,6 +29,17 @@ namespace WorldPackets
         class InitWorldStates;
     }
 }
+
+
+namespace Battlefields::WG
+{
+class BattlefieldWG;
+class WintergraspCapturePoint;
+struct BfWGGameObjectBuilding;
+struct WintergraspWorkshop;
+struct StaticWintergraspTowerInfo;
+struct StaticWintergraspWorkshopInfo;
+struct WintergraspObjectPositionData;
 
 
 typedef std::vector<BfWGGameObjectBuilding*> GameObjectBuildingVect;
@@ -555,5 +558,6 @@ public:
 
     void UpdateGraveyardAndWorkshop();
 };
+}
 
 #endif

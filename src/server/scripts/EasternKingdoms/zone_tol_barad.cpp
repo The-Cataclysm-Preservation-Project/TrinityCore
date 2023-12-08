@@ -23,6 +23,10 @@
 #include "ScriptedGossip.h"
 #include "SpellScript.h"
 
+namespace TolBarad
+{
+using namespace Battlefields::TB;
+
 enum TBSpiritGuide
 {
     SPELL_CHANNEL_SPIRIT_HEAL = 22011,
@@ -144,9 +148,11 @@ class spell_tb_scrap_master_summon : public SpellScript
         OnEffectHitTarget.Register(&spell_tb_scrap_master_summon::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
+}
 
 void AddSC_tol_barad()
 {
+    using namespace TolBarad;
     new npc_tb_spirit_guide();
     new spell_siege_cannon();
     RegisterSpellScript(spell_tb_scrap_master_summon);
