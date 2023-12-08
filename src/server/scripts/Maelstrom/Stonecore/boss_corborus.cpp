@@ -16,16 +16,17 @@
  */
 
 #include "ScriptMgr.h"
-#include "Player.h"
-#include "CreatureGroups.h"
 #include "InstanceScript.h"
+#include "Map.h"
+#include "MotionMaster.h"
+#include "Player.h"
 #include "ScriptedCreature.h"
 #include "SpellAuraEffects.h"
-#include "MotionMaster.h"
 #include "SpellScript.h"
-#include "Map.h"
 #include "stonecore.h"
 
+namespace Stonecore::Corborus
+{
 enum Spells
 {
     // Corborus Intro
@@ -471,9 +472,12 @@ class spell_corborus_crystal_barrage : public AuraScript
         OnEffectRemove.Register(&spell_corborus_crystal_barrage::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_corborus()
 {
+    using namespace Stonecore;
+    using namespace Stonecore::Corborus;
     new boss_corborus();
     new npc_rock_borer();
     new npc_crystal_shard();

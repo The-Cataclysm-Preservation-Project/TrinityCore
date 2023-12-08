@@ -25,6 +25,8 @@
 #include "EventMap.h"
 #include "stonecore.h"
 
+namespace Stonecore
+{
 #define MAX_ENCOUNTER 4
 
 /* Stonecore encounters:
@@ -311,8 +313,10 @@ class instance_stonecore : public InstanceMapScript
             return new instance_stonecore_InstanceScript(map);
         }
 };
+}
 
 void AddSC_instance_stonecore()
 {
+    using namespace Stonecore;
     new instance_stonecore();
 }

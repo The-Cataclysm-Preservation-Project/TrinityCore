@@ -18,11 +18,12 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
-#include "SpellAuraEffects.h"
 #include "MotionMaster.h"
 #include "PassiveAI.h"
 #include "Vehicle.h"
 
+namespace Deepholm
+{
 enum VehicleSeatIds
 {
     SEAT_1 = 0,
@@ -282,9 +283,11 @@ class spell_deepholm_twilight_buffet_targeting : public SpellScript
         OnEffectHitTarget.Register(&spell_deepholm_twilight_buffet_targeting::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_deepholm()
 {
+    using namespace Deepholm;
     RegisterCreatureAI(npc_deepholm_xariona);
     RegisterCreatureAI(npc_deepholm_wyvern);
     RegisterSpellScript(spell_deepholm_twilight_buffet_targeting);

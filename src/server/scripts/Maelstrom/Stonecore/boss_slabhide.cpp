@@ -26,6 +26,8 @@
 #include "Spell.h"
 #include "SpellScript.h"
 
+namespace Stonecore::Slabhide
+{
 enum Spells
 {
     SPELL_FACE_RANDOM_PLAYER        = 82530,
@@ -417,9 +419,12 @@ class spell_slabhide_crystal_storm_periodic : public SpellScript
         OnEffectHitTarget.Register(&spell_slabhide_crystal_storm_periodic::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
+}
 
 void AddSC_boss_slabhide()
 {
+    using namespace Stonecore;
+    using namespace Stonecore::Slabhide;
     RegisterStonecoreCreatureAI(boss_slabhide);
     RegisterStonecoreCreatureAI(npc_slabhide_lava_fissure);
     RegisterStonecoreCreatureAI(npc_slabhide_stalactite_trigger);

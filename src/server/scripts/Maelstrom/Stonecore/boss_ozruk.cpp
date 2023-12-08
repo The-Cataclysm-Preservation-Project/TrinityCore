@@ -27,6 +27,9 @@
 #include "Map.h"
 #include "ScriptedCreature.h"
 
+namespace Stonecore::Ozruk
+{
+
 enum Spells
 {
     // Ozruk
@@ -287,10 +290,12 @@ class spell_ozruk_paralyze_stun : public AuraScript
         AfterEffectRemove.Register(&spell_ozruk_paralyze_stun::OnAuraRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
-
+}
 
 void AddSC_boss_ozruk()
 {
+    using namespace Stonecore;
+    using namespace Stonecore::Ozruk;
     RegisterStonecoreCreatureAI(boss_ozruk);
     RegisterSpellScript(spell_ozruk_rupture);
     RegisterSpellScript(spell_ozuruk_rupture_summon);

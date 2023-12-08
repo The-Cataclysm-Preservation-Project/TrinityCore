@@ -34,6 +34,8 @@
 #include "Vehicle.h"
 #include <G3D/Vector3.h>
 
+namespace Stonecore::HighPriestessAzil
+{
 enum Spells
 {
     SPELL_ENERGY_SHIELD                     = 82858,
@@ -760,9 +762,12 @@ class spell_azil_force_grip_change_seat : public SpellScript
         OnEffectHitTarget.Register(&spell_azil_force_grip_change_seat::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
+}
 
 void AddSC_boss_high_priestess_azil()
 {
+    using namespace Stonecore;
+    using namespace Stonecore::HighPriestessAzil;
     new boss_high_priestess_azil();
     new npc_azil_devout_follower();
     new npc_azil_gravity_well();

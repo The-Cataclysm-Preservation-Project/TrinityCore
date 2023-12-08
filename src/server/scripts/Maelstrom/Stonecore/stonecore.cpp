@@ -25,6 +25,9 @@
 #include "SpellScript.h"
 #include "stonecore.h"
 
+namespace Stonecore
+{
+
 enum Texts
 {
     // Millhouse Manastorm
@@ -419,9 +422,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_stonecore()
 {
+    using namespace Stonecore;
     new npc_sc_millhouse_manastorm();
     new spell_force_of_earth();
     new spell_sc_anchor_here();

@@ -15,6 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace Kezan
+{
+}
+
 void AddSC_kezan()
 {
+    using namespace Kezan;
 }
