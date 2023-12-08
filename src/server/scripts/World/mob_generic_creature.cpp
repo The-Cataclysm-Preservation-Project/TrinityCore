@@ -21,6 +21,9 @@
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 
+namespace MobGenericCreature
+{
+
 class trigger_periodic : public CreatureScript
 {
 public:
@@ -56,8 +59,10 @@ public:
         return new trigger_periodicAI(creature);
     }
 };
+}
 
 void AddSC_generic_creature()
 {
+    using namespace MobGenericCreature;
     new trigger_periodic();
 }

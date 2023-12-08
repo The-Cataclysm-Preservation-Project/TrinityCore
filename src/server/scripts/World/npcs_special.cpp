@@ -38,6 +38,9 @@
 #include "Vehicle.h"
 #include "World.h"
 
+namespace NpcSpecial
+{
+
 /*########
 # npc_air_force_bots
 #########*/
@@ -3142,9 +3145,11 @@ private:
     EventMap _events;
     bool _hit;
 };
+}
 
 void AddSC_npcs_special()
 {
+    using namespace NpcSpecial;
     new npc_air_force_bots();
     new npc_chicken_cluck();
     new npc_dancing_flames();

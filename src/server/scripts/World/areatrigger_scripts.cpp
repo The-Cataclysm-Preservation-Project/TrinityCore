@@ -44,6 +44,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace AreatriggerScripts
+{
 /*######
 ## at_coilfang_waterfall
 ######*/
@@ -464,9 +466,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_areatrigger_scripts()
 {
+    using namespace AreatriggerScripts;
     new AreaTrigger_at_coilfang_waterfall();
     new AreaTrigger_at_legion_teleporter();
     new AreaTrigger_at_stormwright_shelf();

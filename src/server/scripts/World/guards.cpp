@@ -36,6 +36,9 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace Guards
+{
+
 enum GuardGeneric
 {
     GENERIC_CREATURE_COOLDOWN       = 5000,
@@ -409,9 +412,11 @@ public:
         return new guard_shattrath_aldorAI(creature);
     }
 };
+}
 
 void AddSC_guards()
 {
+    using namespace Guards;
     new guard_generic();
     new guard_shattrath_aldor();
     new guard_shattrath_scryer();

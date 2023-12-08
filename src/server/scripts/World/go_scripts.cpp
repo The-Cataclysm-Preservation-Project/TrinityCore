@@ -59,6 +59,9 @@ EndContentData */
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
+namespace GoScripts
+{
+
 /*######
 ## go_cat_figurine
 ######*/
@@ -1941,9 +1944,11 @@ struct go_cauldron_of_battle : public GameObjectAI
         }
     }
 };
+}
 
 void AddSC_go_scripts()
 {
+    using namespace GoScripts;
     new go_cat_figurine();
     new go_barov_journal();
     new go_gilded_brazier();

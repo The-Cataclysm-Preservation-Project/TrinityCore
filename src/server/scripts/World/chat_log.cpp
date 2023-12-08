@@ -22,6 +22,8 @@
 #include "Log.h"
 #include "Player.h"
 
+namespace ChatLog
+{
 class ChatLogScript : public PlayerScript
 {
     public:
@@ -152,8 +154,10 @@ class ChatLogScript : public PlayerScript
             }
         }
 };
+}
 
 void AddSC_chat_log()
 {
+    using namespace ChatLog;
     new ChatLogScript();
 }

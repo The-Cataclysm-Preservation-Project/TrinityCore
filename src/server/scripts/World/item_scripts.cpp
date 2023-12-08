@@ -38,6 +38,9 @@ EndContentData */
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 
+namespace ItemScripts
+{
+
 /*#####
 # item_only_for_flight
 #####*/
@@ -409,9 +412,11 @@ class item_generic_limit_chance_above_60 : public ItemScript
             return true;
         }
 };
+}
 
 void AddSC_item_scripts()
 {
+    using namespace ItemScripts;
     new item_only_for_flight();
     new item_nether_wraith_beacon();
     new item_gor_dreks_ointment();

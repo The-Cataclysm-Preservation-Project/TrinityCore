@@ -20,6 +20,8 @@
 #include "Player.h"
 #include "WorldSession.h"
 
+namespace ActionIpLogger
+{
 enum IPLoggingTypes
 {
 
@@ -305,10 +307,11 @@ public:
         return;
     }
 };
-
+}
 
 void AddSC_action_ip_logger()
 {
+    using namespace ActionIpLogger;
     new AccountActionIpLogger();
     new CharacterActionIpLogger();
     new CharacterDeleteActionIpLogger();

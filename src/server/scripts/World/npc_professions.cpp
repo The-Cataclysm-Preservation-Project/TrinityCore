@@ -32,6 +32,9 @@ EndScriptData */
 #include "SpellMgr.h"
 #include "WorldSession.h"
 
+namespace NpcProfessions
+{
+
 /*
 A few notes for future developement:
 - It's possible blacksmithing still require some tweaks and adjustments due to the way we _have_ to use reputation.
@@ -1085,9 +1088,11 @@ enum MultiProfessionTrainer
     GOSSIP_MENU_LEATHERWORKING   = 12198,
     GOSSIP_MENU_TAILORING        = 12199
 };
+}
 
 void AddSC_npc_professions()
 {
+    using namespace NpcProfessions;
     new npc_prof_blacksmith();
     new npc_engineering_tele_trinket();
     new npc_prof_leather();

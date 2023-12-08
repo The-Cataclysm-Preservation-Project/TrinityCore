@@ -30,6 +30,9 @@ EndScriptData */
 #include "Player.h"
 #include "WorldSession.h"
 
+namespace NpcInnkeeper
+{
+
 enum Spells
 {
     SPELL_TRICK_OR_TREATED      = 24755,
@@ -38,18 +41,18 @@ enum Spells
 
 #define LOCALE_TRICK_OR_TREAT_0 "Trick or Treat!"
 #define LOCALE_TRICK_OR_TREAT_2 "Des bonbons ou des blagues!"
-#define LOCALE_TRICK_OR_TREAT_3 "SÃ¼ÃŸes oder Saures!"
-#define LOCALE_TRICK_OR_TREAT_6 "Â¡Truco o trato!"
+#define LOCALE_TRICK_OR_TREAT_3 "Süßes oder Saures!"
+#define LOCALE_TRICK_OR_TREAT_6 "¡Truco o trato!"
 
 #define LOCALE_INNKEEPER_0 "Make this inn my home."
 #define LOCALE_INNKEEPER_2 "Faites de cette auberge votre foyer."
-#define LOCALE_INNKEEPER_3 "Ich mÃ¶chte dieses Gasthaus zu meinem Heimatort machen."
+#define LOCALE_INNKEEPER_3 "Ich möchte dieses Gasthaus zu meinem Heimatort machen."
 #define LOCALE_INNKEEPER_6 "Fija tu hogar en esta taberna."
 
 #define LOCALE_VENDOR_0 "I want to browse your goods."
 #define LOCALE_VENDOR_2 "Je voudrais regarder vos articles."
 #define LOCALE_VENDOR_3 "Ich sehe mich nur mal um."
-#define LOCALE_VENDOR_6 "Quiero ver tus mercancÃ­as."
+#define LOCALE_VENDOR_6 "Quiero ver tus mercancías."
 
 class npc_innkeeper : public CreatureScript
 {
@@ -162,8 +165,10 @@ class npc_innkeeper : public CreatureScript
             return new npc_innkeeperAI(creature);
         }
 };
+}
 
 void AddSC_npc_innkeeper()
 {
+    using namespace NpcInnkeeper;
     new npc_innkeeper();
 }

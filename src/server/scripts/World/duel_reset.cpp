@@ -24,6 +24,8 @@
 #include "SpellMgr.h"
 #include "World.h"
 
+namespace DuelReset
+{
 class DuelResetScript : public PlayerScript
 {
     public:
@@ -108,8 +110,10 @@ class DuelResetScript : public PlayerScript
                 pet->GetSpellHistory()->ResetAllCooldowns();
         }
 };
+}
 
 void AddSC_duel_reset()
 {
+    using namespace DuelReset;
     new DuelResetScript();
 }
