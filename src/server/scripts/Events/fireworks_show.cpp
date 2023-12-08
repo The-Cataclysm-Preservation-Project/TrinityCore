@@ -24,6 +24,8 @@
 #include "GameObjectAI.h"
 #include "GameTime.h"
 
+namespace FireworksShow
+{
 enum FireworksShowTypeObjects
 {
     FIREWORK_SHOW_TYPE_1_RED        = 180703,
@@ -897,8 +899,10 @@ public:
         return new go_cheer_speakerAI(go);
     }
 };
+}
 
 void AddSC_event_fireworks()
 {
+    using namespace FireworksShow;
     new go_cheer_speaker();
 }

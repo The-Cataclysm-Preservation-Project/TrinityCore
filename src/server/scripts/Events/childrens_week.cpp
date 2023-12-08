@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "SpellAuras.h"
 
+namespace ChildrendsWeek
+{
 enum Orphans
 {
     ORPHAN_ORACLE                           = 33533,
@@ -1115,9 +1117,11 @@ class npc_grizzlemaw_cw_trigger : public CreatureScript
             return new npc_grizzlemaw_cw_triggerAI(creature);
         }
 };
+}
 
 void AddSC_event_childrens_week()
 {
+    using namespace ChildrendsWeek;
     new npc_elder_kekek();
     new npc_high_oracle_soo_roo();
     new npc_winterfin_playmate();
