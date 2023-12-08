@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "arcatraz.h"
 
+namespace Arcatraz::ZerekethTheUnbound
+{
 enum Say
 {
     SAY_AGGRO                       = 0,
@@ -121,8 +123,11 @@ class boss_zereketh_the_unbound : public CreatureScript
             return GetArcatrazAI<boss_zereketh_the_unboundAI>(creature);
         }
 };
+}
 
 void AddSC_boss_zereketh_the_unbound()
 {
+    using namespace Arcatraz;
+    using namespace Arcatraz::ZerekethTheUnbound;
     new boss_zereketh_the_unbound();
 }

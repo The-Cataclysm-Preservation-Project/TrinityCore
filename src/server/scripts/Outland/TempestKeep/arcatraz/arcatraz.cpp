@@ -34,6 +34,8 @@ EndContentData */
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
+namespace Arcatraz
+{
 /*#####
 # npc_millhouse_manastorm
 #####*/
@@ -556,9 +558,11 @@ class npc_zerekethvoidzone : public CreatureScript
             return GetArcatrazAI<npc_zerekethvoidzoneAI>(creature);
         }
 };
+}
 
 void AddSC_arcatraz()
 {
+    using namespace Arcatraz;
     new npc_millhouse_manastorm();
     new npc_warden_mellichar();
     new npc_zerekethvoidzone();

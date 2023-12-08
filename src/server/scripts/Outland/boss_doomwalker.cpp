@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Doomwalker
+{
 enum Texts
 {
     SAY_AGGRO       = 0,
@@ -169,8 +171,10 @@ class boss_doomwalker : public CreatureScript
             return new boss_doomwalkerAI(creature);
         }
 };
+}
 
 void AddSC_boss_doomwalker()
 {
+    using namespace Doomwalker;
     new boss_doomwalker();
 }

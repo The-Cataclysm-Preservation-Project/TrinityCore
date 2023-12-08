@@ -20,6 +20,8 @@
 #include "InstanceScript.h"
 #include "the_botanica.h"
 
+namespace Botanica
+{
 class instance_the_botanica : public InstanceMapScript
 {
     public:
@@ -110,8 +112,10 @@ class instance_the_botanica : public InstanceMapScript
             return new instance_the_botanica_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_the_botanica()
 {
+    using namespace Botanica;
     new instance_the_botanica;
 }

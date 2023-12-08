@@ -21,6 +21,8 @@
 #include "SpellScript.h"
 #include "the_botanica.h"
 
+namespace Botanica::CommanderSarannis
+{
 enum Says
 {
     SAY_AGGRO                   = 0,
@@ -188,9 +190,12 @@ class spell_commander_sarannis_summon_reinforcements : public SpellScriptLoader
             return new spell_commander_sarannis_summon_reinforcements_SpellScript();
         }
 };
+}
 
 void AddSC_boss_commander_sarannis()
 {
+    using namespace Botanica;
+    using namespace Botanica::CommanderSarannis;
     new boss_commander_sarannis();
     new spell_commander_sarannis_summon_reinforcements();
 }

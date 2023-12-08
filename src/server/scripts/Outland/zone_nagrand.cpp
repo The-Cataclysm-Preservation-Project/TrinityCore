@@ -36,6 +36,8 @@ EndContentData */
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 
+namespace Nagrand
+{
 /*######
 ## npc_maghar_captive
 #####*/
@@ -632,9 +634,11 @@ class go_warmaul_prison : public GameObjectScript
             return new go_warmaul_prisonAI(go);
         }
 };
+}
 
 void AddSC_nagrand()
 {
+    using namespace Nagrand;
     new npc_maghar_captive();
     new npc_creditmarker_visit_with_ancestors();
     new npc_corki();

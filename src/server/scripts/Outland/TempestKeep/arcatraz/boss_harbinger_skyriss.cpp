@@ -33,6 +33,8 @@ EndContentData */
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace Arcatraz::HarbingerSkyriss
+{
 enum Says
 {
     SAY_INTRO              = 0,
@@ -301,9 +303,12 @@ class boss_harbinger_skyriss_illusion : public CreatureScript
             return GetArcatrazAI<boss_harbinger_skyriss_illusionAI>(creature);
         }
 };
+}
 
 void AddSC_boss_harbinger_skyriss()
 {
+    using namespace Arcatraz;
+    using namespace Arcatraz::HarbingerSkyriss;
     new boss_harbinger_skyriss();
     new boss_harbinger_skyriss_illusion();
 }

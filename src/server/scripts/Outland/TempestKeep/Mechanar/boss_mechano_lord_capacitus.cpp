@@ -22,6 +22,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Mechanar::MechanoLordCapacitus
+{
 enum Spells
 {
     SPELL_HEADCRACK                 = 35161,
@@ -255,9 +257,12 @@ class spell_capacitus_polarity_shift : public SpellScriptLoader
             return new spell_capacitus_polarity_shift_SpellScript();
         }
 };
+}
 
 void AddSC_boss_mechano_lord_capacitus()
 {
+    using namespace Mechanar;
+    using namespace Mechanar::MechanoLordCapacitus;
     new boss_mechano_lord_capacitus();
     new spell_capacitus_polarity_charge();
     new spell_capacitus_polarity_shift();

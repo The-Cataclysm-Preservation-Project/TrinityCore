@@ -29,6 +29,8 @@ EndScriptData */
 #include "TemporarySummon.h"
 #include "the_botanica.h"
 
+namespace Botanica::WarpSplinter
+{
 enum Says
 {
     SAY_AGGRO          = 0,
@@ -243,9 +245,12 @@ class boss_warp_splinter : public CreatureScript
             return GetBotanicaAI<boss_warp_splinterAI>(creature);
         }
 };
+}
 
 void AddSC_boss_warp_splinter()
 {
+    using namespace Botanica;
+    using namespace Botanica::WarpSplinter;
     new boss_warp_splinter();
     new npc_warp_splinter_treant();
 }

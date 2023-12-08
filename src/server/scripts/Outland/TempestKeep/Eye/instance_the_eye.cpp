@@ -34,6 +34,8 @@ EndScriptData */
 3 - Void Reaver event
 */
 
+namespace Eye
+{
 DoorData const doorData[] =
 {
     { GO_ARCANE_DOOR_LEFT,  DATA_KAELTHAS, DOOR_TYPE_ROOM/*, BOUNDARY_SW  */ },
@@ -123,7 +125,10 @@ class instance_the_eye : public InstanceMapScript
             return new instance_the_eye_InstanceMapScript(map);
         }
 };
+}
+
 void AddSC_instance_the_eye()
 {
+    using namespace Eye;
     new instance_the_eye;
 }

@@ -32,6 +32,8 @@ EndContentData */
 #include "Player.h"
 #include "WorldSession.h"
 
+namespace ShattrathCity
+{
 /*######
 # npc_kservant
 ######*/
@@ -176,8 +178,10 @@ public:
         void Reset() override { }
     };
 };
+}
 
 void AddSC_shattrath_city()
 {
+    using namespace ShattrathCity;
     new npc_kservant();
 }

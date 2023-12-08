@@ -28,6 +28,8 @@ EndScriptData */
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
+namespace Mechanar::NethermancerSepethrea
+{
 enum Says
 {
     SAY_AGGRO                      = 0,
@@ -232,9 +234,12 @@ class npc_ragin_flames : public CreatureScript
                 return GetMechanarAI<npc_ragin_flamesAI>(creature);
             }
 };
+}
 
 void AddSC_boss_nethermancer_sepethrea()
 {
+    using namespace Mechanar;
+    using namespace Mechanar::NethermancerSepethrea;
     new boss_nethermancer_sepethrea();
     new npc_ragin_flames();
 }

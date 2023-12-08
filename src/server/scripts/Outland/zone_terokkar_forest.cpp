@@ -40,6 +40,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "WorldSession.h"
 
+namespace TerokkarForest
+{
 /*######
 ## npc_unkor_the_ruthless
 ######*/
@@ -589,9 +591,11 @@ enum Akuno
     QUEST_ESCAPING_THE_TOMB = 10887,
     NPC_CABAL_SKRIMISHER    = 21661
 };
+}
 
 void AddSC_terokkar_forest()
 {
+    using namespace TerokkarForest;
     new npc_unkor_the_ruthless();
     new npc_infested_root_walker();
     new npc_rotting_forest_rager();

@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "the_botanica.h"
 
+namespace Botanica::Laj
+{
 enum Spells
 {
     SPELL_ALLERGIC_REACTION    = 34697,
@@ -225,8 +227,11 @@ class boss_laj : public CreatureScript
             return GetBotanicaAI<boss_lajAI>(creature);
         }
 };
+}
 
 void AddSC_boss_laj()
 {
+    using namespace Botanica;
+    using namespace Botanica::Laj;
     new boss_laj();
 }

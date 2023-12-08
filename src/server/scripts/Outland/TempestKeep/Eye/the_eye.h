@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Eye
+{
 #define TheEyeScriptName "instance_the_eye"
 #define DataHeader "TE"
 
@@ -69,6 +71,7 @@ template <class AI, class T>
 inline AI* GetTheEyeAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, TheEyeScriptName);
+}
 }
 
 #endif

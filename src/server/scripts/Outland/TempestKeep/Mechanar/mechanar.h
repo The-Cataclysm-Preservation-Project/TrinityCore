@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Mechanar
+{
 #define MechanarScriptName "instance_mechanar"
 #define DataHeader "MR"
 
@@ -45,6 +47,7 @@ template <class AI, class T>
 inline AI* GetMechanarAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, MechanarScriptName);
+}
 }
 
 #endif

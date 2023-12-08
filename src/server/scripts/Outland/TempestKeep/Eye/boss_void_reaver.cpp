@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "the_eye.h"
 
+namespace Eye::Voidreaver
+{
 enum Yells
 {
     SAY_AGGRO                   = 0,
@@ -166,8 +168,11 @@ class boss_void_reaver : public CreatureScript
             return GetTheEyeAI<boss_void_reaverAI>(creature);
         }
 };
+}
 
 void AddSC_boss_void_reaver()
 {
+    using namespace Eye;
+    using namespace Eye::Voidreaver;
     new boss_void_reaver();
 }

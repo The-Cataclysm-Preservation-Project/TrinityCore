@@ -19,6 +19,8 @@
 #include "InstanceScript.h"
 #include "mechanar.h"
 
+namespace Mechanar
+{
 static DoorData const doorData[] =
 {
     { GO_DOOR_MOARG_1,          DATA_GATEWATCHER_IRON_HAND,     DOOR_TYPE_PASSAGE },
@@ -67,8 +69,10 @@ class instance_mechanar : public InstanceMapScript
             return new instance_mechanar_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_mechanar()
 {
+    using namespace Mechanar;
     new instance_mechanar();
 }

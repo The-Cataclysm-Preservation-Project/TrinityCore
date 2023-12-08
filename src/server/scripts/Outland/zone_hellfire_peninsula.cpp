@@ -40,6 +40,9 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "WorldSession.h"
 
+namespace HellfirePeninsula
+{
+
 /*######
 ## npc_aeranas
 ######*/
@@ -1243,9 +1246,11 @@ struct npc_fear_controller : public ScriptedAI
 private:
     EventMap _events;
 };
+}
 
 void AddSC_hellfire_peninsula()
 {
+    using namespace HellfirePeninsula;
     new npc_aeranas();
     new npc_ancestral_wolf();
     new npc_wounded_blood_elf();

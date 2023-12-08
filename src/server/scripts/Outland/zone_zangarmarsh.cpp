@@ -34,6 +34,8 @@ EndContentData */
 #include "Player.h"
 #include "WorldSession.h"
 
+namespace Zangarmarsh
+{
 /*######
 ## npcs_ashyen_and_keleth
 ######*/
@@ -231,6 +233,7 @@ class npc_kayra_longmane : public CreatureScript
             return new npc_kayra_longmaneAI(creature);
         }
 };
+}
 
 /*######
 ## AddSC
@@ -238,6 +241,7 @@ class npc_kayra_longmane : public CreatureScript
 
 void AddSC_zangarmarsh()
 {
+    using namespace Zangarmarsh;
     new npcs_ashyen_and_keleth();
     new npc_kayra_longmane();
 }

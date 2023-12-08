@@ -32,6 +32,8 @@ EndScriptData */
 #include "TemporarySummon.h"
 #include "the_eye.h"
 
+namespace Eye::Astromancer
+{
 enum Yells
 {
     SAY_AGGRO                           = 0,
@@ -536,9 +538,12 @@ class spell_astromancer_wrath_of_the_astromancer : public SpellScriptLoader
             return new spell_astromancer_wrath_of_the_astromancer_AuraScript();
         }
 };
+}
 
 void AddSC_boss_high_astromancer_solarian()
 {
+    using namespace Eye;
+    using namespace Eye::Astromancer;
     new boss_high_astromancer_solarian();
     new npc_solarium_priest();
     new spell_astromancer_wrath_of_the_astromancer();

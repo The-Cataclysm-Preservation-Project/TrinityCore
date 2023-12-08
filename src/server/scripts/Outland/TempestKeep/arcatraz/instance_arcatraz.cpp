@@ -22,6 +22,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace Arcatraz
+{
 DoorData const doorData[] =
 {
     { GO_CONTAINMENT_CORE_SECURITY_FIELD_ALPHA, DATA_SOCCOTHRATES,  DOOR_TYPE_PASSAGE },
@@ -205,8 +207,10 @@ class instance_arcatraz : public InstanceMapScript
             return new instance_arcatraz_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_arcatraz()
 {
+    using namespace Arcatraz;
     new instance_arcatraz();
 }

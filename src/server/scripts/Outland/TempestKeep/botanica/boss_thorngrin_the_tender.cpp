@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "the_botanica.h"
 
+namespace Botanica::ThorngrinTheTender
+{
 enum Says
 {
     SAY_AGGRO                   = 0,
@@ -155,8 +157,11 @@ class boss_thorngrin_the_tender : public CreatureScript
             return GetBotanicaAI<boss_thorngrin_the_tenderAI>(creature);
         }
 };
+}
 
 void AddSC_boss_thorngrin_the_tender()
 {
+    using namespace Botanica;
+    using namespace Botanica::ThorngrinTheTender;
     new boss_thorngrin_the_tender();
 }

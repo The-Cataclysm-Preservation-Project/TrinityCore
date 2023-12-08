@@ -41,6 +41,8 @@ EndContentData */
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace BladesEdgeMountains
+{
 /*######
 ## npc_nether_drake
 ######*/
@@ -1051,9 +1053,11 @@ class spell_oscillating_field : public SpellScriptLoader
             return new spell_oscillating_field_SpellScript();
         }
 };
+}
 
 void AddSC_blades_edge_mountains()
 {
+    using namespace BladesEdgeMountains;
     new npc_nether_drake();
     new npc_daranelle();
     new go_legion_obelisk();

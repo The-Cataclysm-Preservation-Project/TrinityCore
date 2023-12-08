@@ -20,6 +20,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace DoomlordKazzak
+{
 enum Texts
 {
     SAY_INTRO       = 0,
@@ -251,9 +253,11 @@ class spell_twisted_reflection : public SpellScriptLoader
             return new spell_twisted_reflection_AuraScript();
         }
 };
+}
 
 void AddSC_boss_doomlordkazzak()
 {
+    using namespace DoomlordKazzak;
     new boss_doomlord_kazzak();
     new spell_mark_of_kazzak();
     new spell_twisted_reflection();

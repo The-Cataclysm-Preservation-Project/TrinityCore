@@ -31,6 +31,8 @@ EndScriptData */
 #include "TemporarySummon.h"
 #include "the_eye.h"
 
+namespace Eye::Alar
+{
 enum Spells
 {
     SPELL_FLAME_BUFFET           = 34121, // Flame Buffet - every 1, 5 secs in phase 1 if there is no victim in melee range and after Dive Bomb in phase 2 with same conditions
@@ -557,9 +559,12 @@ class npc_flame_patch_alar : public CreatureScript
             return GetTheEyeAI<npc_flame_patch_alarAI>(creature);
         }
 };
+}
 
 void AddSC_boss_alar()
 {
+    using namespace Eye;
+    using namespace Eye::Alar;
     new boss_alar();
     new npc_ember_of_alar();
     new npc_flame_patch_alar();

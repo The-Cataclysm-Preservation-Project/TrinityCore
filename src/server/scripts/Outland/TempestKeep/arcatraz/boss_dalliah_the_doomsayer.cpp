@@ -21,6 +21,8 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace Arcatraz::DalliahTheDoomsayer
+{
 enum Say
 {
     // Dalliah the Doomsayer
@@ -197,8 +199,11 @@ class boss_dalliah_the_doomsayer : public CreatureScript
             return GetArcatrazAI<boss_dalliah_the_doomsayerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_dalliah_the_doomsayer()
 {
+    using namespace Arcatraz;
+    using namespace Arcatraz::DalliahTheDoomsayer;
     new boss_dalliah_the_doomsayer();
 }

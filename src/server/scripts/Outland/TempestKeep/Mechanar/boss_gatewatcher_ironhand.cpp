@@ -26,6 +26,8 @@ EndScriptData */
 #include "mechanar.h"
 #include "ScriptedCreature.h"
 
+namespace Mechanar::GatewatcherIronhand
+{
 enum Says
 {
     SAY_AGGRO                      = 0,
@@ -129,8 +131,11 @@ class boss_gatewatcher_iron_hand : public CreatureScript
             return GetMechanarAI<boss_gatewatcher_iron_handAI>(creature);
         }
 };
+}
 
 void AddSC_boss_gatewatcher_iron_hand()
 {
+    using namespace Mechanar;
+    using namespace Mechanar::GatewatcherIronhand;
     new boss_gatewatcher_iron_hand();
 }

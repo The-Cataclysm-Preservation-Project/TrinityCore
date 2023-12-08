@@ -33,6 +33,8 @@ EndScriptData */
 #include "SpellScript.h"
 #include "the_eye.h"
 
+namespace Eye::Kaelthas
+{
 enum Yells
 {
     // Kael'thas Speech
@@ -1486,9 +1488,12 @@ class spell_kael_gravity_lapse : public SpellScriptLoader
             return new spell_kael_gravity_lapse_SpellScript();
         }
 };
+}
 
 void AddSC_boss_kaelthas()
 {
+    using namespace Eye;
+    using namespace Eye::Kaelthas;
     new boss_kaelthas();
     new boss_thaladred_the_darkener();
     new boss_lord_sanguinar();

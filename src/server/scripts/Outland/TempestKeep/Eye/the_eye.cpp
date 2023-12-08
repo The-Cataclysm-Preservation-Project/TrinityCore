@@ -30,6 +30,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "the_eye.h"
 
+namespace Eye
+{
 enum Spells
 {
     SPELL_COUNTERCHARGE    = 35035,
@@ -107,7 +109,10 @@ class npc_crystalcore_devastator : public CreatureScript
             return GetTheEyeAI<npc_crystalcore_devastatorAI>(creature);
         }
 };
+}
+
 void AddSC_the_eye()
 {
+    using namespace Eye;
     new npc_crystalcore_devastator();
 }

@@ -28,6 +28,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "the_botanica.h"
 
+namespace Botanica::HighBotanistFreywinn
+{
 enum Says
 {
     SAY_AGGRO                  = 0,
@@ -214,8 +216,11 @@ class boss_high_botanist_freywinn : public CreatureScript
             return GetBotanicaAI<boss_high_botanist_freywinnAI>(creature);
         }
 };
+}
 
 void AddSC_boss_high_botanist_freywinn()
 {
+    using namespace Botanica;
+    using namespace Botanica::HighBotanistFreywinn;
     new boss_high_botanist_freywinn();
 }

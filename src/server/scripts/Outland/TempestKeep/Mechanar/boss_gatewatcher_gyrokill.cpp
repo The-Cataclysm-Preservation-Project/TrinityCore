@@ -26,6 +26,8 @@ EndScriptData */
 #include "mechanar.h"
 #include "ScriptedCreature.h"
 
+namespace Mechanar::GatewatcherGyrokill
+{
 enum Say
 {
     SAY_AGGRO                       = 0,
@@ -123,8 +125,11 @@ class boss_gatewatcher_gyrokill : public CreatureScript
             return GetMechanarAI<boss_gatewatcher_gyrokillAI>(creature);
         }
 };
+}
 
 void AddSC_boss_gatewatcher_gyrokill()
 {
+    using namespace Mechanar;
+    using namespace Mechanar::GatewatcherGyrokill;
     new boss_gatewatcher_gyrokill();
 }

@@ -29,6 +29,8 @@ EndScriptData */
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace Arcatraz::WrathScyrerSoccothrates
+{
 enum Say
 {
     // Wrath-Scryer Soccothrates
@@ -287,8 +289,11 @@ class boss_wrath_scryer_soccothrates : public CreatureScript
             return GetArcatrazAI<boss_wrath_scryer_soccothratesAI>(creature);
         }
 };
+}
 
 void AddSC_boss_wrath_scryer_soccothrates()
 {
+    using namespace Arcatraz;
+    using namespace Arcatraz::WrathScyrerSoccothrates;
     new boss_wrath_scryer_soccothrates();
 }

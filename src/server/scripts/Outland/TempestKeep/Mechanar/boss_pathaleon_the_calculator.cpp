@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace Mechanar::PathaleonTheCalculator
+{
 enum Says
 {
     SAY_AGGRO                      = 0,
@@ -246,9 +248,12 @@ class npc_nether_wraith : public CreatureScript
             return GetMechanarAI<npc_nether_wraithAI>(creature);
         }
 };
+}
 
 void AddSC_boss_pathaleon_the_calculator()
 {
+    using namespace Mechanar;
+    using namespace Mechanar::PathaleonTheCalculator;
     new boss_pathaleon_the_calculator();
     new npc_nether_wraith();
 }

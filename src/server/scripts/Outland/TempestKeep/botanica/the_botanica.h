@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Botanica
+{
 #define BotanicaScriptName "instance_the_botanica"
 #define DataHeader "BC"
 
@@ -47,6 +49,7 @@ template <class AI, class T>
 inline AI* GetBotanicaAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, BotanicaScriptName);
+}
 }
 
 #endif
