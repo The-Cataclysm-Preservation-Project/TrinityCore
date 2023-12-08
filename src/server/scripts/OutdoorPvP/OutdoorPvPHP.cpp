@@ -25,6 +25,8 @@
 #include "WorldPacket.h"
 #include "WorldStatePackets.h"
 
+namespace OutdoorPvpScript::HP
+{
 uint32 const OutdoorPvPHPBuffZonesNum = 6;
                                                          //  HP, citadel, ramparts, blood furnace, shattered halls, mag's lair
 uint32 const OutdoorPvPHPBuffZones[OutdoorPvPHPBuffZonesNum] = { 3483, 3563, 3562, 3713, 3714, 3836 };
@@ -319,8 +321,10 @@ class OutdoorPvP_hellfire_peninsula : public OutdoorPvPScript
             return new OutdoorPvPHP(map);
         }
 };
+}
 
 void AddSC_outdoorpvp_hp()
 {
+    using namespace OutdoorPvpScript::HP;
     new OutdoorPvP_hellfire_peninsula();
 }

@@ -31,6 +31,8 @@
 #include "WorldPacket.h"
 #include "WorldStatePackets.h"
 
+namespace OutdoorPvpScript::SI
+{
 constexpr int32 SI_MAX_RESOURCES = 200;
 uint32 const SI_AREATRIGGER_H = 4168;
 uint32 const SI_AREATRIGGER_A = 4162;
@@ -248,8 +250,10 @@ class OutdoorPvP_silithus : public OutdoorPvPScript
             return new OutdoorPvPSI(map);
         }
 };
+}
 
 void AddSC_outdoorpvp_si()
 {
+    using namespace OutdoorPvpScript::SI;
     new OutdoorPvP_silithus();
 }

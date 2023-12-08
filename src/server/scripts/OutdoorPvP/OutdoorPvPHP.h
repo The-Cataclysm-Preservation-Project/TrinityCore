@@ -21,6 +21,8 @@
 #include "OutdoorPvP.h"
 #include <array>
 
+namespace OutdoorPvpScript::HP
+{
 enum DefenseMessages
 {
     TEXT_OVERLOOK_TAKEN_ALLIANCE        = 14841, // '|cffffff00The Overlook has been taken by the Alliance!|r'
@@ -97,5 +99,6 @@ class OutdoorPvPHP : public OutdoorPvP
         uint32 m_HordeTowersControlled;
         std::array<ObjectGuid::LowType, HP_TOWER_NUM> m_towerFlagSpawnIds;
 };
+}
 
 #endif

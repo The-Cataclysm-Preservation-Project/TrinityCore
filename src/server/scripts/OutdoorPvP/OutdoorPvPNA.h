@@ -28,6 +28,12 @@ namespace WorldPackets
     }
 }
 
+class Unit;
+class Creature;
+
+namespace OutdoorPvpScript::NA
+{
+
 enum DefenseMessages
 {
     TEXT_ALL_GUARDS_DEFEATED                = 15017, // (NYI) '|cffffff00All the guards have been defeated!|r'
@@ -121,9 +127,6 @@ enum HalaaStates
     HALAA_H = 16
 };
 
-class Unit;
-class Creature;
-
 class OPvPCapturePointNA : public OPvPCapturePoint
 {
     public:
@@ -170,5 +173,6 @@ class OutdoorPvPNA : public OutdoorPvP
     private:
         OPvPCapturePointNA * m_obj;
 };
+}
 
 #endif

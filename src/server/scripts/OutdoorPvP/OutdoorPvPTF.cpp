@@ -27,6 +27,8 @@
 #include "WorldPacket.h"
 #include "WorldStatePackets.h"
 
+namespace OutdoorPvpScript::TF
+{
 uint8 const OutdoorPvPTFBuffZonesNum = 5;
 uint32 const OutdoorPvPTFBuffZones[OutdoorPvPTFBuffZonesNum] =
 {
@@ -390,8 +392,10 @@ class OutdoorPvP_terokkar_forest : public OutdoorPvPScript
             return new OutdoorPvPTF(map);
         }
 };
+}
 
 void AddSC_outdoorpvp_tf()
 {
+    using namespace OutdoorPvpScript::TF;
     new OutdoorPvP_terokkar_forest();
 }

@@ -28,6 +28,8 @@ namespace WorldPackets
     }
 }
 
+namespace OutdoorPvpScript::ZM
+{
 enum DefenseMessages
 {
     TEXT_WEST_BEACON_TAKEN_ALLIANCE         = 15541, // '|cffffff00The Alliance has taken control of the West Beacon!|r'
@@ -171,6 +173,7 @@ class OutdoorPvPZM : public OutdoorPvP
         uint32 m_AllianceTowersControlled;
         uint32 m_HordeTowersControlled;
 };
+}
 
 /// @todo flag carrier death/leave/mount/activitychange should give back the gossip options
 #endif

@@ -28,6 +28,9 @@ namespace WorldPackets
     }
 }
 
+namespace OutdoorPvpScript::SI
+{
+
 enum OutdoorPvPSISpells
 {
     SI_SILITHYST_FLAG_GO_SPELL = 29518,
@@ -61,5 +64,6 @@ class OutdoorPvPSI : public OutdoorPvP
     private:
         uint32 m_LastController;
 };
+}
 
 #endif

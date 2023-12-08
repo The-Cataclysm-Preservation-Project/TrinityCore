@@ -28,6 +28,8 @@
 #include "WorldPacket.h"
 #include "WorldStatePackets.h"
 
+namespace OutdoorPvpScript::NA
+{
  // kill credit for pks
 uint32 const NA_CREDIT_MARKER = 24867; // kill credit for pks
 uint32 const NA_GUARDS_MAX = 15;
@@ -488,8 +490,10 @@ class OutdoorPvP_nagrand : public OutdoorPvPScript
             return new OutdoorPvPNA(map);
         }
 };
+}
 
 void AddSC_outdoorpvp_na()
 {
+    using namespace OutdoorPvpScript::NA;
     new OutdoorPvP_nagrand();
 }

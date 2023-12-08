@@ -28,6 +28,8 @@
 #include "WorldStatePackets.h"
 #include "GossipDef.h"
 
+namespace OutdoorPvpScript::ZM
+{
 uint8 const OutdoorPvPZMBuffZonesNum = 5;
 
 // the buff is cast in these zones
@@ -449,8 +451,10 @@ class OutdoorPvP_zangarmarsh : public OutdoorPvPScript
             return new OutdoorPvPZM(map);
         }
 };
+}
 
 void AddSC_outdoorpvp_zm()
 {
+    using namespace OutdoorPvpScript::ZM;
     new OutdoorPvP_zangarmarsh();
 }

@@ -28,6 +28,8 @@ namespace WorldPackets
     }
 }
 
+namespace OutdoorPvpScript::TF
+{
 enum DefenseMessages
 {
     TEXT_BONE_WASTES_TAKEN_ALLIANCE     = 16120, // (NYI) '|cffffff00The Alliance has taken control of The Bone Wastes!|r'
@@ -118,5 +120,6 @@ class OutdoorPvPTF : public OutdoorPvP
 
         uint32 hours_left, second_digit, first_digit;
 };
+}
 
 #endif
