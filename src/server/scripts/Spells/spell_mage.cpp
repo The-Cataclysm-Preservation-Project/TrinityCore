@@ -31,6 +31,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace Spells::Mage
+{
 enum MageSpells
 {
     SPELL_MAGE_ARCANE_POTENCY_RANK_1             = 31571,
@@ -1783,9 +1785,11 @@ class spell_mage_frostfire_bolt : public SpellScript
         OnEffectHitTarget.Register(&spell_mage_frostfire_bolt::HandleGlyphDot, EFFECT_2, SPELL_EFFECT_APPLY_AURA);
     }
 };
+}
 
 void AddSC_mage_spell_scripts()
 {
+    using namespace Spells::Mage;
     RegisterSpellScript(spell_mage_arcane_missiles_trigger);
     RegisterSpellScript(spell_mage_arcane_potency);
     RegisterSpellScript(spell_mage_blast_wave);

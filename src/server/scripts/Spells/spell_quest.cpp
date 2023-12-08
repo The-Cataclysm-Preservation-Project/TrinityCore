@@ -32,6 +32,8 @@
 #include "SpellScript.h"
 #include "Vehicle.h"
 
+namespace Spells::Quests
+{
 class spell_generic_quest_update_entry_SpellScript : public SpellScript
 {
     private:
@@ -2735,9 +2737,11 @@ public:
         return new spell_q14098_knocking_67869_SpellScript();
     }
 };
+}
 
 void AddSC_quest_spell_scripts()
 {
+    using namespace Spells::Quests;
     new spell_q55_sacred_cleansing();
     new spell_q2203_thaumaturgy_channel();
     new spell_q5206_test_fetid_skull();

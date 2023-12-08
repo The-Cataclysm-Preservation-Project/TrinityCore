@@ -32,6 +32,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace Spells::Rogue
+{
 enum RogueSpells
 {
     SPELL_ROGUE_ADRENALIN_RUSH                      = 13750,
@@ -1381,9 +1383,11 @@ class spell_rogue_venomous_wounds : public AuraScript
         AfterEffectProc.Register(&spell_rogue_venomous_wounds::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
+}
 
 void AddSC_rogue_spell_scripts()
 {
+    using namespace Spells::Rogue;
     RegisterSpellScript(spell_rog_bandits_guile);
     RegisterSpellScript(spell_rog_blade_flurry);
     RegisterSpellScript(spell_rog_cheat_death);

@@ -30,6 +30,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace Spells::Hunter
+{
 enum HunterSpells
 {
     SPELL_HUNTER_AIMED_SHOT                         = 19434,
@@ -1436,9 +1438,11 @@ class spell_hun_serpent_spread : public AuraScript
         OnEffectProc.Register(&spell_hun_serpent_spread::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
+}
 
 void AddSC_hunter_spell_scripts()
 {
+    using namespace Spells::Hunter;
     RegisterSpellScript(spell_hun_ancient_hysteria);
     RegisterSpellScript(spell_hun_camouflage);
     RegisterSpellScript(spell_hun_camouflage_duration);

@@ -33,6 +33,8 @@
 #include "SpellScript.h"
 #include "GridNotifiersImpl.h"
 
+namespace Spells::Warrior
+{
 enum WarriorSpells
 {
     SPELL_WARRIOR_BATTLE_TRANCE_TRIGGERED           = 12964,
@@ -1089,9 +1091,11 @@ class spell_warr_enraged_regeneration_AuraScript: public AuraScript
         AfterEffectRemove.Register(&spell_warr_enraged_regeneration_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_warrior_spell_scripts()
 {
+    using namespace Spells::Warrior;
     RegisterSpellScript(spell_warr_blood_craze);
     RegisterSpellScript(spell_warr_bloodthirst);
     RegisterSpellScript(spell_warr_bloodthirst_heal);

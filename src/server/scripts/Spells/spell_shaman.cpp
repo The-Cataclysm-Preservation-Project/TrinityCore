@@ -32,6 +32,8 @@
 #include "TemporarySummon.h"
 #include "Unit.h"
 
+namespace Spells::Shaman
+{
 enum ShamanSpells
 {
     SPELL_SHAMAN_ANCESTRAL_AWAKENING            = 52759,
@@ -1774,9 +1776,11 @@ class spell_sha_clearcasting : public AuraScript
         DoEffectCalcAmount.Register(&spell_sha_clearcasting::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
     }
 };
+}
 
 void AddSC_shaman_spell_scripts()
 {
+    using namespace Spells::Shaman;
     RegisterSpellScript(spell_sha_ancestral_awakening);
     RegisterSpellScript(spell_sha_ancestral_awakening_proc);
     RegisterSpellScript(spell_sha_ancestral_healing);

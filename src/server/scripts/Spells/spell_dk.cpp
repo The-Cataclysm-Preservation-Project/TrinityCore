@@ -33,6 +33,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace Spells::DeathKnight
+{
 enum DeathKnightSpells
 {
     SPELL_DK_ANTI_MAGIC_SHELL_TALENT            = 51052,
@@ -1871,9 +1873,11 @@ class spell_dk_strangulate : public SpellScript
         OnEffectHitTarget.Register(&spell_dk_strangulate::HandleCreatureInterrupt, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
+}
 
 void AddSC_deathknight_spell_scripts()
 {
+    using namespace Spells::DeathKnight;
     RegisterSpellScript(spell_dk_anti_magic_shell);
     RegisterSpellScript(spell_dk_anti_magic_zone);
     RegisterSpellScript(spell_dk_army_of_the_dead);

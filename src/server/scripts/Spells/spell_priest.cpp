@@ -30,6 +30,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Spells::Priest
+{
 enum PriestSpells
 {
     SPELL_PRIEST_ABSOLUTION                         = 33167,
@@ -1844,9 +1846,11 @@ class spell_pri_silence : public SpellScript
         OnEffectHitTarget.Register(&spell_pri_silence::HandleCreatureInterrupt, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
+}
 
 void AddSC_priest_spell_scripts()
 {
+    using namespace Spells::Priest;
     RegisterSpellScript(spell_pri_archangel);
     RegisterSpellScript(spell_pri_atonement);
     RegisterSpellScript(spell_pri_atonement_heal);

@@ -31,6 +31,8 @@
 #include "Spell.h"
 #include "TemporarySummon.h"
 
+namespace Spells::Paladin
+{
 enum PaladinSpells
 {
     SPELL_PALADIN_ANCIENT_HEALER                        = 86674,
@@ -1857,9 +1859,11 @@ class spell_pal_guarded_by_the_light : public AuraScript
             OnEffectProc.Register(&spell_pal_guarded_by_the_light::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
+}
 
 void AddSC_paladin_spell_scripts()
 {
+    using namespace Spells::Paladin;
     RegisterSpellScript(spell_pal_ardent_defender);
     RegisterSpellScript(spell_pal_ancient_healer);
     RegisterSpellScript(spell_pal_ancient_crusader);

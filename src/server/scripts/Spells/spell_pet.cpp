@@ -30,6 +30,8 @@
 #include "SpellScript.h"
 #include "Unit.h"
 
+namespace Spells::Pets
+{
 enum HunterPetCalculate
 {
     SPELL_TAMED_PET_PASSIVE_09          = 34667,
@@ -1075,9 +1077,11 @@ class spell_mage_water_elemental_scaling_02 : public AuraScript
         DoEffectCalcAmount.Register(&spell_mage_water_elemental_scaling_02::CalculateManaAmount, EFFECT_0, SPELL_AURA_MOD_INCREASE_ENERGY);
     }
 };
+}
 
 void AddSC_pet_spell_scripts()
 {
+    using namespace Spells::Pets;
     RegisterSpellScript(spell_warl_pet_scaling_01);
     RegisterSpellScript(spell_warl_pet_scaling_02);
     RegisterSpellScript(spell_warl_pet_scaling_03);

@@ -33,6 +33,8 @@
 #include "Vehicle.h"
 #include "World.h"
 
+namespace Spells::Holiday
+{
 // 45102 Romantic Picnic
 enum SpellsPicnic
 {
@@ -1891,9 +1893,11 @@ class spell_darkmoon_island_whack_a_gnoll_player_action_bar_removed : public Spe
         OnEffectHitTarget.Register(&spell_darkmoon_island_whack_a_gnoll_player_action_bar_removed::DespawnUnits, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_holiday_spell_scripts()
 {
+    using namespace Spells::Holiday;
     // Love is in the Air
     new spell_love_is_in_the_air_romantic_picnic();
     // Hallow's End

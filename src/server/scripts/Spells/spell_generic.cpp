@@ -43,6 +43,8 @@
 #include "Vehicle.h"
 #include "CreatureAIImpl.h"
 
+namespace Spells::Generic
+{
 class spell_gen_absorb0_hitlimit1 : public SpellScriptLoader
 {
     public:
@@ -5189,9 +5191,11 @@ class spell_gen_arcane_torrent_racial : public SpellScript
         OnEffectHitTarget.Register(&spell_gen_arcane_torrent_racial::HandleCreatureInterrupt, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
+}
 
 void AddSC_generic_spell_scripts()
 {
+    using namespace Spells::Generic;
     new spell_gen_absorb0_hitlimit1();
     new spell_gen_adaptive_warding();
     new spell_gen_alchemist_stone();

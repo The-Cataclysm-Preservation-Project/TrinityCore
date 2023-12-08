@@ -35,6 +35,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace Spells::Items
+{
 // Generic script for handling item dummy effects which trigger another spell.
 class spell_item_trigger_spell : public SpellScriptLoader
 {
@@ -5172,9 +5174,11 @@ public:
 private:
     std::array<uint32, 3> _procSpellIds;
 };
+}
 
 void AddSC_item_spell_scripts()
 {
+    using namespace Spells::Items;
     // 23074 Arcanite Dragonling
     new spell_item_trigger_spell("spell_item_arcanite_dragonling", SPELL_ARCANITE_DRAGONLING);
     // 23133 Gnomish Battle Chicken

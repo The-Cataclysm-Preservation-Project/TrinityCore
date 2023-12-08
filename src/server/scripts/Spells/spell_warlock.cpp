@@ -34,6 +34,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace Spells::Warlock
+{
 enum WarlockSpells
 {
     SPELL_WARLOCK_AFTERMATH_STUN                    = 85387,
@@ -1808,9 +1810,11 @@ private:
         return true;
     }
 };
+}
 
 void AddSC_warlock_spell_scripts()
 {
+    using namespace Spells::Warlock;
     RegisterSpellScript(spell_warl_aftermath);
     RegisterSpellScript(spell_warl_bane_of_havoc);
     RegisterSpellScript(spell_warl_bane_of_havoc_tracking_aura);

@@ -34,6 +34,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Spells::Druid
+{
 enum DruidSpells
 {
     SPELL_DRUID_ASTRAL_ALIGNMENT            = 90164,
@@ -2181,9 +2183,11 @@ class spell_dru_stampede_triggered : public AuraScript
         AfterEffectRemove.Register(&spell_dru_stampede_triggered::AfterRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
+}
 
 void AddSC_druid_spell_scripts()
 {
+    using namespace Spells::Druid;
     RegisterSpellScript(spell_dru_astral_alignment);
     RegisterSpellScript(spell_dru_berserk);
     RegisterSpellScript(spell_dru_blood_in_the_water);
