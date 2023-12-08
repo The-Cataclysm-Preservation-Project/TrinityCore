@@ -23,6 +23,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Pets::Shaman
+{
 enum ShamanSpells
 {
     SPELL_SHAMAN_ANGEREDEARTH   = 36213,
@@ -145,9 +147,11 @@ class npc_pet_shaman_fire_elemental : public CreatureScript
             return new npc_pet_shaman_fire_elementalAI(creature);
         }
 };
+}
 
 void AddSC_shaman_pet_scripts()
 {
+    using namespace Pets::Shaman;
     new npc_pet_shaman_earth_elemental();
     new npc_pet_shaman_fire_elemental();
 }

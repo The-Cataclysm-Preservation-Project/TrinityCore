@@ -36,6 +36,8 @@
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace Pets::Generic
+{
 enum BabyBlizzardBearMisc
 {
     SPELL_BBB_PET_SIT = 61853,
@@ -430,9 +432,11 @@ struct npc_pet_gen_soul_trader : public ScriptedAI
             DoCast(owner, SPELL_ETHEREAL_ONSUMMON);
     }
 };
+}
 
 void AddSC_generic_pet_scripts()
 {
+    using namespace Pets::Generic;
     new npc_pet_gen_baby_blizzard_bear();
     new npc_pet_gen_egbert();
     new npc_pet_gen_pandaren_monk();

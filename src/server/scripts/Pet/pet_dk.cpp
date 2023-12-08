@@ -28,6 +28,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace Pets::DeathKnight
+{
 enum DeathKnightSpells
 {
     SPELL_DK_SUMMON_GARGOYLE_1      = 49206,
@@ -316,9 +318,11 @@ struct npc_pet_dk_rune_weapon : public AggressorAI
         DoCastSelf(SPELL_DANCING_RUNE_WEAPON_VISUAL);
     }
 };
+}
 
 void AddSC_deathknight_pet_scripts()
 {
+    using namespace Pets::DeathKnight;
     new npc_pet_dk_ebon_gargoyle();
     new npc_pet_dk_guardian();
     RegisterCreatureAI(npc_pet_dk_army_of_the_dead_ghoul);

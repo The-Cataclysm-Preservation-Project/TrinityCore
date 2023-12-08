@@ -25,6 +25,8 @@
 #include "PassiveAI.h"
 #include "PetAI.h"
 
+namespace Pets::Priest
+{
 enum PriestSpells
 {
     SPELL_PRIEST_GLYPH_OF_SHADOWFIEND       = 58228,
@@ -82,9 +84,11 @@ class npc_pet_pri_shadowfiend : public CreatureScript
             return new npc_pet_pri_shadowfiendAI(creature);
         }
 };
+}
 
 void AddSC_priest_pet_scripts()
 {
+    using namespace Pets::Priest;
     new npc_pet_pri_lightwell();
     new npc_pet_pri_shadowfiend();
 }

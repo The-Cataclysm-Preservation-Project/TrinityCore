@@ -27,6 +27,8 @@
 #include "PetAI.h"
 #include "ScriptedCreature.h"
 
+namespace Pets::Paladin
+{
 enum GuardianOfAncientKings
 {
     SPELL_ANCIENT_GUARDIAN                      = 86657,
@@ -54,8 +56,10 @@ struct npc_pet_pal_guardian_of_ancient_kings : public PetAI
         }
     }
 };
+}
 
 void AddSC_paladin_pet_script()
 {
+    using namespace Pets::Paladin;
     RegisterCreatureAI(npc_pet_pal_guardian_of_ancient_kings);
 }

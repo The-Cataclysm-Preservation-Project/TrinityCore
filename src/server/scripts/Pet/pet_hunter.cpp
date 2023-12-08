@@ -27,6 +27,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Pets::Hunter
+{
 enum HunterSpells
 {
     SPELL_HUNTER_CRIPPLING_POISON       = 30981, // Viper
@@ -274,9 +276,11 @@ class spell_pet_culling_the_herd : public SpellScriptLoader
             return new spell_pet_culling_the_herd_AuraScript();
         }
 };
+}
 
 void AddSC_hunter_pet_scripts()
 {
+    using namespace Pets::Hunter;
     new npc_pet_hunter_snake_trap();
     new spell_pet_guard_dog();
     new spell_pet_silverback();
