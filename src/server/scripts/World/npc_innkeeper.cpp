@@ -55,6 +55,8 @@ class npc_innkeeper : public CreatureScript
 
             bool GossipHello(Player* player) override
             {
+                InitGossipMenuFor(player, NPC_GOSSIP_MENU);
+
                 if (IsHolidayActive(HOLIDAY_HALLOWS_END) && !player->HasAura(SPELL_TRICK_OR_TREATED))
                     AddGossipItemFor(player, NPC_GOSSIP_MENU_EVENT, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
