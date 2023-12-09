@@ -28,7 +28,7 @@ EndScriptData */
 #include "ScriptedGossip.h"
 #include "GameEventMgr.h"
 #include "Player.h"
-#include "Worldsession.h"
+#include "WorldSession.h"
 
 namespace NpcInnkeeper
 {
