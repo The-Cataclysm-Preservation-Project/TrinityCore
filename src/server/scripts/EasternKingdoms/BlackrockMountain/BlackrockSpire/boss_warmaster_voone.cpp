@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::WarmasterVoone
+{
 enum Spells
 {
     SPELL_SNAPKICK                  = 15618,
@@ -121,8 +123,11 @@ public:
         return new boss_warmastervooneAI(creature);
     }
 };
+}
 
 void AddSC_boss_warmastervoone()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::WarmasterVoone;
     new boss_warmaster_voone();
 }

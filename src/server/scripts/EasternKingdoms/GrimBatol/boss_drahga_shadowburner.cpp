@@ -27,6 +27,8 @@
 #include "TemporarySummon.h"
 #include "grim_batol.h"
 
+namespace GrimBatol::DrahgaShadowburner
+{
 enum Spells
 {
     // Drahga
@@ -539,9 +541,12 @@ class spell_drahga_devouring_flames : public SpellScript
         OnHit.Register(&spell_drahga_devouring_flames::ChangeDamage);
     }
 };
+}
 
 void AddSC_boss_drahga_shadowburner()
 {
+    using namespace GrimBatol;
+    using namespace GrimBatol::DrahgaShadowburner;
     RegisterGrimBatolCreatureAI(boss_drahga_shadowburner);
     RegisterGrimBatolCreatureAI(npc_drahga_valiona);
     RegisterGrimBatolCreatureAI(npc_drahga_invoked_flaming_spirit);

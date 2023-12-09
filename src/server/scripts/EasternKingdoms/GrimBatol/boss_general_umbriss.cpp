@@ -25,6 +25,8 @@
 #include "MotionMaster.h"
 #include "grim_batol.h"
 
+namespace GrimBatol::GeneralUmbriss
+{
 enum Spells
 {
     // General Umbriss
@@ -364,9 +366,12 @@ class spell_umbriss_bleeding_wound : public AuraScript
         OnEffectPeriodic.Register(&spell_umbriss_bleeding_wound::HandleRemoval, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
+}
 
 void AddSC_boss_general_umbriss()
 {
+    using namespace GrimBatol;
+    using namespace GrimBatol::GeneralUmbriss;
     RegisterGrimBatolCreatureAI(boss_general_umbriss);
     RegisterGrimBatolCreatureAI(npc_umbriss_skardyn);
     RegisterSpellScript(spell_umbriss_summon_blitz_trigger);

@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "scholomance.h"
 
+namespace Scholomance::InstructorMalicia
+{
 enum Spells
 {
     SPELL_CALLOFGRAVES          = 17831,
@@ -152,8 +154,11 @@ class boss_instructor_malicia : public CreatureScript
         }
 
 };
+}
 
 void AddSC_boss_instructormalicia()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::InstructorMalicia;
     new boss_instructor_malicia();
 }

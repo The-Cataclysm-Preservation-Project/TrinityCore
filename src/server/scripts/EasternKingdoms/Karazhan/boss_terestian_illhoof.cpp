@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace Karazhan::TerestianIllhoof
+{
 enum TerestianSays
 {
     SAY_SLAY                  = 0,
@@ -318,9 +320,12 @@ public:
         return GetKarazhanAI<npc_fiendish_impAI>(creature);
     }
 };
+}
 
 void AddSC_boss_terestian_illhoof()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::TerestianIllhoof;
     new boss_terestian_illhoof();
     new npc_kilrek();
     new npc_demon_chain();

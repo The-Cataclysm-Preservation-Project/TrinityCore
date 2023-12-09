@@ -30,6 +30,8 @@ EndScriptData */
 #include "Map.h"
 #include "Random.h"
 
+namespace Karazhan
+{
 /*
 0  - Attumen + Midnight (optional)
 1  - Moroes
@@ -330,8 +332,10 @@ public:
         ObjectGuid BlackenedUrnGUID;
     };
 };
+}
 
 void AddSC_instance_karazhan()
 {
+    using namespace Karazhan;
     new instance_karazhan();
 }

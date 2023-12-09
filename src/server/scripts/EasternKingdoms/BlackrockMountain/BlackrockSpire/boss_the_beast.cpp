@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::TheBeast
+{
 enum Spells
 {
     SPELL_FLAMEBREAK                = 16785,
@@ -101,8 +103,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_thebeast()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::TheBeast;
     new boss_the_beast();
 }

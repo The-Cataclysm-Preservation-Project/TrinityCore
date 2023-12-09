@@ -23,6 +23,8 @@
 #include "SpellInfo.h"
 #include "zulaman.h"
 
+namespace ZulAman::Halazzi
+{
 enum Texts
 {
 };
@@ -71,8 +73,11 @@ struct boss_halazzi : public BossAI
         DoMeleeAttackIfReady();
     }
 };
+}
 
 void AddSC_boss_halazzi()
 {
+    using namespace ZulAman;
+    using namespace ZulAman::Halazzi;
     RegisterZulAamanCreatureAI(boss_halazzi);
 }

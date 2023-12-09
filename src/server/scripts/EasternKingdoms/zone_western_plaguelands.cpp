@@ -33,6 +33,8 @@ EndContentData */
 #include "Player.h"
 #include "WorldSession.h"
 
+namespace WesternPlaguelands
+{
 /*######
 ## npc_the_scourge_cauldron
 ######*/
@@ -150,9 +152,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_western_plaguelands()
 {
+    using namespace WesternPlaguelands;
     new npc_the_scourge_cauldron();
     new npc_andorhal_tower();
 }

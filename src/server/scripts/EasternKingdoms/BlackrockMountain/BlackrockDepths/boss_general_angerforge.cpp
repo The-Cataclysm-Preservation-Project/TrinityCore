@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockDepths::GeneralAngerforge
+{
 enum Spells
 {
     SPELL_MIGHTYBLOW                                       = 14099,
@@ -133,8 +135,11 @@ class boss_general_angerforge : public CreatureScript
             return new boss_general_angerforgeAI(creature);
         }
 };
+}
 
 void AddSC_boss_general_angerforge()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::GeneralAngerforge;
     new boss_general_angerforge();
 }

@@ -31,6 +31,8 @@ EndContentData */
 #include "Player.h"
 #include "ScriptedEscortAI.h"
 
+namespace Hinterlands
+{
 /*######
 ## npc_oox09hl
 ######*/
@@ -234,9 +236,11 @@ public:
         return new npc_sharpbeak_AI(creature);
     }
 };
+}
 
 void AddSC_hinterlands()
 {
+    using namespace Hinterlands;
     new npc_oox09hl();
     new npc_sharpbeak();
 }

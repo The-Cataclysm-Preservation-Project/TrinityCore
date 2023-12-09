@@ -34,6 +34,8 @@ EndContentData */
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
+namespace Ghostlands
+{
 /*######
 
 ## npc_ranger_lilatha
@@ -142,8 +144,10 @@ public:
         return new npc_ranger_lilathaAI(creature);
     }
 };
+}
 
 void AddSC_ghostlands()
 {
+    using namespace Ghostlands;
     new npc_ranger_lilatha();
 }

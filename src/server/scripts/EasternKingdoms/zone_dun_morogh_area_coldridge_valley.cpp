@@ -25,6 +25,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace CodridgeValley
+{
 enum WoundedColdridgeMountaineer
 {
     NPC_JOREN_IRONSTOCK            = 37081,
@@ -453,9 +455,11 @@ public:
         return new spell_low_health_SpellScript();
     }
 };
+}
 
 void AddSC_dun_morogh_area_coldridge_valley()
 {
+    using namespace CodridgeValley;
     new npc_wounded_coldridge_mountaineer();
     new npc_wounded_milita();
     new npc_milos_gyro();

@@ -32,6 +32,8 @@ EndScriptData */
 #include "ScriptedGossip.h"
 #include "MotionMaster.h"
 
+namespace MoltenCore::MajordomoExecutus
+{
 enum Texts
 {
     SAY_AGGRO           = 0,
@@ -257,8 +259,11 @@ class boss_majordomo : public CreatureScript
             return GetMoltenCoreAI<boss_majordomoAI>(creature);
         }
 };
+}
 
 void AddSC_boss_majordomo()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::MajordomoExecutus;
     new boss_majordomo();
 }

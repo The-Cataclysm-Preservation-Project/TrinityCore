@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "molten_core.h"
 
+namespace MoltenCore::SulfuronHarbinger
+{
 enum Spells
 {
     // Sulfuron Harbringer
@@ -213,9 +215,12 @@ class npc_flamewaker_priest : public CreatureScript
             return new npc_flamewaker_priestAI(creature);
         }
 };
+}
 
 void AddSC_boss_sulfuron()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::SulfuronHarbinger;
     new boss_sulfuron();
     new npc_flamewaker_priest();
 }

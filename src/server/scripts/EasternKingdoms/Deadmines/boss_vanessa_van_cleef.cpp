@@ -27,6 +27,8 @@
 #include "ObjectAccessor.h"
 #include "SpellScript.h"
 
+namespace Deadmines::VanessaVanCleef
+{
 enum Texts
 {
     // Vanessa VanCleef
@@ -731,9 +733,12 @@ class spell_vanessa_backslash_targeting : public SpellScriptLoader
             return new spell_vanessa_backslash_targeting_SpellScript();
         }
 };
+}
 
 void AddSC_boss_vanessa_van_cleef()
 {
+    using namespace Deadmines;
+    using namespace Deadmines::VanessaVanCleef;
     new boss_vanessa_van_cleef();
     new npc_vanessa_vanessa_van_cleef();
     new npc_vanessa_note_from_vanessa();

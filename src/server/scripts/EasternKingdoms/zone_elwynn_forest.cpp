@@ -27,6 +27,8 @@
 #include "ScriptMgr.h"
 #include "SpellScript.h"
 
+namespace ElwynnForest
+{
 enum Northshire
 {
     NPC_STORWIND_INFANTRY                   = 49869,
@@ -762,9 +764,11 @@ private:
     bool _started;
     GuidVector _childrenGUIDs;
 };
+}
 
 void AddSC_elwynn_forest()
 {
+    using namespace ElwynnForest;
     RegisterCreatureAI(npc_stormwind_infantry);
     RegisterCreatureAI(npc_blackrock_battle_worg);
     RegisterCreatureAI(npc_injured_stormwind_infantry_dummy);

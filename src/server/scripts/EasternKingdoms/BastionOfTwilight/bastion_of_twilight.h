@@ -18,10 +18,12 @@
 #ifndef DEF_BASTION_OF_TWILIGHT_H
 #define DEF_BASTION_OF_TWILIGHT_H
 
+#include "CreatureAIImpl.h"
+
+namespace BastionOfTwilight
+{
 #define DataHeader "BoT"
 #define BoTScriptName "instance_bastion_of_twilight"
-
-#include "CreatureAIImpl.h"
 
 uint32 const EncounterCountNormal = 4;
 uint32 const EncounterCountHeroic = 5;
@@ -218,6 +220,7 @@ template<class AI>
 AI* GetBastionOfTwilightAI(GameObject* go)
 {
     return GetInstanceAI<AI>(go, BoTScriptName);
+}
 }
 
 #endif

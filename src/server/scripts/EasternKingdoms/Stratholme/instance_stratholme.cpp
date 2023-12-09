@@ -28,6 +28,8 @@
 #include "Player.h"
 #include "stratholme.h"
 
+namespace Stratholme
+{
 enum InstanceEvents
 {
     EVENT_BARON_RUN         = 1,
@@ -487,8 +489,10 @@ class instance_stratholme : public InstanceMapScript
             return new instance_stratholme_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_stratholme()
 {
+    using namespace Stratholme;
     new instance_stratholme();
 }

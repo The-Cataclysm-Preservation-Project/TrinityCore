@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace GrimBatol
+{
 #define GBScriptName "instance_grim_batol"
 #define DataHeader   "GB"
 
@@ -104,5 +106,6 @@ AI* GetGrimBatolAI(T* creature)
 }
 
 #define RegisterGrimBatolCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetGrimBatolAI)
+}
 
 #endif // GRIM_BATOL_H_

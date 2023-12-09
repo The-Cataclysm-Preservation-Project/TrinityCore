@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "karazhan.h"
 
+namespace Karazhan::MaidenOfVirtue
+{
 enum Spells
 {
     SPELL_REPENTANCE    = 29511,
@@ -126,8 +128,11 @@ public:
         return GetKarazhanAI<boss_maiden_of_virtueAI>(creature);
     }
 };
+}
 
 void AddSC_boss_maiden_of_virtue()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::MaidenOfVirtue;
     new boss_maiden_of_virtue();
 }

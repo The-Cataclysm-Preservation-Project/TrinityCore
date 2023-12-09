@@ -25,6 +25,8 @@
 #include "SpellScript.h"
 #include "zulgurub.h"
 
+namespace ZulGurub::HighPriestesKilnara
+{
 enum Yells
 {
     // High Priestess Kilnara
@@ -464,9 +466,12 @@ class spell_kilnara_gaping_wound : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_kilnara_gaping_wound::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
+}
 
 void AddSC_boss_high_priestess_kilnara()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::HighPriestesKilnara;
     RegisterZulGurubCreatureAI(boss_high_priestess_kilnara);
     RegisterZulGurubCreatureAI(npc_kilnara_pride_of_bethekk);
 

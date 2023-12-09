@@ -34,6 +34,8 @@
 #include "Vehicle.h"
 #include "bastion_of_twilight.h"
 
+namespace BastionOfTwilight::Chogall
+{
 enum Texts
 {
     // Cho'Gall
@@ -1380,9 +1382,12 @@ class spell_chogall_debilitating_beam final : public AuraScript
         OnEffectPeriodic.Register(&spell_chogall_debilitating_beam::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
+}
 
 void AddSC_boss_chogall()
 {
+    using namespace BastionOfTwilight;
+    using namespace BastionOfTwilight::Chogall;
     RegisterBastionOfTwilightCreatureAI(boss_chogall);
     RegisterBastionOfTwilightCreatureAI(npc_chogall_corrupting_adherent);
     RegisterBastionOfTwilightCreatureAI(npc_chogall_blood_of_the_old_god);

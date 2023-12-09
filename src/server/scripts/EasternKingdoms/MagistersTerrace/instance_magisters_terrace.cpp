@@ -26,6 +26,9 @@
 #include "ObjectAccessor.h"
 #include "TemporarySummon.h"
 
+namespace MagistersTerrace
+{
+
 /*
 0  - Selin Fireheart
 1  - Vexallus
@@ -227,8 +230,10 @@ class instance_magisters_terrace : public InstanceMapScript
             return new instance_magisters_terrace_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_magisters_terrace()
 {
+    using namespace MagistersTerrace;
     new instance_magisters_terrace();
 }

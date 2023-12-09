@@ -26,6 +26,8 @@
 #include "Map.h"
 #include "grim_batol.h"
 
+namespace GrimBatol::ForgemasterThrongus
+{
 enum Spells
 {
     // Forgemaster Throngus
@@ -465,9 +467,12 @@ class spell_throngus_impaling_slam : public AuraScript
         AfterEffectRemove.Register(&spell_throngus_impaling_slam::AfterRemove, EFFECT_2, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_forgemaster_throngus()
 {
+    using namespace GrimBatol;
+    using namespace GrimBatol::ForgemasterThrongus;
     RegisterGrimBatolCreatureAI(boss_forgemaster_throngus);
     RegisterSpellScript(spell_throngus_mighty_stomp);
     RegisterSpellScript(spell_throngus_pick_weapon);

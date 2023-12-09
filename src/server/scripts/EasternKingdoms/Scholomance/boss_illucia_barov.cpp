@@ -26,6 +26,8 @@ Category: Scholomance
 #include "ScriptedCreature.h"
 #include "scholomance.h"
 
+namespace Scholomance::IlluciaBarov
+{
 enum Spells
 {
     SPELL_CURSEOFAGONY          = 18671,
@@ -107,8 +109,11 @@ class boss_illucia_barov : public CreatureScript
             return new boss_illuciabarovAI(creature);
         }
 };
+}
 
 void AddSC_boss_illuciabarov()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::IlluciaBarov;
     new boss_illucia_barov();
 }

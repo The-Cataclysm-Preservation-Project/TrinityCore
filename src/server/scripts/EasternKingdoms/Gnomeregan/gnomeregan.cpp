@@ -34,6 +34,8 @@ Script Data End */
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Gnomeregan
+{
 enum BlastmasterEmi
 {
     SAY_BLASTMASTER_0   = 0,
@@ -579,9 +581,11 @@ class spell_collecting_fallout : public SpellScriptLoader
             return new spell_collecting_fallout_SpellScript();
         }
 };
+}
 
 void AddSC_gnomeregan()
 {
+    using namespace Gnomeregan;
     new npc_blastmaster_emi_shortfuse();
     new boss_grubbis();
 

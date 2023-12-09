@@ -24,6 +24,8 @@
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockSpire
+{
 //uint32 const DragonspireRunes[7] = { GO_HALL_RUNE_1, GO_HALL_RUNE_2, GO_HALL_RUNE_3, GO_HALL_RUNE_4, GO_HALL_RUNE_5, GO_HALL_RUNE_6, GO_HALL_RUNE_7 };
 
 uint32 const DragonspireMobs[3] = { NPC_BLACKHAND_DREADWEAVER, NPC_BLACKHAND_SUMMONER, NPC_BLACKHAND_VETERAN };
@@ -589,9 +591,11 @@ public:
         return false;
     }
 };
+}
 
 void AddSC_instance_blackrock_spire()
 {
+    using namespace BlackrockSpire;
     new instance_blackrock_spire();
     new at_dragonspire_hall();
     new at_blackrock_stadium();

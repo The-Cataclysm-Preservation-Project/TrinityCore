@@ -33,6 +33,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 
+namespace MagistersTerrace
+{
 /*######
 ## npc_kalecgos
 ######*/
@@ -204,9 +206,11 @@ struct npc_mgt_shattered_sun_sentry : public ScriptedAI
             me->GetMotionMaster()->MovePoint(POINT_ID_PREPARE_SPLINE_PATH, ShatteredSunSentryWaypoint1);
     }
 };
+}
 
 void AddSC_magisters_terrace()
 {
+    using namespace MagistersTerrace;
     new npc_kalecgos();
     RegisterMagistersTerraceCreatureAI(npc_mgt_shattered_sun_sentry);
 }

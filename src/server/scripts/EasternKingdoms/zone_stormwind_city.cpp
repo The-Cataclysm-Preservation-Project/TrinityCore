@@ -15,6 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace StormwindCity
+{
+}
+
 void AddSC_stormwind_city()
 {
+    using namespace StormwindCity;
 }

@@ -22,6 +22,8 @@
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockSpire::Gyth
+{
 enum Spells
 {
     SPELL_REND_MOUNTS               = 16167, // Change model
@@ -182,8 +184,11 @@ public:
         return GetBlackrockSpireAI<boss_gythAI>(creature);
     }
 };
+}
 
 void AddSC_boss_gyth()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::Gyth;
     new boss_gyth();
 }

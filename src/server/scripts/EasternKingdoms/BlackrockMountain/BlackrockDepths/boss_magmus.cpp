@@ -20,6 +20,8 @@
 #include "InstanceScript.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockDepths::Magmus
+{
 enum Spells
 {
     SPELL_FIERYBURST        = 13900,
@@ -109,8 +111,11 @@ class boss_magmus : public CreatureScript
             return GetBlackrockDepthsAI<boss_magmusAI>(creature);
         }
 };
+}
 
 void AddSC_boss_magmus()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::Magmus;
     new boss_magmus();
 }

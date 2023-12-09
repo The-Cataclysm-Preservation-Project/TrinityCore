@@ -20,6 +20,8 @@
 #include "InstanceScript.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockSpire::LordValthalak
+{
 enum Spells
 {
     SPELL_FRENZY                    = 8269,
@@ -142,8 +144,11 @@ public:
         return GetBlackrockSpireAI<boss_lord_valthalakAI>(creature);
     }
 };
+}
 
 void AddSC_boss_lord_valthalak()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::LordValthalak;
     new boss_lord_valthalak();
 }

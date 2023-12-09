@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace BlackwingDescent
+{
 #define DataHeader "BWD"
 #define BWDScriptName "instance_blackwing_descent"
 
@@ -231,5 +233,6 @@ inline AI* GetBlackwingDescentAI(T* obj)
 }
 
 #define RegisterBlackwingDescentCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetBlackwingDescentAI)
+}
 
 #endif

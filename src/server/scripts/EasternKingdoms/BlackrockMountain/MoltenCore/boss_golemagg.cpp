@@ -29,6 +29,8 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "ScriptedCreature.h"
 
+namespace MoltenCore::Golemagg
+{
 enum Texts
 {
     EMOTE_LOWHP             = 0,
@@ -190,9 +192,12 @@ class npc_core_rager : public CreatureScript
             return GetMoltenCoreAI<npc_core_ragerAI>(creature);
         }
 };
+}
 
 void AddSC_boss_golemagg()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::Golemagg;
     new boss_golemagg();
     new npc_core_rager();
 }

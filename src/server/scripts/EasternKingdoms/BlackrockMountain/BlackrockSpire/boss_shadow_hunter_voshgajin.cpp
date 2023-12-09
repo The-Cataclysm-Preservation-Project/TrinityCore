@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::ShadowHunterVoshgajin
+{
 enum Spells
 {
     SPELL_CURSEOFBLOOD              = 24673,
@@ -103,8 +105,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_shadowvosh()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::ShadowHunterVoshgajin;
     new boss_shadow_hunter_voshgajin();
 }

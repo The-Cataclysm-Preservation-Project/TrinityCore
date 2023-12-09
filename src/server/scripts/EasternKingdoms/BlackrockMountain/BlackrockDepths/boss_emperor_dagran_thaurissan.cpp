@@ -21,6 +21,8 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockDepths::EmperorDagranThaurissan
+{
 enum Yells
 {
     SAY_AGGRO                                              = 0,
@@ -123,8 +125,11 @@ class boss_emperor_dagran_thaurissan : public CreatureScript
             return GetBlackrockDepthsAI<boss_draganthaurissanAI>(creature);
         }
 };
+}
 
 void AddSC_boss_draganthaurissan()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::EmperorDagranThaurissan;
     new boss_emperor_dagran_thaurissan();
 }

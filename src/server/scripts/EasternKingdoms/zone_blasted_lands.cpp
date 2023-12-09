@@ -26,6 +26,8 @@ Quest support: 3628.
 #include "Player.h"
 #include "Group.h"
 
+namespace BlastedLands
+{
 enum DeathlyUsher
 {
     SPELL_TELEPORT_SINGLE               = 12885,
@@ -75,8 +77,10 @@ class spell_razelikh_teleport_group : public SpellScriptLoader
             return new spell_razelikh_teleport_group_SpellScript();
         }
 };
+}
 
 void AddSC_blasted_lands()
 {
+    using namespace BlastedLands;
     new spell_razelikh_teleport_group();
 }

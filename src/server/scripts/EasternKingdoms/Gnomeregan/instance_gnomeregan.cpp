@@ -24,6 +24,8 @@
 #include "Map.h"
 #include "Player.h"
 
+namespace Gnomeregan
+{
 #define    MAX_ENCOUNTER  1
 
 class instance_gnomeregan : public InstanceMapScript
@@ -132,8 +134,10 @@ public:
         return new instance_gnomeregan_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_gnomeregan()
 {
+    using namespace Gnomeregan;
     new instance_gnomeregan();
 }

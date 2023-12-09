@@ -20,6 +20,8 @@
 
 #include "Position.h"
 
+namespace Gilneas
+{
 /*######
 ## Quest 14154 - By the Skin of his Teeth
 ######*/
@@ -304,5 +306,6 @@ Position const greymanesHorsePath2[] =
     { -1771.557f, 1423.011f, 19.98499f },
     { -1770.955f, 1430.332f, 19.83506f }
 };
+}
 
 #endif // GILNEAS_M_

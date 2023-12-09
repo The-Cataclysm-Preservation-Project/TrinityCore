@@ -28,6 +28,8 @@
 #include "Map.h"
 #include "blackwing_descent.h"
 
+namespace BlackwingDescent::Chimaeron
+{
 enum Spells
 {
     // Chimaeron
@@ -681,9 +683,12 @@ class spell_chimaeron_shadow_whip : public SpellScript
         OnEffectHitTarget.Register(&spell_chimaeron_shadow_whip::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_boss_chimaeron()
 {
+    using namespace BlackwingDescent;
+    using namespace BlackwingDescent::Chimaeron;
     RegisterBlackwingDescentCreatureAI(boss_chimaeron);
     RegisterBlackwingDescentCreatureAI(npc_chimaeron_finkle_einhorn);
     RegisterBlackwingDescentCreatureAI(npc_chimaeron_bile_o_tron);

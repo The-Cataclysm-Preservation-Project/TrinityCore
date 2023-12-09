@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedEscortAI.h"
 #include "scarlet_monastery.h"
 
+namespace ScarletMonastery::Herod
+{
 enum Says
 {
     SAY_AGGRO                   = 0,
@@ -175,9 +177,12 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_herod()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::Herod;
     new boss_herod();
     new npc_scarlet_trainee();
 }

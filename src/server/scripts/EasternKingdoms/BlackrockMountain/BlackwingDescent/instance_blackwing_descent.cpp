@@ -26,6 +26,8 @@
 #include "TemporarySummon.h"
 #include "blackwing_descent.h"
 
+namespace BlackwingDescent
+{
 ObjectData const creatureData[] =
 {
     { BOSS_MAGMAW,                              DATA_MAGMAW                             },
@@ -534,8 +536,10 @@ class instance_blackwing_descent : public InstanceMapScript
             return new instance_blackwing_descent_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_blackwing_descent()
 {
+    using namespace BlackwingDescent;
     new instance_blackwing_descent();
 }

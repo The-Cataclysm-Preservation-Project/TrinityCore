@@ -29,6 +29,8 @@
 #include "Transport.h"
 #include "Vehicle.h"
 
+namespace ThroneOfTheTides
+{
 enum OzumatVehicleBig
 {
     SEAT_TENTACLE_BLOCK = 0,
@@ -516,9 +518,11 @@ class at_tott_neptulon_intro : public AreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_throne_of_the_tides()
 {
+    using namespace ThroneOfTheTides;
     RegisterThroneOfTheTidesCreatureAI(npc_tott_ozumat_vehicle_big);
     RegisterThroneOfTheTidesCreatureAI(npc_tott_lady_nazjar);
     RegisterSpellScript(spell_tott_trigger_murloc);

@@ -26,6 +26,8 @@
 #include "TemporarySummon.h"
 #include "WorldStateMgr.h"
 
+namespace TheScarletEnclave::Chapter3
+{
 #define LESS_MOB // if you do not have a good server and do not want it to be laggy as hell
 //Light of Dawn
 enum mograine
@@ -1654,9 +1656,11 @@ public:
     };
 
 };
+}
 
 void AddSC_the_scarlet_enclave_chapter_5()
 {
+    using namespace TheScarletEnclave::Chapter3;
     new npc_highlord_darion_mograine();
     new npc_the_lich_king_tirion_dawn();
 }

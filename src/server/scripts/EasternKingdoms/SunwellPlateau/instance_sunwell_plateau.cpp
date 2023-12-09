@@ -34,6 +34,8 @@
 5 - Kil'Jaeden
 */
 
+namespace SunwellPlateau
+{
 DoorData const doorData[] =
 {
     { GO_FIRE_BARRIER,     DATA_FELMYST,  DOOR_TYPE_PASSAGE },
@@ -234,8 +236,10 @@ class instance_sunwell_plateau : public InstanceMapScript
             return new instance_sunwell_plateau_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_sunwell_plateau()
 {
+    using namespace SunwellPlateau;
     new instance_sunwell_plateau();
 }

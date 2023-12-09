@@ -19,6 +19,8 @@
 #include "blackwing_lair.h"
 #include "ScriptedCreature.h"
 
+namespace BlackwingLair::Firemaw
+{
 enum Spells
 {
     SPELL_SHADOWFLAME       = 22539,
@@ -94,8 +96,11 @@ public:
         return GetBlackwingLairAI<boss_firemawAI>(creature);
     }
 };
+}
 
 void AddSC_boss_firemaw()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::Firemaw;
     new boss_firemaw();
 }

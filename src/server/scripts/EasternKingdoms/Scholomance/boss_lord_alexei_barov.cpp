@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "scholomance.h"
 
+namespace Scholomance::LordAlexeiBarov
+{
 enum Spells
 {
     SPELL_IMMOLATE                  = 20294,
@@ -101,8 +103,11 @@ class boss_lord_alexei_barov : public CreatureScript
             return new boss_lordalexeibarovAI(creature);
         }
 };
+}
 
 void AddSC_boss_lordalexeibarov()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::LordAlexeiBarov;
     new boss_lord_alexei_barov();
 }

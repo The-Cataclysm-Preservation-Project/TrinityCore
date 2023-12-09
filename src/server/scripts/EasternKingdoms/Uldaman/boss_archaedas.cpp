@@ -35,6 +35,8 @@ EndScriptData */
 #include "SpellInfo.h"
 #include "uldaman.h"
 
+namespace Uldaman::Archaedas
+{
 enum Says
 {
     SAY_AGGRO                   = 0,
@@ -408,11 +410,14 @@ class go_altar_of_archaedas : public GameObjectScript
             return GetUldamanAI<go_altar_of_archaedasAI>(go);
         }
 };
+}
 
 //This is the actual function called only once durring InitScripts()
 //It must define all handled functions that are to be run in this script
 void AddSC_boss_archaedas()
 {
+    using namespace Uldaman;
+    using namespace Uldaman::Archaedas;
     new boss_archaedas();
     new npc_archaedas_minions();
     new npc_stonekeepers();

@@ -29,6 +29,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace Karazhan::Moroes
+{
 enum Yells
 {
     SAY_AGGRO           = 0,
@@ -799,9 +801,12 @@ public:
         return GetKarazhanAI<boss_lord_crispin_ferenceAI>(creature);
     }
 };
+}
 
 void AddSC_boss_moroes()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::Moroes;
     new boss_moroes();
     new boss_baroness_dorothea_millstipe();
     new boss_baron_rafe_dreuger();

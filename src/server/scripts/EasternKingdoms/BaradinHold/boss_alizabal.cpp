@@ -25,6 +25,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace BaradinHold::Alizabal
+{
 enum Texts
 {
     // Alizabal
@@ -250,9 +252,12 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_boss_alizabal()
 {
+    using namespace BaradinHold;
+    using namespace BaradinHold::Alizabal;
     RegisterBaradinHoldCreatureAI(boss_alizabal);
     RegisterSpellScript(spell_alizabal_seething_hate);
     new at_alizabal_intro();

@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::UrokDoomhowl
+{
 enum Spells
 {
     SPELL_REND                      = 16509,
@@ -104,8 +106,11 @@ public:
         return new boss_urok_doomhowlAI(creature);
     }
 };
+}
 
 void AddSC_boss_urok_doomhowl()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::UrokDoomhowl;
     new boss_urok_doomhowl();
 }

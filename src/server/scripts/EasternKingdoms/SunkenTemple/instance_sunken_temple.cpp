@@ -28,6 +28,8 @@ EndScriptData */
 #include "Map.h"
 #include "sunken_temple.h"
 
+namespace SunkenTemple
+{
 enum Gameobject
 {
     GO_ATALAI_STATUE1           = 148830,
@@ -203,8 +205,10 @@ public:
         return new instance_sunken_temple_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_sunken_temple()
 {
+    using namespace SunkenTemple;
     new instance_sunken_temple();
 }

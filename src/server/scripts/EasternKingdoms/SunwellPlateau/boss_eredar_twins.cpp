@@ -22,6 +22,8 @@
 #include "sunwell_plateau.h"
 #include "SpellInfo.h"
 
+namespace SunwellPlateau::EredarTwins
+{
 enum Quotes
 {
     YELL_INTRO_SAC_1            = 0,
@@ -757,9 +759,12 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_eredar_twins()
 {
+    using namespace SunwellPlateau;
+    using namespace SunwellPlateau::EredarTwins;
     new boss_sacrolash();
     new boss_alythess();
     new npc_shadow_image();

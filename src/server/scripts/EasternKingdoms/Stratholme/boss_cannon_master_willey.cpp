@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Stratholme::CannonMasterWlley
+{
 //front, left
 #define ADD_1X 3553.851807f
 #define ADD_1Y -2945.885986f
@@ -229,8 +231,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_cannon_master_willey()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::CannonMasterWlley;
     new boss_cannon_master_willey();
 }

@@ -26,6 +26,8 @@
 #include "Player.h"
 #include "InstanceScript.h"
 
+namespace ShadowfangKeep
+{
 enum Events
 {
 };
@@ -146,9 +148,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_shadowfang_keep()
 {
+    using namespace ShadowfangKeep;
     RegisterSpellScript(spell_sfk_shield_of_bones);
     new at_sfk_outside_troups();
     new at_sfk_outside_ivar_bloodfang();

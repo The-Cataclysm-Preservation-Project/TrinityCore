@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace AlteracValley::Galvangar
+{
 enum Spells
 {
     SPELL_CLEAVE                                  = 15284,
@@ -144,8 +146,10 @@ public:
         return new boss_galvangarAI(creature);
     }
 };
+}
 
 void AddSC_boss_galvangar()
 {
+    using namespace AlteracValley::Galvangar;
     new boss_galvangar;
 }

@@ -26,6 +26,8 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 
+namespace BaradinHold::Argaloth
+{
 enum Texts
 {
     SAY_ANNOUNCE_FEL_FIRESTORM = 0
@@ -292,9 +294,12 @@ class spell_argaloth_fel_firestorm : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_argaloth_fel_firestorm::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
+}
 
 void AddSC_boss_pit_lord_argaloth()
 {
+    using namespace BaradinHold;
+    using namespace BaradinHold::Argaloth;
     RegisterBaradinHoldCreatureAI(boss_pit_lord_argaloth);
     RegisterBaradinHoldCreatureAI(npc_argaloth_fel_flames);
     RegisterSpellAndAuraScriptPair(spell_argaloth_consuming_darkness, spell_argaloth_consuming_darkness_AuraScript);

@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockDepths::HighInterrogatorGerstahn
+{
 enum Spells
 {
     SPELL_SHADOWWORDPAIN                                   = 10894,
@@ -102,8 +104,11 @@ class boss_high_interrogator_gerstahn : public CreatureScript
             return new boss_high_interrogator_gerstahnAI(creature);
         }
 };
+}
 
 void AddSC_boss_high_interrogator_gerstahn()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::HighInterrogatorGerstahn;
     new boss_high_interrogator_gerstahn();
 }

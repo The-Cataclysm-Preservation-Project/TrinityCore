@@ -19,6 +19,8 @@
 #include "blackwing_lair.h"
 #include "ScriptedCreature.h"
 
+namespace BlackwingLair::BroodlordLashlayer
+{
 enum Say
 {
     SAY_AGGRO               = 0,
@@ -112,8 +114,11 @@ public:
         return GetBlackwingLairAI<boss_broodlordAI>(creature);
     }
 };
+}
 
 void AddSC_boss_broodlord()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::BroodlordLashlayer;
     new boss_broodlord();
 }

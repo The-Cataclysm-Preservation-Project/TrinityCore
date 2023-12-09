@@ -19,6 +19,8 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace AlteracValley::Balinda
+{
 enum Spells
 {
     SPELL_ARCANE_EXPLOSION                  = 46608,
@@ -190,8 +192,10 @@ public:
         return new boss_balindaAI(creature);
     }
 };
+}
 
 void AddSC_boss_balinda()
 {
+    using namespace AlteracValley::Balinda;
     new boss_balinda;
 }

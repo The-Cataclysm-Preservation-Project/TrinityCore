@@ -23,6 +23,8 @@
 #include "Map.h"
 #include "scarlet_monastery.h"
 
+namespace ScarletMonastery
+{
 ObjectData const creatureData[] =
 {
     { BOSS_INTERROGATOR_VISHAS,         DATA_INTERROGATOR_VISHAS        },
@@ -206,8 +208,10 @@ class instance_scarlet_monastery : public InstanceMapScript
             return new instance_scarlet_monastery_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_scarlet_monastery()
 {
+    using namespace ScarletMonastery;
     new instance_scarlet_monastery();
 }

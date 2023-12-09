@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 
+namespace BlackrockDepths::TombOfSeven
+{
 enum Spells
 {
     SPELL_SMELT_DARK_IRON       = 14891,
@@ -270,9 +272,12 @@ class boss_doomrel : public CreatureScript
             return GetBlackrockDepthsAI<boss_doomrelAI>(creature);
         }
 };
+}
 
 void AddSC_boss_tomb_of_seven()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::TombOfSeven;
     new boss_gloomrel();
     new boss_doomrel();
 }

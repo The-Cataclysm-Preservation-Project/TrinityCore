@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "the_stockade.h"
 
+namespace TheStockade::Hogger
+{
 enum Says
 {
     SAY_AGGRO      = 0,
@@ -164,9 +166,12 @@ struct npc_warden_thelwater : public ScriptedAI
 private:
     EventMap _events;
 };
+}
 
 void AddSC_boss_hogger()
 {
+    using namespace TheStockade;
+    using namespace TheStockade::Hogger;
     RegisterStormwindStockadeAI(boss_hogger);
     RegisterStormwindStockadeAI(npc_warden_thelwater);
 }

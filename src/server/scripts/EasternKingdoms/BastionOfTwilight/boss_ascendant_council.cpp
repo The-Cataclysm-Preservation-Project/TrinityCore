@@ -36,6 +36,8 @@
 #include "MotionMaster.h"
 #include "Map.h"
 
+namespace BastionOfTwilight::AscendantCouncil
+{
 enum Texts
 {
     // Ascendant Council
@@ -2571,9 +2573,12 @@ class spell_elementium_monstrosity_gravity_crush final : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_elementium_monstrosity_gravity_crush::FilterTargets, EFFECT_ALL, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
+}
 
 void AddSC_boss_ascendant_council()
 {
+    using namespace BastionOfTwilight;
+    using namespace BastionOfTwilight::AscendantCouncil;
     RegisterBastionOfTwilightCreatureAI(boss_ascendant_council_controller);
     RegisterBastionOfTwilightCreatureAI(npc_feludius);
     RegisterBastionOfTwilightCreatureAI(npc_ignacious);

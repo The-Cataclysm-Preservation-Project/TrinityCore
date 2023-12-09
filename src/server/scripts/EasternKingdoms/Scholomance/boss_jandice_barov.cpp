@@ -19,6 +19,8 @@
 #include "scholomance.h"
 #include "ScriptedCreature.h"
 
+namespace Scholomance::JandiceBarov
+{
 enum Spells
 {
     SPELL_CURSE_OF_BLOOD        = 24673,
@@ -120,8 +122,11 @@ public:
         return GetScholomanceAI<boss_jandicebarovAI>(creature);
     }
 };
+}
 
 void AddSC_boss_jandicebarov()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::JandiceBarov;
     new boss_jandice_barov();
 }

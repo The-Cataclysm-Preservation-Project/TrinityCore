@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "molten_core.h"
 
+namespace MoltenCore::Lucifron
+{
 enum Spells
 {
     SPELL_IMPENDING_DOOM    = 19702,
@@ -103,8 +105,11 @@ class boss_lucifron : public CreatureScript
             return new boss_lucifronAI(creature);
         }
 };
+}
 
 void AddSC_boss_lucifron()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::Lucifron;
     new boss_lucifron();
 }

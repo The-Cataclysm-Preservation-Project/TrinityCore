@@ -25,6 +25,8 @@
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 
+namespace BlackwingLair::Nefarian
+{
 enum Events
 {
     // Victor Nefarius
@@ -600,9 +602,12 @@ public:
         return GetBlackwingLairAI<boss_nefarianAI>(creature);
     }
 };
+}
 
 void AddSC_boss_nefarian()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::Nefarian;
     new boss_victor_nefarius();
     new boss_nefarian();
 }

@@ -31,6 +31,8 @@ EndContentData */
 #include "ScriptedEscortAI.h"
 #include "Player.h"
 
+namespace SilverpineForest
+{
 /*######
 ## npc_deathstalker_erland
 ######*/
@@ -128,6 +130,7 @@ public:
         return new npc_deathstalker_erlandAI(creature);
     }
 };
+}
 
 /*######
 ## AddSC
@@ -135,5 +138,6 @@ public:
 
 void AddSC_silverpine_forest()
 {
+    using namespace SilverpineForest;
     new npc_deathstalker_erland();
 }

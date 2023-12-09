@@ -27,6 +27,8 @@
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 
+namespace MagistersTerrace::FelbloodKaelthas
+{
 enum Says
 {
     // Kael'thas Sunstrider
@@ -503,9 +505,12 @@ class spell_felblood_kaelthas_flame_strike : public AuraScript
         AfterEffectRemove.Register(&spell_felblood_kaelthas_flame_strike::AfterRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_felblood_kaelthas()
 {
+    using namespace MagistersTerrace;
+    using namespace MagistersTerrace::FelbloodKaelthas;
     RegisterMagistersTerraceCreatureAI(boss_felblood_kaelthas);
     RegisterMagistersTerraceCreatureAI(npc_felblood_kaelthas_phoenix);
     RegisterSpellScript(spell_felblood_kaelthas_flame_strike);

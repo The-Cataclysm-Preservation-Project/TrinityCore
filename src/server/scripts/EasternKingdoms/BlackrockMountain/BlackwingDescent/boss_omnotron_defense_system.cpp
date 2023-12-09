@@ -30,6 +30,8 @@
 #include "TemporarySummon.h"
 #include "blackwing_descent.h"
 
+namespace BlackwingDescent::OmnotronDefenseSystem
+{
 enum Spells
 {
     // Omnotron
@@ -1557,9 +1559,12 @@ class spell_omnotron_flamethrower : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_omnotron_flamethrower::FilterTargets, EFFECT_0, TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY);
     }
 };
+}
 
 void AddSC_boss_omnotron_defense_system()
 {
+    using namespace BlackwingDescent;
+    using namespace BlackwingDescent::OmnotronDefenseSystem;
     RegisterBlackwingDescentCreatureAI(boss_omnotron_defense_system);
     RegisterBlackwingDescentCreatureAI(npc_omnotron_electron);
     RegisterBlackwingDescentCreatureAI(npc_omnotron_magmatron);

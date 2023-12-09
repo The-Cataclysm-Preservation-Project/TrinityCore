@@ -29,6 +29,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace MoltenCore::Ragnaros
+{
 enum Texts
 {
     SAY_SUMMON_MAJ              = 0,
@@ -350,9 +352,12 @@ class npc_son_of_flame : public CreatureScript
             return GetMoltenCoreAI<npc_son_of_flameAI>(creature);
         }
 };
+}
 
 void AddSC_boss_ragnaros()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::Ragnaros;
     new boss_ragnaros();
     new npc_son_of_flame();
 }

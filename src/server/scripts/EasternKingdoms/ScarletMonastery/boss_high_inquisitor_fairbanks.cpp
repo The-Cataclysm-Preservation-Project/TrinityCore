@@ -27,6 +27,8 @@ EndScriptData */
 #include "scarlet_monastery.h"
 #include "ScriptedCreature.h"
 
+namespace ScarletMonastery::HighInquisitorFairbanks
+{
 enum Spells
 {
     SPELL_CURSEOFBLOOD              = 8282,
@@ -155,8 +157,11 @@ public:
         return GetScarletMonasteryAI<boss_high_inquisitor_fairbanksAI>(creature);
     }
 };
+}
 
 void AddSC_boss_high_inquisitor_fairbanks()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::HighInquisitorFairbanks;
     new boss_high_inquisitor_fairbanks();
 }

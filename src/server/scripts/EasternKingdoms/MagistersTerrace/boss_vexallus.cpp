@@ -20,6 +20,8 @@
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
+namespace MagistersTerrace::Vexallus
+{
 enum Yells
 {
     SAY_AGGRO                       = 0,
@@ -214,9 +216,12 @@ class npc_pure_energy : public CreatureScript
             return GetMagistersTerraceAI<npc_pure_energyAI>(creature);
         };
 };
+}
 
 void AddSC_boss_vexallus()
 {
+    using namespace MagistersTerrace;
+    using namespace MagistersTerrace::Vexallus;
     new boss_vexallus();
     new npc_pure_energy();
 }

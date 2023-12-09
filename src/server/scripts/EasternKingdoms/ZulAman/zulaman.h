@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace ZulAman
+{
 uint32 const EncounterCount = 6;
 #define ZulAmanScriptName "instance_zulaman"
 #define DataHeader "ZA"
@@ -104,5 +106,6 @@ inline AI* GetZulAmanAI(T* obj)
 }
 
 #define RegisterZulAamanCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetZulAmanAI)
+}
 
 #endif

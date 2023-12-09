@@ -31,6 +31,8 @@
 #include "InstanceScript.h"
 #include "blackwing_descent.h"
 
+namespace BlackwingDescent
+{
 enum LordVictorNefarius
 {
     // Spells
@@ -681,9 +683,11 @@ class at_bwd_intro: public OnlyOnceAreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_blackwing_descent()
 {
+    using namespace BlackwingDescent;
     RegisterBlackwingDescentCreatureAI(npc_bwd_lord_victor_nefarius);
     RegisterBlackwingDescentCreatureAI(npc_bwd_drakonid_chainwielder);
     RegisterBlackwingDescentCreatureAI(npc_bwd_dwarven_spirit);

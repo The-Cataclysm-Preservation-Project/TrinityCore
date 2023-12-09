@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::Drakkisath
+{
 enum Spells
 {
     SPELL_FIRENOVA                  = 23462,
@@ -107,8 +109,11 @@ public:
         return new boss_drakkisathAI(creature);
     }
 };
+}
 
 void AddSC_boss_drakkisath()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::Drakkisath;
     new boss_drakkisath();
 }

@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::HighlordOmokk
+{
 enum Spells
 {
     SPELL_FRENZY                    = 8269,
@@ -96,8 +98,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_highlordomokk()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::HighlordOmokk;
     new boss_highlord_omokk();
 }

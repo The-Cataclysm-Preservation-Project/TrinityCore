@@ -24,6 +24,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace BlackwingLair::Razorgore
+{
 enum Say
 {
     SAY_EGGS_BROKEN1        = 0,
@@ -225,9 +227,12 @@ class spell_egg_event : public SpellScriptLoader
             return new spell_egg_eventSpellScript();
         }
 };
+}
 
 void AddSC_boss_razorgore()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::Razorgore;
     new boss_razorgore();
     new go_orb_of_domination();
     new spell_egg_event();

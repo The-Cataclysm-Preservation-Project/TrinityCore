@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Uldaman
+{
 #define UldamanScriptName "instance_uldaman"
 #define DataHeader "UD"
 
@@ -48,6 +50,7 @@ template <class AI, class T>
 inline AI* GetUldamanAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, UldamanScriptName);
+}
 }
 
 #endif

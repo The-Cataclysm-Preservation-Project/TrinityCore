@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "molten_core.h"
 
+namespace MoltenCore::Magmadar
+{
 enum Texts
 {
     EMOTE_FRENZY        = 0
@@ -117,8 +119,11 @@ class boss_magmadar : public CreatureScript
             return new boss_magmadarAI(creature);
         }
 };
+}
 
 void AddSC_boss_magmadar()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::Magmadar;
     new boss_magmadar();
 }

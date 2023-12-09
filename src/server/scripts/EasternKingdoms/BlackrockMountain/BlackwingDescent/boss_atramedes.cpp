@@ -32,6 +32,8 @@
 #include "TemporarySummon.h"
 #include "blackwing_descent.h"
 
+namespace BlackwingDescent::Atramedes
+{
 enum Spells
 {
     // Atramedes
@@ -1110,9 +1112,12 @@ class spell_atramedes_apply_vehicle_periodic : public AuraScript
         AfterEffectApply.Register(&spell_atramedes_apply_vehicle_periodic::AfterApply, EFFECT_0, SPELL_AURA_SET_VEHICLE_ID, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_atramedes()
 {
+    using namespace BlackwingDescent;
+    using namespace BlackwingDescent::Atramedes;
     RegisterBlackwingDescentCreatureAI(boss_atramedes);
     RegisterBlackwingDescentCreatureAI(npc_atramedes_ancient_dwarven_shield);
     RegisterBlackwingDescentCreatureAI(npc_atramedes_lord_victor_nefarius);

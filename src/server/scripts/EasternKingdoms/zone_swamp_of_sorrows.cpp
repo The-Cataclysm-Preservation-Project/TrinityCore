@@ -15,6 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace SwampOfSorrows
+{
+}
+
 void AddSC_swamp_of_sorrows()
 {
+    using namespace SwampOfSorrows;
 }

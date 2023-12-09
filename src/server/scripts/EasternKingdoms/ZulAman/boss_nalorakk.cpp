@@ -23,6 +23,8 @@
 #include "ScriptedCreature.h"
 #include "zulaman.h"
 
+namespace ZulAman::Nalorakk
+{
 enum Texts
 {
 };
@@ -75,8 +77,11 @@ struct boss_nalorakk : public BossAI
         DoMeleeAttackIfReady();
     }
 };
+}
 
 void AddSC_boss_nalorakk()
 {
+    using namespace ZulAman;
+    using namespace ZulAman::Nalorakk;
     RegisterZulAamanCreatureAI(boss_nalorakk);
 }

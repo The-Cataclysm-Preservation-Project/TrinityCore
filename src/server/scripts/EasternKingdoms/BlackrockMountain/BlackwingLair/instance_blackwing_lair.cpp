@@ -25,6 +25,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace BlackwingLair
+{
 DoorData const doorData[] =
 {
     { GO_PORTCULLIS,             DATA_RAZORGORE_THE_UNTAMED,  DOOR_TYPE_PASSAGE },
@@ -282,8 +284,10 @@ public:
         return new instance_blackwing_lair_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_blackwing_lair()
 {
+    using namespace BlackwingLair;
     new instance_blackwing_lair();
 }

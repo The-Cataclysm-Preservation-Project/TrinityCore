@@ -26,6 +26,8 @@ Category: Scholomance
 #include "ScriptedCreature.h"
 #include "scholomance.h"
 
+namespace Scholomance::DoctorTheolenKrastinov
+{
 enum Say
 {
     EMOTE_FRENZY_KILL           = 0,
@@ -106,8 +108,11 @@ class boss_doctor_theolen_krastinov : public CreatureScript
         }
 
 };
+}
 
 void AddSC_boss_theolenkrastinov()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::DoctorTheolenKrastinov;
     new boss_doctor_theolen_krastinov();
 }

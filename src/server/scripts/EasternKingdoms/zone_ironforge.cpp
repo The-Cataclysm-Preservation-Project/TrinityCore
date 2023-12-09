@@ -15,6 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace Ironforge
+{
+}
+
 void AddSC_ironforge()
 {
+    using namespace Ironforge;
 }

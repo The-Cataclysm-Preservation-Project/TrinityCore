@@ -32,6 +32,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "uldaman.h"
 
+namespace Uldaman
+{
 enum Spells
 {
     SPELL_ARCHAEDAS_AWAKEN      = 10347,
@@ -526,8 +528,10 @@ class instance_uldaman : public InstanceMapScript
             return new instance_uldaman_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_uldaman()
 {
+    using namespace Uldaman;
     new instance_uldaman();
 }

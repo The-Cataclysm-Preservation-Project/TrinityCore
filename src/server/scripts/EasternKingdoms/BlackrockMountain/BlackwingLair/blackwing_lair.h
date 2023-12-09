@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace BlackwingLair
+{
 uint32 const EncounterCount     = 8;
 
 #define BRLScriptName "instance_blackwing_lair"
@@ -86,6 +88,7 @@ template <class AI, class T>
 inline AI* GetBlackwingLairAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, BRLScriptName);
+}
 }
 
 #endif

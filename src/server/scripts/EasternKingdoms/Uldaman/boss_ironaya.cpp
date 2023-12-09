@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Uldaman::Ironaya
+{
 enum Ironaya
 {
     SPELL_ARCINGSMASH           = 8374,
@@ -104,10 +106,13 @@ class boss_ironaya : public CreatureScript
             return new boss_ironayaAI(creature);
         }
 };
+}
 
 //This is the actual function called only once durring InitScripts()
 //It must define all handled functions that are to be run in this script
 void AddSC_boss_ironaya()
 {
+    using namespace Uldaman;
+    using namespace Uldaman::Ironaya;
     new boss_ironaya();
 }

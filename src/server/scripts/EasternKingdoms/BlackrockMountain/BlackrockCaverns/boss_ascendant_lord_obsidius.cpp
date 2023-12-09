@@ -26,6 +26,8 @@
 #include "SpellScript.h"
 #include "Position.h"
 
+namespace BlackrockCaverns::AscendantLordObsidius
+{
 enum Text
 {
     // Ascendant Lord Obsidius
@@ -348,9 +350,12 @@ class spell_obsidius_shadow_of_obsidius : public AuraScript
         OnEffectAbsorb.Register(&spell_obsidius_shadow_of_obsidius::Absorb, EFFECT_0);
     }
 };
+}
 
 void AddSC_boss_ascendant_lord_obsidius()
 {
+    using namespace BlackrockCaverns;
+    using namespace BlackrockCaverns::AscendantLordObsidius;
     RegisterBlackrockCavernsCreatureAI(boss_ascendant_lord_obsidius);
     RegisterSpellScript(spell_obsidius_twitchy);
     RegisterSpellScript(spell_obsidius_transformation);

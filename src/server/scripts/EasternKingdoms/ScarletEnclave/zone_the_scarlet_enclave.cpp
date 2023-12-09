@@ -21,6 +21,9 @@
 #include "Player.h"
 #include "TemporarySummon.h"
 
+namespace TheScarletEnclave
+{
+
 /*####
 ## npc_valkyr_battle_maiden
 ####*/
@@ -136,8 +139,10 @@ public:
     };
 
 };
+}
 
 void AddSC_the_scarlet_enclave()
 {
+    using namespace TheScarletEnclave;
     new npc_valkyr_battle_maiden();
 }

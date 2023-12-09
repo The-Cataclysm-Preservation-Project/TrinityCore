@@ -26,6 +26,8 @@ Category: Scholomance
 #include "ScriptedCreature.h"
 #include "scholomance.h"
 
+namespace Scholomance::LorekeeperPolkelt
+{
 enum Spells
 {
     SPELL_VOLATILEINFECTION     = 24928,
@@ -106,8 +108,11 @@ class boss_lorekeeper_polkelt : public CreatureScript
             return new boss_lorekeeperpolkeltAI(creature);
         }
 };
+}
 
 void AddSC_boss_lorekeeperpolkelt()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::LorekeeperPolkelt;
     new boss_lorekeeper_polkelt();
 }

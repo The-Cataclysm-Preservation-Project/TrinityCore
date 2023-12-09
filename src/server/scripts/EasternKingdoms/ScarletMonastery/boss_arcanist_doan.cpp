@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "scarlet_monastery.h"
 
+namespace ScarletMonastery::ArcanistDoan
+{
 enum Yells
 {
     SAY_AGGRO       = 0,
@@ -119,9 +121,11 @@ struct boss_arcanist_doan : public BossAI
 private:
     bool _detonationTriggered;
 };
-
+}
 
 void AddSC_boss_arcanist_doan()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::ArcanistDoan;
     RegisterScarletMonasteryCreatureAI(boss_arcanist_doan);
 }

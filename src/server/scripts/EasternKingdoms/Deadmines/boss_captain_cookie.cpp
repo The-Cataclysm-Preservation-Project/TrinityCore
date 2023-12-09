@@ -26,6 +26,8 @@
 #include "MotionMaster.h"
 #include "deadmines.h"
 
+namespace Deadmines::CaptainCookie
+{
 enum Spells
 {
     // "Captain" Cookie
@@ -345,9 +347,12 @@ class spell_cookie_satiated : public SpellScriptLoader
             return new spell_cookie_satiated_SpellScript();
         }
 };
+}
 
 void AddSC_boss_captain_cookie()
 {
+    using namespace Deadmines;
+    using namespace Deadmines::CaptainCookie;
     new boss_captain_cookie();
     new spell_cookie_throw_food_targeting();
     new spell_cookie_satiated();

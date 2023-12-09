@@ -28,6 +28,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "sunwell_plateau.h"
 
+namespace SunwellPlateau::Brutallus
+{
 enum Quotes
 {
     YELL_INTRO                          = 0,
@@ -343,8 +345,11 @@ public:
         return GetSunwellPlateauAI<boss_brutallusAI>(creature);
     }
 };
+}
 
 void AddSC_boss_brutallus()
 {
+    using namespace SunwellPlateau;
+    using namespace SunwellPlateau::Brutallus;
     new boss_brutallus();
 }

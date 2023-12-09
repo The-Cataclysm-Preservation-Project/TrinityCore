@@ -30,6 +30,8 @@
 #include "SpellScript.h"
 #include "SpellInfo.h"
 
+namespace Deadmines
+{
 enum DefiasWatcher
 {
     SPELL_ON_FIRE           = 91737,
@@ -655,9 +657,11 @@ class spell_deadmines_bloodbath : public SpellScriptLoader
             return new spell_deadmines_bloodbath_AuraScript();
         }
 };
+}
 
 void AddSC_deadmines()
 {
+    using namespace Deadmines;
     RegisterDeadminesCreatureAI(npc_deadmines_defias_watcher);
     new npc_deadmines_vanessas_trap_bunny();
     new npc_deadmines_steam_valve();

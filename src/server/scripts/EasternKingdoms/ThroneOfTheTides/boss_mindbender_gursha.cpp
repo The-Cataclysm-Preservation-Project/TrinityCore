@@ -15,6 +15,12 @@
 * with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+namespace ThroneOfTheTides::MindbenderGursha
+{
+}
+
 void AddSC_boss_mindbender_gursha()
 {
+    using namespace ThroneOfTheTides;
+    using namespace ThroneOfTheTides::MindbenderGursha;
 }

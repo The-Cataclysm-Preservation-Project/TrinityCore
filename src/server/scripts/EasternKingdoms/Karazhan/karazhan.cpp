@@ -39,6 +39,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 
+namespace Karazhan
+{
 enum Spells
 {
     // Barnes
@@ -624,9 +626,11 @@ public:
         return GetKarazhanAI<npc_image_of_medivhAI>(creature);
     }
 };
+}
 
 void AddSC_karazhan()
 {
+    using namespace Karazhan;
     new npc_barnes();
     new npc_image_of_medivh();
 }

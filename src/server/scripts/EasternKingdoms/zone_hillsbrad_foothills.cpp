@@ -31,6 +31,8 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace HillsbradFoothills
+{
 enum PlansVsZombies
 {
     // Quest related
@@ -1294,9 +1296,11 @@ class spell_brazie_spit : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_brazie_spit::FilterTargets, EFFECT_ALL, TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY);
     }
 };
+}
 
 void AddSC_hillsbrad_foothills()
 {
+    using namespace HillsbradFoothills;
     RegisterCreatureAI(npc_brazie_the_bonatist_vehicle);
     RegisterCreatureAI(npc_brazie_fertilitize_o_tron_2000);
     RegisterCreatureAI(npc_brazie_spot);

@@ -24,6 +24,8 @@
 #include "ScriptedEscortAI.h"
 #include "SpellInfo.h"
 
+namespace TheScarletEnclave::Chapter2
+{
 /*######
 ## npc_koltira_deathweaver
 ######*/
@@ -603,9 +605,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_the_scarlet_enclave_chapter_2()
 {
+    using namespace TheScarletEnclave::Chapter2;
     new npc_scarlet_courier();
     new npc_koltira_deathweaver();
     new npc_high_inquisitor_valroth();

@@ -34,6 +34,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "sunken_temple.h"
 
+namespace SunkenTemple
+{
 /*#####
 # at_malfurion_Stormrage_trigger
 #####*/
@@ -86,9 +88,11 @@ class go_atalai_statue : public GameObjectScript
             return GetSunkenTempleAI<go_atalai_statueAI>(go);
         }
 };
+}
 
 void AddSC_sunken_temple()
 {
+    using namespace SunkenTemple;
     new at_malfurion_stormrage();
     new go_atalai_statue();
 }

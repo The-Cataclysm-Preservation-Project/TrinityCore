@@ -19,22 +19,24 @@
 #include "ScriptedCreature.h"
 #include "scarlet_monastery.h"
 
-enum Spells
+namespace ScarletMonastery::AzshirTheSleepless
 {
-    SPELL_CALL_OF_THE_GRAVE         = 17831,
-    SPELL_TERRIFY                   = 7399,
-    SPELL_SOUL_SIPHON               = 7290
-};
+    enum Spells
+    {
+        SPELL_CALL_OF_THE_GRAVE = 17831,
+        SPELL_TERRIFY = 7399,
+        SPELL_SOUL_SIPHON = 7290
+    };
 
-enum Events
-{
-    EVENT_CALL_OF_GRAVE             = 1,
-    EVENT_TERRIFY,
-    EVENT_SOUL_SIPHON
-};
+    enum Events
+    {
+        EVENT_CALL_OF_GRAVE = 1,
+        EVENT_TERRIFY,
+        EVENT_SOUL_SIPHON
+    };
 
-class boss_azshir_the_sleepless : public CreatureScript
-{
+    class boss_azshir_the_sleepless : public CreatureScript
+    {
     public:
         boss_azshir_the_sleepless() : CreatureScript("boss_azshir_the_sleepless") { }
 
@@ -87,20 +89,20 @@ class boss_azshir_the_sleepless : public CreatureScript
                 {
                     switch (eventId)
                     {
-                        case EVENT_CALL_OF_GRAVE:
-                            DoCastVictim(SPELL_CALL_OF_THE_GRAVE);
-                            events.ScheduleEvent(EVENT_CALL_OF_GRAVE, 30000);
-                            break;
-                        case EVENT_TERRIFY:
-                            DoCastVictim(SPELL_TERRIFY);
-                            events.ScheduleEvent(EVENT_TERRIFY, 20000);
-                            break;
-                        case EVENT_SOUL_SIPHON:
-                            DoCastVictim(SPELL_SOUL_SIPHON);
-                            events.ScheduleEvent(EVENT_SOUL_SIPHON, 20000);
-                            break;
-                        default:
-                            break;
+                    case EVENT_CALL_OF_GRAVE:
+                        DoCastVictim(SPELL_CALL_OF_THE_GRAVE);
+                        events.ScheduleEvent(EVENT_CALL_OF_GRAVE, 30000);
+                        break;
+                    case EVENT_TERRIFY:
+                        DoCastVictim(SPELL_TERRIFY);
+                        events.ScheduleEvent(EVENT_TERRIFY, 20000);
+                        break;
+                    case EVENT_SOUL_SIPHON:
+                        DoCastVictim(SPELL_SOUL_SIPHON);
+                        events.ScheduleEvent(EVENT_SOUL_SIPHON, 20000);
+                        break;
+                    default:
+                        break;
                     }
 
                     if (me->HasUnitState(UNIT_STATE_CASTING))
@@ -118,9 +120,12 @@ class boss_azshir_the_sleepless : public CreatureScript
         {
             return GetScarletMonasteryAI<boss_azshir_the_sleeplessAI>(creature);
         }
-};
+    };
+}
 
 void AddSC_boss_azshir_the_sleepless()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::AzshirTheSleepless;
     new boss_azshir_the_sleepless();
 }

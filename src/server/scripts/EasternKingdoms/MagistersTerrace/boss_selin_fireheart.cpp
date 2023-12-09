@@ -22,6 +22,8 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace MagistersTerrace::SelinFireheart
+{
 enum Says
 {
     SAY_AGGRO                       = 0,
@@ -279,9 +281,12 @@ class npc_fel_crystal : public CreatureScript
             return GetMagistersTerraceAI<npc_fel_crystalAI>(creature);
         };
 };
+}
 
 void AddSC_boss_selin_fireheart()
 {
+    using namespace MagistersTerrace;
+    using namespace MagistersTerrace::SelinFireheart;
     new boss_selin_fireheart();
     new npc_fel_crystal();
 }

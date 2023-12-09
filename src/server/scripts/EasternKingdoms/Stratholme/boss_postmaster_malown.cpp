@@ -26,6 +26,9 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::PostmasterMalown
+{
+
 //Spell ID to summon this guy is 24627 "Summon Postmaster Malown"
 //He should be spawned along with three other elites once the third postbox has been opened
 
@@ -133,8 +136,11 @@ class boss_postmaster_malown : public CreatureScript
             return GetStratholmeAI<boss_postmaster_malownAI>(creature);
         }
 };
+}
 
 void AddSC_boss_postmaster_malown()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::PostmasterMalown;
     new boss_postmaster_malown();
 }

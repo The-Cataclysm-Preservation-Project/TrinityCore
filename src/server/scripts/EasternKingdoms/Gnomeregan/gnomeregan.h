@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Gnomeregan
+{
 #define GNOScriptName "instance_gnomeregan"
 #define DataHeader "GNO"
 
@@ -54,6 +56,7 @@ template <class AI, class T>
 inline AI* GetGnomereganAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, GNOScriptName);
+}
 }
 
 #endif

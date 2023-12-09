@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Scholomance
+{
 #define ScholomanceScriptName "instance_scholomance"
 #define DataHeader "SC"
 
@@ -60,6 +62,7 @@ template <class AI, class T>
 inline AI* GetScholomanceAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, ScholomanceScriptName);
+}
 }
 
 #endif

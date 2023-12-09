@@ -25,6 +25,8 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace BaradinHold::Occuthar
+{
 enum Spells
 {
     SPELL_SEARING_SHADOWS               = 96913,
@@ -374,9 +376,11 @@ class spell_occuthar_occuthars_destruction : public SpellScriptLoader
             return new spell_occuthar_occuthars_destruction_AuraScript();
         }
 };
+}
 
 void AddSC_boss_occuthar()
 {
+    using namespace BaradinHold::Occuthar;
     new boss_occuthar();
     new npc_eyestalk();
     new spell_occuthar_focused_fire();

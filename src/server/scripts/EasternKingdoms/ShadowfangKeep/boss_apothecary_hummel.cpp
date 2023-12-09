@@ -30,6 +30,8 @@
 #include "SpellScript.h"
 #include "CreatureAIImpl.h"
 
+namespace ShadowfangKeep::ApothecaryHummel
+{
 enum ApothecarySpells
 {
     SPELL_ALLURING_PERFUME       = 68589,
@@ -572,9 +574,12 @@ class spell_apothecary_cologne_spill : public SpellScriptLoader
             return new spell_apothecary_cologne_spill_AuraScript();
         }
 };
+}
 
 void AddSC_boss_apothecary_hummel()
 {
+    using namespace ShadowfangKeep;
+    using namespace ShadowfangKeep::ApothecaryHummel;
     new boss_apothecary_hummel();
     new npc_apothecary_baxter();
     new npc_apothecary_frye();

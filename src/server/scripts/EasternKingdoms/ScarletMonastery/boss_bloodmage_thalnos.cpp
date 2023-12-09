@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "scarlet_monastery.h"
 
+namespace ScarletMonastery::BloodmageThalnos
+{
 enum Yells
 {
     SAY_AGGRO               = 0,
@@ -177,8 +179,11 @@ private:
         events.ScheduleEvent(GetNextEventId(), 3s);
     }
 };
+}
 
 void AddSC_boss_bloodmage_thalnos()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::BloodmageThalnos;
     RegisterScarletMonasteryCreatureAI(boss_bloodmage_thalnos);
 }

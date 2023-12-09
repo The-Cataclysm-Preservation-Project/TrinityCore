@@ -29,6 +29,8 @@
 #include "Map.h"
 #include "blackwing_descent.h"
 
+namespace BlackwingDescent::Magmaw
+{
 enum Spells
 {
     // Magmaw
@@ -1260,10 +1262,12 @@ class spell_magmaw_captured : public AuraScript
         OnEffectPeriodic.Register(&spell_magmaw_captured::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
-
+}
 
 void AddSC_boss_magmaw()
 {
+    using namespace BlackwingDescent;
+    using namespace BlackwingDescent::Magmaw;
     RegisterBlackwingDescentCreatureAI(boss_magmaw);
     RegisterBlackwingDescentCreatureAI(npc_magmaw_nefarian);
     RegisterBlackwingDescentCreatureAI(npc_magmaw_lava_parasite);

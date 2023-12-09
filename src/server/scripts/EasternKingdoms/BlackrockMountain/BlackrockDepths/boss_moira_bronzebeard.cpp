@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockDepths::MoiraBronzebeard
+{
 enum Spells
 {
     SPELL_HEAL                                             = 10917,
@@ -96,8 +98,11 @@ class boss_moira_bronzebeard : public CreatureScript
             return new boss_moira_bronzebeardAI(creature);
         }
 };
+}
 
 void AddSC_boss_moira_bronzebeard()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::MoiraBronzebeard;
     new boss_moira_bronzebeard();
 }

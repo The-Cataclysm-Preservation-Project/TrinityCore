@@ -33,6 +33,8 @@ Category: Scholomance
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Scholomance::DarkmasterGandling
+{
 enum Says
 {
    YELL_SUMMONED                = 0
@@ -377,9 +379,12 @@ class spell_shadow_portal_rooms : public SpellScriptLoader
             return new spell_shadow_portal_rooms_SpellScript();
         }
 };
+}
 
 void AddSC_boss_darkmaster_gandling()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::DarkmasterGandling;
     new boss_darkmaster_gandling();
     new spell_shadow_portal();
     new spell_shadow_portal_rooms();

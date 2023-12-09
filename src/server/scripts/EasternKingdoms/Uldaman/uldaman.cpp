@@ -36,6 +36,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "uldaman.h"
 
+namespace Uldaman
+{
 /*######
 ## npc_jadespine_basilisk
 ######*/
@@ -154,9 +156,11 @@ class AreaTrigger_at_map_chamber : public AreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_uldaman()
 {
+    using namespace Uldaman;
     new npc_jadespine_basilisk();
     new go_keystone_chamber();
     new AreaTrigger_at_map_chamber();

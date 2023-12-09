@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Scholomance::DeathKnightDarkreaver
+{
 class boss_death_knight_darkreaver : public CreatureScript
 {
 public:
@@ -55,8 +57,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_death_knight_darkreaver()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::DeathKnightDarkreaver;
     new boss_death_knight_darkreaver();
 }

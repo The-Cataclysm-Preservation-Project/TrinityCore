@@ -26,6 +26,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace Karazhan::Nightbane
+{
 enum NightbaneSpells
 {
     SPELL_BELLOWING_ROAR        = 36922,
@@ -448,9 +450,12 @@ class go_blackened_urn : public GameObjectScript
             return GetKarazhanAI<go_blackened_urnAI>(go);
         }
 };
+}
 
 void AddSC_boss_nightbane()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::Nightbane;
     new boss_nightbane();
     new spell_rain_of_bones();
     new go_blackened_urn();

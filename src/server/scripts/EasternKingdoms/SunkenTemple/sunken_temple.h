@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace SunkenTemple
+{
 #define STScriptName "instance_sunken_temple"
 #define DataHeader "ST"
 
@@ -32,6 +34,7 @@ template <class AI, class T>
 inline AI* GetSunkenTempleAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, STScriptName);
+}
 }
 
 #endif

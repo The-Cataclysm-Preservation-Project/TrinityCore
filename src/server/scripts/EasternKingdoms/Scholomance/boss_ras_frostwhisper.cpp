@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Scholomance::RasFrostWhisper
+{
 enum Spells
 {
     SPELL_FROSTBOLT         = 21369,
@@ -121,8 +123,11 @@ public:
         return new boss_rasfrostAI(creature);
     }
 };
+}
 
 void AddSC_boss_rasfrost()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::RasFrostWhisper;
     new boss_boss_ras_frostwhisper();
 }

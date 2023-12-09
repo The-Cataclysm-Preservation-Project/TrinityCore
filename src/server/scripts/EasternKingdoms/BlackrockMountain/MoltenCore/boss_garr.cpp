@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "molten_core.h"
 
+namespace MoltenCore::Garr
+{
 enum Spells
 {
     // Garr
@@ -162,9 +164,12 @@ class npc_firesworn : public CreatureScript
             return new npc_fireswornAI(creature);
         }
 };
+}
 
 void AddSC_boss_garr()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::Garr;
     new boss_garr();
     new npc_firesworn();
 }

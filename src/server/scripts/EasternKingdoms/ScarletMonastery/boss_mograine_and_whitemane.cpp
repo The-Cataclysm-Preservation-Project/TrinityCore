@@ -25,6 +25,8 @@
 #include "Spell.h"
 #include "SpellInfo.h"
 
+namespace ScarletMonastery::MograineAndWhitemane
+{
 enum Says
 {
     // Scarlet Commander Mograine
@@ -409,10 +411,12 @@ private:
     bool _below50PctHealth;
     bool _resurrectedMograine;
 };
-
+}
 
 void AddSC_boss_mograine_and_whitemane()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::MograineAndWhitemane;
     RegisterScarletMonasteryCreatureAI(npc_scarlet_commander_mograine);
     RegisterScarletMonasteryCreatureAI(npc_high_inquisitor_whitemane);
 }

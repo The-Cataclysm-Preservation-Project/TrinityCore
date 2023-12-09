@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace AlteracValley::Vanndar
+{
 enum Yells
 {
     YELL_AGGRO                                    = 0,
@@ -121,8 +123,10 @@ public:
         return new boss_vanndarAI(creature);
     }
 };
+}
 
 void AddSC_boss_vanndar()
 {
+    using namespace AlteracValley::Vanndar;
     new boss_vanndar;
 }

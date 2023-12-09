@@ -24,6 +24,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace BlackwingLair::Vaelastrasz
+{
 enum Says
 {
    SAY_LINE1                         = 0,
@@ -271,9 +273,12 @@ public:
         return new spell_vael_burning_adrenaline_AuraScript();
     }
 };
+}
 
 void AddSC_boss_vaelastrasz()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::Vaelastrasz;
     new boss_vaelastrasz();
     new spell_vael_burning_adrenaline();
 }

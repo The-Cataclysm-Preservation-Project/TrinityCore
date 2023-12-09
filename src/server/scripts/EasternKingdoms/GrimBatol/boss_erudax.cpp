@@ -28,6 +28,8 @@
 #include "Spell.h"
 #include "Map.h"
 
+namespace GrimBatol::Erudax
+{
 enum Spells
 {
     // Erudax
@@ -525,9 +527,12 @@ class spell_erudax_twilight_corruption_AuraScript : public AuraScript
         OnEffectRemove.Register(&spell_erudax_twilight_corruption_AuraScript::OnAuraRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_erudax()
 {
+    using namespace GrimBatol;
+    using namespace GrimBatol::Erudax;
     RegisterGrimBatolCreatureAI(boss_erudax);
     RegisterGrimBatolCreatureAI(npc_erudax_faceless_corruptor);
     RegisterSpellScript(spell_erudax_shadow_gale_trigger);

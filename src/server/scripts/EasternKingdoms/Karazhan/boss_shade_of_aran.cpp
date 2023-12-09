@@ -31,6 +31,8 @@ EndScriptData */
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 
+namespace Karazhan::ShadeOfAran
+{
 enum ShadeOfAran
 {
     SAY_AGGRO                   = 0,
@@ -546,9 +548,12 @@ public:
         return GetKarazhanAI<water_elementalAI>(creature);
     }
 };
+}
 
 void AddSC_boss_shade_of_aran()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::ShadeOfAran;
     new boss_shade_of_aran();
     new npc_aran_elemental();
 }

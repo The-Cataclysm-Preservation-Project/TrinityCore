@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::MotherSmolderweb
+{
 enum Spells
 {
     SPELL_CRYSTALIZE                = 16104,
@@ -101,8 +103,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_mothersmolderweb()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::MotherSmolderweb;
     new boss_mother_smolderweb();
 }

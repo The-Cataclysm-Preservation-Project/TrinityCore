@@ -26,6 +26,8 @@
 #include "scholomance.h"
 #include "ScriptedCreature.h"
 
+namespace Scholomance::KirtonosTheHerald
+{
 enum Says
 {
    EMOTE_SUMMONED                     = 0
@@ -302,9 +304,12 @@ class go_brazier_of_the_herald : public GameObjectScript
             return GetScholomanceAI<go_brazier_of_the_heraldAI>(go);
         }
 };
+}
 
 void AddSC_boss_kirtonos_the_herald()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::KirtonosTheHerald;
     new boss_kirtonos_the_herald();
     new go_brazier_of_the_herald;
 }

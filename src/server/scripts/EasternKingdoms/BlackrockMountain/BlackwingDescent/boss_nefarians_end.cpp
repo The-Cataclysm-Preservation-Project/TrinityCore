@@ -37,6 +37,8 @@
 #include "ObjectAccessor.h"
 #include "blackwing_descent.h"
 
+namespace BlackwingDescent::NefariansEnd
+{
 enum Spells
 {
     // Nefarian
@@ -2064,9 +2066,12 @@ struct go_nefarians_end_orb_of_culmination : public GameObjectAI
 private:
     InstanceScript* _instance;
 };
+}
 
 void AddSC_boss_nefarians_end()
 {
+    using namespace BlackwingDescent;
+    using namespace BlackwingDescent::NefariansEnd;
     RegisterBlackwingDescentCreatureAI(boss_nefarians_end);
     RegisterBlackwingDescentCreatureAI(npc_nefarians_end_onyxia);
     RegisterBlackwingDescentCreatureAI(npc_nefarians_end_lord_victor_nefarius);

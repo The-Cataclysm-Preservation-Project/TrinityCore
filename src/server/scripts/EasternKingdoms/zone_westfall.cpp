@@ -31,6 +31,8 @@
 #include "ObjectMgr.h"
 #include "Group.h"
 
+namespace Westfall
+{
 enum WestfallQuest
 {
     QUEST_MURDER_WAS_THE_CASE_THAT_THEY_GAVE_ME = 26209,
@@ -1599,9 +1601,11 @@ class spell_westfall_sniper_fire : public SpellScript
         OnEffectHitTarget.Register(&spell_westfall_sniper_fire::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_westfall()
 {
+    using namespace Westfall;
     RegisterSpellScript(spell_westfall_unbound_energy);
     RegisterCreatureAI(npc_westfall_overloaded_harvest_golem);
     RegisterSpellScript(spell_westfall_reaping_blows);

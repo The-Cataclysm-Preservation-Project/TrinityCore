@@ -35,6 +35,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 
+namespace Undercity
+{
 /*######
 ## npc_lady_sylvanas_windrunner
 ######*/
@@ -320,6 +322,7 @@ public:
         }
     };
 };
+}
 
 /*######
 ## AddSC
@@ -327,6 +330,7 @@ public:
 
 void AddSC_undercity()
 {
+    using namespace Undercity;
     new npc_lady_sylvanas_windrunner();
     new npc_highborne_lamenter();
 }

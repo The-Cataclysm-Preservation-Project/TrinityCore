@@ -31,6 +31,8 @@
 #include "Map.h"
 #include "bastion_of_twilight.h"
 
+namespace BastionOfTwilight::TheralionAndValiona
+{
 enum Texts
 {
     // Theralion and Valiona
@@ -1601,9 +1603,12 @@ class spell_theralion_and_valiona_collapsing_twilight_portal final : public Aura
         AfterEffectApply.Register(&spell_theralion_and_valiona_collapsing_twilight_portal::Apply, EFFECT_1, SPELL_AURA_MOD_SCALE, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_theralion_and_valiona()
 {
+    using namespace BastionOfTwilight;
+    using namespace BastionOfTwilight::TheralionAndValiona;
     RegisterBastionOfTwilightCreatureAI(boss_theralion);
     RegisterBastionOfTwilightCreatureAI(boss_valiona);
     RegisterBastionOfTwilightCreatureAI(npc_theralion_and_valiona_unstable_twilight);

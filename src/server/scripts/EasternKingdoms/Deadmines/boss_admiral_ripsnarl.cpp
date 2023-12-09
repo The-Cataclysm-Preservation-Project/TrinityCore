@@ -27,6 +27,8 @@
 #include "ObjectAccessor.h"
 #include "MotionMaster.h"
 
+namespace Deadmines::AdmiralRipsnarl
+{
 enum Texts
 {
     // Admiral Ripsnarl
@@ -454,9 +456,12 @@ class spell_ripsnarl_summon_vapor_targeting : public SpellScriptLoader
             return new spell_ripsnarl_summon_vapor_targeting_SpellScript();
         }
 };
+}
 
 void AddSC_boss_admiral_ripsnarl()
 {
+    using namespace Deadmines;
+    using namespace Deadmines::AdmiralRipsnarl;
     new boss_admiral_ripsnarl();
     new npc_ripsnarl_vapor();
     new spell_ripsnarl_go_for_the_throat_targeting();

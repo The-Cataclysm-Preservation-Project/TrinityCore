@@ -22,6 +22,8 @@
 
 struct Position;
 
+namespace MoltenCore
+{
 #define MCScriptName "instance_molten_core"
 #define DataHeader "MC"
 
@@ -79,6 +81,7 @@ template <class AI, class T>
 inline AI* GetMoltenCoreAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, MCScriptName);
+}
 }
 
 #endif

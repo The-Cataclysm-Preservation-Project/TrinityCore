@@ -28,6 +28,8 @@
 #include "MotionMaster.h"
 #include "deadmines.h"
 
+namespace Deadmines::Glubtok
+{
 enum Spells
 {
     // Glubtok
@@ -387,9 +389,12 @@ class spell_glubtok_blossom_targeting : public SpellScript
         OnEffectHitTarget.Register(&spell_glubtok_blossom_targeting::HandleBlossomEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
+}
 
 void AddSC_boss_glubtok()
 {
+    using namespace Deadmines;
+    using namespace Deadmines::Glubtok;
     RegisterDeadminesCreatureAI(boss_glubtok);
     RegisterSpellScript(spell_glubtok_blossom_targeting);
 }

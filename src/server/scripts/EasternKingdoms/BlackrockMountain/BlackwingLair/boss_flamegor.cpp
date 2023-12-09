@@ -19,6 +19,8 @@
 #include "blackwing_lair.h"
 #include "ScriptedCreature.h"
 
+namespace BlackwingLair::Flamegor
+{
 enum Emotes
 {
     EMOTE_FRENZY            = 0,
@@ -100,8 +102,11 @@ public:
         return GetBlackwingLairAI<boss_flamegorAI>(creature);
     }
 };
+}
 
 void AddSC_boss_flamegor()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::Flamegor;
     new boss_flamegor();
 }

@@ -32,6 +32,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace Karazhan::Netherspite
+{
 enum Netherspite
 {
     EMOTE_PHASE_PORTAL          = 0,
@@ -345,8 +347,11 @@ public:
         return GetKarazhanAI<boss_netherspiteAI>(creature);
     }
 };
+}
 
 void AddSC_boss_netherspite()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::Netherspite;
     new boss_netherspite();
 }

@@ -28,6 +28,8 @@
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
+namespace SunwellPlateau::Kalecgos
+{
 enum Yells
 {
     SAY_SATH_AGGRO        = 0,
@@ -774,9 +776,12 @@ class spell_kalecgos_curse_of_boundless_agony : public AuraScript
         AfterEffectRemove.Register(&spell_kalecgos_curse_of_boundless_agony::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_kalecgos()
 {
+    using namespace SunwellPlateau;
+    using namespace SunwellPlateau::Kalecgos;
     RegisterSunwellPlateauCreatureAI(boss_kalecgos);
     RegisterSunwellPlateauCreatureAI(boss_sathrovarr);
     RegisterSunwellPlateauCreatureAI(boss_kalecgos_human);

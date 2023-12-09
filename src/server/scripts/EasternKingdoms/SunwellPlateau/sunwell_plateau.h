@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace SunwellPlateau
+{
 #define SunwellPlateauScriptName "instance_sunwell_plateau"
 #define DataHeader "SWP"
 
@@ -122,5 +124,6 @@ inline AI* GetSunwellPlateauAI(T* obj)
 }
 
 #define RegisterSunwellPlateauCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetSunwellPlateauAI)
+}
 
 #endif // SUNWELL_PLATEAU_H

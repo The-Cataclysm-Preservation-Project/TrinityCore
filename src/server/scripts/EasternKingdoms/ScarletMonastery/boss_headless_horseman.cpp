@@ -38,6 +38,8 @@ EndScriptData */
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 
+namespace ScarletMonastery::HeadlessHorseman
+{
 //this texts are already used by 3975 and 3976
 enum Says
 {
@@ -940,9 +942,12 @@ void npc_head::npc_headAI::Disappear()
         }
     }
 }
+}
 
 void AddSC_boss_headless_horseman()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::HeadlessHorseman;
     new boss_headless_horseman();
     new npc_head();
     new npc_pulsing_pumpkin();

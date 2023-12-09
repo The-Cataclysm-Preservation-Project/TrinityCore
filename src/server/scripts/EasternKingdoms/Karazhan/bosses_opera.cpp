@@ -34,6 +34,8 @@ EndScriptData */
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 
+namespace Karazhan::Opera
+{
 /***********************************/
 /*** OPERA WIZARD OF OZ EVENT *****/
 /*********************************/
@@ -1546,9 +1548,12 @@ void boss_julianne::boss_julianneAI::DamageTaken(Unit* /*done_by*/, uint32 &dama
     }
     TC_LOG_ERROR("scripts", "boss_julianneAI: DamageTaken reach end of code, that should not happen.");
 }
+}
 
 void AddSC_bosses_opera()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::Opera;
     new boss_dorothee();
     new boss_strawman();
     new boss_tinhead();

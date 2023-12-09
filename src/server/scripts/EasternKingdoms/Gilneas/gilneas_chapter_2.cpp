@@ -32,6 +32,8 @@
 #include "GameObjectAI.h"
 #include "GameObject.h"
 
+namespace Gilneas::Chapter2
+{
 enum GilneasInvasionCamera
 {
     CINEMATIC_FORSAKEN_INVASION = 168
@@ -695,9 +697,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_gilneas_chapter_2()
 {
+    using namespace Gilneas::Chapter2;
     RegisterGameObjectAI(go_gilneas_invasion_camera);
     RegisterCreatureAI(npc_gilneas_horrid_abomination);
     RegisterCreatureAI(npc_gilneas_save_the_children);

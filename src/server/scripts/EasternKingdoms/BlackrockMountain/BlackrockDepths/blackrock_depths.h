@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace BlackrockDepths
+{
 #define BRDScriptName "instance_blackrock_depths"
 #define DataHeader "BRD"
 
@@ -70,6 +72,7 @@ template <class AI, class T>
 inline AI* GetBlackrockDepthsAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, BRDScriptName);
+}
 }
 
 #endif

@@ -27,6 +27,8 @@
 #include "SpellScript.h"
 #include "zulgurub.h"
 
+namespace ZulGurub::BloodlordMandokir
+{
 enum Yells
 {
     SAY_AGGRO               = 0,
@@ -668,9 +670,12 @@ class achievement_ohganot_so_fast : public AchievementCriteriaScript
            return target && target->GetAI()->GetData(DATA_OHGANOT_SO_FAST);
        }
 };
+}
 
 void AddSC_boss_mandokir()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::BloodlordMandokir;
     RegisterZulGurubCreatureAI(boss_bloodlord_mandokir);
     RegisterZulGurubCreatureAI(npc_mandokir_ohgan);
     RegisterZulGurubCreatureAI(npc_mandokir_chained_spirit);

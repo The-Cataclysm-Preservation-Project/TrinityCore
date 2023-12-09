@@ -24,6 +24,8 @@
 #include "MotionMaster.h"
 #include "TemporarySummon.h"
 
+namespace BastionOfTwilight
+{
 ObjectData const creatureData[] =
 {
     { BOSS_HALFUS_WYRMBREAKER,          DATA_HALFUS_WYRMBREAKER             },
@@ -488,8 +490,10 @@ class instance_bastion_of_twilight final : public InstanceMapScript
             return new instance_bastion_of_twilight_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_bastion_of_twilight()
 {
+    using namespace BastionOfTwilight;
     new instance_bastion_of_twilight();
 }

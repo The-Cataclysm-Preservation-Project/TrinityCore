@@ -29,6 +29,8 @@
 #include "SpellInfo.h"
 #include "zulgurub.h"
 
+namespace ZulGurub::JindoTheGodbreaker
+{
 enum Yells
 {
     // Jin'do the Godbreaker
@@ -675,9 +677,12 @@ struct spell_jindo_body_slam : public SpellScript
         OnEffectHitTarget.Register(&spell_jindo_body_slam::HandleShieldBreakEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
+}
 
 void AddSC_boss_jindo_the_godbreaker()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::JindoTheGodbreaker;
     RegisterZulGurubCreatureAI(boss_jindo_the_godbreaker);
     RegisterZulGurubCreatureAI(npc_jindo_gurubashi_spirit_warrior);
     RegisterSpellScript(spell_jindo_shadow_spike);

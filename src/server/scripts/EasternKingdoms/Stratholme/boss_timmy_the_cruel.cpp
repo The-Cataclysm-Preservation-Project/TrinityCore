@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::TimmyTheCruel
+{
 enum Texts
 {
     // Timmy the Cruel
@@ -105,8 +107,11 @@ struct boss_timmy_the_cruel : public BossAI
 private:
     bool _enraged;
 };
+}
 
 void AddSC_boss_timmy_the_cruel()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::TimmyTheCruel;
     RegisterStratholmeCreatureAI(boss_timmy_the_cruel);
 }

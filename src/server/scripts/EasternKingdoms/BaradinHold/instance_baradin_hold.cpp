@@ -23,6 +23,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace BaradinHold
+{
 ObjectData const creatureData[] =
 {
     { BOSS_ARGALOTH,    DATA_ARGALOTH },
@@ -75,8 +77,10 @@ class instance_baradin_hold: public InstanceMapScript
             return new instance_baradin_hold_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_baradin_hold()
 {
+    using namespace BaradinHold;
     new instance_baradin_hold();
 }

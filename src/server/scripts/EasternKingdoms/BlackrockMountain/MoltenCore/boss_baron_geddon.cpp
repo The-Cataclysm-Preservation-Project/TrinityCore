@@ -29,6 +29,8 @@ EndScriptData */
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace MoltenCore::BaronGeddon
+{
 enum Emotes
 {
     EMOTE_SERVICE       = 0
@@ -149,9 +151,12 @@ class spell_baron_geddon_inferno : public SpellScriptLoader
             return new spell_baron_geddon_inferno_AuraScript();
         }
 };
+}
 
 void AddSC_boss_baron_geddon()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::BaronGeddon;
     new boss_baron_geddon();
     new spell_baron_geddon_inferno();
 }

@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "zulaman.h"
 
+namespace ZulAman::Daakara
+{
 enum Texts
 {
 };
@@ -73,8 +75,11 @@ struct boss_daakara : public BossAI
         DoMeleeAttackIfReady();
     }
 };
+}
 
 void AddSC_boss_daakara()
 {
+    using namespace ZulAman;
+    using namespace ZulAman::Daakara;
     RegisterZulAamanCreatureAI(boss_daakara);
 }

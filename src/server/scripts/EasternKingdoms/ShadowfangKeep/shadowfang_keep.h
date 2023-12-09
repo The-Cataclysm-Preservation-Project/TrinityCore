@@ -21,6 +21,8 @@
 #include "CreatureAIImpl.h"
 #include "Creature.h"
 
+namespace ShadowfangKeep
+{
 #define DataHeader "SK"
 #define SKScriptName "instance_shadowfang_keep"
 
@@ -110,5 +112,6 @@ AI* GetShadowfangKeepAI(Creature* creature)
 }
 
 #define RegisterShadowfangKeepCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetShadowfangKeepAI)
+}
 
 #endif

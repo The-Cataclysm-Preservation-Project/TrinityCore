@@ -19,6 +19,8 @@
 #include "blackwing_lair.h"
 #include "ScriptedCreature.h"
 
+namespace BlackwingLair::Ebonroc
+{
 enum Spells
 {
     SPELL_SHADOWFLAME           = 22539,
@@ -92,8 +94,11 @@ public:
         return GetBlackwingLairAI<boss_ebonrocAI>(creature);
     }
 };
+}
 
 void AddSC_boss_ebonroc()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::Ebonroc;
     new boss_ebonroc();
 }

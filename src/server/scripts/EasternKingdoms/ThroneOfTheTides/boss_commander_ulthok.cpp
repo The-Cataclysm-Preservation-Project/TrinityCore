@@ -25,6 +25,8 @@
 #include "Player.h"
 #include "InstanceScript.h"
 
+namespace ThroneOfTheTides::CommanderUlthok
+{
 enum Texts
 {
     // Commander Ulthok
@@ -216,9 +218,12 @@ class spell_ulthok_dark_fissure : public AuraScript
         OnEffectPeriodic.Register(&spell_ulthok_dark_fissure::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
+}
 
 void AddSC_boss_commander_ulthok()
 {
+    using namespace ThroneOfTheTides;
+    using namespace ThroneOfTheTides::CommanderUlthok;
     RegisterThroneOfTheTidesCreatureAI(boss_commander_ulthok);
     RegisterSpellScript(spell_ulthok_dark_fissure);
 }

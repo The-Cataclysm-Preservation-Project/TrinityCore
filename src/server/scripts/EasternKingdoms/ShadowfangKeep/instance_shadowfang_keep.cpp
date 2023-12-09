@@ -26,6 +26,8 @@
 #include "EventMap.h"
 #include "CreatureAI.h"
 
+namespace ShadowfangKeep
+{
 ObjectData const creatureData[] =
 {
     { BOSS_BARON_ASHBURY,               DATA_BARON_ASHBURY          },
@@ -300,8 +302,10 @@ public:
         return new instance_shadowfang_keep_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_shadowfang_keep()
 {
+    using namespace ShadowfangKeep;
     new instance_shadowfang_keep();
 }

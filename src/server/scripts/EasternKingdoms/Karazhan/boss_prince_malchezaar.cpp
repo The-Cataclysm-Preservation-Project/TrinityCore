@@ -31,6 +31,8 @@ EndScriptData */
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 
+namespace Karazhan::PrinceMalchezaar
+{
 // 18 Coordinates for Infernal spawns
 struct InfernalPoint
 {
@@ -593,9 +595,12 @@ void netherspite_infernal::netherspite_infernalAI::Cleanup()
     if (pMalchezaar && pMalchezaar->IsAlive())
         ENSURE_AI(boss_malchezaar::boss_malchezaarAI, pMalchezaar->AI())->Cleanup(me, point);
 }
+}
 
 void AddSC_boss_malchezaar()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::PrinceMalchezaar;
     new boss_malchezaar();
     new netherspite_infernal();
 }

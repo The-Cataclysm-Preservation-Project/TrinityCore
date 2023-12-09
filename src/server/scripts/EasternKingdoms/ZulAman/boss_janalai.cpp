@@ -26,6 +26,8 @@
 #include "SpellScript.h"
 #include "zulaman.h"
 
+namespace ZulAman::Janalai
+{
 enum Texts
 {
     // Jan'alai
@@ -580,9 +582,12 @@ class spell_janalai_hatch_eggs : public SpellScript
         OnEffectHitTarget.Register(&spell_janalai_hatch_eggs::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_boss_janalai()
 {
+    using namespace ZulAman;
+    using namespace ZulAman::Janalai;
     RegisterZulAamanCreatureAI(boss_janalai);
     RegisterZulAamanCreatureAI(npc_janalai_amanishi_hatcher);
     RegisterZulAamanCreatureAI(npc_janalai_amani_dragonhawk_hatchling);

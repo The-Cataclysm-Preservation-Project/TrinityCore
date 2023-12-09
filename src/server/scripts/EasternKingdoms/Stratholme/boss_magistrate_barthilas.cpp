@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::MagistrateBarthilas
+{
 enum Spells
 {
     SPELL_DRAININGBLOW      = 16793,
@@ -139,10 +141,12 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-
 };
+}
 
 void AddSC_boss_magistrate_barthilas()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::MagistrateBarthilas;
     new boss_magistrate_barthilas();
 }

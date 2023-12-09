@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "molten_core.h"
 
+namespace MoltenCore::Gehenannas
+{
 enum Spells
 {
     SPELL_GEHENNAS_CURSE    = 19716,
@@ -105,8 +107,11 @@ class boss_gehennas : public CreatureScript
             return new boss_gehennasAI(creature);
         }
 };
+}
 
 void AddSC_boss_gehennas()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::Gehenannas;
     new boss_gehennas();
 }

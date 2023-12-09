@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::QuatermasterZigris
+{
 enum Spells
 {
     SPELL_SHOOT                     = 16496,
@@ -95,8 +97,11 @@ public:
         return new boss_quatermasterzigrisAI(creature);
     }
 };
+}
 
 void AddSC_boss_quatermasterzigris()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::QuatermasterZigris;
     new quartermaster_zigris();
 }

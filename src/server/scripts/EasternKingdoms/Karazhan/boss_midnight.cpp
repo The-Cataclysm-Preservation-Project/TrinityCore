@@ -29,6 +29,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace Karazhan::Midnight
+{
 enum Texts
 {
     SAY_KILL          = 0,
@@ -381,9 +383,12 @@ public:
         return GetKarazhanAI<boss_midnightAI>(creature);
     }
 };
+}
 
 void AddSC_boss_attumen()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::Midnight;
     new boss_attumen();
     new boss_midnight();
 }

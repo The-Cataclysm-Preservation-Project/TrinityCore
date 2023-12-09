@@ -31,6 +31,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace BlackwingDescent::Maloriak
+{
 enum Spells
 {
     // Maloriak
@@ -1264,9 +1266,12 @@ class spell_maloriak_master_adventurer_award : public AuraScript
         AfterEffectRemove.Register(&spell_maloriak_master_adventurer_award::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_maloriak()
 {
+    using namespace BlackwingDescent;
+    using namespace BlackwingDescent::Maloriak;
     RegisterBlackwingDescentCreatureAI(boss_maloriak);
     RegisterBlackwingDescentCreatureAI(npc_maloriak_flash_freeze);
     RegisterBlackwingDescentCreatureAI(npc_maloriak_experiment);

@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace Scholomance::Kormok
+{
 enum Spells
 {
     SPELL_SHADOWBOLT_VOLLEY             = 20741,
@@ -207,9 +209,12 @@ class spell_kormok_summon_bone_minions : SpellScriptLoader
         return new spell_kormok_summon_bone_minionsSpellScript();
     }
 };
+}
 
 void AddSC_boss_kormok()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::Kormok;
     new boss_kormok();
     new spell_kormok_summon_bone_mages();
     new spell_kormok_summon_bone_minions();

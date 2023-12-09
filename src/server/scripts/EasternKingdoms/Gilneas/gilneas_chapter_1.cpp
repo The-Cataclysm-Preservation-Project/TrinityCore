@@ -29,6 +29,9 @@
 #include "TemporarySummon.h"
 #include "Vehicle.h"
 
+namespace Gilneas::Chapter1
+{
+
 /*######
 ## Quest 14098 - Evacuate the Merchant Square
 ######*/
@@ -665,9 +668,11 @@ struct npc_gilnean_crow : public PassiveAI
 private:
     EventMap _events;
 };
+}
 
 void AddSC_gilneas_chapter_1()
 {
+    using namespace Gilneas::Chapter1;
     RegisterCreatureAI(npc_frightened_citizen);
     RegisterCreatureAI(npc_worgen_runt);
     RegisterCreatureAI(npc_josiah_avery);

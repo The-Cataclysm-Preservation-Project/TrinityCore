@@ -28,6 +28,8 @@
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
+namespace BlackrockDepths
+{
 //go_shadowforge_brazier
 class go_shadowforge_brazier : public GameObjectScript
 {
@@ -634,9 +636,11 @@ class npc_rocknot : public CreatureScript
             return GetBlackrockDepthsAI<npc_rocknotAI>(creature);
         }
 };
+}
 
 void AddSC_blackrock_depths()
 {
+    using namespace BlackrockDepths;
     new go_shadowforge_brazier();
     new at_ring_of_law();
     new npc_grimstone();

@@ -29,6 +29,8 @@
 #include "GridNotifiers.h"
 #include "Map.h"
 
+namespace Deadmines::HelixGearbreaker
+{
 enum Texts
 {
     // Helix Gearbreaker
@@ -851,10 +853,12 @@ class spell_helix_ride_vehicle : public AuraScript
         AfterEffectRemove.Register(&spell_helix_ride_vehicle::AfterRemove, EFFECT_0, SPELL_AURA_CONTROL_VEHICLE, AURA_EFFECT_HANDLE_REAL);
     }
 };
-
+}
 
 void AddSC_boss_helix_gearbreaker()
 {
+    using namespace Deadmines;
+    using namespace Deadmines::HelixGearbreaker;
     RegisterDeadminesCreatureAI(boss_helix_gearbreaker);
     RegisterDeadminesCreatureAI(npc_helix_lumbering_oaf);
     RegisterDeadminesCreatureAI(npc_helix_sticky_bomb);

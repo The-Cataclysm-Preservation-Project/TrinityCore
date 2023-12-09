@@ -28,6 +28,8 @@
 #include "InstanceScript.h"
 #include "MotionMaster.h"
 
+namespace ThroneOfTheTides::LadyNazjar
+{
 enum Texts
 {
     SAY_AGGRO       = 0,
@@ -510,9 +512,12 @@ class spell_nazjar_waterspout_targeting : public SpellScript
         OnEffectHitTarget.Register(&spell_nazjar_waterspout_targeting::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
+}
 
 void AddSC_boss_lady_nazjar()
 {
+    using namespace ThroneOfTheTides;
+    using namespace ThroneOfTheTides::LadyNazjar;
     RegisterThroneOfTheTidesCreatureAI(boss_lady_nazjar);
     RegisterThroneOfTheTidesCreatureAI(npc_nazjar_nazjar_honor_guard);
     RegisterThroneOfTheTidesCreatureAI(npc_nazjar_nazjar_tempest_witch);

@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace AlteracValley::Drekthar
+{
 enum Spells
 {
     SPELL_WHIRLWIND                               = 15589,
@@ -143,8 +145,10 @@ public:
         return new boss_drektharAI(creature);
     }
 };
+}
 
 void AddSC_boss_drekthar()
 {
+    using namespace AlteracValley::Drekthar;
     new boss_drekthar;
 }

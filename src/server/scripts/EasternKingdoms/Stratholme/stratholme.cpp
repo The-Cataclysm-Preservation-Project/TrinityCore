@@ -42,6 +42,8 @@ EndContentData */
 #include "SpellScript.h"
 #include "stratholme.h"
 
+namespace Stratholme
+{
 /*######
 ## go_gauntlet_gate (this is the _first_ of the gauntlet gates, two exist)
 ######*/
@@ -331,9 +333,11 @@ class spell_ysida_saved_credit : public SpellScript
         OnEffectHitTarget.Register(&spell_ysida_saved_credit::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
+}
 
 void AddSC_stratholme()
 {
+    using namespace Stratholme;
     new go_gauntlet_gate();
     new npc_restless_soul();
     new npc_spectral_ghostly_citizen();

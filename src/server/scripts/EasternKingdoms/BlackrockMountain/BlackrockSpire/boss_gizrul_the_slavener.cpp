@@ -21,6 +21,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace BlackrockSpire::GizrulTheSlavener
+{
 enum Spells
 {
     SPELL_FATAL_BITE                = 16495,
@@ -109,8 +111,11 @@ public:
         return GetBlackrockSpireAI<boss_gizrul_the_slavenerAI>(creature);
     }
 };
+}
 
 void AddSC_boss_gizrul_the_slavener()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::GizrulTheSlavener;
     new boss_gizrul_the_slavener();
 }

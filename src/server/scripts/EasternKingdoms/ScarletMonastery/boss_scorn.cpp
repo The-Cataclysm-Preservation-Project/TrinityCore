@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "scarlet_monastery.h"
 
+namespace ScarletMonastery::Scorn
+{
 enum Spells
 {
     SPELL_LICHSLAP                  = 28873,
@@ -94,8 +96,11 @@ class boss_scorn : public CreatureScript
             return GetScarletMonasteryAI<boss_scornAI>(creature);
         }
 };
+}
 
 void AddSC_boss_scorn()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::Scorn;
     new boss_scorn();
 }

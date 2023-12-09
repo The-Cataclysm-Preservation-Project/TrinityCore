@@ -27,6 +27,8 @@
 #include "Map.h"
 #include "deadmines.h"
 
+namespace Deadmines::ForeReaper5000
+{
 enum Texts
 {
     // Foe Reaper 5000
@@ -571,9 +573,12 @@ class spell_foe_reaper_5000_fixate : public SpellScriptLoader
             return new spell_foe_reaper_5000_fixate_SpellScript();
         }
 };
+}
 
 void AddSC_boss_foe_reaper_5000()
 {
+    using namespace Deadmines;
+    using namespace Deadmines::ForeReaper5000;
     new boss_foe_reaper_5000();
     new npc_foe_reaper_5000_molten_slag();
     new spell_foe_reaper_5000_acquire_target();

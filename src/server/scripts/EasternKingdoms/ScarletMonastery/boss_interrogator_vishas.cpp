@@ -21,6 +21,8 @@
 #include "scarlet_monastery.h"
 #include "ScriptedCreature.h"
 
+namespace ScarletMonastery::InterrogatorVishas
+{
 enum Says
 {
     SAY_AGGRO               = 0,
@@ -105,8 +107,11 @@ struct boss_interrogator_vishas : public BossAI
 private:
     uint8 _textCount;
 };
+}
 
 void AddSC_boss_interrogator_vishas()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::InterrogatorVishas;
     RegisterScarletMonasteryCreatureAI(boss_interrogator_vishas);
 }

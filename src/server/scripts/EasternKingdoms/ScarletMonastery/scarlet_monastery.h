@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace ScarletMonastery
+{
 #define SMScriptName "instance_scarlet_monastery"
 #define DataHeader "SM"
 
@@ -82,6 +84,6 @@ inline AI* GetScarletMonasteryAI(T* obj)
 }
 
 #define RegisterScarletMonasteryCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetScarletMonasteryAI)
-
+}
 
 #endif // SCARLET_M_

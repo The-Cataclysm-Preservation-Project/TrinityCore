@@ -22,6 +22,8 @@
 #include "Player.h"
 #include "scholomance.h"
 
+namespace Scholomance
+{
 Position const GandlingLoc = { 180.7712f, -5.428603f, 75.57024f, 1.291544f };
 
 class instance_scholomance : public InstanceMapScript
@@ -179,8 +181,10 @@ class instance_scholomance : public InstanceMapScript
             return new instance_scholomance_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_scholomance()
 {
+    using namespace Scholomance;
     new instance_scholomance();
 }

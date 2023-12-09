@@ -21,6 +21,8 @@
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace BlackwingLair::Chromaggus
+{
 enum Emotes
 {
     EMOTE_FRENZY                                           = 0,
@@ -293,8 +295,11 @@ public:
         return GetBlackwingLairAI<boss_chromaggusAI>(creature);
     }
 };
+}
 
 void AddSC_boss_chromaggus()
 {
+    using namespace BlackwingLair;
+    using namespace BlackwingLair::Chromaggus;
     new boss_chromaggus();
 }

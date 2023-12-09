@@ -23,6 +23,8 @@
 #include "SpellScript.h"
 #include "ObjectAccessor.h"
 
+namespace BlackrockCaverns::Beauty
+{
 enum Sounds
 {
     // Beauty
@@ -248,9 +250,12 @@ class spell_beauty_magma_spit : public AuraScript
         AfterEffectRemove.Register(&spell_beauty_magma_spit::AfterRemove, EFFECT_1, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_beauty()
 {
+    using namespace BlackrockCaverns;
+    using namespace BlackrockCaverns::Beauty;
     RegisterBlackrockCavernsCreatureAI(boss_beauty);
     RegisterBlackrockCavernsCreatureAI(npc_beauty_puppy);
     RegisterSpellScript(spell_beauty_magma_spit);

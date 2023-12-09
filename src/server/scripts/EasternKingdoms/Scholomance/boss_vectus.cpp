@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Scholomance::Vectus
+{
 enum Emotes
 {
     EMOTE_FRENZY                 = 0
@@ -115,8 +117,11 @@ public:
         return new boss_vectusAI(creature);
     }
 };
+}
 
 void AddSC_boss_vectus()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::Vectus;
     new boss_vectus();
 }

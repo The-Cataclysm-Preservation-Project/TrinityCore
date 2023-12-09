@@ -23,6 +23,8 @@
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockSpire::RendBlackhand
+{
 enum Spells
 {
     SPELL_WHIRLWIND                 = 13736, // sniffed
@@ -457,8 +459,11 @@ public:
         return GetBlackrockSpireAI<boss_rend_blackhandAI>(creature);
     }
 };
+}
 
 void AddSC_boss_rend_blackhand()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::RendBlackhand;
     new boss_rend_blackhand();
 }

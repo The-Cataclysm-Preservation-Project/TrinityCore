@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "zulgurub.h"
 
+namespace ZulGurub::Grilek
+{
 enum Yells
 {
 };
@@ -87,8 +89,11 @@ class boss_grilek : public CreatureScript
             return new boss_grilekAI(creature);
         }
 };
+}
 
 void AddSC_boss_grilek()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::Grilek;
     new boss_grilek();
 }

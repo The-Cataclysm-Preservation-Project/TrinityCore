@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "blackrock_spire.h"
 
+namespace BlackrockSpire::Halycon
+{
 enum Spells
 {
     SPELL_REND                      = 13738,
@@ -115,8 +117,11 @@ public:
         return new boss_halyconAI(creature);
     }
 };
+}
 
 void AddSC_boss_halycon()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::Halycon;
     new boss_halycon();
 }

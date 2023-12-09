@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "the_stockade.h"
 
+namespace TheStockade::RandolphMoloch
+{
 enum Spells
 {
     // Randolph Moloch
@@ -198,9 +200,12 @@ struct npc_mortimer_moloch : public ScriptedAI
 private:
     EventMap _events;
 };
+}
 
 void AddSC_boss_randolph_moloch()
 {
+    using namespace TheStockade;
+    using namespace TheStockade::RandolphMoloch;
     RegisterStormwindStockadeAI(boss_randolph_moloch);
     RegisterStormwindStockadeAI(npc_mortimer_moloch);
 }

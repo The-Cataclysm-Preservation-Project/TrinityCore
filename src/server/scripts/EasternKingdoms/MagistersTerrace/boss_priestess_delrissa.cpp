@@ -29,6 +29,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace MagistersTerrace::PriestessDelrissa
+{
 struct Speech
 {
     int32 id;
@@ -1327,9 +1329,12 @@ public:
     //};
 };
 */
+}
 
 void AddSC_boss_priestess_delrissa()
 {
+    using namespace MagistersTerrace;
+    using namespace MagistersTerrace::PriestessDelrissa;
     new boss_priestess_delrissa();
     new boss_kagani_nightstrike();
     new boss_ellris_duskhallow();

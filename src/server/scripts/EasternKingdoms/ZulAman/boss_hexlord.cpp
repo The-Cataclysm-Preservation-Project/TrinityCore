@@ -25,6 +25,8 @@
 #include "TemporarySummon.h"
 #include "zulaman.h"
 
+namespace ZulAman::HexlordMalacrass
+{
 enum Texts
 {
 };
@@ -75,8 +77,11 @@ struct boss_hexlord_malacrass : public BossAI
         events.Update(diff);
     }
 };
+}
 
 void AddSC_boss_hex_lord_malacrass()
 {
+    using namespace ZulAman;
+    using namespace ZulAman::HexlordMalacrass;
     RegisterZulAamanCreatureAI(boss_hexlord_malacrass);
 }

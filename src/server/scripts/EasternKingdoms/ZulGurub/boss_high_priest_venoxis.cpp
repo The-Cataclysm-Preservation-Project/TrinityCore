@@ -29,6 +29,8 @@
 #include "ObjectAccessor.h"
 #include "Map.h"
 
+namespace ZulGurub::HighPriestVenoxis
+{
 enum Yells
 {
     SAY_AGGRO                       = 0,
@@ -595,9 +597,12 @@ class spell_venom_withdrawal : public SpellScript
         OnEffectHitTarget.Register(&spell_venom_withdrawal::HandleKnockback, EFFECT_2, SPELL_EFFECT_LEAP_BACK);
     }
 };
+}
 
 void AddSC_boss_high_priest_venoxis()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::HighPriestVenoxis;
     RegisterZulGurubCreatureAI(boss_high_priest_venoxis);
     RegisterSpellScript(spell_venoxis_venomous_effusion);
     RegisterSpellScript(spell_venoxis_whispers_of_hethiss);

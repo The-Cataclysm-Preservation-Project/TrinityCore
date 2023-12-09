@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::BaronessAnastari
+{
 enum Spells
 {
     SPELL_BANSHEEWAIL           = 16565,
@@ -136,8 +138,11 @@ struct boss_baroness_anastari : public BossAI
         DoMeleeAttackIfReady();
     }
 };
+}
 
 void AddSC_boss_baroness_anastari()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::BaronessAnastari;
     RegisterStratholmeCreatureAI(boss_baroness_anastari);
 }

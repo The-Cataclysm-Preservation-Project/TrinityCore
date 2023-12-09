@@ -20,6 +20,8 @@
 #include "Map.h"
 #include "the_stockade.h"
 
+namespace TheStockade
+{
 enum SpawnGroups
 {
     SPAWN_GROUP_ALLIANCE_ENTRANCE = 450
@@ -56,8 +58,10 @@ public:
         return new instance_the_stockade_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_the_stockade()
 {
+    using namespace TheStockade;
     new instance_the_stockade();
 }

@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace MagistersTerrace
+{
 #define MGTScriptName "instance_magisters_terrace"
 #define DataHeader "MT"
 
@@ -103,5 +105,6 @@ inline AI* GetMagistersTerraceAI(T* obj)
 }
 
 #define RegisterMagistersTerraceCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetMagistersTerraceAI)
+}
 
 #endif

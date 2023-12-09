@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace Duskwood
+{
 enum TwilightCorrupter
 {
     NPC_TWILIGHT_CORRUPTER          = 15625,
@@ -156,9 +158,11 @@ class at_twilight_grove : public AreaTriggerScript
             return false;
         };
 };
+}
 
 void AddSC_duskwood()
 {
+    using namespace Duskwood;
     new boss_twilight_corrupter();
     new at_twilight_grove();
 }

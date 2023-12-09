@@ -30,6 +30,8 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "sunwell_plateau.h"
 
+namespace SunwellPlateau
+{
 /*######
 ## npc_prophet_velen
 ######*/
@@ -61,5 +63,9 @@ enum LiadrinnSpeeches
 #define CS_GOSSIP2 "What went wrong?"
 #define CS_GOSSIP3 "Why did they stop?"
 #define CS_GOSSIP4 "Your insight is appreciated."
+}
 
-void AddSC_sunwell_plateau() { }
+void AddSC_sunwell_plateau()
+{
+    using namespace SunwellPlateau;
+}

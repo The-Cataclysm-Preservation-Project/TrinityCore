@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::Nerubenkan
+{
 enum Spells
 {
     SPELL_ENCASINGWEBS          = 4962,
@@ -127,8 +129,11 @@ public:
         return GetStratholmeAI<boss_nerubenkanAI>(creature);
     }
 };
+}
 
 void AddSC_boss_nerubenkan()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::Nerubenkan;
     new boss_nerubenkan();
 }

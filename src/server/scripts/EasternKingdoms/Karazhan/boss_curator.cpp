@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "karazhan.h"
 
+namespace Karazhan::Curator
+{
 enum CuratorSays
 {
     SAY_AGGRO                    = 0,
@@ -183,9 +185,12 @@ public:
         return GetKarazhanAI<npc_curator_astral_flareAI>(creature);
     }
 };
+}
 
 void AddSC_boss_curator()
 {
+    using namespace Karazhan;
+    using namespace Karazhan::Curator;
     new boss_curator();
     new npc_curator_astral_flare();
 }

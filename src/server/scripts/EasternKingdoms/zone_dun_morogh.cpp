@@ -19,6 +19,8 @@
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
+namespace DunMorogh
+{
 enum FrozenMountaineer
 {
     DATA_SET_ICE_BROKEN      = 1,
@@ -82,8 +84,10 @@ public:
         return new npc_frozen_mountaineerAI(creature);
     }
 };
+}
 
 void AddSC_dun_morogh()
 {
+    using namespace DunMorogh;
     new npc_frozen_mountaineer();
 }

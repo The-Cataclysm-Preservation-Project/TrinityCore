@@ -28,6 +28,8 @@
 #include "SpellScript.h"
 #include "zulaman.h"
 
+namespace ZulAman
+{
 enum VoljinTexts
 {
     // Vol'jin
@@ -456,9 +458,11 @@ private:
     bool _enraged;
     bool _firstGuardian;
 };
+}
 
 void AddSC_zulaman()
 {
+    using namespace ZulAman;
     RegisterZulAamanCreatureAI(npc_zulaman_voljin);
     RegisterZulAamanCreatureAI(npc_zulaman_amanishi_guardian);
 }

@@ -25,6 +25,8 @@
 #include "Map.h"
 #include "MotionMaster.h"
 
+namespace BlackrockDepths
+{
 #define TIMER_TOMBOFTHESEVEN    15000
 #define MAX_ENCOUNTER           6
 
@@ -426,8 +428,10 @@ public:
         }
     };
 };
+}
 
 void AddSC_instance_blackrock_depths()
 {
+    using namespace BlackrockDepths;
     new instance_blackrock_depths();
 }

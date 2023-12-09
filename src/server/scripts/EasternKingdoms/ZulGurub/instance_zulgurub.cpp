@@ -24,6 +24,8 @@
 #include "Map.h"
 #include "zulgurub.h"
 
+namespace ZulGurub
+{
 ObjectData const creatureData[] =
 {
     { BOSS_HIGH_PRIEST_VENOXIS,         DATA_HIGH_PRIEST_VENOXIS                },
@@ -228,8 +230,10 @@ class instance_zulgurub : public InstanceMapScript
             return new instance_zulgurub_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_zulgurub()
 {
+    using namespace ZulGurub;
     new instance_zulgurub();
 }

@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "the_stockade.h"
 
+namespace TheStockade::Lordoverheat
+{
 enum Spells
 {
     SPELL_FIREBALL      = 12466,
@@ -96,8 +98,11 @@ struct boss_lord_overheat : public BossAI
         DoMeleeAttackIfReady();
     }
 };
+}
 
 void AddSC_boss_lord_overheat()
 {
+    using namespace TheStockade;
+    using namespace TheStockade::Lordoverheat;
     RegisterStormwindStockadeAI(boss_lord_overheat);
 }

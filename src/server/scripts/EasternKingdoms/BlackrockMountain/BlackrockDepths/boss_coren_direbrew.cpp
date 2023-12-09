@@ -31,6 +31,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace BlackrockDepths::CorenDirebrew
+{
 enum DirebrewSays
 {
     SAY_INTRO                 = 0,
@@ -669,9 +671,12 @@ class spell_barreled_control_aura : public SpellScriptLoader
             return new spell_barreled_control_aura_AuraScript();
         }
 };
+}
 
 void AddSC_boss_coren_direbrew()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::CorenDirebrew;
     new boss_coren_direbrew();
     new npc_coren_direbrew_sisters();
     new npc_direbrew_minion();

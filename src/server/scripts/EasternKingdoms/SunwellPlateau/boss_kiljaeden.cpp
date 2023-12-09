@@ -36,6 +36,8 @@ EndScriptData */
 #include "sunwell_plateau.h"
 #include "TemporarySummon.h"
 
+namespace SunwellPlateau::KilJaeden
+{
 /*** Speech and sounds***/
 enum Yells
 {
@@ -1463,9 +1465,12 @@ public:
         return GetSunwellPlateauAI<npc_sinster_reflectionAI>(creature);
     }
 };
+}
 
 void AddSC_boss_kiljaeden()
 {
+    using namespace SunwellPlateau;
+    using namespace SunwellPlateau::KilJaeden;
     new go_orb_of_the_blue_flight();
     new boss_kalecgos_kj();
     new boss_kiljaeden();

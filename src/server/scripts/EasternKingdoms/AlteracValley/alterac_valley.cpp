@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace AlteracValley
+{
 enum Spells
 {
     SPELL_CHARGE                                  = 22911,
@@ -185,8 +187,10 @@ class npc_av_marshal_or_warmaster : public CreatureScript
             return new npc_av_marshal_or_warmasterAI(creature);
         }
 };
+}
 
 void AddSC_alterac_valley()
 {
+    using namespace AlteracValley;
     new npc_av_marshal_or_warmaster();
 }

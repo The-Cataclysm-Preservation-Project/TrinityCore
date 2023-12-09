@@ -24,6 +24,8 @@
 #include "molten_core.h"
 #include "TemporarySummon.h"
 
+namespace MoltenCore
+{
 Position const MajodoSummonPos   = { 737.850f, -1145.35f, -120.288f, 4.71368f };
 Position const RagnarosTelePos   = { 829.159f, -815.773f, -228.972f, 5.30500f };
 Position const RagnarosSummonPos = { 838.510f, -829.840f, -232.000f, 2.00000f };
@@ -169,8 +171,10 @@ class instance_molten_core : public InstanceMapScript
             return new instance_molten_core_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_molten_core()
 {
+    using namespace MoltenCore;
     new instance_molten_core();
 }

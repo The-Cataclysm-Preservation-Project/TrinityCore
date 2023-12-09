@@ -27,6 +27,8 @@
 #include "ObjectAccessor.h"
 #include "grim_batol.h"
 
+namespace GrimBatol
+{
 enum TwilightBeguiler
 {
     // Events
@@ -287,9 +289,11 @@ class spell_grim_batol_engulfing_flames : public SpellScript
         OnEffectHitTarget.Register(&spell_grim_batol_engulfing_flames::HandleEffect, EFFECT_1, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_grim_batol()
 {
+    using namespace GrimBatol;
     RegisterGrimBatolCreatureAI(npc_grim_batol_twilight_beguiler);
     RegisterGrimBatolCreatureAI(npc_grim_batol_battered_red_drake);
     RegisterSpellScript(spell_grim_batol_engulfing_flames);

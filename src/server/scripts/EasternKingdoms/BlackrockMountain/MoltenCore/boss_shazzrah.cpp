@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace MoltenCore::Shazzrah
+{
 enum Spells
 {
     SPELL_ARCANE_EXPLOSION      = 19712,
@@ -164,9 +166,12 @@ class spell_shazzrah_gate_dummy : public SpellScriptLoader
             return new spell_shazzrah_gate_dummy_SpellScript();
         }
 };
+}
 
 void AddSC_boss_shazzrah()
 {
+    using namespace MoltenCore;
+    using namespace MoltenCore::Shazzrah;
     new boss_shazzrah();
     new spell_shazzrah_gate_dummy();
 }

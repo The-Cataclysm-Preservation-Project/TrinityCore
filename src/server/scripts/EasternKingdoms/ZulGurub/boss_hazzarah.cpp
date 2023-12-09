@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "zulgurub.h"
 
+namespace ZulGurub::Hazzarah
+{
 enum Yells
 {
 };
@@ -87,8 +89,11 @@ class boss_hazzarah : public CreatureScript
             return new boss_hazzarahAI(creature);
         }
 };
+}
 
 void AddSC_boss_hazzarah()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::Hazzarah;
     new boss_hazzarah();
 }

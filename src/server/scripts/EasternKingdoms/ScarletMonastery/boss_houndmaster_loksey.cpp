@@ -21,6 +21,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace ScarletMonastery::HoundmasterLoksey
+{
 enum Yells
 {
     SAY_AGGRO = 0
@@ -94,8 +96,11 @@ struct boss_houndmaster_loksey : public BossAI
         DoMeleeAttackIfReady();
     }
 };
+}
 
 void AddSC_boss_houndmaster_loksey()
 {
+    using namespace ScarletMonastery;
+    using namespace ScarletMonastery::HoundmasterLoksey;
     RegisterScarletMonasteryCreatureAI(boss_houndmaster_loksey);
 }

@@ -27,6 +27,8 @@
 #include "Spell.h"
 #include "SpellInfo.h"
 
+namespace BlackrockSpire::PyroguardEmberseer
+{
 enum Text
 {
     EMOTE_ONE_STACK                 = 0,
@@ -444,9 +446,12 @@ public:
         return GetBlackrockSpireAI<npc_blackhand_incarceratorAI>(creature);
     }
 };
+}
 
 void AddSC_boss_pyroguard_emberseer()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::PyroguardEmberseer;
     new boss_pyroguard_emberseer();
     new npc_blackhand_incarcerator();
 }

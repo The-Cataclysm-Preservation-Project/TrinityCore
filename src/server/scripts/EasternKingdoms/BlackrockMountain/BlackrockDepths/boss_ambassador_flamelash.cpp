@@ -18,6 +18,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace BlackrockDepths::AmbassadorFlamelash
+{
 enum Spells
 {
     SPELL_FIREBLAST                                        = 15573
@@ -92,8 +94,11 @@ class boss_ambassador_flamelash : public CreatureScript
             return new boss_ambassador_flamelashAI(creature);
         }
 };
+}
 
 void AddSC_boss_ambassador_flamelash()
 {
+    using namespace BlackrockDepths;
+    using namespace BlackrockDepths::AmbassadorFlamelash;
     new boss_ambassador_flamelash();
 }

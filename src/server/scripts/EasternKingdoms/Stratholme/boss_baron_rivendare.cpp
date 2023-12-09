@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::BaronRivendare
+{
 enum Says
 {
     SAY_BARON_RUN_START         = 0,
@@ -176,8 +178,11 @@ public:
         return GetStratholmeAI<boss_baron_rivendareAI>(creature);
     }
 };
+}
 
 void AddSC_boss_baron_rivendare()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::BaronRivendare;
     new boss_baron_rivendare();
 }

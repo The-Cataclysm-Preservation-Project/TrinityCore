@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace BaradinHold
+{
 #define DataHeader "BH"
 #define BHScriptName "instance_baradin_hold"
 
@@ -63,5 +65,6 @@ inline AI* GetBaradinHoldAI(T* obj)
 }
 
 #define RegisterBaradinHoldCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetBaradinHoldAI)
+}
 
 #endif

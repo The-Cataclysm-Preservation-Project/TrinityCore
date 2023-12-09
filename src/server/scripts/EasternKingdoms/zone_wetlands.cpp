@@ -32,6 +32,8 @@ EndContentData */
 #include "ScriptedEscortAI.h"
 #include "Player.h"
 
+namespace Wetlands
+{
 /*######
 ## npc_tapoke_slim_jahn
 ######*/
@@ -163,6 +165,7 @@ class npc_mikhail : public CreatureScript
             return new npc_mikhailAI(creature);
         }
 };
+}
 
 /*######
 ## AddSC
@@ -170,6 +173,7 @@ class npc_mikhail : public CreatureScript
 
 void AddSC_wetlands()
 {
+    using namespace Wetlands;
     new npc_tapoke_slim_jahn();
     new npc_mikhail();
 }

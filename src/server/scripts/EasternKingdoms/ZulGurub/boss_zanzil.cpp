@@ -27,6 +27,8 @@
 #include "SpellScript.h"
 #include "zulgurub.h"
 
+namespace ZulGurub::Zanzil
+{
 enum Yells
 {
     // Zanzil
@@ -648,9 +650,12 @@ class spell_zanzil_frostburn_formula : public AuraScript
         DoCheckProc.Register(&spell_zanzil_frostburn_formula::CheckProc);
     }
 };
+}
 
 void AddSC_boss_zanzil()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::Zanzil;
     RegisterZulGurubCreatureAI(boss_zanzil);
     RegisterZulGurubCreatureAI(npc_zanzil_zanzili_berserker);
     RegisterSpellScript(spell_zanzil_zanzili_fire);

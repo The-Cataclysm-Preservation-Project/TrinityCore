@@ -21,6 +21,8 @@
 #include "CreatureAIImpl.h"
 #include "Position.h"
 
+namespace BlackrockCaverns
+{
 #define BCScriptName "instance_blackrock_caverns"
 #define DataHeader "BRC"
 
@@ -109,5 +111,6 @@ inline AI* GetBlackrockCavernsAI(T* obj)
 }
 
 #define RegisterBlackrockCavernsCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetBlackrockCavernsAI)
+}
 
 #endif // BLACKROCKCAVERNS_H_

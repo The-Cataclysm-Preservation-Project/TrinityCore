@@ -25,6 +25,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace TwilightHighlands
+{
 enum Points
 {
     POINT_NONE                      = 0,
@@ -398,9 +400,11 @@ class spell_th_poison : public AuraScript
         OnEffectPeriodic.Register(&spell_th_poison::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
+}
 
 void AddSC_twilight_highlands()
 {
+    using namespace TwilightHighlands;
     RegisterCreatureAI(npc_th_gurgthock);
     RegisterSpellScript(spell_th_grab_targeting);
     RegisterSpellScript(spell_th_charge);

@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::MalekiThePallid
+{
 enum Spells
 {
     SPELL_FROSTBOLT     = 17503,
@@ -120,8 +122,11 @@ public:
         return GetStratholmeAI<boss_maleki_the_pallidAI>(creature);
     }
 };
+}
 
 void AddSC_boss_maleki_the_pallid()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::MalekiThePallid;
     new boss_maleki_the_pallid();
 }

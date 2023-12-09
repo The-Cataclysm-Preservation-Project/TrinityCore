@@ -30,6 +30,8 @@
 #include "MotionMaster.h"
 #include "bastion_of_twilight.h"
 
+namespace BastionOfTwilight::HalfusWyrmbreaker
+{
 enum Spells
 {
     // Halfus Wyrmbreaker
@@ -689,9 +691,12 @@ class spell_halfus_dancing_flames final : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_halfus_dancing_flames::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
     }
 };
+}
 
 void AddSC_boss_halfus_wyrmbreaker()
 {
+    using namespace BastionOfTwilight;
+    using namespace BastionOfTwilight::HalfusWyrmbreaker;
     RegisterBastionOfTwilightCreatureAI(boss_halfus_wyrmbreaker);
     RegisterBastionOfTwilightCreatureAI(npc_halfus_proto_behemoth);
     RegisterBastionOfTwilightCreatureAI(npc_halfus_enslaved_dragon);

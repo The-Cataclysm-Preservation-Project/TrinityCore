@@ -35,6 +35,8 @@ EndScriptData */
 # Once Aurius is defeated, he should be the one summoning the ghosts.
 #####*/
 
+namespace Stratholme::OrderOfSilverHand
+{
 enum SH_CreatureIds
 {
     SH_GREGOR                   = 17910,
@@ -164,8 +166,11 @@ public:
         return GetStratholmeAI<boss_silver_hand_bossesAI>(creature);
     }
 };
+}
 
 void AddSC_boss_order_of_silver_hand()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::OrderOfSilverHand;
     new boss_silver_hand_bosses();
 }

@@ -21,6 +21,8 @@
 #include "CreatureAIImpl.h"
 #include "MotionMaster.h"
 
+namespace TheStockade
+{
 #define StormwindStockadeScriptName "instance_the_stockade"
 #define DataHeader "SS"
 
@@ -49,5 +51,5 @@ inline AI* GetStormwindStockadeAI(T* obj)
 }
 
 #define RegisterStormwindStockadeAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetStormwindStockadeAI)
-
+}
 #endif

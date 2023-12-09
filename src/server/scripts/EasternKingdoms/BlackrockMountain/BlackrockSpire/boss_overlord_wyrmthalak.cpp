@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace BlackrockSpire::OverlordWyrmthalak
+{
 enum Spells
 {
     SPELL_BLASTWAVE                 = 11130,
@@ -140,8 +142,11 @@ public:
         return GetBlackrockSpireAI<boss_overlordwyrmthalakAI>(creature);
     }
 };
+}
 
 void AddSC_boss_overlordwyrmthalak()
 {
+    using namespace BlackrockSpire;
+    using namespace BlackrockSpire::OverlordWyrmthalak;
     new boss_overlord_wyrmthalak();
 }

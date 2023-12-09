@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "stratholme.h"
 
+namespace Stratholme::Balnazzar
+{
 enum Spells
 {
     // Balnazzar
@@ -118,8 +120,11 @@ struct boss_balnazzar : public BossAI
         DoMeleeAttackIfReady();
     }
 };
+}
 
 void AddSC_boss_balnazzar()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::Balnazzar;
     RegisterStratholmeCreatureAI(boss_balnazzar);
 }

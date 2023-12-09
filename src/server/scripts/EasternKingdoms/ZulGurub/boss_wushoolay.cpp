@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "zulgurub.h"
 
+namespace ZulGurub::Wuhsoolay
+{
 enum Yells
 {
 };
@@ -86,8 +88,11 @@ class boss_wushoolay : public CreatureScript
             return new boss_wushoolayAI(creature);
         }
 };
+}
 
 void AddSC_boss_wushoolay()
 {
+    using namespace ZulGurub;
+    using namespace ZulGurub::Wuhsoolay;
     new boss_wushoolay();
 }

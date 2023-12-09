@@ -26,6 +26,8 @@ Category: Scholomance
 #include "ScriptedCreature.h"
 #include "scholomance.h"
 
+namespace Scholomance::TheRavenian
+{
 enum Spells
 {
     SPELL_TRAMPLE                   = 15550,
@@ -106,8 +108,11 @@ class boss_the_ravenian : public CreatureScript
             return new boss_theravenianAI(creature);
         }
 };
+}
 
 void AddSC_boss_theravenian()
 {
+    using namespace Scholomance;
+    using namespace Scholomance::TheRavenian;
     new boss_the_ravenian();
 }

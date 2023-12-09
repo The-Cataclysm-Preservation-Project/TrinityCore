@@ -25,6 +25,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace BlackrockCaverns::KarshSteelbender
+{
 enum Text
 {
     // Karsh Steelbender
@@ -318,9 +320,12 @@ class achievement_too_hot_to_handle : public AchievementCriteriaScript
             return false;
         }
 };
+}
 
 void AddSC_boss_karsh_steelbender()
 {
+    using namespace BlackrockCaverns;
+    using namespace BlackrockCaverns::KarshSteelbender;
     RegisterBlackrockCavernsCreatureAI(boss_karsh_steelbender);
     RegisterSpellScript(spell_karsh_quicksilver_armor);
     RegisterSpellAndAuraScriptPair(spell_karsh_superheated_quicksilver_armor, spell_karsh_superheated_quicksilver_armor_AuraScript);

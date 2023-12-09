@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Karazhan
+{
 #define KZScriptName "instance_karazhan"
 #define DataHeader "KZ"
 
@@ -116,6 +118,7 @@ template <class AI, class T>
 inline AI* GetKarazhanAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, KZScriptName);
+}
 }
 
 #endif

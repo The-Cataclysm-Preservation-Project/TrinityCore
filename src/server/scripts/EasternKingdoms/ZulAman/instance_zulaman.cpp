@@ -23,6 +23,8 @@
 #include "MotionMaster.h"
 #include "zulaman.h"
 
+namespace ZulAman
+{
 ObjectData const creatureData[] =
 {
     { BOSS_AKILZON,                     DATA_ALKILZON                   },
@@ -258,8 +260,10 @@ public:
         return new instance_zulaman_InstanceScript(map);
     }
 };
+}
 
 void AddSC_instance_zulaman()
 {
+    using namespace ZulAman;
     new instance_zulaman();
 }

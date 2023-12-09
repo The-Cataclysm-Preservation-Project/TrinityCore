@@ -31,6 +31,8 @@ EndScriptData */
 #include "sunwell_plateau.h"
 #include "TemporarySummon.h"
 
+namespace SunwellPlateau::Felwyst
+{
 enum Yells
 {
     YELL_BIRTH                                    = 0,
@@ -577,9 +579,12 @@ public:
         return GetSunwellPlateauAI<npc_felmyst_trailAI>(creature);
     }
 };
+}
 
 void AddSC_boss_felmyst()
 {
+    using namespace SunwellPlateau;
+    using namespace SunwellPlateau::Felwyst;
     new boss_felmyst();
     new npc_felmyst_vapor();
     new npc_felmyst_trail();

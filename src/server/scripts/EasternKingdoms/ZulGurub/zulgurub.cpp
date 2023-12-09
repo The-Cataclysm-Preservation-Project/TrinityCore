@@ -27,6 +27,8 @@
 #include "SpellScript.h"
 #include "Vehicle.h"
 
+namespace ZulGurub
+{
 enum RollingBoulders
 {
     SPELL_ROLLING_BOULDERS_PERIODIC_AURA    = 96837,
@@ -662,9 +664,11 @@ class spell_zulgurub_toad_explode : public SpellScript
         OnEffectHitTarget.Register(&spell_zulgurub_toad_explode::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_zulgurub()
 {
+    using namespace ZulGurub;
     RegisterZulGurubCreatureAI(npc_zulgurub_berserking_boulder_roller);
     RegisterZulGurubCreatureAI(npc_zulgurub_venomguard_destroyer);
     RegisterZulGurubCreatureAI(npc_zulgurub_tiki_lord_mu_loa);

@@ -28,6 +28,8 @@ EndScriptData */
 #include "stratholme.h"
 #include "TemporarySummon.h"
 
+namespace Stratholme::RamsteinTheGorger
+{
 enum Spells
 {
     SPELL_TRAMPLE           = 5568,
@@ -112,8 +114,11 @@ public:
         return GetStratholmeAI<boss_ramstein_the_gorgerAI>(creature);
     }
 };
+}
 
 void AddSC_boss_ramstein_the_gorger()
 {
+    using namespace Stratholme;
+    using namespace Stratholme::RamsteinTheGorger;
     new boss_ramstein_the_gorger();
 }

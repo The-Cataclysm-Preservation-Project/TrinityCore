@@ -30,6 +30,8 @@
 #include "TemporarySummon.h"
 #include "Weather.h"
 
+namespace ZulAman::Akilzon
+{
 enum Texts
 {
     // Akil'zon
@@ -669,9 +671,12 @@ class spell_akilzon_summon_amani_kidnapper : public SpellScript
         OnDestinationTargetSelect.Register(&spell_akilzon_summon_amani_kidnapper::SetDest, EFFECT_0, TARGET_DEST_CASTER);
     }
 };
+}
 
 void AddSC_boss_akilzon()
 {
+    using namespace ZulAman;
+    using namespace ZulAman::Akilzon;
     RegisterZulAamanCreatureAI(boss_akilzon);
     RegisterZulAamanCreatureAI(npc_akilzon_soaring_eagle);
     RegisterZulAamanCreatureAI(npc_akilzon_amani_kidnapper);
