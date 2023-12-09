@@ -235,12 +235,12 @@ public:
     }
 };
 
-struct Wave
+struct PortalWave
 {
     uint32 PortalMob[4];                                    //spawns for portal waves (in order)
 };
 
-static Wave PortalWaves[]=
+static PortalWave PortalWaves[]=
 {
     { {NPC_INFINITE_ASSASIN, NPC_INFINITE_WHELP, NPC_INFINITE_CRONOMANCER, 0} },
     { {NPC_INFINITE_EXECUTIONER, NPC_INFINITE_CRONOMANCER, NPC_INFINITE_WHELP, NPC_INFINITE_ASSASIN} },

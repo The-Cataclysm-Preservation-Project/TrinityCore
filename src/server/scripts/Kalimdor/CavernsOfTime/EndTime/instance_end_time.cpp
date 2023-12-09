@@ -44,34 +44,34 @@ DoorData const doorData[] =
     { 0, 0, DOOR_TYPE_ROOM } // END
 };
 
-enum Events
+enum ETEvents
 {
     EVENT_RESPAWN_MUROZOND = 1
 };
 
-enum SpawnGroups
+enum ETSpawnGroups
 {
     SPAWN_GROUP_ID_MUROZOND_CHEST   = 437,
     SPAWN_GROUP_ID_ECHO_OF_JAINA    = 460
 };
 
-enum AreaIds
+enum ETAreaIds
 {
     AREA_ID_BRONZE_DRAGON_SHRINE = 5795
 };
 
-enum WorldStates
+enum ETWorldStates
 {
     WORLD_STATE_ID_SHOW_COLLECTED_STAVE_FRAGMENTS   = 6046,
     WORLD_STATE_ID_COLLECTED_STAVE_FRAGMENTS        = 6025
 };
 
-enum MapEvents
+enum ETMapEvents
 {
     MAP_EVENT_AZURE_DRAGONSHRINE_ENTERED = 29225
 };
 
-enum Spells
+enum ETSpells
 {
     SPELL_SUMMON_PHANTOM = 102200
 };

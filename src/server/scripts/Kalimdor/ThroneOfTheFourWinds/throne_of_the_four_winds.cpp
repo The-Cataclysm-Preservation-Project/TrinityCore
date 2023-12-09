@@ -31,7 +31,7 @@
 
 namespace ThroneOfTheFourWinds
 {
-enum Spells
+enum ToTFWSpells
 {
     SPELL_JET_STREAM                = 84576,
     SPELL_JET_STREAM_TRIGGERED      = 84610,
@@ -43,19 +43,19 @@ enum Spells
     SPELL_SLIPSTREAM_SAFE_FALL      = 87740,
 };
 
-enum Events
+enum ToTFWEvents
 {
     EVENT_EJECT_ALL_PASSENGERS      = 1,
     EVENT_THROW_PASSENGER           = 2
 };
 
-enum Actions
+enum ToTFWActions
 {
     // action id 1 is used by boss_conclave_of_wind
     ACTION_PLAYER_LEFT_PLATFORM = 2,
 };
 
-enum VehicleSeats
+enum ToTFWVehicleSeats
 {
     SEAT_0 = 0
 };

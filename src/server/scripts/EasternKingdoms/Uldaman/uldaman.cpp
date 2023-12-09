@@ -42,7 +42,7 @@ namespace Uldaman
 ## npc_jadespine_basilisk
 ######*/
 
-enum Spells
+enum USpells
 {
     SPELL_CRYSTALLINE_SLUMBER   = 3636,
 };

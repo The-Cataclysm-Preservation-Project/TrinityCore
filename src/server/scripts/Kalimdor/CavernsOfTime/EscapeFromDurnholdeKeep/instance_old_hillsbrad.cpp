@@ -40,7 +40,6 @@ namespace EscapeFromDurnholdeKeep
 
 #define DRAKE_ENTRY             17848
 
-#define QUEST_ENTRY_DIVERSION   10283
 #define LODGE_QUEST_TRIGGER     20155
 
 class instance_old_hillsbrad : public InstanceMapScript

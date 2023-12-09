@@ -28,14 +28,14 @@
 namespace Stonecore
 {
 
-enum Texts
+enum MillhouseTexts
 {
     // Millhouse Manastorm
     SAY_MILLHOUSE_EVENT_1           = 0,
     SAY_MILLHOUSE_EVENT_2           = 1
 };
 
-enum Spells
+enum MillhouseSpells
 {
     // Millhouse Manastorm
     SPELL_SHADOW_BOLT                     = 81439,
@@ -53,7 +53,7 @@ enum Spells
 //  SPELL_PORTAL_VISUAL                   = 79754,
 };
 
-enum Events
+enum MillhouseEvents
 {
     // Millhouse Manastorm
     EVENT_FROSTBOLT_VOLLEY = 1,
@@ -65,7 +65,7 @@ enum Events
     EVENT_RUN_AWAY
 };
 
-enum MovementPoints
+enum MillhouseCMovementPoints
 {
     POINT_NONE,
 

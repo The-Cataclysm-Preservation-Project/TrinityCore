@@ -39,6 +39,13 @@ EndContentData */
 
 namespace EscapeFromDurnholdeKeep
 {
+#define GOSSIP_HELLO_EROZION1   "I need a pack of Incendiary Bombs."
+#define GOSSIP_HELLO_EROZION2   "[PH] Teleport please, i'm tired."
+
+/*######
+## npc_erozion
+######*/
+
 enum Erozion
 {
     QUEST_ENTRY_HILLSBRAD   = 10282,
@@ -47,12 +54,6 @@ enum Erozion
     QUEST_ENTRY_RETURN      = 10285,
     ITEM_ENTRY_BOMBS        = 25853
 };
-#define GOSSIP_HELLO_EROZION1   "I need a pack of Incendiary Bombs."
-#define GOSSIP_HELLO_EROZION2   "[PH] Teleport please, i'm tired."
-
-/*######
-## npc_erozion
-######*/
 
 class npc_erozion : public CreatureScript
 {

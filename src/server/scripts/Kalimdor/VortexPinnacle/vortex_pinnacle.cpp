@@ -32,12 +32,12 @@
 
 namespace VortexPinnacle
 {
-enum Texts
+enum VPTrashTexts
 {
     SAY_FEIGN_DEATH = 0
 };
 
-enum Spells
+enum VPTrashSpells
 {
     // Lurking Tempest
     SPELL_LIGHTNING_BOLT                = 89105,
@@ -74,7 +74,7 @@ enum Spells
     SPELL_ARCANE_BARRAGE                = 87845
 };
 
-enum Events
+enum VPTrashEvents
 {
     EVENT_NONE,
 
@@ -94,7 +94,7 @@ enum Events
     EVENT_EJECT_ALL_PASSENGERS
 };
 
-enum Points
+enum VPTrashPoints
 {
     POINT_NONE,
     POINT_RANDOM

@@ -256,7 +256,7 @@ class npc_deadmines_steam_valve : public CreatureScript
         }
 };
 
-enum VanessaVanCleef
+enum VanessaVanCleefGauntlet
 {
     SAY_GLUBTOK_INTRO_1                 = 0,
     SAY_GLUBTOK_INTRO_2                 = 1,
