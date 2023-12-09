@@ -35,6 +35,8 @@
 #include "Unit.h"
 #include "Vehicle.h"
 
+namespace Uldum
+{
 enum UldumIntro
 {
     // Phase IDs
@@ -550,9 +552,11 @@ class spell_uldum_rescue_survivor : public SpellScript
         OnEffectHitTarget.Register(&spell_uldum_rescue_survivor::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_uldum()
 {
+    using namespace Uldum;
     /*
     RegisterCreatureAI(npc_uldum_uldum_camera_bunny_04);
     RegisterCreatureAI(npc_uldum_uldum_skarf);

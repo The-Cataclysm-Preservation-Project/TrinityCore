@@ -35,6 +35,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "TemporarySummon.h"
 
+namespace OnyxiasLair::Onyxia
+{
 enum Yells
 {
     // Say
@@ -495,8 +497,11 @@ public:
         return GetOnyxiaAI<boss_onyxiaAI>(creature);
     }
 };
+}
 
 void AddSC_boss_onyxia()
 {
+    using namespace OnyxiasLair;
+    using namespace OnyxiasLair::Onyxia;
     new boss_onyxia();
 }

@@ -29,6 +29,8 @@ EndScriptData */
 #include "temple_of_ahnqiraj.h"
 #include "TemporarySummon.h"
 
+namespace TempleOfAhnqiraj::BugTrio
+{
 enum Spells
 {
     SPELL_CLEAVE       = 26350,
@@ -328,9 +330,12 @@ public:
         return GetAQ40AI<boss_yaujAI>(creature);
     }
 };
+}
 
 void AddSC_bug_trio()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::BugTrio;
     new boss_kri();
     new boss_vem();
     new boss_yauj();

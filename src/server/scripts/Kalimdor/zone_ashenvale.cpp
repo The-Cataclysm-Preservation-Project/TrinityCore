@@ -34,6 +34,8 @@ EndContentData */
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Ashenvale
+{
 /*####
 # npc_ruul_snowhoof
 ####*/
@@ -384,9 +386,11 @@ class spell_destroy_karangs_banner : public SpellScriptLoader
             return new spell_destroy_karangs_banner_SpellScript();
         }
 };
+}
 
 void AddSC_ashenvale()
 {
+    using namespace Ashenvale;
     new npc_ruul_snowhoof();
     new npc_muglash();
     new go_naga_brazier();

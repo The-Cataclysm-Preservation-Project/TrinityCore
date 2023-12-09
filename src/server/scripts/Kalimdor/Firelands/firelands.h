@@ -22,6 +22,8 @@
 #include "Position.h"
 #include <array>
 
+namespace Firelands
+{
 #define DataHeader "FL"
 #define FirelandsScriptName "instance_firelands"
 
@@ -1117,5 +1119,6 @@ inline AI* GetFirelandsAI(T* obj)
 }
 
 #define RegisterFirelandsCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetFirelandsAI)
+}
 
 #endif // FIRELANDS_H_

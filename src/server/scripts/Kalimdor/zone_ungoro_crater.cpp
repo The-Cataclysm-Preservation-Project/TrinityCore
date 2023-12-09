@@ -15,6 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace UnguroCrater
+{
+}
+
 void AddSC_ungoro_crater()
 {
+    using namespace UnguroCrater;
 }

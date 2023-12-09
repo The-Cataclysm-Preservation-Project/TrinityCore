@@ -19,6 +19,8 @@
 #include "blackfathom_deeps.h"
 #include "ScriptedCreature.h"
 
+namespace BlackfathomDeeps::Gelihast
+{
 enum Spells
 {
     SPELL_NET         = 6533
@@ -69,8 +71,11 @@ public:
         return GetBlackfathomDeepsAI<boss_gelihastAI>(creature);
     }
 };
+}
 
 void AddSC_boss_gelihast()
 {
+    using namespace BlackfathomDeeps;
+    using namespace BlackfathomDeeps::Gelihast;
     new boss_gelihast();
 }

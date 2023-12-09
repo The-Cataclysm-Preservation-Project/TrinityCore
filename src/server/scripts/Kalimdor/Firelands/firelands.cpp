@@ -21,6 +21,8 @@
 #include "Player.h"
 #include "ScriptMgr.h"
 
+namespace Firelands
+{
 class at_fl_ragnaros_spawn : public OnlyOnceAreaTriggerScript
 {
 public:
@@ -35,8 +37,10 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_firelands()
 {
+    using namespace Firelands;
     new at_fl_ragnaros_spawn();
 }

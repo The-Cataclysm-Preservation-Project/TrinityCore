@@ -33,6 +33,8 @@
 #include "TemporarySummon.h"
 #include "halls_of_origination.h"
 
+namespace HallsOfOrigination
+{
 enum SunTouchedServant
 {
     // Texts
@@ -909,9 +911,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_halls_of_origination()
 {
+    using namespace HallsOfOrigination;
     RegisterHallsOfOriginationCreatureAI(npc_sun_touched_servant);
     RegisterHallsOfOriginationCreatureAI(npc_hoo_aggro_stalker_1);
     RegisterHallsOfOriginationCreatureAI(npc_hoo_aggro_stalker_2);

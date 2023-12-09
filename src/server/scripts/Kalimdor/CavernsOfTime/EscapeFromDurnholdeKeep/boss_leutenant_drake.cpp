@@ -30,6 +30,8 @@ EndScriptData */
 #include "old_hillsbrad.h"
 #include "ScriptedEscortAI.h"
 
+namespace EscapeFromDurnholdeKeep::LeutenantDrake
+{
 /*######
 ## go_barrel_old_hillsbrad
 ######*/
@@ -199,9 +201,12 @@ public:
         return GetOldHillsbradAI<boss_lieutenant_drakeAI>(creature);
     }
 };
+}
 
 void AddSC_boss_lieutenant_drake()
 {
+    using namespace EscapeFromDurnholdeKeep;
+    using namespace EscapeFromDurnholdeKeep::LeutenantDrake;
     new go_barrel_old_hillsbrad();
     new boss_lieutenant_drake();
 }

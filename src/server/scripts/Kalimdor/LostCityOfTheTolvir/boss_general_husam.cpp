@@ -30,6 +30,8 @@
 #include "Vehicle.h"
 #include "lost_city_of_the_tolvir.h"
 
+namespace LostCityOfTheTolvir::GeneralHusam
+{
 enum Spells
 {
     // General Husam
@@ -487,9 +489,12 @@ class spell_husam_land_mine_player_search_effect : public SpellScript
         OnEffectHitTarget.Register(&spell_husam_land_mine_player_search_effect::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_boss_general_husam()
 {
+    using namespace LostCityOfTheTolvir;
+    using namespace LostCityOfTheTolvir::GeneralHusam;
     RegisterLostCityOfTheTolvirAI(boss_general_husam);
     RegisterLostCityOfTheTolvirAI(npc_husam_tolvir_land_mine);
     RegisterLostCityOfTheTolvirAI(npc_husam_bad_intentions_target);

@@ -25,6 +25,8 @@ Category: Tanaris, ZulFarrak
 #include "ScriptedCreature.h"
 #include "zulfarrak.h"
 
+namespace Zulfarrak::ZumRah
+{
 enum Says
 {
     SAY_SANCT_INVADE    = 0,
@@ -156,8 +158,10 @@ public:
         return GetZulFarrakAI<boss_zum_rahAI>(creature);
     }
 };
+}
 
 void AddSC_boss_zum_rah()
 {
+    using namespace Zulfarrak::ZumRah;
     new boss_zum_rah();
 }

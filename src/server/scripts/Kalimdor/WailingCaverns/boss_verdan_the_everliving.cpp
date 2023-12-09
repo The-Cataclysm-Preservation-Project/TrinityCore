@@ -19,6 +19,8 @@
 #include "ScriptMgr.h"
 #include "wailing_caverns.h"
 
+namespace WailingCaverns::VerdanTheEverliving
+{
 enum Spells
 {
     SPELL_GRASPING_VINES = 8142
@@ -80,9 +82,11 @@ public:
         return GetWailingCavernsAI<boss_verdan_the_everlivingAI>(creature);
     }
 };
-
+}
 
 void AddSC_boss_verdan_the_everliving()
 {
+    using namespace WailingCaverns;
+    using namespace WailingCaverns::VerdanTheEverliving;
     new boss_verdan_the_everliving();
 }

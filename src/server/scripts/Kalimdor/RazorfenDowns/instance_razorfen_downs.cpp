@@ -23,6 +23,8 @@
 #include "razorfen_downs.h"
 #include "TemporarySummon.h"
 
+namespace RazorfenDowns
+{
 Position const PosSummonTutenkash[15] =
 {
     // 7349 Tomb Fiend
@@ -182,8 +184,10 @@ public:
         return new instance_razorfen_downs_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_razorfen_downs()
 {
+    using namespace RazorfenDowns;
     new instance_razorfen_downs();
 }

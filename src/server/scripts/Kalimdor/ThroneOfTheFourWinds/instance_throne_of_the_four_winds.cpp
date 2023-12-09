@@ -30,6 +30,8 @@
 #include "Player.h"
 #include "Creature.h"
 
+namespace ThroneOfTheFourWinds
+{
 ObjectData const creatureData[] =
 {
     { BOSS_ANSHAL,                      DATA_ANSHAL                     },
@@ -354,8 +356,10 @@ class instance_throne_of_the_four_winds : public InstanceMapScript
             return new instance_throne_of_the_four_winds_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_throne_of_the_four_winds()
 {
+    using namespace ThroneOfTheFourWinds;
     new instance_throne_of_the_four_winds();
 }

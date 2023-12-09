@@ -22,6 +22,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace CullingOfStratholme::SalrammTheFleshcrafter
+{
 enum Spells
 {
     SPELL_CURSE_OF_TWISTED_FLESH    = 58845,
@@ -152,9 +154,12 @@ class spell_salramm_steal_flesh : public AuraScript
         OnEffectPeriodic.Register(&spell_salramm_steal_flesh::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
+}
 
 void AddSC_boss_salramm()
 {
+    using namespace CullingOfStratholme;
+    using namespace CullingOfStratholme::SalrammTheFleshcrafter;
     new boss_salramm();
     RegisterSpellScript(spell_salramm_steal_flesh);
 }

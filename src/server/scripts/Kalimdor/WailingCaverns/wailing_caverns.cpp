@@ -38,6 +38,8 @@ EndContentData */
 ## npc_disciple_of_naralex
 ######*/
 
+namespace WailingCaverns
+{
 enum Enums
 {
     SAY_AT_LAST                   = 0,
@@ -361,8 +363,10 @@ public:
         return GetWailingCavernsAI<npc_disciple_of_naralexAI>(creature);
     }
 };
+}
 
 void AddSC_wailing_caverns()
 {
+    using namespace WailingCaverns;
     new npc_disciple_of_naralex();
 }

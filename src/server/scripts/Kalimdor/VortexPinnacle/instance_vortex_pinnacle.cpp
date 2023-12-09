@@ -25,6 +25,8 @@
 #include "TemporarySummon.h"
 #include "vortex_pinnacle.h"
 
+namespace VortexPinnacle
+{
 #define MAX_ENCOUNTER 3
 
 /* The Vortex Pinnacle encounters:
@@ -266,8 +268,10 @@ class instance_vortex_pinnacle : public InstanceMapScript
             return new instance_vortex_pinnacle_InstanceScript(map);
         }
 };
+}
 
 void AddSC_instance_vortex_pinnacle()
 {
+    using namespace VortexPinnacle;
     new instance_vortex_pinnacle();
 }

@@ -24,6 +24,8 @@
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace Firelands
+{
 ObjectData const creatureData[] =
 {
     { BOSS_BETHTILAC,                           DATA_BETHTILAC                          },
@@ -283,8 +285,10 @@ class instance_firelands : public InstanceMapScript
             return new instance_firelands_InstanceScript(map);
         }
 };
+}
 
 void AddSC_instance_firelands()
 {
+    using namespace Firelands;
     new instance_firelands();
 }

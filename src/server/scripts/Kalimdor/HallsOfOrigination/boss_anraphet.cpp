@@ -26,6 +26,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace HallsOfOrigination::Anraphet
+{
 enum Texts
 {
     ANRAPHET_SAY_INTRO              = 0,
@@ -368,9 +370,12 @@ class spell_anraphet_omega_stance_summon : public SpellScript
         OnEffectLaunch.Register(&spell_anraphet_omega_stance_summon::SetDestPosition, EFFECT_0, SPELL_EFFECT_SUMMON);
     }
 };
+}
 
 void AddSC_boss_anraphet()
 {
+    using namespace HallsOfOrigination;
+    using namespace HallsOfOrigination::Anraphet;
     RegisterHallsOfOriginationCreatureAI(boss_anraphet);
     RegisterHallsOfOriginationCreatureAI(npc_alpha_beam);
     RegisterHallsOfOriginationCreatureAI(npc_omega_stance);

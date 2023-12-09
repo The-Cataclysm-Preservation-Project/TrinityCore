@@ -38,6 +38,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "zulfarrak.h"
 
+namespace Zulfarrak
+{
 /*######
 ## npc_sergeant_bly
 ######*/
@@ -463,9 +465,11 @@ public:
     }
 
 };
+}
 
 void AddSC_zulfarrak()
 {
+    using namespace Zulfarrak;
     new npc_sergeant_bly();
     new npc_weegli_blastfuse();
     new go_shallow_grave();

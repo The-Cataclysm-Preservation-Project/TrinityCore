@@ -21,6 +21,8 @@
 #include "ScriptMgr.h"
 #include "ObjectAccessor.h"
 
+namespace LostCityOfTheTolvir
+{
 enum Texts
 {
     SAY_AGGRO       = 0,
@@ -194,9 +196,11 @@ struct npc_lct_wind_tunnel : public ScriptedAI
 private:
     EventMap _events;
 };
+}
 
 void AddSC_lost_city_of_the_tolvir()
 {
+    using namespace LostCityOfTheTolvir;
     new npc_lct_augh();
     RegisterCreatureAI(npc_lct_wind_tunnel_landing_zone);
     RegisterCreatureAI(npc_lct_wind_tunnel);

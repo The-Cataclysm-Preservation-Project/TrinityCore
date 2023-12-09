@@ -40,6 +40,8 @@
 
 #include <array>
 
+namespace DragonSoul::MadnessOfDeathwing
+{
 enum Texts
 {
     // Deathwing
@@ -2605,9 +2607,12 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_boss_madness_of_deathwing()
 {
+    using namespace DragonSoul;
+    using namespace DragonSoul::MadnessOfDeathwing;
     RegisterDragonSoulCreatureAI(boss_madness_of_deathwing);
     RegisterDragonSoulCreatureAI(npc_madness_of_deathwing_limb_tentacle);
     RegisterDragonSoulCreatureAI(npc_madness_of_deathwing_mutated_corruption);

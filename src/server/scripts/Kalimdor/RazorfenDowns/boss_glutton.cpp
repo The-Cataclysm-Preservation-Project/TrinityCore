@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "razorfen_downs.h"
 
+namespace RazorfenDowns::Glutton
+{
 enum Say
 {
     SAY_AGGRO               = 0,
@@ -100,8 +102,11 @@ public:
         return new boss_gluttonAI(creature);
     }
 };
+}
 
 void AddSC_boss_glutton()
 {
+    using namespace RazorfenDowns;
+    using namespace RazorfenDowns::Glutton;
     new boss_glutton();
 }

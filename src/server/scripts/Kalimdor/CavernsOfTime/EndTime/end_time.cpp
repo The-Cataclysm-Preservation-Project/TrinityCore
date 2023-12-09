@@ -25,6 +25,8 @@
 #include "ScriptedGossip.h"
 #include "ScriptMgr.h"
 
+namespace EndTime
+{
 enum Events
 {
     // Nozdormu
@@ -245,9 +247,11 @@ struct go_end_time_fragment_of_jainas_staff : public GameObjectAI
 private:
     InstanceScript* _instance;
 };
+}
 
 void AddSC_end_time()
 {
+    using namespace EndTime;
     RegisterEndTimeCreatureAI(npc_end_time_nozdormu);
     RegisterGameObjectAI(go_end_time_time_transit_device);
     RegisterGameObjectAI(go_end_time_fragment_of_jainas_staff);

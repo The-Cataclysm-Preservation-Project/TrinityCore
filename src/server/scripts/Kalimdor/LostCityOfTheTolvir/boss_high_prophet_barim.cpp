@@ -28,6 +28,8 @@
 #include "SpellMgr.h"
 #include "SpellScript.h"
 
+namespace LostCityOfTheTolvir::HighProphetBarim
+{
 enum Spells
 {
     // High Prophet Barim
@@ -743,9 +745,12 @@ class spell_barim_repentance_stun : public AuraScript
         OnEffectPeriodic.Register(&spell_barim_repentance_stun::DisablePeriodic, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
+}
 
 void AddSC_boss_high_prophet_barim()
 {
+    using namespace LostCityOfTheTolvir;
+    using namespace LostCityOfTheTolvir::HighProphetBarim;
     RegisterLostCityOfTheTolvirAI(boss_high_prophet_barim);
     RegisterLostCityOfTheTolvirAI(npc_barim_repentance);
     RegisterLostCityOfTheTolvirAI(npc_barim_phoenix_summoner);

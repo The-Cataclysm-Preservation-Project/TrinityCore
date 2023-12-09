@@ -34,6 +34,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "SpellInfo.h"
 
+namespace Desolace
+{
 enum DyingKodo
 {
     SAY_SMEED_HOME                  = 0,
@@ -127,8 +129,10 @@ public:
         return new npc_aged_dying_ancient_kodoAI(creature);
     }
 };
+}
 
 void AddSC_desolace()
 {
+    using namespace Desolace;
     new npc_aged_dying_ancient_kodo();
 }

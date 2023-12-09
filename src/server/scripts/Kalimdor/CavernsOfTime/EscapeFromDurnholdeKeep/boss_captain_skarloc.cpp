@@ -27,6 +27,8 @@ EndScriptData */
 #include "old_hillsbrad.h"
 #include "ScriptedCreature.h"
 
+namespace EscapeFromDurnholdeKeep::CaptainSkarloc
+{
 /*######################
 # boss_captain_skarloc #
 #######################*/
@@ -161,8 +163,11 @@ public:
         return GetOldHillsbradAI<boss_captain_skarlocAI>(creature);
     }
 };
+}
 
 void AddSC_boss_captain_skarloc()
 {
+    using namespace EscapeFromDurnholdeKeep;
+    using namespace EscapeFromDurnholdeKeep::CaptainSkarloc;
     new boss_captain_skarloc();
 }

@@ -36,6 +36,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "WorldSession.h"
 
+namespace Tanaris
+{
 /*######
 ## npc_custodian_of_time
 ######*/
@@ -418,9 +420,11 @@ class npc_tooga : public CreatureScript
             }
         };
 };
+}
 
 void AddSC_tanaris()
 {
+    using namespace Tanaris;
     new npc_custodian_of_time();
     new npc_OOX17();
 }

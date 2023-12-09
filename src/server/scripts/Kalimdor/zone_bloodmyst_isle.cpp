@@ -36,6 +36,8 @@ EndContentData */
 #include "Player.h"
 #include "ScriptedEscortAI.h"
 
+namespace BloodmystIsle
+{
 /*######
 ## npc_webbed_creature
 ######*/
@@ -823,9 +825,11 @@ public:
         return new npc_demolitionist_legosoAI(creature);
     }
 };
+}
 
 void AddSC_bloodmyst_isle()
 {
+    using namespace BloodmystIsle;
     new npc_webbed_creature();
     new npc_sironas();
     new npc_demolitionist_legoso();

@@ -37,6 +37,8 @@ TODO List:
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace EndTime::Murozond
+{
 enum Spells
 {
     // Murozond
@@ -523,9 +525,12 @@ class spell_murozond_clone_master_health : public SpellScript
         OnEffectHitTarget.Register(&spell_murozond_clone_master_health::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_boss_murozond()
 {
+    using namespace EndTime;
+    using namespace EndTime::Murozond;
     RegisterEndTimeCreatureAI(boss_murozond);
     RegisterEndTimeCreatureAI(npc_murozond_mirror_image);
     RegisterSpellScript(spell_murozond_rewind_time_forcecast);

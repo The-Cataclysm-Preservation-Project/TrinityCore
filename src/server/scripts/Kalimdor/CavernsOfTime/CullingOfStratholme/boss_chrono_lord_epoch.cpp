@@ -23,6 +23,8 @@
 #include "SpellInfo.h"
 #include <vector>
 
+namespace CullingOfStratholme::ChronoLordEpoch
+{
 enum Spells
 {
     SPELL_CURSE_OF_EXERTION = 52772,
@@ -157,8 +159,11 @@ class boss_epoch : public CreatureScript
             return GetCullingOfStratholmeAI<boss_epochAI>(creature);
         }
 };
+}
 
 void AddSC_boss_epoch()
 {
+    using namespace CullingOfStratholme;
+    using namespace CullingOfStratholme::ChronoLordEpoch;
     new boss_epoch();
 }

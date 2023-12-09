@@ -20,6 +20,10 @@
 
 #include "CreatureAIImpl.h"
 
+struct Position;
+
+namespace CullingOfStratholme
+{
 #define DataHeader "CS"
 #define CoSScriptName "instance_culling_of_stratholme"
 
@@ -83,8 +87,6 @@ uint32 constexpr EncounterCount = 5;
 *      - gets current instance state using GetData, then checks if we should despawn ourselves (bitmask check)          *
 \***********************************************************************************************************************/
 
-struct Position;
-
 // Note: These are bitmask values to allow combining, but only a single bit will ever be true in instance script
 enum COSProgressStates : uint32
 {
@@ -109,7 +111,11 @@ enum COSProgressStates : uint32
     ALL                     = 0x1FFFF
 };
 COSProgressStates GetStableStateFor(COSProgressStates const state); // defined by instance script
-Position const& GetArthasSnapbackFor(COSProgressStates state); // defined by arthas script
+
+namespace Arthas
+{
+    Position const& GetArthasSnapbackFor(COSProgressStates state); // defined by arthas script
+}
 
 enum COSInstanceData
 {
@@ -171,6 +177,7 @@ template <class AI, class T>
 inline AI* GetCullingOfStratholmeAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, CoSScriptName);
+}
 }
 
 #endif

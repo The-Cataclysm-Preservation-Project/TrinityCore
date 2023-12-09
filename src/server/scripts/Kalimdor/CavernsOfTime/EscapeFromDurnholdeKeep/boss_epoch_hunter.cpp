@@ -27,6 +27,8 @@ EndScriptData */
 #include "old_hillsbrad.h"
 #include "ScriptedCreature.h"
 
+namespace EscapeFromDurnholdeKeep::EpochHunter
+{
 /*###################
 # boss_epoch_hunter #
 ####################*/
@@ -143,8 +145,11 @@ public:
         return GetOldHillsbradAI<boss_epoch_hunterAI>(creature);
     }
 };
+}
 
 void AddSC_boss_epoch_hunter()
 {
+    using namespace EscapeFromDurnholdeKeep;
+    using namespace EscapeFromDurnholdeKeep::EpochHunter;
     new boss_epoch_hunter();
 }

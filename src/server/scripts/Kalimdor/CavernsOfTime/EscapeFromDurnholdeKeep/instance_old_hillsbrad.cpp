@@ -30,6 +30,8 @@ EndScriptData */
 #include "Player.h"
 #include "ScriptedCreature.h"
 
+namespace EscapeFromDurnholdeKeep
+{
 #define MAX_ENCOUNTER      6
 
 #define THRALL_ENTRY    17876
@@ -233,8 +235,10 @@ public:
         return new instance_old_hillsbrad_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_old_hillsbrad()
 {
+    using namespace EscapeFromDurnholdeKeep;
     new instance_old_hillsbrad();
 }

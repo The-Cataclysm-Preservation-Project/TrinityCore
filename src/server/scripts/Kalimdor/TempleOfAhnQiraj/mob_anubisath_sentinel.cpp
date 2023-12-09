@@ -27,6 +27,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "temple_of_ahnqiraj.h"
 
+namespace TempleOfAhnqiraj::AnubisathSentinel
+{
 enum Spells
 {
     SPELL_MENDING_BUFF     = 2147,
@@ -258,8 +260,11 @@ public:
         return GetAQ40AI<aqsentinelAI>(creature);
     }
 };
+}
 
 void AddSC_npc_anubisath_sentinel()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::AnubisathSentinel;
     new npc_anubisath_sentinel();
 }

@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Maraudon::Landslide
+{
 enum Spells
 {
     SPELL_KNOCKAWAY         = 18670,
@@ -106,8 +108,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_landslide()
 {
+    using namespace Maraudon;
+    using namespace Maraudon::Landslide;
     new boss_landslide();
 }

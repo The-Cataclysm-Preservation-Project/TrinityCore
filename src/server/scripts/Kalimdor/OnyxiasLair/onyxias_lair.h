@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace OnyxiasLair
+{
 #define OnyxiaScriptName "instance_onyxias_lair"
 #define DataHeader "OL"
 
@@ -77,6 +79,7 @@ template <class AI, class T>
 inline AI* GetOnyxiaAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, OnyxiaScriptName);
+}
 }
 
 #endif

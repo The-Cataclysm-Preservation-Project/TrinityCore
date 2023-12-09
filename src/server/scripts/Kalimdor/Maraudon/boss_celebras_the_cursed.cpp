@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Maraudon::CelebrasTheCursed
+{
 enum Spells
 {
     SPELL_WRATH                 = 21807,
@@ -107,8 +109,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_celebras_the_cursed()
 {
+    using namespace Maraudon;
+    using namespace Maraudon::CelebrasTheCursed;
     new celebras_the_cursed();
 }

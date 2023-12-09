@@ -25,6 +25,8 @@
 #include "ScriptedEscortAI.h"
 #include "ScriptedGossip.h"
 
+namespace BlackfathomDeeps
+{
 enum Spells
 {
     SPELL_BLESSING_OF_BLACKFATHOM                           = 8733,
@@ -256,9 +258,11 @@ public:
         return GetBlackfathomDeepsAI<npc_morriduneAI>(creature);
     }
 };
+}
 
 void AddSC_blackfathom_deeps()
 {
+    using namespace BlackfathomDeeps;
     new go_blackfathom_altar();
     new go_blackfathom_fire();
     new npc_blackfathom_deeps_event();

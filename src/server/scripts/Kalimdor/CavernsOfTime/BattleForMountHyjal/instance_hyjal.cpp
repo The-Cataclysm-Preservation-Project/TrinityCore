@@ -42,6 +42,8 @@ EndScriptData */
 4 - Archimonde event
 */
 
+namespace BattleForMountHyjal
+{
 enum Yells
 {
     YELL_ARCHIMONDE_INTRO = 8
@@ -321,8 +323,10 @@ public:
         return new instance_mount_hyjal_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_mount_hyjal()
 {
+    using namespace BattleForMountHyjal;
     new instance_hyjal();
 }

@@ -26,6 +26,8 @@
 #include "SpellInfo.h"
 #include "vortex_pinnacle.h"
 
+namespace VortexPinnacle::GrandVizierErtan
+{
 enum Spells
 {
     // Grandvizier Ertan
@@ -274,9 +276,12 @@ class spell_ertan_storms_edge_script : public SpellScript
         OnEffectHitTarget.Register(&spell_ertan_storms_edge_script::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
+}
 
 void AddSC_boss_grand_vizier_ertan()
 {
+    using namespace VortexPinnacle;
+    using namespace VortexPinnacle::GrandVizierErtan;
     RegisterVortexPinnacleCreatureAI(boss_grand_vizier_ertan);
     RegisterVortexPinnacleCreatureAI(npc_ertan_ertans_vortex);
     RegisterSpellScript(spell_ertan_storms_edge);

@@ -33,6 +33,10 @@ EndScriptData */
 #include "ObjectAccessor.h"
 #include "TemporarySummon.h"
 
+namespace BattleForMountHyjal::HyjalAI
+{
+using namespace BattleForMountHyjal::Trash;
+
 enum Spawns
 {
     SPAWN_GARG_GATE     = 0,
@@ -1105,4 +1109,5 @@ void hyjalAI::DoOverrun(uint32 faction, const uint32 diff)
             }
             break;
     }
+}
 }

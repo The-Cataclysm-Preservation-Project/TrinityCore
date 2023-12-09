@@ -29,6 +29,8 @@
 #include "MotionMaster.h"
 #include "throne_of_the_four_winds.h"
 
+namespace ThroneOfTheFourWinds
+{
 enum Spells
 {
     SPELL_JET_STREAM                = 84576,
@@ -274,9 +276,11 @@ struct npc_totfw_slipstream : public ScriptedAI
             DoCast(passenger, SPELL_SLIPSTREAM_SAFE_FALL);
     }
 };
+}
 
 void AddSC_throne_of_the_four_winds()
 {
+    using namespace ThroneOfTheFourWinds;
     new at_totfw_jet_stream();
     new at_totfw_catch_fall();
     new npc_totfw_fall_catcher();

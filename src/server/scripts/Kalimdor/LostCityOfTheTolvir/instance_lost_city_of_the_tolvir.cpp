@@ -27,6 +27,8 @@
 #include "TemporarySummon.h"
 #include "Weather.h"
 
+namespace LostCityOfTheTolvir
+{
 enum TimedEvents
 {
     EVENT_SPAWN_AUGH = 1
@@ -307,8 +309,10 @@ class instance_lost_city_of_the_tolvir : public InstanceMapScript
             return new instance_lost_city_of_the_tolvir_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_lost_city_of_the_tolvir()
 {
+    using namespace LostCityOfTheTolvir;
     new instance_lost_city_of_the_tolvir();
 }

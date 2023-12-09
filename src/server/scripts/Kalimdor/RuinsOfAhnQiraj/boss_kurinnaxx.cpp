@@ -22,6 +22,8 @@
 #include "ruins_of_ahnqiraj.h"
 #include "ScriptedCreature.h"
 
+namespace RuinsOfAhnQiraj::Kurinnaxx
+{
 enum Spells
 {
     SPELL_MORTALWOUND       = 25646,
@@ -140,8 +142,11 @@ class boss_kurinnaxx : public CreatureScript
             return GetAQ20AI<boss_kurinnaxxAI>(creature);
         }
 };
+}
 
 void AddSC_boss_kurinnaxx()
 {
+    using namespace RuinsOfAhnQiraj;
+    using namespace RuinsOfAhnQiraj::Kurinnaxx;
     new boss_kurinnaxx();
 }

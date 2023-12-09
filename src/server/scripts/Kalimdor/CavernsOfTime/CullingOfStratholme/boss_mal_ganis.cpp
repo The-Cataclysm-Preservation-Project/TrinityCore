@@ -26,6 +26,8 @@
 #include "ScriptMgr.h"
 #include "SpellMgr.h"
 
+namespace CullingOfStratholme::MalGanis
+{
 enum Spells
 {
     SPELL_CARRION_SWARM     = 52720,
@@ -190,8 +192,11 @@ class boss_mal_ganis : public CreatureScript
             bool _hadYell15;
         };
 };
+}
 
 void AddSC_boss_mal_ganis()
 {
+    using namespace CullingOfStratholme;
+    using namespace CullingOfStratholme::MalGanis;
     new boss_mal_ganis();
 }

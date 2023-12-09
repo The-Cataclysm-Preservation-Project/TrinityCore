@@ -22,40 +22,42 @@
 #include "ScriptMgr.h"
 #include "SpellInfo.h"
 
-enum Spells
+namespace CullingOfStratholme::InfiniteCorruptor
 {
-    SPELL_CORRUPTING_BLIGHT             = 60588,
-    SPELL_VOID_STRIKE                   = 60590,
-    SPELL_CORRUPTION_OF_TIME_CHANNEL    = 60422,
-    SPELL_CORRUPTION_OF_TIME_TARGET     = 60451
-};
+    enum Spells
+    {
+        SPELL_CORRUPTING_BLIGHT = 60588,
+        SPELL_VOID_STRIKE = 60590,
+        SPELL_CORRUPTION_OF_TIME_CHANNEL = 60422,
+        SPELL_CORRUPTION_OF_TIME_TARGET = 60451
+    };
 
-enum Yells
-{
-    SAY_AGGRO   = 0,
-    SAY_DEATH   = 1,
-    SAY_FAIL    = 2
-};
+    enum Yells
+    {
+        SAY_AGGRO = 0,
+        SAY_DEATH = 1,
+        SAY_FAIL = 2
+    };
 
-enum Events
-{
-    EVENT_CORRUPTING_BLIGHT = 1,
-    EVENT_VOID_STRIKE
-};
+    enum Events
+    {
+        EVENT_CORRUPTING_BLIGHT = 1,
+        EVENT_VOID_STRIKE
+    };
 
-enum Entries
-{
-    NPC_TIME_RIFT           = 28409,
-    NPC_GUARDIAN_OF_TIME    = 32281
-};
+    enum Entries
+    {
+        NPC_TIME_RIFT = 28409,
+        NPC_GUARDIAN_OF_TIME = 32281
+    };
 
-enum Misc
-{
-    MOVEMENT_TIME_RIFT = 1
-};
+    enum Misc
+    {
+        MOVEMENT_TIME_RIFT = 1
+    };
 
-class boss_infinite_corruptor : public CreatureScript
-{
+    class boss_infinite_corruptor : public CreatureScript
+    {
     public:
         boss_infinite_corruptor() : CreatureScript("boss_infinite_corruptor") { }
 
@@ -102,17 +104,17 @@ class boss_infinite_corruptor : public CreatureScript
             {
                 switch (eventId)
                 {
-                    case EVENT_CORRUPTING_BLIGHT:
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))
-                            DoCast(target, SPELL_CORRUPTING_BLIGHT);
-                        events.ScheduleEvent(EVENT_CORRUPTING_BLIGHT, 15s);
-                        break;
-                    case EVENT_VOID_STRIKE:
-                        DoCastVictim(SPELL_VOID_STRIKE);
-                        events.ScheduleEvent(EVENT_VOID_STRIKE, 5s);
-                        break;
-                    default:
-                        break;
+                case EVENT_CORRUPTING_BLIGHT:
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))
+                        DoCast(target, SPELL_CORRUPTING_BLIGHT);
+                    events.ScheduleEvent(EVENT_CORRUPTING_BLIGHT, 15s);
+                    break;
+                case EVENT_VOID_STRIKE:
+                    DoCastVictim(SPELL_VOID_STRIKE);
+                    events.ScheduleEvent(EVENT_VOID_STRIKE, 5s);
+                    break;
+                default:
+                    break;
                 }
             }
 
@@ -155,9 +157,12 @@ class boss_infinite_corruptor : public CreatureScript
         {
             return GetCullingOfStratholmeAI<boss_infinite_corruptorAI>(creature);
         }
-};
+    };
+}
 
 void AddSC_boss_infinite_corruptor()
 {
+    using namespace CullingOfStratholme;
+    using namespace CullingOfStratholme::InfiniteCorruptor;
     new boss_infinite_corruptor();
 }

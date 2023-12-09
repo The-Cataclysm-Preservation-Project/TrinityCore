@@ -25,6 +25,8 @@
 #include "SpellScript.h"
 #include "InstanceScript.h"
 
+namespace HallsOfOrigination::Ammunae
+{
 enum Spells
 {
     //  Ammunae
@@ -554,9 +556,12 @@ class spell_ammunae_fixate : public SpellScript
         OnEffectHitTarget.Register(&spell_ammunae_fixate::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
+}
 
 void AddSC_boss_ammunae()
 {
+    using namespace HallsOfOrigination;
+    using namespace HallsOfOrigination::Ammunae;
     RegisterHallsOfOriginationCreatureAI(boss_ammunae);
     RegisterHallsOfOriginationCreatureAI(npc_ammunae_seedling_pod);
     RegisterHallsOfOriginationCreatureAI(npc_ammunae_bloodpetal_blossom);

@@ -34,6 +34,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace Firelands::Baleroc
+{
 enum Spells
 {
     SPELL_INFERNO_BLADE             = 99350,
@@ -822,9 +824,12 @@ class achievement_share_the_pain : public AchievementCriteriaScript
             return target->GetAI()->GetData(DATA_SHARE_THE_PAIN) != 0;
         }
 };
+}
 
 void AddSC_boss_baleroc()
 {
+    using namespace Firelands;
+    using namespace Firelands::Baleroc;
     new boss_baleroc();
 
     new npc_shard_of_torment();

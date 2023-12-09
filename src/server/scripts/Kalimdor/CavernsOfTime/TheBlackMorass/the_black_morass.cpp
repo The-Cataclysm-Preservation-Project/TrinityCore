@@ -26,6 +26,8 @@
 #include "SpellInfo.h"
 #include "the_black_morass.h"
 
+namespace TheBlackMorass
+{
 enum MedivhBm
 {
     SAY_ENTER               = 0,                    //where does this belong?
@@ -351,9 +353,11 @@ public:
         return GetBlackMorassAI<npc_time_riftAI>(creature);
     }
 };
+}
 
 void AddSC_the_black_morass()
 {
+    using namespace TheBlackMorass;
     new npc_medivh_bm();
     new npc_time_rift();
 }

@@ -23,6 +23,8 @@
 #include "SpellInfo.h"
 
 
+namespace Moonglade
+{
 /*####
 # npc_omen
 ####*/
@@ -168,9 +170,11 @@ public:
         return new npc_giant_spotlightAI(creature);
     }
 };
+}
 
 void AddSC_moonglade()
 {
+    using namespace Moonglade;
     new npc_omen();
     new npc_giant_spotlight();
 }

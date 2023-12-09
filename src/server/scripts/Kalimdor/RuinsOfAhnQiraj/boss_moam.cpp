@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "ruins_of_ahnqiraj.h"
 
+namespace RuinsOfAhnQiraj::Moam
+{
 enum Texts
 {
     EMOTE_AGGRO             = 0,
@@ -185,8 +187,11 @@ class boss_moam : public CreatureScript
             return new boss_moamAI(creature);
         }
 };
+}
 
 void AddSC_boss_moam()
 {
+    using namespace RuinsOfAhnQiraj;
+    using namespace RuinsOfAhnQiraj::Moam;
     new boss_moam();
 }

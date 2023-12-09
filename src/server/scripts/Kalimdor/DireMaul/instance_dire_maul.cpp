@@ -48,6 +48,8 @@ gets instead the deserter debuff.
 // 15 - Captain Kromcrush
 // 16 - King Gordok
 
+namespace DireMaul
+{
 uint8 const EncounterCount = 17;
 
 class instance_dire_maul : public InstanceMapScript
@@ -69,8 +71,10 @@ public:
     }
 
 };
+}
 
 void AddSC_instance_dire_maul()
 {
+    using namespace DireMaul;
     new instance_dire_maul();
 }

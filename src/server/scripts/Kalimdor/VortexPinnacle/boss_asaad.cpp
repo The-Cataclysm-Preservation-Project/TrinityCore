@@ -29,6 +29,8 @@
 #include "TemporarySummon.h"
 #include "vortex_pinnacle.h"
 
+namespace VortexPinnacle::Asaad
+{
 enum Spells
 {
     // Asaad
@@ -735,9 +737,12 @@ class spell_asaad_supremacy_of_the_storm_damage: public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_asaad_supremacy_of_the_storm_damage::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
+}
 
 void AddSC_boss_asaad()
 {
+    using namespace VortexPinnacle;
+    using namespace VortexPinnacle::Asaad;
     RegisterVortexPinnacleCreatureAI(boss_asaad);
     RegisterVortexPinnacleCreatureAI(npc_asaad_unstable_grounding_field);
     RegisterSpellScript(spell_asaad_sots_targeting);

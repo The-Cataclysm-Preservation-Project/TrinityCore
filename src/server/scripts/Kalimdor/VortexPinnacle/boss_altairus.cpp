@@ -28,6 +28,8 @@
 #include "ObjectAccessor.h"
 #include "vortex_pinnacle.h"
 
+namespace VortexPinnacle::Altairus
+{
 enum Spells
 {
     // Altairus
@@ -374,9 +376,12 @@ class spell_altairus_safe_area : public AuraScript
         AfterEffectRemove.Register(&spell_altairus_safe_area::HandleLightningBlast, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_altairus()
 {
+    using namespace VortexPinnacle;
+    using namespace VortexPinnacle::Altairus;
     RegisterVortexPinnacleCreatureAI(boss_altairus);
     RegisterSpellScript(spell_altairus_call_the_wind);
     RegisterSpellAndAuraScriptPair(spell_altairus_upwind_of_altairus, spell_altairus_upwind_of_altairus_AuraScript);

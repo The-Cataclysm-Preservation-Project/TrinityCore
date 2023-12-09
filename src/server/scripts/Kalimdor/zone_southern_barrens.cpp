@@ -19,6 +19,8 @@
 #include "DBCStores.h"
 #include "Player.h"
 
+namespace SouthernBarrens
+{
 enum RazorfenKraulEntrance
 {
     AREA_ID_RAZORFEN_KRAUL          = 1717,
@@ -43,8 +45,10 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_southern_barrens()
 {
+    using namespace SouthernBarrens;
     new at_sb_razorfen_kraul_entrance();
 }

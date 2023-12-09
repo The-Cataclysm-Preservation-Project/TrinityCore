@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace TempleOfAhnqiraj::Huhuran
+{
 enum Huhuran
 {
     EMOTE_FRENZY_KILL           = 0,
@@ -154,8 +156,11 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_huhuran()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::Huhuran;
     new boss_huhuran();
 }

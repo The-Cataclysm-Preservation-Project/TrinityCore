@@ -39,6 +39,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 
+namespace RazorfenDowns
+{
 /*###
 ## npc_belnistrasz for Quest 3525 "Extinguishing the Idol"
 ######*/
@@ -395,9 +397,11 @@ class go_gong : public GameObjectScript
             return GetRazorfenDownsAI<go_gongAI>(go);
         }
 };
+}
 
 void AddSC_razorfen_downs()
 {
+    using namespace RazorfenDowns;
     new npc_belnistrasz();
     new npc_idol_room_spawner();
     new npc_tomb_creature();

@@ -19,6 +19,8 @@
 #include "ScriptMgr.h"
 #include "wailing_caverns.h"
 
+namespace WailingCaverns::Skum
+{
 enum Spells
 {
     SPELL_CHAINED_BOLT = 6254
@@ -80,9 +82,10 @@ public:
         return GetWailingCavernsAI<boss_skumAI>(creature);
     }
 };
-
+}
 
 void AddSC_boss_skum()
 {
+    using namespace WailingCaverns::Skum;
     new boss_skum();
 }

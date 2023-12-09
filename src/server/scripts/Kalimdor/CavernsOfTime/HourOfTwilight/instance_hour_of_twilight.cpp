@@ -19,6 +19,8 @@
 #include "InstanceScript.h"
 #include "hour_of_twilight.h"
 
+namespace HourOfTwilight
+{
 ObjectData const creatureData[] =
 {
     { 0, 0  } // END
@@ -55,8 +57,10 @@ public:
         return new instance_hour_of_twilight_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_hour_of_twilight()
 {
+    using namespace HourOfTwilight;
     new instance_hour_of_twilight();
 }

@@ -30,6 +30,8 @@ EndScriptData */
 #include "Player.h"
 #include "razorfen_kraul.h"
 
+namespace RazorfenKraul
+{
 #define WARD_KEEPERS_NR 2
 
 class instance_razorfen_kraul : public InstanceMapScript
@@ -93,8 +95,10 @@ public:
         return new instance_razorfen_kraul_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_razorfen_kraul()
 {
+    using namespace RazorfenKraul;
     new instance_razorfen_kraul();
 }

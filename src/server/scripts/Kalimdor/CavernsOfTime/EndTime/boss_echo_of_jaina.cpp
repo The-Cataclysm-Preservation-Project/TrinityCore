@@ -26,6 +26,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace EndTime::EchoOfJaina
+{
 enum Spells
 {
     // Echo of Jaina
@@ -466,9 +468,12 @@ class spell_echo_of_jaina_flarecore_periodic : public AuraScript
         AfterEffectRemove.Register(&spell_echo_of_jaina_flarecore_periodic::AfterRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
+}
 
 void AddSC_boss_echo_of_jaina()
 {
+    using namespace EndTime;
+    using namespace EndTime::EchoOfJaina;
     RegisterEndTimeCreatureAI(boss_echo_of_jaina);
     RegisterEndTimeCreatureAI(npc_echo_of_jaina_blink_target);
     RegisterSpellScript(spell_echo_of_jaina_face_highest_threat_target);

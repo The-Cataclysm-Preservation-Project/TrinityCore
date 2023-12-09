@@ -27,6 +27,8 @@
 #include "World.h"
 #include "TemporarySummon.h"
 
+namespace HallsOfOrigination
+{
 DoorData const doorData[] =
 {
     { GO_DOODAD_ULDUM_DOOR_14,         DATA_TEMPLE_GUARDIAN_ANHUUR, DOOR_TYPE_ROOM    },
@@ -546,8 +548,10 @@ class instance_halls_of_origination : public InstanceMapScript
             return new instance_halls_of_origination_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_halls_of_origination()
 {
+    using namespace HallsOfOrigination;
     new instance_halls_of_origination();
 }

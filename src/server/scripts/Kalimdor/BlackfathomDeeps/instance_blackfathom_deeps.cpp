@@ -29,6 +29,8 @@ EndScriptData */
 #include "InstanceScript.h"
 #include "Map.h"
 
+namespace BlackfathomDeeps
+{
 const Position LorgusPosition[4] =
 {
     { -458.500610f, -38.343079f, -33.474445f, 0.0f },
@@ -241,8 +243,10 @@ public:
         return new instance_blackfathom_deeps_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_blackfathom_deeps()
 {
+    using namespace BlackfathomDeeps;
     new instance_blackfathom_deeps();
 }

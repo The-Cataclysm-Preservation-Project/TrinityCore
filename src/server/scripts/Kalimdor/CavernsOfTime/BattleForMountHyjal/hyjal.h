@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace BattleForMountHyjal
+{
 #define HyjalScriptName "instance_hyjal"
 #define DataHeader "HY"
 
@@ -99,6 +101,7 @@ template <class AI, class T>
 inline AI* GetHyjalAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, HyjalScriptName);
+}
 }
 
 #endif

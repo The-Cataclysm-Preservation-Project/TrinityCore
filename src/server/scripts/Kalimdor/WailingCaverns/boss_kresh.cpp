@@ -19,6 +19,8 @@
 #include "ScriptMgr.h"
 #include "wailing_caverns.h"
 
+namespace WailingCaverns::Kresh
+{
 enum Spells
 {
     SPELL_CRUSHING_BITE = 80362
@@ -77,9 +79,11 @@ public:
         return GetWailingCavernsAI<boss_kreshAI>(creature);
     }
 };
-
+}
 
 void AddSC_boss_kresh()
 {
+    using namespace WailingCaverns;
+    using namespace WailingCaverns::Kresh;
     new boss_kresh();
 }

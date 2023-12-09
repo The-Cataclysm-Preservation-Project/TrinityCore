@@ -30,6 +30,8 @@
 #include "Vehicle.h"
 #include "vortex_pinnacle.h"
 
+namespace VortexPinnacle
+{
 enum Texts
 {
     SAY_FEIGN_DEATH = 0
@@ -872,9 +874,11 @@ public:
         return true;
     }
 };
+}
 
 void AddSC_vortex_pinnacle()
 {
+    using namespace VortexPinnacle;
     RegisterVortexPinnacleCreatureAI(npc_lurking_tempest);
     RegisterVortexPinnacleCreatureAI(npc_vp_howling_gale);
     RegisterVortexPinnacleCreatureAI(npc_slipstream);

@@ -21,6 +21,8 @@
 #include "hyjal.h"
 #include "ScriptedEscortAI.h"
 
+namespace BattleForMountHyjal::HyjalAI
+{
 #define HYJAL_AI_MAX_SPELLS 3
 
 enum SpellIds
@@ -204,4 +206,5 @@ struct hyjalAI : public EscortAI
     private:
         uint32 SpellTimer[3];
 };
+}
 #endif

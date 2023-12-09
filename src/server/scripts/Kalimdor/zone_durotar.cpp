@@ -22,6 +22,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace Durotar
+{
 enum VoodooSpells
 {
     SPELL_BREW      = 16712, // Special Brew
@@ -77,9 +79,11 @@ class spell_zuni_lvl_1_trigger_aura : public SpellScript
         OnEffectHitTarget.Register(&spell_zuni_lvl_1_trigger_aura::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
+}
 
 void AddSC_durotar()
 {
+    using namespace Durotar;
     new spell_voodoo();
     RegisterSpellScript(spell_zuni_lvl_1_trigger_aura);
 }

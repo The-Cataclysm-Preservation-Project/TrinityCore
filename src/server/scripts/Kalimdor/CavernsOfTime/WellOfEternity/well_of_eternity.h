@@ -21,40 +21,43 @@
 #include "CreatureAIImpl.h"
 #include "Define.h"
 
+namespace WellOfEternity
+{
 #define DataHeader "WOE"
 #define WOEScriptName "instance_well_of_eternity"
 
-uint32 const EncounterCount = 3;
+    uint32 const EncounterCount = 3;
 
-enum WOEDataTypes
-{
-    // Bosses
-    BOSS_PEROTHARN              = 0,
-    BOSS_QUEEN_AZSHARA          = 1,
-    BOSS_MANNOROTH_AND_VAROTHEN = 2,
+    enum WOEDataTypes
+    {
+        // Bosses
+        BOSS_PEROTHARN = 0,
+        BOSS_QUEEN_AZSHARA = 1,
+        BOSS_MANNOROTH_AND_VAROTHEN = 2,
 
-    // Misc
-    DATA_WOE_COURTYARD_DOOR01,
-};
+        // Misc
+        DATA_WOE_COURTYARD_DOOR01,
+    };
 
-enum WOECreatures
-{
-    NPC_PEROTHARN = 55085
-};
+    enum WOECreatures
+    {
+        NPC_PEROTHARN = 55085
+    };
 
-enum WOEGameObjectIds
-{
-    GO_WOE_COURTYARD_DOOR01 = 210084,
-    GO_LARGE_FIREWALL_DOOR  = 210234,
-    GO_SMALL_FIREWALL_DOOR  = 210130,
-};
+    enum WOEGameObjectIds
+    {
+        GO_WOE_COURTYARD_DOOR01 = 210084,
+        GO_LARGE_FIREWALL_DOOR = 210234,
+        GO_SMALL_FIREWALL_DOOR = 210130,
+    };
 
-template<class AI>
-AI* GetWellOfEternityAI(Creature* creature)
-{
-    return GetInstanceAI<AI>(creature, WOEScriptName);
-}
+    template<class AI>
+    AI* GetWellOfEternityAI(Creature* creature)
+    {
+        return GetInstanceAI<AI>(creature, WOEScriptName);
+    }
 
 #define RegisterWellOfEternityCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetWellOfEternityAI)
+}
 
 #endif // DEF_WELLOFETERNITY_H

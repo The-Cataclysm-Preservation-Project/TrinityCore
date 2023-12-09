@@ -39,6 +39,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 
+namespace Silithus
+{
 /*#####
 # Quest: A Pawn on the Eternal Board
 #####*/
@@ -1376,9 +1378,11 @@ class go_wind_stone : public GameObjectScript
             return new go_wind_stoneAI(go);
         }
 };
+}
 
 void AddSC_silithus()
 {
+    using namespace Silithus;
     new go_crystalline_tear();
     new npc_anachronos_quest_trigger();
     new npc_anachronos_the_ancient();

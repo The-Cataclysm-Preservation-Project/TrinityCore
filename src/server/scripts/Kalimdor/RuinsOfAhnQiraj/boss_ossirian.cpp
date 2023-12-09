@@ -30,6 +30,8 @@
 #include "Weather.h"
 #include "WorldPacket.h"
 
+namespace RuinsOfAhnQiraj::Ossirian
+{
 enum Texts
 {
     SAY_SUPREME             = 0,
@@ -309,9 +311,12 @@ class go_ossirian_crystal : public GameObjectScript
             return GetAQ20AI<go_ossirian_crystalAI>(go);
         }
 };
+}
 
 void AddSC_boss_ossirian()
 {
+    using namespace RuinsOfAhnQiraj;
+    using namespace RuinsOfAhnQiraj::Ossirian;
     new boss_ossirian();
     new go_ossirian_crystal();
 }

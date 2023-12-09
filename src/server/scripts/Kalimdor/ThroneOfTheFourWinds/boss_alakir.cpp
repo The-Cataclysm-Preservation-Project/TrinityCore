@@ -30,6 +30,8 @@
 #include "TemporarySummon.h"
 #include "Map.h"
 
+namespace ThroneOfTheFourWinds::Alakir
+{
 enum Spells
 {
     // Al'Akir
@@ -1181,9 +1183,12 @@ class spell_alakir_lightning_script: public SpellScript
         OnEffectHitTarget.Register(&spell_alakir_lightning_script::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
+}
 
 void AddSC_boss_alakir()
 {
+    using namespace ThroneOfTheFourWinds;
+    using namespace ThroneOfTheFourWinds::Alakir;
     RegisterThroneOfTheFourWindsCreatureAI(boss_alakir);
     RegisterThroneOfTheFourWindsCreatureAI(npc_alakir_ice_storm);
     RegisterThroneOfTheFourWindsCreatureAI(npc_alakir_stormling);

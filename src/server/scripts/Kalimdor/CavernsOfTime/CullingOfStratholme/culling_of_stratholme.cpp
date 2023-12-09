@@ -36,6 +36,8 @@
 #include "TemporarySummon.h"
 #include <unordered_map>
 
+namespace CullingOfStratholme
+{
 enum InnEventEntries
 {
     NPC_FORREST = 30551,
@@ -1457,9 +1459,11 @@ public:
         return GetCullingOfStratholmeAI<npc_crate_helperAI>(creature);
     }
 };
+}
 
 void AddSC_culling_of_stratholme()
 {
+    using namespace CullingOfStratholme;
     new npc_hearthsinger_forresten_cot();
     new at_stratholme_inn_stairs_cot();
 

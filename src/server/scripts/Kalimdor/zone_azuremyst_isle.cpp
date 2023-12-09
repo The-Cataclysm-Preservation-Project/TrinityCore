@@ -42,6 +42,8 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 
+namespace AzuremstIsle
+{
 /*######
 ## npc_draenei_survivor
 ######*/
@@ -717,9 +719,11 @@ public:
         return new npc_death_ravagerAI(creature);
     }
 };
+}
 
 void AddSC_azuremyst_isle()
 {
+    using namespace AzuremstIsle;
     new npc_draenei_survivor();
     new npc_engineer_spark_overgrind();
     new npc_injured_draenei();

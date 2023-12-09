@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "SpellInfo.h"
 
+namespace Mulgore
+{
 enum EagleSpirit
 {
     SPELL_EJECT_ALL_PASSENGERS = 50630,
@@ -212,9 +214,11 @@ struct npc_mulgore_chief_squealer_thornmantle : public ScriptedAI
 private:
     EventMap _events;
 };
+}
 
 void AddSC_mulgore()
 {
+    using namespace Mulgore;
     RegisterCreatureAI(npc_mulgore_eagle_spirit);
     RegisterCreatureAI(npc_mulgore_captured_brave);
     RegisterCreatureAI(npc_mulgore_chief_squealer_thornmantle);

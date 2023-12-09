@@ -26,6 +26,8 @@ gets instead the deserter debuff.
 #include "ScriptMgr.h"
 #include "InstanceScript.h"
 
+namespace RagefireChasm
+{
 class instance_ragefire_chasm : public InstanceMapScript
 {
 public:
@@ -45,8 +47,10 @@ public:
         return new instance_ragefire_chasm_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_ragefire_chasm()
 {
+    using namespace RagefireChasm;
     new instance_ragefire_chasm();
 }

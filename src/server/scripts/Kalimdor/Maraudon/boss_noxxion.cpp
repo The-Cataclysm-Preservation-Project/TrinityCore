@@ -25,6 +25,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace Maraudon::Noxxion
+{
 enum Spells
 {
     SPELL_TOXICVOLLEY           = 21687,
@@ -141,8 +143,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_noxxion()
 {
+    using namespace Maraudon;
+    using namespace Maraudon::Noxxion;
     new boss_noxxion();
 }

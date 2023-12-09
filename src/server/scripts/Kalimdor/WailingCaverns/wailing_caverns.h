@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace WailingCaverns
+{
 #define DataHeader "WC"
 #define WCScriptName "instance_wailing_caverns"
 
@@ -68,6 +70,7 @@ template <class AI, class T>
 inline AI* GetWailingCavernsAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, WCScriptName);
+}
 }
 
 #endif // WAILING_CAVERNS_H

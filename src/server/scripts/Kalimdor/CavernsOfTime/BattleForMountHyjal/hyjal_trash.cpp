@@ -23,6 +23,8 @@
 #include "ObjectAccessor.h"
 #include "TemporarySummon.h"
 
+namespace BattleForMountHyjal::Trash
+{
 enum Spells
 {
     SPELL_METEOR            = 33814, //infernal visual
@@ -1442,9 +1444,12 @@ public:
         return GetHyjalAI<alliance_riflemanAI>(creature);
     }
 };
+}
 
 void AddSC_hyjal_trash()
 {
+    using namespace BattleForMountHyjal;
+    using namespace BattleForMountHyjal::Trash;
     new npc_giant_infernal();
     new npc_abomination();
     new npc_ghoul();

@@ -19,6 +19,8 @@
 #include "InstanceScript.h"
 #include "well_of_eternity.h"
 
+namespace WellOfEternity
+{
 ObjectData const creatureData[] =
 {
     { NPC_PEROTHARN,    BOSS_PEROTHARN  },
@@ -59,8 +61,10 @@ public:
         return new instance_well_of_eternity_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_well_of_eternity()
 {
+    using namespace WellOfEternity;
     new instance_well_of_eternity();
 }

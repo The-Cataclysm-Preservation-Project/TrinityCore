@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
+namespace TempleOfAhnqiraj::Sartura
+{
 enum Sartura
 {
     SAY_AGGRO           = 0,
@@ -312,9 +314,12 @@ public:
     };
 
 };
+}
 
 void AddSC_boss_sartura()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::Sartura;
     new boss_sartura();
     new npc_sartura_royal_guard();
 }

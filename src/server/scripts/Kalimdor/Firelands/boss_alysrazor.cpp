@@ -29,6 +29,8 @@
 #include "SpellScript.h"
 #include "TemporarySummon.h"
 
+namespace Firelands::Alysrazor
+{
 enum Texts
 {
     // Egg Pile
@@ -671,9 +673,12 @@ class spell_alysrazor_fieroblast : public SpellScriptLoader
             return new spell_alysrazor_fieroblast_SpellScript();
         }
 };
+}
 
 void AddSC_boss_alysrazor()
 {
+    using namespace Firelands;
+    using namespace Firelands::Alysrazor;
     new npc_harbinger_of_flame();
     new npc_blazing_monstrosity();
     new npc_molten_barrage();

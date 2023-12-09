@@ -24,6 +24,8 @@
 #include "SpellInfo.h"
 #include "SpellScript.h"
 
+namespace LostCityOfTheTolvir::Lockmaw
+{
 enum Texts
 {
     // Augh Boss
@@ -610,9 +612,12 @@ class spell_lockmaw_random_aggro_taunt : public SpellScriptLoader
             return new spell_lockmaw_random_aggro_taunt_SpellScript();
         }
 };
+}
 
 void AddSC_boss_lockmaw_and_augh()
 {
+    using namespace LostCityOfTheTolvir;
+    using namespace LostCityOfTheTolvir::Lockmaw;
     new boss_lockmaw();
     new boss_augh();
     new npc_lockmaw_frenzied_crocolisk();

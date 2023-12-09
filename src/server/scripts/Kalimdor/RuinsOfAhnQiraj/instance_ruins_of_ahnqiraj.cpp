@@ -20,6 +20,8 @@
 #include "InstanceScript.h"
 #include "ruins_of_ahnqiraj.h"
 
+namespace RuinsOfAhnQiraj
+{
 class instance_ruins_of_ahnqiraj : public InstanceMapScript
 {
     public:
@@ -110,8 +112,10 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
             return new instance_ruins_of_ahnqiraj_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_ruins_of_ahnqiraj()
 {
+    using namespace RuinsOfAhnQiraj;
     new instance_ruins_of_ahnqiraj();
 }

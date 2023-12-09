@@ -20,6 +20,8 @@
 #include "ScriptMgr.h"
 #include "dragon_soul.h"
 
+namespace DragonSoul
+{
 ObjectData const creatureData[] =
 {
     { BOSS_MADNESS_OF_DEATHWING,            DATA_MADNESS_OF_DEATHWING               },
@@ -87,8 +89,10 @@ public:
         return new instance_dragon_soul_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_dragon_soul()
 {
+    using namespace DragonSoul;
     new instance_dragon_soul();
 }

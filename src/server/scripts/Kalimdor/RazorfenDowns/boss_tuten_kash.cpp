@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "razorfen_downs.h"
 
+namespace RazorfenDowns::TutenKash
+{
 enum Spells
 {
     SPELL_THRASH             = 8876,
@@ -103,8 +105,11 @@ public:
         return new boss_tuten_kashAI(creature);
     }
 };
+}
 
 void AddSC_boss_tuten_kash()
 {
+    using namespace RazorfenDowns;
+    using namespace RazorfenDowns::TutenKash;
     new boss_tuten_kash();
 }

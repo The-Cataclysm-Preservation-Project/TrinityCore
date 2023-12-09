@@ -23,6 +23,8 @@
 #include "TemporarySummon.h"
 #include "zulfarrak.h"
 
+namespace Zulfarrak
+{
 enum Misc
 {
     // Creatures
@@ -373,8 +375,10 @@ public:
         return new instance_zulfarrak_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_zulfarrak()
 {
+    using namespace Zulfarrak;
     new instance_zulfarrak();
 }

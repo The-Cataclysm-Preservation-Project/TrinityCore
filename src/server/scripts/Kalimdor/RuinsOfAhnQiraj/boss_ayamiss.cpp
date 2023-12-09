@@ -23,6 +23,8 @@
 #include "ruins_of_ahnqiraj.h"
 #include "ScriptedCreature.h"
 
+namespace RuinsOfAhnQiraj::Ayamiss
+{
 enum Spells
 {
     SPELL_STINGER_SPRAY         =  25749,
@@ -300,9 +302,12 @@ class npc_hive_zara_larva : public CreatureScript
             return GetAQ20AI<npc_hive_zara_larvaAI>(creature);
         }
 };
+}
 
 void AddSC_boss_ayamiss()
 {
+    using namespace RuinsOfAhnQiraj;
+    using namespace RuinsOfAhnQiraj::Ayamiss;
     new boss_ayamiss();
     new npc_hive_zara_larva();
 }

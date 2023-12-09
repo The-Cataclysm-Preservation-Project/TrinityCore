@@ -21,6 +21,10 @@
 #include "ObjectAccessor.h"
 #include "SpellScript.h"
 
+namespace BattleForMountHyjal::Anetheron
+{
+using namespace BattleForMountHyjal::Trash;
+
 enum Spells
 {
     SPELL_CARRION_SWARM         = 31306,
@@ -294,9 +298,12 @@ class spell_anetheron_vampiric_aura : public SpellScriptLoader
             return new spell_anetheron_vampiric_aura_AuraScript();
         }
 };
+}
 
 void AddSC_boss_anetheron()
 {
+    using namespace BattleForMountHyjal;
+    using namespace BattleForMountHyjal::Anetheron;
     new boss_anetheron();
     new npc_towering_infernal();
     new spell_anetheron_vampiric_aura();

@@ -30,6 +30,8 @@
 #include "ObjectAccessor.h"
 #include "MotionMaster.h"
 
+namespace ThroneOfTheFourWinds::ConclaveOfWind
+{
 enum Spells
 {
     // Conclave of Wind
@@ -1293,9 +1295,12 @@ class spell_conclave_of_wind_sleet_storm : public SpellScript
 private:
     uint32 _targetCount;
 };
+}
 
 void AddSC_boss_conclave_of_wind()
 {
+    using namespace ThroneOfTheFourWinds;
+    using namespace ThroneOfTheFourWinds::ConclaveOfWind;
     RegisterThroneOfTheFourWindsCreatureAI(boss_anshal);
     RegisterThroneOfTheFourWindsCreatureAI(boss_nezir);
     RegisterThroneOfTheFourWindsCreatureAI(boss_rohash);

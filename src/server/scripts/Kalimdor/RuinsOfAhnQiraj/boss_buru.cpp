@@ -22,6 +22,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace RuinsOfAhnQiraj::Buru
+{
 enum Emotes
 {
     EMOTE_TARGET                = 0
@@ -273,9 +275,12 @@ class spell_egg_explosion : public SpellScriptLoader
             return new spell_egg_explosion_SpellScript();
         }
 };
+}
 
 void AddSC_boss_buru()
 {
+    using namespace RuinsOfAhnQiraj;
+    using namespace RuinsOfAhnQiraj::Buru;
     new boss_buru();
     new npc_buru_egg();
     new spell_egg_explosion();

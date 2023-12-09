@@ -19,6 +19,8 @@
 #include "blackfathom_deeps.h"
 #include "ScriptedCreature.h"
 
+namespace BlackfathomDeeps::Kelris
+{
 enum Spells
 {
     SPELL_MIND_BLAST    = 15587,
@@ -104,8 +106,11 @@ public:
         return GetBlackfathomDeepsAI<boss_kelrisAI>(creature);
     }
 };
+}
 
 void AddSC_boss_kelris()
 {
+    using namespace BlackfathomDeeps;
+    using namespace BlackfathomDeeps::Kelris;
     new boss_kelris();
 }

@@ -27,6 +27,8 @@ Category: Caverns of Time, The Black Morass
 #include "ScriptedCreature.h"
 #include "the_black_morass.h"
 
+namespace TheBlackMorass::ChronoLordDeja
+{
 enum Enums
 {
     SAY_ENTER                   = 0,
@@ -150,8 +152,10 @@ public:
         return GetBlackMorassAI<boss_chrono_lord_dejaAI>(creature);
     }
 };
+}
 
 void AddSC_boss_chrono_lord_deja()
 {
+    using namespace TheBlackMorass::ChronoLordDeja;
     new boss_chrono_lord_deja();
 }

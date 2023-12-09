@@ -30,6 +30,8 @@ EndScriptData */
 #include "onyxias_lair.h"
 #include "TemporarySummon.h"
 
+namespace OnyxiasLair
+{
 BossBoundaryData const boundaries =
 {
     { DATA_ONYXIA, new CircleBoundary(Position(-34.3697f, -212.3296f), 100.0) }
@@ -264,8 +266,10 @@ public:
         bool   achievSheDeepBreathMore;
     };
 };
+}
 
 void AddSC_instance_onyxias_lair()
 {
+    using namespace OnyxiasLair;
     new instance_onyxias_lair();
 }

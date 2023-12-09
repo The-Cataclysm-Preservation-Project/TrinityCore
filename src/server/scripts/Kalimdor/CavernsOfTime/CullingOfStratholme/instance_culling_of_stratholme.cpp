@@ -35,6 +35,8 @@
 #include <unordered_set>
 #include <vector>
 
+namespace CullingOfStratholme
+{
 /*
  *  Culling of Stratholme encounters:
  *  0 - Meathook
@@ -400,7 +402,7 @@ class instance_culling_of_stratholme : public InstanceMapScript
                     case DATA_GM_RECALL:
                     {
                         Creature* arthas = instance->GetCreature(_arthasGUID);
-                        Position const& target = arthas ? arthas->GetPosition() : GetArthasSnapbackFor(_currentState);
+                        Position const& target = arthas ? arthas->GetPosition() : Arthas::GetArthasSnapbackFor(_currentState);
 
                         for (auto itr = instance->GetPlayers().begin(); itr != instance->GetPlayers().end(); ++itr)
                         {
@@ -517,7 +519,7 @@ class instance_culling_of_stratholme : public InstanceMapScript
                         }
                         case EVENT_RESPAWN_ARTHAS:
                             TC_LOG_DEBUG("scripts.cos", "instance_culling_of_stratholme::Update: Spawning new Arthas for instance...");
-                            instance->SummonCreature(NPC_ARTHAS, GetArthasSnapbackFor(_currentState));
+                            instance->SummonCreature(NPC_ARTHAS, Arthas::GetArthasSnapbackFor(_currentState));
                             events.CancelEvent(EVENT_RESPAWN_ARTHAS); // make sure we don't have two scheduled
                             break;
                         case EVENT_CRIER_CALL_TO_GATES:
@@ -820,8 +822,10 @@ class instance_culling_of_stratholme : public InstanceMapScript
             return new instance_culling_of_stratholme_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_culling_of_stratholme()
 {
+    using namespace CullingOfStratholme;
     new instance_culling_of_stratholme();
 }

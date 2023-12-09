@@ -24,6 +24,8 @@
 #include "SpellInfo.h"
 #include "TemporarySummon.h"
 
+namespace NorthernBarrens
+{
 /*######
 ## npc_beaten_corpse
 ######*/
@@ -645,8 +647,10 @@ public:
     }
 
 };
+}
 
 void AddSC_northern_barrens()
 {
+    using namespace NorthernBarrens;
     new npc_wizzlecrank_shredder();
 }

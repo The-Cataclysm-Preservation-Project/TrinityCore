@@ -22,6 +22,8 @@
 #include "Creature.h"
 #include "CreatureAIImpl.h"
 
+namespace DragonSoul
+{
 #define DataHeader "DS"
 #define DSScriptName "instance_dragon_soul"
 
@@ -115,5 +117,6 @@ AI* GetDragonSoulAI(Creature* creature)
 }
 
 #define RegisterDragonSoulCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetDragonSoulAI)
+}
 
 #endif // DEF_DRAGONSOUL_H

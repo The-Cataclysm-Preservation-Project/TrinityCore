@@ -38,6 +38,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace CullingOfStratholme::Arthas
+{
 enum Entries
 {
     NPC_MALGANIS_BUNNY          = 20562,
@@ -1680,9 +1682,12 @@ class spell_stratholme_crusader_strike : public SpellScript
         OnEffectHitTarget.Register(&spell_stratholme_crusader_strike::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_npc_arthas_stratholme()
 {
+    using namespace CullingOfStratholme;
+    using namespace CullingOfStratholme::Arthas;
     new npc_arthas_stratholme();
     RegisterCreatureAI(npc_stratholme_rp_dummy);
     RegisterSpellScript(spell_stratholme_crusader_strike);

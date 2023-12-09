@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace ThroneOfTheFourWinds
+{
 #define TotFWScriptName "instance_throne_of_the_four_winds"
 #define DataHeader   "TOTFW"
 
@@ -133,5 +135,6 @@ inline AI* GetThroneOfTheFourWindsAI(T* obj)
 }
 
 #define RegisterThroneOfTheFourWindsCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetThroneOfTheFourWindsAI)
+}
 
 #endif // THRONE_OF_THE_FOUR_WINDS_H_

@@ -26,6 +26,8 @@
 #include "ObjectAccessor.h"
 #include "Map.h"
 
+namespace HallsOfOrigination::Rajh
+{
 enum Spells
 {
     // Rajh
@@ -395,9 +397,12 @@ class spell_rajh_summon_sun_orb_power_cost : public AuraScript
         OnEffectPeriodic.Register(&spell_rajh_summon_sun_orb_power_cost::HandlePeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
+}
 
 void AddSC_boss_rajh()
 {
+    using namespace HallsOfOrigination;
+    using namespace HallsOfOrigination::Rajh;
     RegisterHallsOfOriginationCreatureAI(boss_rajh);
     RegisterHallsOfOriginationCreatureAI(npc_rajh_solar_winds);
     RegisterHallsOfOriginationCreatureAI(npc_rajh_orb_of_the_sun);

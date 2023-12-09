@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace VortexPinnacle
+{
 #define VPScriptName "instance_vortex_pinnacle"
 #define DataHeader "VP"
 
@@ -116,5 +118,6 @@ inline AI* GetVortexPinnacleAI(T* obj)
 }
 
 #define RegisterVortexPinnacleCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetVortexPinnacleAI)
+}
 
 #endif // DEF_VORTEX_PINNACLE_H

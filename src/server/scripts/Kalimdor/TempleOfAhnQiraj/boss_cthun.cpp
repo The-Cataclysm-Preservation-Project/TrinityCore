@@ -31,6 +31,8 @@ EndScriptData */
 #include "temple_of_ahnqiraj.h"
 #include "TemporarySummon.h"
 
+namespace TempleOfAhnqiraj::Cthun
+{
 /*
  * This is a 2 phases events. Here follows an explanation of the main events and transition between phases and sub-phases.
  *
@@ -1281,11 +1283,14 @@ public:
         return GetAQ40AI<flesh_tentacleAI>(creature);
     }
 };
+}
 
 //GetAIs
 
 void AddSC_boss_cthun()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::Cthun;
     new boss_eye_of_cthun();
     new boss_cthun();
     new npc_eye_tentacle();

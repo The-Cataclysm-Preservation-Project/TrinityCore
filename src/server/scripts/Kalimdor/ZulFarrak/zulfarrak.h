@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace Zulfarrak
+{
 #define ZFScriptName "instance_zulfarrak"
 #define DataHeader "ZF"
 
@@ -60,6 +62,7 @@ template <class AI, class T>
 inline AI* GetZulFarrakAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, ZFScriptName);
+}
 }
 
 #endif

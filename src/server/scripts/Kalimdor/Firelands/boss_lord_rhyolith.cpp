@@ -33,6 +33,8 @@
 #include "SpellAuras.h"
 #include "SpellAuraEffects.h"
 
+namespace Firelands::LordRhylith
+{
 enum Texts
 {
     // Lord Rhyolith
@@ -1369,9 +1371,12 @@ private:
     std::vector<ObjectGuid> _elementalTargetGUIDs;
     uint32 _summonSpellId = 0;
 };
+}
 
 void AddSC_boss_lord_rhyolith()
 {
+    using namespace Firelands;
+    using namespace Firelands::LordRhylith;
     RegisterFirelandsCreatureAI(boss_lord_rhyolith);
     RegisterFirelandsCreatureAI(npc_rhyolith_movement_controller_lord_rhyolith);
     RegisterFirelandsCreatureAI(npc_rhyolith_foot);

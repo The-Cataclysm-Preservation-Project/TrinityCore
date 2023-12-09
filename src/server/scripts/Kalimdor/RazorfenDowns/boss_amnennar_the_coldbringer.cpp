@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "razorfen_downs.h"
 
+namespace RazorfenDowns::AmnennarTheColdbringer
+{
 enum Say
 {
     SAY_AGGRO               = 0,
@@ -154,8 +156,11 @@ public:
         return new boss_amnennar_the_coldbringerAI(creature);
     }
 };
+}
 
 void AddSC_boss_amnennar_the_coldbringer()
 {
+    using namespace RazorfenDowns;
+    using namespace RazorfenDowns::AmnennarTheColdbringer;
     new boss_amnennar_the_coldbringer();
 }

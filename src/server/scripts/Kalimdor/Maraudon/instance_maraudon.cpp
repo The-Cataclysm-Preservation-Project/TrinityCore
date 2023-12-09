@@ -25,6 +25,8 @@ gets instead the deserter debuff.
 #include "ScriptMgr.h"
 #include "InstanceScript.h"
 
+namespace Maraudon
+{
 class instance_maraudon : public InstanceMapScript
 {
 public:
@@ -40,8 +42,10 @@ public:
         instance_maraudon_InstanceMapScript(InstanceMap* map) : InstanceScript(map) { }
     };
 };
+}
 
 void AddSC_instance_maraudon()
 {
+    using namespace Maraudon;
     new instance_maraudon();
 }

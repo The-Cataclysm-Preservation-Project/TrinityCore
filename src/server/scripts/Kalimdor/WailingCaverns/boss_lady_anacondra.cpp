@@ -19,6 +19,8 @@
 #include "ScriptMgr.h"
 #include "wailing_caverns.h"
 
+namespace WailingCaverns::LadyAnacondra
+{
 enum Texts
 {
     SAY_AGGRO = 0
@@ -124,9 +126,10 @@ public:
         return GetWailingCavernsAI<boss_lady_anacondraAI>(creature);
     }
 };
-
+}
 
 void AddSC_boss_lady_anacondra()
 {
+    using namespace WailingCaverns::LadyAnacondra;
     new boss_lady_anacondra();
 }

@@ -21,6 +21,8 @@
 #include "hyjal.h"
 #include "ScriptedEscortAI.h"
 
+namespace BattleForMountHyjal::Trash
+{
 struct hyjal_trashAI : public EscortAI
 {
     hyjal_trashAI(Creature* creature);
@@ -46,4 +48,5 @@ struct hyjal_trashAI : public EscortAI
 
     //private:
 };
+}
 #endif

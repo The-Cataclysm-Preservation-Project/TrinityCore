@@ -27,6 +27,8 @@ EndScriptData */
 #include "temple_of_ahnqiraj.h"
 #include "TemporarySummon.h"
 
+namespace TempleOfAhnqiraj::Fankriss
+{
 #define SOUND_SENTENCE_YOU 8588
 #define SOUND_SERVE_TO     8589
 #define SOUND_LAWS         8590
@@ -208,8 +210,11 @@ public:
         return GetAQ40AI<boss_fankrissAI>(creature);
     }
 };
+}
 
 void AddSC_boss_fankriss()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::Fankriss;
     new boss_fankriss();
 }

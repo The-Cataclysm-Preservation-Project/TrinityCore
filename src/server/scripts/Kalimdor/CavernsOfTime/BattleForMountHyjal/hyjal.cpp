@@ -36,6 +36,10 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 
+namespace BattleForMountHyjal
+{
+using namespace BattleForMountHyjal::HyjalAI;
+
 #define GOSSIP_ITEM_BEGIN_ALLY      "My companions and I are with you, Lady Proudmoore."
 #define GOSSIP_ITEM_ANETHERON       "We are ready for whatever Archimonde might send our way, Lady Proudmoore."
 
@@ -251,9 +255,11 @@ class npc_tyrande_whisperwind : public CreatureScript
             return GetHyjalAI<npc_tyrande_whisperwindAI>(creature);
         }
 };
+}
 
 void AddSC_hyjal()
 {
+    using namespace BattleForMountHyjal;
     new npc_jaina_proudmoore();
     new npc_thrall();
     new npc_tyrande_whisperwind();

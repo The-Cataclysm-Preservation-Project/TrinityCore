@@ -23,6 +23,8 @@
 #include "PetAI.h"
 #include "SpellScript.h"
 
+namespace RazorfenKraul
+{
 enum Willix
 {
     SAY_READY                   = 0,
@@ -134,8 +136,10 @@ public:
         return new npc_willixAI(creature);
     }
 };
+}
 
 void AddSC_razorfen_kraul()
 {
+    using namespace RazorfenKraul;
     new npc_willix();
 }

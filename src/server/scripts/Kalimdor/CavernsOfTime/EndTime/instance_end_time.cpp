@@ -25,6 +25,8 @@
 
 #include <array>
 
+namespace EndTime
+{
 ObjectData const creatureData[] =
 {
     { BOSS_MUROZOND,        DATA_MUROZOND       },
@@ -264,8 +266,10 @@ public:
         return new instance_end_time_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_end_time()
 {
+    using namespace EndTime;
     new instance_end_time();
 }

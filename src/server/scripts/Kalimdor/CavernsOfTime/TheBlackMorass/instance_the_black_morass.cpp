@@ -32,6 +32,8 @@ Category: Caverns of Time, The Black Morass
 #include "TemporarySummon.h"
 #include "the_black_morass.h"
 
+namespace TheBlackMorass
+{
 enum Misc
 {
     SPELL_RIFT_CHANNEL                = 31387,
@@ -333,8 +335,10 @@ public:
         return new instance_the_black_morass_InstanceMapScript(map);
     }
 };
+}
 
 void AddSC_instance_the_black_morass()
 {
+    using namespace TheBlackMorass;
     new instance_the_black_morass();
 }

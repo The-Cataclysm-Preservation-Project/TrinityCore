@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "ScriptMgr.h"
 
+namespace CullingOfStratholme::Meathook
+{
 enum Spells
 {
     SPELL_CONSTRICTING_CHAINS   = 52696,
@@ -112,8 +114,11 @@ class boss_meathook : public CreatureScript
             return GetCullingOfStratholmeAI<boss_meathookAI>(creature);
         }
 };
+}
 
 void AddSC_boss_meathook()
 {
+    using namespace CullingOfStratholme;
+    using namespace CullingOfStratholme::Meathook;
     new boss_meathook();
 }

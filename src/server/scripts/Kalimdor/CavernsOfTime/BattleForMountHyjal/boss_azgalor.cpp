@@ -21,6 +21,9 @@
 #include "ObjectAccessor.h"
 #include "ScriptedCreature.h"
 
+namespace BattleForMountHyjal::Azgalor
+{
+using namespace BattleForMountHyjal::Trash;
 enum Spells
 {
     SPELL_RAIN_OF_FIRE          = 31340,
@@ -271,9 +274,12 @@ public:
         return GetHyjalAI<npc_lesser_doomguardAI>(creature);
     }
 };
+}
 
 void AddSC_boss_azgalor()
 {
+    using namespace BattleForMountHyjal;
+    using namespace BattleForMountHyjal::Azgalor;
     new boss_azgalor();
     new npc_lesser_doomguard();
 }

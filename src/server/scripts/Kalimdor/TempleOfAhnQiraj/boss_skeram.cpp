@@ -20,6 +20,8 @@
 #include "SpellScript.h"
 #include "temple_of_ahnqiraj.h"
 
+namespace TempleOfAhnqiraj::Skeram
+{
 enum Yells
 {
     SAY_AGGRO                   = 0,
@@ -276,9 +278,12 @@ public:
         return new spell_skeram_true_fulfillment_SpellScript();
     }
 };
+}
 
 void AddSC_boss_skeram()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::Skeram;
     new boss_skeram();
     new spell_skeram_arcane_explosion();
     new spell_skeram_true_fulfillment();

@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace EscapeFromDurnholdeKeep
+{
 #define OHScriptName "instance_old_hillsbrad"
 #define DataHeader "OH"
 
@@ -47,6 +49,7 @@ template <class AI, class T>
 inline AI* GetOldHillsbradAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, OHScriptName);
+}
 }
 
 #endif

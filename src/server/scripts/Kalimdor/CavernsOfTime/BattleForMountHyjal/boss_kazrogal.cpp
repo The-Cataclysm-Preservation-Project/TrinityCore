@@ -23,6 +23,9 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace BattleForMountHyjal::Kazrogal
+{
+using namespace BattleForMountHyjal::Trash;
 enum Spells
 {
     SPELL_CLEAVE        = 31436,
@@ -233,9 +236,12 @@ class spell_mark_of_kazrogal : public SpellScriptLoader
             return new spell_mark_of_kazrogal_AuraScript();
         }
 };
+}
 
 void AddSC_boss_kazrogal()
 {
+    using namespace BattleForMountHyjal;
+    using namespace BattleForMountHyjal::Kazrogal;
     new boss_kazrogal();
     new spell_mark_of_kazrogal();
 }

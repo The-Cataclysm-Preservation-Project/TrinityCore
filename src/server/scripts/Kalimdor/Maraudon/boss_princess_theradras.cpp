@@ -26,6 +26,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "ScriptedCreature.h"
 
+namespace Maraudon::PrincessTheradas
+{
 enum Spells
 {
     SPELL_DUSTFIELD             = 21909,
@@ -118,8 +120,11 @@ public:
         }
     };
 };
+}
 
 void AddSC_boss_ptheradras()
 {
+    using namespace Maraudon;
+    using namespace Maraudon::PrincessTheradas;
     new boss_princess_theradras();
 }

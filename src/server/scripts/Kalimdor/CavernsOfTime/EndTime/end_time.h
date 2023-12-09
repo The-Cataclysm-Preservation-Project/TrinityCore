@@ -23,6 +23,8 @@
 
 class Creature;
 
+namespace EndTime
+{
 #define DataHeader "ET"
 #define ETScriptName "instance_end_time"
 
@@ -75,5 +77,6 @@ AI* GetEndTimeAI(Creature* creature)
 }
 
 #define RegisterEndTimeCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetEndTimeAI)
+}
 
 #endif // DEF_ENDTIME_H

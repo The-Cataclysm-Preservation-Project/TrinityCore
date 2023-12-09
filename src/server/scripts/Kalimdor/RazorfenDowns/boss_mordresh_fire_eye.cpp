@@ -19,6 +19,8 @@
 #include "ScriptedCreature.h"
 #include "razorfen_downs.h"
 
+namespace RazorfenDowns::MordreshFireEye
+{
 enum Say
 {
     SAY_OOC_1               = 0,
@@ -132,8 +134,11 @@ public:
         return new boss_mordresh_fire_eyeAI(creature);
     }
 };
+}
 
 void AddSC_boss_mordresh_fire_eye()
 {
+    using namespace RazorfenDowns;
+    using namespace RazorfenDowns::MordreshFireEye;
     new boss_mordresh_fire_eye();
 }

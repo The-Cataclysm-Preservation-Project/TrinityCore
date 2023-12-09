@@ -20,6 +20,8 @@
 #include "ScriptedCreature.h"
 #include "ruins_of_ahnqiraj.h"
 
+namespace RuinsOfAhnQiraj::Rajaxx
+{
 enum Yells
 {
     // The time of our retribution is at hand! Let darkness reign in the hearts of our enemies! Sound: 8645 Emote: 35
@@ -122,8 +124,11 @@ class boss_rajaxx : public CreatureScript
             return new boss_rajaxxAI(creature);
         }
 };
+}
 
 void AddSC_boss_rajaxx()
 {
+    using namespace RuinsOfAhnQiraj;
+    using namespace RuinsOfAhnQiraj::Rajaxx;
     new boss_rajaxx();
 }

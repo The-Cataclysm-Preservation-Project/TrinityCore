@@ -25,6 +25,8 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 
+namespace Firelands::MajordomoStaghelm
+{
 enum Spells
 {
     // Majordomo Staghelm
@@ -626,9 +628,12 @@ class spell_majordomo_staghelm_burning_orbs : public SpellScript
         OnEffectHitTarget.Register(&spell_majordomo_staghelm_burning_orbs::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
+}
 
 void AddSC_boss_majordomo_staghelm()
 {
+    using namespace Firelands;
+    using namespace Firelands::MajordomoStaghelm;
     RegisterFirelandsCreatureAI(boss_majordomo_staghelm);
     RegisterSpellScript(spell_majordomo_staghelm_form_controller);
     RegisterSpellScript(spell_majordomo_staghelm_clump_check);

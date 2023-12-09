@@ -28,6 +28,8 @@ EndScriptData */
 #include "Map.h"
 #include "wailing_caverns.h"
 
+namespace WailingCaverns
+{
 ObjectData const creatureData[] =
 {
     { NPC_LADY_ANACONDRA, DATA_LADY_ANACONDRA },
@@ -106,8 +108,10 @@ public:
     }
 
 };
+}
 
 void AddSC_instance_wailing_caverns()
 {
+    using namespace WailingCaverns;
     new instance_wailing_caverns();
 }

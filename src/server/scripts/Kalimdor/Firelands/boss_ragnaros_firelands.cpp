@@ -35,6 +35,8 @@
 
 #include "boost/container/flat_set.hpp"
 
+namespace Firelands::RagnarosFirelands
+{
 enum Spells
 {
     // Ragnaros
@@ -2447,9 +2449,12 @@ class spell_ragnaros_superheated : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_ragnaros_superheated::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
+}
 
 void AddSC_boss_ragnaros_firelands()
 {
+    using namespace Firelands;
+    using namespace Firelands::RagnarosFirelands;
     RegisterFirelandsCreatureAI(boss_ragnaros_firelands);
     RegisterFirelandsCreatureAI(npc_ragnaros_son_of_flame);
     RegisterFirelandsCreatureAI(npc_ragnaros_lava_scion);

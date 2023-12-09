@@ -20,6 +20,10 @@
 #include "InstanceScript.h"
 #include "ObjectAccessor.h"
 
+namespace BattleForMountHyjal::RageWinterchill
+{
+using namespace BattleForMountHyjal::Trash;
+
 enum Spells
 {
     SPELL_FROST_ARMOR           = 31256,
@@ -162,8 +166,11 @@ public:
         return GetHyjalAI<boss_rage_winterchillAI>(creature);
     }
 };
+}
 
 void AddSC_boss_rage_winterchill()
 {
+    using namespace BattleForMountHyjal;
+    using namespace BattleForMountHyjal::RageWinterchill;
     new boss_rage_winterchill();
 }

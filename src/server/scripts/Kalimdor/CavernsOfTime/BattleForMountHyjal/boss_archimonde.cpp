@@ -31,6 +31,8 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace BattleForMountHyjal::Archimonde
+{
 enum Texts
 {
     SAY_AGGRO       = 1,
@@ -566,9 +568,12 @@ class spell_archimonde_drain_world_tree_dummy : public SpellScriptLoader
             return new spell_archimonde_drain_world_tree_dummy_SpellScript();
         }
 };
+}
 
 void AddSC_boss_archimonde()
 {
+    using namespace BattleForMountHyjal;
+    using namespace BattleForMountHyjal::Archimonde;
     new boss_archimonde();
     new npc_doomfire();
     new npc_doomfire_targetting();

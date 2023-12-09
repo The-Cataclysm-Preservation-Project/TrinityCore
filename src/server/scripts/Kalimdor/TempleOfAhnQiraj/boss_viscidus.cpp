@@ -24,6 +24,8 @@
 #include "temple_of_ahnqiraj.h"
 #include "TemporarySummon.h"
 
+namespace TempleOfAhnqiraj::Viscidus
+{
 enum Spells
 {
     SPELL_POISON_SHOCK          = 25993,
@@ -312,9 +314,12 @@ class npc_glob_of_viscidus : public CreatureScript
             return GetAQ40AI<npc_glob_of_viscidusAI>(creature);
         }
 };
+}
 
 void AddSC_boss_viscidus()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::Viscidus;
     new boss_viscidus();
     new npc_glob_of_viscidus();
 }

@@ -31,6 +31,8 @@
 #include "Player.h"
 #include "SpellScript.h"
 
+namespace MountHyjal
+{
 enum CommonDefines
 {
     // Move Points
@@ -728,9 +730,11 @@ class at_mh_hyjal_barrow_dens : public AreaTriggerScript
             return true;
         }
 };
+}
 
 void AddSC_mount_hyjal()
 {
+    using namespace MountHyjal;
     RegisterCreatureAI(npc_mh_aronus);
     RegisterCreatureAI(npc_mh_faerie_dragon);
     RegisterCreatureAI(npc_mh_twilight_inciter);

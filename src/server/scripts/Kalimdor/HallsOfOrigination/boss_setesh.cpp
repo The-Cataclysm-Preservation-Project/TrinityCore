@@ -24,6 +24,8 @@
 #include "MotionMaster.h"
 #include "SpellInfo.h"
 
+namespace HallsOfOrigination::Setesh
+{
 enum Spells
 {
     SPELL_CHAOS_BOLT                    = 77069,
@@ -520,9 +522,12 @@ public:
         return new spell_setesh_chaos_blast_SpellScript();
     }
 };
+}
 
 void AddSC_boss_setesh()
 {
+    using namespace HallsOfOrigination;
+    using namespace HallsOfOrigination::Setesh;
     new boss_setesh();
     new npc_setesh_chaos_blast();
     new npc_setesh_chaos_seed();

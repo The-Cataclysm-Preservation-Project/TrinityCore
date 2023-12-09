@@ -22,6 +22,8 @@
 
 #include <array>
 
+namespace TempleOfAhnqiraj
+{
 ObjectData const creatureData[] =
 {
     { BOSS_VEM,         DATA_VEM            },
@@ -126,8 +128,10 @@ class instance_temple_of_ahnqiraj : public InstanceMapScript
             return new instance_temple_of_ahnqiraj_InstanceMapScript(map);
         }
 };
+}
 
 void AddSC_instance_temple_of_ahnqiraj()
 {
+    using namespace TempleOfAhnqiraj;
     new instance_temple_of_ahnqiraj();
 }

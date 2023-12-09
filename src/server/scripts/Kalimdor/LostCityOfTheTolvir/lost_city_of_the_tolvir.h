@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace LostCityOfTheTolvir
+{
 #define LCTScriptName "instance_lost_city_of_the_tolvir"
 #define DataHeader   "LCT"
 
@@ -113,5 +115,5 @@ inline AI* GetLostCityOfTheTolvirAI(T* obj)
 }
 
 #define RegisterLostCityOfTheTolvirAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetLostCityOfTheTolvirAI)
-
+}
 #endif // LOST_CITY_OF_THE_TOLVIR_H_

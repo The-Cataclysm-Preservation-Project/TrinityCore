@@ -21,6 +21,8 @@
 #include "CreatureAIImpl.h"
 #include "Position.h"
 
+namespace HallsOfOrigination
+{
 #define DataHeader "HOO"
 #define HoOScriptName "instance_halls_of_origination"
 
@@ -245,6 +247,6 @@ inline AI* GetHallsOfOriginationAI(T* obj)
 }
 
 #define RegisterHallsOfOriginationCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetHallsOfOriginationAI)
-
+}
 
 #endif // HALLS_OF_ORIGINATION_H

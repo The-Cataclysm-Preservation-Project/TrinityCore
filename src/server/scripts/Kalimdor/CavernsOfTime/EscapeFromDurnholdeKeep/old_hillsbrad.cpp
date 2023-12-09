@@ -37,6 +37,8 @@ EndContentData */
 #include "ScriptedEscortAI.h"
 #include "ScriptedGossip.h"
 
+namespace EscapeFromDurnholdeKeep
+{
 enum Erozion
 {
     QUEST_ENTRY_HILLSBRAD   = 10282,
@@ -649,6 +651,7 @@ public:
         return GetOldHillsbradAI<npc_tarethaAI>(creature);
     }
 };
+}
 
 /*######
 ## AddSC
@@ -656,6 +659,7 @@ public:
 
 void AddSC_old_hillsbrad()
 {
+    using namespace EscapeFromDurnholdeKeep;
     new npc_erozion();
     new npc_thrall_old_hillsbrad();
     new npc_taretha();

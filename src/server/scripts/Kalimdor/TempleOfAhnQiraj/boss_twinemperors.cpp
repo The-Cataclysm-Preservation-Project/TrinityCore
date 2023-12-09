@@ -30,6 +30,8 @@ EndScriptData */
 #include "SpellInfo.h"
 #include "temple_of_ahnqiraj.h"
 
+namespace TempleOfAhnqiraj::TwinEmperors
+{
 enum Spells
 {
     SPELL_HEAL_BROTHER            = 7393,
@@ -594,9 +596,12 @@ public:
         return GetAQ40AI<boss_veklorAI>(creature);
     }
 };
+}
 
 void AddSC_boss_twinemperors()
 {
+    using namespace TempleOfAhnqiraj;
+    using namespace TempleOfAhnqiraj::TwinEmperors;
     new boss_veknilash();
     new boss_veklor();
 }

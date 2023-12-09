@@ -20,6 +20,8 @@
 
 #include "CreatureAIImpl.h"
 
+namespace TheBlackMorass
+{
 #define TBMScriptName "instance_the_black_morass"
 #define DataHeader "TBM"
 
@@ -71,6 +73,7 @@ template <class AI, class T>
 inline AI* GetBlackMorassAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, TBMScriptName);
+}
 }
 
 #endif

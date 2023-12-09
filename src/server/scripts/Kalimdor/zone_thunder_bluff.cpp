@@ -31,6 +31,8 @@ EndScriptData */
 # npc_cairne_bloodhoof
 ######*/
 
+namespace ThunderBluff
+{
 enum CairneBloodhoof
 {
     SPELL_BERSERKER_CHARGE  = 16636,
@@ -130,8 +132,10 @@ public:
     };
 
 };
+}
 
 void AddSC_thunder_bluff()
 {
+    using namespace ThunderBluff;
     new npc_cairne_bloodhoof();
 }

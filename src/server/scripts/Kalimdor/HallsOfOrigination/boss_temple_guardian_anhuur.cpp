@@ -30,6 +30,8 @@
 #include "SpellAuraEffects.h"
 #include "SpellScript.h"
 
+namespace HallsOfOrigination::TempleGuardianAnhuur
+{
 enum Texts
 {
     SAY_AGGRO                    = 0,
@@ -425,9 +427,12 @@ class spell_anhuur_burning_light_forcecast : public SpellScript
         OnObjectAreaTargetSelect.Register(&spell_anhuur_burning_light_forcecast::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
     }
 };
+}
 
 void AddSC_boss_temple_guardian_anhuur()
 {
+    using namespace HallsOfOrigination;
+    using namespace HallsOfOrigination::TempleGuardianAnhuur;
     RegisterHallsOfOriginationCreatureAI(boss_temple_guardian_anhuur);
     RegisterGameObjectAI(go_anhuur_beacon_of_light);
     RegisterSpellScript(spell_anhuur_divine_reckoning);

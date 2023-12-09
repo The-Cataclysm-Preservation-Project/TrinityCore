@@ -21,6 +21,8 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 
+namespace Felwood
+{
 /*######
 ## npc_whisperwind_lasher
 ######*/
@@ -251,9 +253,11 @@ class spell_ruumbos_silly_dance : public SpellScriptLoader
             return new spell_ruumbos_silly_dance_SpellScript();
         }
 };
+}
 
 void AddSC_felwood()
 {
+    using namespace Felwood;
     new npc_whisperwind_lasher();
     new spell_swipe_honey();
     new spell_beesbees();

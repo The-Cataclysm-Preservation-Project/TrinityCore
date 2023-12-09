@@ -19,6 +19,8 @@
 #include "blackfathom_deeps.h"
 #include "ScriptedCreature.h"
 
+namespace BlackfathomDeeps::AkuMai
+{
 enum Spells
 {
     SPELL_POISON_CLOUD     = 3815,
@@ -91,8 +93,11 @@ public:
         return GetBlackfathomDeepsAI<boss_aku_maiAI>(creature);
     }
 };
+}
 
 void AddSC_boss_aku_mai()
 {
+    using namespace BlackfathomDeeps;
+    using namespace BlackfathomDeeps::AkuMai;
     new boss_aku_mai();
 }
