@@ -223,6 +223,15 @@ set_target_properties(scripts
     FOLDER
       "scripts")
 
+if(UNITY_BUILDS)
+  set_target_properties(scripts
+      PROPERTIES UNITY_BUILD ON)
+  set_target_properties(scripts
+      PROPERTIES
+        UNITY_BUILD_MODE BATCH
+        UNITY_BUILD_BATCH_SIZE 8)
+endif()
+
 # Generate precompiled header
 if(USE_SCRIPTPCH)
   list(APPEND ALL_SCRIPT_PROJECTS scripts ${DYNAMIC_SCRIPT_MODULE_PROJECTS})
