@@ -1553,8 +1553,7 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
     }
 
     float armorReduction = 100.f - GetArmorReduction(armor, attacker ? attacker->getLevel() : attackerLevel);
-
-    return std::max<uint32>(CalculatePct(damage, armorReduction), 0);
+    return std::max<uint32>(std::ceil(damage * armorReduction / 100.f), 0);
 }
 
 /*static*/ uint32 Unit::CalcSpellResistedDamage(Unit const* attacker, Unit* victim, uint32 damage, SpellSchoolMask schoolMask, SpellInfo const* spellInfo)
@@ -5144,8 +5143,8 @@ void Unit::SendAttackStateUpdate(CalcDamageInfo* damageInfo)
 
     packet.SubDmg.emplace();
     packet.SubDmg->SchoolMask = damageInfo->DamageSchoolMask;   // School of sub damage
-    packet.SubDmg->FDamage = damageInfo->Damage;                // sub damage
-    packet.SubDmg->Damage = damageInfo->Damage;                 // Sub Damage
+    packet.SubDmg->FDamage = damageInfo->CleanDamage;           // sub damage
+    packet.SubDmg->Damage = damageInfo->CleanDamage;            // Sub Damage
     packet.SubDmg->Absorbed = damageInfo->Absorb;
     packet.SubDmg->Resisted = damageInfo->Resist;
 
@@ -7765,8 +7764,7 @@ int32 Unit::MeleeDamageBonusTaken(Unit* attacker, int32 pdamage, WeaponAttackTyp
         TakenTotalMod = 1.0f - damageReduction;
     }
 
-    float tmpDamage = float(pdamage + TakenFlatBenefit) * TakenTotalMod;
-    return int32(std::max(tmpDamage, 0.0f));
+    return int32(std::max(std::ceil(static_cast<float>(pdamage + TakenFlatBenefit) * TakenTotalMod), 0.0f));
 }
 
 void Unit::ApplySpellImmune(uint32 spellId, uint32 op, uint32 type, bool apply)
