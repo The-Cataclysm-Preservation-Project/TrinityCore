@@ -414,18 +414,6 @@ class DispelInfo
         uint8 _chargesRemoved;
 };
 
-struct CleanDamage
-{
-    CleanDamage(uint32 mitigated, uint32 absorbed, WeaponAttackType _attackType, MeleeHitOutcome _hitOutCome) :
-    absorbed_damage(absorbed), mitigated_damage(mitigated), attackType(_attackType), hitOutCome(_hitOutCome) { }
-
-    uint32 absorbed_damage;
-    uint32 mitigated_damage;
-
-    WeaponAttackType attackType;
-    MeleeHitOutcome hitOutCome;
-};
-
 struct CalcDamageInfo;
 struct SpellNonMeleeDamage;
 
@@ -547,12 +535,13 @@ struct CalcDamageInfo
     uint32 Blocked;
     uint32 HitInfo;
     uint32 TargetState;
+    uint32 RageGained;
 
     // Helpers
     WeaponAttackType AttackType; //
     uint32 ProcAttacker;
     uint32 ProcVictim;
-    uint32 CleanDamage;          // Used only for rage calculation
+    uint32 UnmitigatedDamage;    // Used only for rage calculation
     MeleeHitOutcome HitOutCome;  /// @todo remove this field (need use TargetState)
 };
 
@@ -561,7 +550,7 @@ struct TC_GAME_API SpellNonMeleeDamage
 {
     SpellNonMeleeDamage(Unit* _attacker, Unit* _target, uint32 _SpellID, uint32 _schoolMask)
         : target(_target), attacker(_attacker), SpellID(_SpellID), damage(0), overkill(0), schoolMask(_schoolMask),
-        absorb(0), resist(0), periodicLog(false), unused(false), blocked(0), HitInfo(0), cleanDamage(0), fullBlock(false)
+        absorb(0), resist(0), periodicLog(false), unused(false), blocked(0), HitInfo(0), unmitigatedDamage(0), fullBlock(false)
     { }
 
     Unit   *target;
@@ -577,7 +566,7 @@ struct TC_GAME_API SpellNonMeleeDamage
     uint32 blocked;
     uint32 HitInfo;
     // Used for help
-    uint32 cleanDamage;
+    uint32 unmitigatedDamage;
     bool   fullBlock;
 };
 
@@ -1003,7 +992,7 @@ class TC_GAME_API Unit : public WorldObject
 
         uint32 GetMaxSkillValueForLevel(Unit const* target = nullptr) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }
         static void DealDamageMods(Unit const* victim, uint32& damage, uint32* absorb);
-        static uint32 DealDamage(Unit* attacker, Unit* victim, uint32 damage, CleanDamage const* cleanDamage = nullptr, DamageEffectType damagetype = DIRECT_DAMAGE, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* spellProto = nullptr, bool durabilityLoss = true);
+        static uint32 DealDamage(Unit* attacker, Unit* victim, uint32 damage, uint32 unmitigatedDamage = 0, DamageEffectType damagetype = DIRECT_DAMAGE, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* spellProto = nullptr, bool durabilityLoss = true);
         static void Kill(Unit* attacker, Unit* victim, bool durabilityLoss = true);
         void KillSelf(bool durabilityLoss = true) { Unit::Kill(this, this, durabilityLoss); }
         static void DealHeal(HealInfo& healInfo);
@@ -1736,7 +1725,7 @@ class TC_GAME_API Unit : public WorldObject
         PlayerMovementPendingChange const* GetPendingMovementChange(MovementChangeType changeType) const;
         void PurgeAndApplyPendingMovementChanges(bool informObservers = true);
 
-        void RewardRage(uint32 baseRage, bool attacker);
+        int32 RewardRage(uint32 baseRage, bool attacker);
 
         void OutDebugInfo() const;
         virtual bool IsLoading() const { return false; }

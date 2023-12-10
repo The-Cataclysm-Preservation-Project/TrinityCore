@@ -710,7 +710,7 @@ uint32 Player::EnvironmentalDamage(EnviromentalDamage type, uint32 damage)
     environmentalDamageLog.Resisted = resist;
     SendMessageToSet(environmentalDamageLog.Write(), true);
 
-    uint32 final_damage = Unit::DealDamage(this, this, damage, nullptr, SELF_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+    uint32 final_damage = Unit::DealDamage(this, this, damage, 0, SELF_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
 
     if (!IsAlive())
     {

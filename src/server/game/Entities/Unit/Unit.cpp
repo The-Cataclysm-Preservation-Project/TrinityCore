@@ -727,7 +727,7 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
     }
 }
 
-/*static*/ uint32 Unit::DealDamage(Unit* attacker, Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss)
+/*static*/ uint32 Unit::DealDamage(Unit* attacker, Unit* victim, uint32 damage, uint32 unmitigatedDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss)
 {
     // Sparring Checks
     if (Creature* target = victim->ToCreature())
@@ -801,30 +801,7 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
 
             /// @todo check packets if damage is done by victim, or by attacker of victim
             Unit::DealDamageMods(shareDamageTarget, share, nullptr);
-            Unit::DealDamage(attacker, shareDamageTarget, share, nullptr, NODAMAGE, spell->GetSchoolMask(), spell, false);
-        }
-    }
-
-    // Rage from Damage made (only from direct weapon damage)
-    if (attacker && cleanDamage && damagetype == DIRECT_DAMAGE && attacker != victim && attacker->GetPowerType() == POWER_RAGE)
-    {
-        uint32 rage = uint32((float)attacker->GetAttackTime(cleanDamage->attackType) / 1000 * 6.5f);
-
-        // Sentinel
-        if (victim->GetVictim() && victim->GetVictim() != attacker)
-            if (AuraEffect* aurEff = attacker->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_GENERIC, 1916, EFFECT_1))
-                rage += CalculatePct(rage, aurEff->GetAmount());
-
-        switch (cleanDamage->attackType)
-        {
-            case OFF_ATTACK:
-                rage /= 2;
-                [[fallthrough]];
-            case BASE_ATTACK:
-                attacker->RewardRage(rage, true);
-                break;
-            default:
-                break;
+            Unit::DealDamage(attacker, shareDamageTarget, share, 0, NODAMAGE, spell->GetSchoolMask(), spell, false);
         }
     }
 
@@ -930,7 +907,7 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
         // Rage from damage received
         if (attacker != victim && victim->GetPowerType() == POWER_RAGE)
         {
-            uint32 rageBaseReward = damage + (cleanDamage ? cleanDamage->absorbed_damage + cleanDamage->mitigated_damage : 0);
+            uint32 rageBaseReward = std::max(damage, unmitigatedDamage);
             victim->RewardRage(rageBaseReward, false);
         }
 
@@ -1148,8 +1125,7 @@ void Unit::DealSpellDamage(SpellNonMeleeDamage* damageInfo, bool durabilityLoss)
     }
 
     // Call default DealDamage
-    CleanDamage cleanDamage(damageInfo->cleanDamage, damageInfo->absorb, BASE_ATTACK, MELEE_HIT_NORMAL);
-    Unit::DealDamage(this, victim, damageInfo->damage, &cleanDamage, SPELL_DIRECT_DAMAGE, SpellSchoolMask(damageInfo->schoolMask), spellProto, durabilityLoss);
+    Unit::DealDamage(this, victim, damageInfo->damage, damageInfo->unmitigatedDamage, SPELL_DIRECT_DAMAGE, SpellSchoolMask(damageInfo->schoolMask), spellProto, durabilityLoss);
 }
 
 /// @todo for melee need create structure as in
@@ -1171,8 +1147,9 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
     damageInfo->AttackType = attackType;
     damageInfo->ProcAttacker = PROC_FLAG_NONE;
     damageInfo->ProcVictim = PROC_FLAG_NONE;
-    damageInfo->CleanDamage = 0;
+    damageInfo->UnmitigatedDamage = 0;
     damageInfo->HitOutCome = MELEE_HIT_EVADE;
+    damageInfo->RageGained = 0;
 
     if (!victim)
         return;
@@ -1203,7 +1180,7 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
        damageInfo->TargetState    = VICTIMSTATE_IS_IMMUNE;
 
        damageInfo->Damage = 0;
-       damageInfo->CleanDamage = 0;
+       damageInfo->UnmitigatedDamage = 0;
        return;
     }
 
@@ -1216,13 +1193,12 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
     // Script Hook For CalculateMeleeDamage -- Allow scripts to change the Damage pre class mitigation calculations
     sScriptMgr->ModifyMeleeDamage(damageInfo->Target, damageInfo->Attacker, damage);
 
+    // Store unmitigated damage to reward rage later
+    damageInfo->UnmitigatedDamage = damage;
+
     // Calculate armor reduction
     if (Unit::IsDamageReducedByArmor((SpellSchoolMask)(damageInfo->DamageSchoolMask)))
-    {
         damageInfo->Damage = Unit::CalcArmorReducedDamage(damageInfo->Attacker, damageInfo->Target, damage, nullptr, damageInfo->AttackType);
-        damageInfo->CleanDamage += damage - damageInfo->Damage;
-    }
-    else
         damageInfo->Damage = damage;
 
     damageInfo->HitOutCome = RollMeleeOutcomeAgainst(damageInfo->Target, damageInfo->AttackType);
@@ -1235,7 +1211,6 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
             damageInfo->OriginalDamage  = damageInfo->Damage;
 
             damageInfo->Damage          = 0;
-            damageInfo->CleanDamage     = 0;
             return;
         case MELEE_HIT_MISS:
             damageInfo->HitInfo        |= HITINFO_MISS;
@@ -1243,7 +1218,7 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
             damageInfo->OriginalDamage = damageInfo->Damage;
 
             damageInfo->Damage          = 0;
-            damageInfo->CleanDamage     = 0;
+            damageInfo->UnmitigatedDamage = 0;
             break;
         case MELEE_HIT_NORMAL:
             damageInfo->TargetState     = VICTIMSTATE_HIT;
@@ -1274,15 +1249,11 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
         }
         case MELEE_HIT_PARRY:
             damageInfo->TargetState  = VICTIMSTATE_PARRY;
-            damageInfo->CleanDamage += damageInfo->Damage;
-
             damageInfo->OriginalDamage = damageInfo->Damage;
             damageInfo->Damage = 0;
             break;
         case MELEE_HIT_DODGE:
             damageInfo->TargetState = VICTIMSTATE_DODGE;
-            damageInfo->CleanDamage += damageInfo->Damage;
-
             damageInfo->OriginalDamage = damageInfo->Damage;
             damageInfo->Damage = 0;
             break;
@@ -1296,7 +1267,6 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
 
             damageInfo->OriginalDamage = damageInfo->Damage;
             damageInfo->Damage -= damageInfo->Blocked;
-            damageInfo->CleanDamage += damageInfo->Blocked;
             break;
         case MELEE_HIT_GLANCING:
         {
@@ -1308,7 +1278,6 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
 
             damageInfo->OriginalDamage = damageInfo->Damage;
             float reducePercent = 1.f - leveldif * 0.1f;
-            damageInfo->CleanDamage += damageInfo->Damage - uint32(reducePercent * damageInfo->Damage);
             damageInfo->Damage = uint32(reducePercent * damageInfo->Damage);
             break;
         }
@@ -1332,7 +1301,6 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
         Unit::ApplyResilience(victim, &resilienceReduction);
     resilienceReduction = damageInfo->Damage - resilienceReduction;
     damageInfo->Damage      -= resilienceReduction;
-    damageInfo->CleanDamage += resilienceReduction;
 
     // Calculate absorb resist
     if (int32(damageInfo->Damage) > 0)
@@ -1397,8 +1365,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
     }
 
     // Call default DealDamage
-    CleanDamage cleanDamage(damageInfo->CleanDamage, damageInfo->Absorb, damageInfo->AttackType, damageInfo->HitOutCome);
-    Unit::DealDamage(this, victim, damageInfo->Damage, &cleanDamage, DIRECT_DAMAGE, SpellSchoolMask(damageInfo->DamageSchoolMask), nullptr, durabilityLoss);
+    Unit::DealDamage(this, victim, damageInfo->Damage, damageInfo->UnmitigatedDamage, DIRECT_DAMAGE, SpellSchoolMask(damageInfo->DamageSchoolMask), nullptr, durabilityLoss);
 
     // If this is a creature and it attacks from behind it has a probability to daze it's victim
     if ((damageInfo->HitOutCome == MELEE_HIT_CRIT || damageInfo->HitOutCome == MELEE_HIT_CRUSHING || damageInfo->HitOutCome == MELEE_HIT_NORMAL || damageInfo->HitOutCome == MELEE_HIT_GLANCING) &&
@@ -1477,7 +1444,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
             damageShield.LogAbsorbed = dmgInfo.GetAbsorb();
             victim->SendMessageToSet(damageShield.Write(), true);
 
-            Unit::DealDamage(victim, this, damage, nullptr, SPELL_DIRECT_DAMAGE, spellInfo->GetSchoolMask(), spellInfo, true);
+            Unit::DealDamage(victim, this, damage, 0, SPELL_DIRECT_DAMAGE, spellInfo->GetSchoolMask(), spellInfo, true);
         }
     }
 }
@@ -1861,8 +1828,7 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
                 attacker->SendSpellNonMeleeDamageLog(caster, (*itr)->GetSpellInfo()->Id, splitDamage, damageInfo.GetSchoolMask(), split_absorb, 0, damageInfo.GetDamageType() == DOT, 0, false, true);
             }
 
-            CleanDamage cleanDamage = CleanDamage(splitDamage, 0, BASE_ATTACK, MELEE_HIT_NORMAL);
-            Unit::DealDamage(damageInfo.GetAttacker(), caster, splitDamage, &cleanDamage, DIRECT_DAMAGE, damageInfo.GetSchoolMask(), (*itr)->GetSpellInfo(), false);
+            Unit::DealDamage(damageInfo.GetAttacker(), caster, splitDamage, 0, DIRECT_DAMAGE, damageInfo.GetSchoolMask(), (*itr)->GetSpellInfo(), false);
 
             // break 'Fear' and similar auras
             Unit::ProcSkillsAndAuras(damageInfo.GetAttacker(), caster, PROC_FLAG_NONE, PROC_FLAG_TAKE_HARMFUL_SPELL, PROC_SPELL_TYPE_DAMAGE, PROC_SPELL_PHASE_HIT, PROC_HIT_NONE, nullptr, &damageInfo, nullptr);
@@ -1931,6 +1897,22 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
 
     if (absorbAmount > 0)
         healInfo.AbsorbHeal(absorbAmount);
+}
+
+// Calculates the normalized rage amount per weapon swing
+inline static uint32 CalcMeleeAttackRageGain(Unit const* attacker, Unit const* victim, WeaponAttackType attType)
+{
+    uint32 rage = uint32((float)attacker->GetAttackTime(attType) / 1000 * 6.5f);
+
+    // Sentinel
+    if (victim->GetVictim() && victim->GetVictim() != attacker)
+        if (AuraEffect* aurEff = attacker->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_GENERIC, 1916, EFFECT_1))
+            rage += CalculatePct(rage, aurEff->GetAmount());
+
+    if (attType == OFF_ATTACK)
+        rage *= 0.5f;
+
+    return rage;
 }
 
 void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extra)
@@ -2003,6 +1985,16 @@ void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extr
                     if (target->GetNoNpcDamageBelowPctHealthValue() != 0.0f)
                         if (target->GetHealthPct() <= target->GetNoNpcDamageBelowPctHealthValue())
                             damageInfo.HitInfo |= HITINFO_FAKE_DAMAGE;
+
+            // Rage reward
+            if (this != victim && damageInfo.HitOutCome != MELEE_HIT_MISS && GetPowerType() == POWER_RAGE)
+            {
+                if (uint32 rageReward = CalcMeleeAttackRageGain(this, victim, attType))
+                {
+                    damageInfo.HitInfo |= HITINFO_RAGE_GAIN;
+                    damageInfo.RageGained = RewardRage(rageReward, true);
+                }
+            }
 
             SendAttackStateUpdate(&damageInfo);
 
@@ -5141,15 +5133,19 @@ void Unit::SendAttackStateUpdate(CalcDamageInfo* damageInfo)
     int32 overkill = damageInfo->Damage - damageInfo->Target->GetHealth();
     packet.OverDamage = (overkill < 0 ? -1 : overkill);
 
-    packet.SubDmg.emplace();
-    packet.SubDmg->SchoolMask = damageInfo->DamageSchoolMask;   // School of sub damage
-    packet.SubDmg->FDamage = damageInfo->CleanDamage;           // sub damage
-    packet.SubDmg->Damage = damageInfo->CleanDamage;            // Sub Damage
-    packet.SubDmg->Absorbed = damageInfo->Absorb;
-    packet.SubDmg->Resisted = damageInfo->Resist;
+    if (damageInfo->Damage)
+    {
+        packet.SubDmg.emplace();
+        packet.SubDmg->SchoolMask = damageInfo->DamageSchoolMask;   // School of sub damage
+        packet.SubDmg->FDamage = damageInfo->Damage;           // sub damage
+        packet.SubDmg->Damage = damageInfo->Damage;            // Sub Damage
+        packet.SubDmg->Absorbed = damageInfo->Absorb;
+        packet.SubDmg->Resisted = damageInfo->Resist;
+    }
 
     packet.VictimState = damageInfo->TargetState;
     packet.BlockAmount = damageInfo->Blocked;
+    packet.RageGained = damageInfo->RageGained;
 
     SendMessageToSet(packet.Write(), true);
 }
@@ -5166,6 +5162,7 @@ void Unit::SendAttackStateUpdate(uint32 HitInfo, Unit* target, uint8 /*SwingType
     dmgInfo.Resist = Resist;
     dmgInfo.TargetState = TargetState;
     dmgInfo.Blocked = BlockedAmount;
+    dmgInfo.RageGained = 0;
     SendAttackStateUpdate(&dmgInfo);
 }
 
@@ -13435,7 +13432,7 @@ PlayerMovementPendingChange::PlayerMovementPendingChange()
 }
 
 // baseRage means damage taken when attacker = false
-void Unit::RewardRage(uint32 baseRage, bool attacker)
+int32 Unit::RewardRage(uint32 baseRage, bool attacker)
 {
     float addRage;
 
@@ -13456,7 +13453,7 @@ void Unit::RewardRage(uint32 baseRage, bool attacker)
     }
 
     addRage *= sWorld->getRate(RATE_POWER_RAGE_INCOME);
-    ModifyPower(POWER_RAGE, static_cast<uint32>(std::ceil(addRage) * 10));
+    return ModifyPower(POWER_RAGE, static_cast<uint32>(std::ceil(addRage) * 10), !attacker);
 }
 
 void Unit::StopAttackFaction(uint32 faction_id)
