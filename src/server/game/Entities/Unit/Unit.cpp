@@ -13456,7 +13456,7 @@ void Unit::RewardRage(uint32 baseRage, bool attacker)
     }
 
     addRage *= sWorld->getRate(RATE_POWER_RAGE_INCOME);
-    ModifyPower(POWER_RAGE, uint32(addRage * 10));
+    ModifyPower(POWER_RAGE, static_cast<uint32>(std::ceil(addRage) * 10));
 }
 
 void Unit::StopAttackFaction(uint32 faction_id)
