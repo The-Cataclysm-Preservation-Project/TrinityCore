@@ -828,15 +828,6 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
         }
     }
 
-    if (!damage)
-    {
-        // Rage from absorbed damage
-        if (cleanDamage && cleanDamage->absorbed_damage && victim->GetPowerType() == POWER_RAGE)
-            victim->RewardRage(cleanDamage->absorbed_damage, false);
-
-        return 0;
-    }
-
     uint32 health = victim->GetHealth();
 
     // duel ends when player has 1 or less hp
@@ -939,8 +930,8 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
         // Rage from damage received
         if (attacker != victim && victim->GetPowerType() == POWER_RAGE)
         {
-            uint32 rage_damage = damage + (cleanDamage ? cleanDamage->absorbed_damage : 0);
-            victim->RewardRage(rage_damage, false);
+            uint32 rageBaseReward = damage + (cleanDamage ? cleanDamage->absorbed_damage + cleanDamage->mitigated_damage : 0);
+            victim->RewardRage(rageBaseReward, false);
         }
 
         if (attacker && attacker->GetTypeId() == TYPEID_PLAYER)
@@ -13459,7 +13450,7 @@ void Unit::RewardRage(uint32 baseRage, bool attacker)
     else
     {
         // Calculate rage from health and damage taken (formular taken from SimulationCraft)
-        addRage = std::floor(0.5f + (baseRage * 18.92f / GetMaxHealth()));
+        addRage = baseRage * 18.92f / GetMaxHealth();
 
         // Berserker Rage
         if (HasAura(18499))
