@@ -24,7 +24,7 @@ namespace ZulAman
 {
 uint32 const EncounterCount = 6;
 #define ZulAmanScriptName "instance_zulaman"
-#define DataHeader "ZA"
+constexpr char const* DataHeader = "ZA";
 
 enum ZADataTypes
 {

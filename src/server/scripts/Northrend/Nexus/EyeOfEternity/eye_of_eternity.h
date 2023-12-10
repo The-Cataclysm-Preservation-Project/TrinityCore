@@ -23,7 +23,7 @@
 namespace EyeOfEternity
 {
 #define EoEScriptName "instance_eye_of_eternity"
-#define DataHeader "EOE"
+constexpr char const* DataHeader = "EOE";
 
 enum EOEInstanceData
 {

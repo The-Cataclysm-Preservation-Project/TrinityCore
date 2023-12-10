@@ -24,7 +24,7 @@
 namespace BlackrockCaverns
 {
 #define BCScriptName "instance_blackrock_caverns"
-#define DataHeader "BRC"
+constexpr char const* DataHeader = "BRC";
 
 uint32 const EncounterCount             = 5;
 

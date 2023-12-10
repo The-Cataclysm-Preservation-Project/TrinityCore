@@ -23,7 +23,7 @@
 namespace Gnomeregan
 {
 #define GNOScriptName "instance_gnomeregan"
-#define DataHeader "GNO"
+constexpr char const* DataHeader = "GNO";
 
 enum GNOGameObjectIds
 {

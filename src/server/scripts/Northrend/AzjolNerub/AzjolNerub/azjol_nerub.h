@@ -23,7 +23,7 @@
 namespace AzjolNerub
 {
 #define AzjolNerubScriptName "instance_azjol_nerub"
-#define DataHeader           "AN"
+constexpr char const* DataHeader = "AN";
 
 uint32 const EncounterCount = 3;
 

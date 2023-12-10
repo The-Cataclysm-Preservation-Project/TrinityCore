@@ -23,7 +23,7 @@
 namespace BlackTemple
 {
 #define BTScriptName "instance_black_temple"
-#define DataHeader   "BT"
+constexpr char const* DataHeader = "BT";
 
 uint32 const EncounterCount         = 9;
 

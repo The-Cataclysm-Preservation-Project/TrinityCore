@@ -23,7 +23,7 @@
 namespace ThroneOfTheFourWinds
 {
 #define TotFWScriptName "instance_throne_of_the_four_winds"
-#define DataHeader   "TOTFW"
+constexpr char const* DataHeader =   "TOTFW";
 
 uint32 const EncounterCount = 2;
 

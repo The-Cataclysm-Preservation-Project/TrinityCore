@@ -21,7 +21,7 @@
 #include "CreatureAIImpl.h"
 
 #define OSScriptName "instance_obsidian_sanctum"
-#define DataHeader "OS"
+constexpr char const* DataHeader = "OS";
 
 namespace ObsidianSanctum
 {

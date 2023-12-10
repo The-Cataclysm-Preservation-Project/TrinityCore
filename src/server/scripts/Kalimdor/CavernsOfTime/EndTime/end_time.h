@@ -25,7 +25,7 @@ class Creature;
 
 namespace EndTime
 {
-#define DataHeader "ET"
+constexpr char const* DataHeader = "ET";
 #define ETScriptName "instance_end_time"
 
 uint32 const EncounterCount = 5;

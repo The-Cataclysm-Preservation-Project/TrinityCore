@@ -23,7 +23,7 @@
 namespace Naxxramas
 {
 #define NaxxramasScriptName "instance_naxxramas"
-#define DataHeader "NAX"
+constexpr char const* DataHeader = "NAX";
 
 uint32 const EncounterCount     = 15;
 

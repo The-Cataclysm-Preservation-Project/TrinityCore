@@ -24,7 +24,7 @@
 namespace ShadowLabyrinth
 {
 #define SLScriptName "instance_shadow_labyrinth"
-#define DataHeader "SL"
+constexpr char const* DataHeader = "SL";
 
 uint32 const EncounterCount = 4;
 

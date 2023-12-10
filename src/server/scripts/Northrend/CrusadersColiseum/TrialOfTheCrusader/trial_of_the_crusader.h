@@ -25,7 +25,7 @@ struct Position;
 namespace TrialOfTheCrusader
 {
 #define ToCrScriptName "instance_trial_of_the_crusader"
-#define DataHeader "TCR"
+constexpr char const* DataHeader = "TCR";
 
 enum TCRDataTypes
 {

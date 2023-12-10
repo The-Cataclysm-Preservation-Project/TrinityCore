@@ -23,7 +23,7 @@
 namespace Ulduar
 {
 #define UlduarScriptName "instance_ulduar"
-#define DataHeader "UU"
+constexpr char const* DataHeader = "UU";
 
     namespace YoggSaron
     {

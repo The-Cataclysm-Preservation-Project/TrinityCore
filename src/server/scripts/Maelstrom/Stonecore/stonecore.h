@@ -25,7 +25,7 @@ namespace Stonecore
 {
 
 #define SCScriptName "instance_stonecore"
-#define DataHeader "SC"
+constexpr char const* DataHeader = "SC";
 
 enum SCDataTypes
 {

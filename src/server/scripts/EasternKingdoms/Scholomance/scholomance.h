@@ -23,7 +23,7 @@
 namespace Scholomance
 {
 #define ScholomanceScriptName "instance_scholomance"
-#define DataHeader "SC"
+constexpr char const* DataHeader = "SC";
 
 uint32 const EncounterCount             = 8;
 

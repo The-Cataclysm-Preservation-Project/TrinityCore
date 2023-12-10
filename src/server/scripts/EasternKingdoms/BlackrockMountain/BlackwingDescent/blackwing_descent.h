@@ -22,7 +22,7 @@
 
 namespace BlackwingDescent
 {
-#define DataHeader "BWD"
+constexpr char const* DataHeader = "BWD";
 #define BWDScriptName "instance_blackwing_descent"
 
 uint32 const EncounterCount = 6;

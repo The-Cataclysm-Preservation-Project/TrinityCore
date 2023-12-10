@@ -23,7 +23,7 @@
 namespace Botanica
 {
 #define BotanicaScriptName "instance_the_botanica"
-#define DataHeader "BC"
+constexpr char const* DataHeader = "BC";
 
 uint32 const EncounterCount = 5;
 

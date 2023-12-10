@@ -23,7 +23,7 @@
 
 namespace HourOfTwilight
 {
-#define DataHeader "HOT"
+constexpr char const* DataHeader = "HOT";
 #define HOTScriptName "instance_hour_of_twilight"
 
 uint32 const EncounterCount = 3;

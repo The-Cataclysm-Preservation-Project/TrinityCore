@@ -22,7 +22,7 @@
 
 namespace BastionOfTwilight
 {
-#define DataHeader "BoT"
+constexpr char const* DataHeader = "BoT";
 #define BoTScriptName "instance_bastion_of_twilight"
 
 uint32 const EncounterCountNormal = 4;

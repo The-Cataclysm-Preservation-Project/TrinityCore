@@ -23,7 +23,7 @@
 namespace VioletHold
 {
 #define VioletHoldScriptName "instance_violet_hold"
-#define DataHeader "VH"
+constexpr char const* DataHeader = "VH";
 
 uint32 const EncounterCount = 3 + 6;
 

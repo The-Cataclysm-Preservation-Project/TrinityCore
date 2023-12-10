@@ -23,7 +23,7 @@
 namespace TempleOfAhnqiraj
 {
 #define AQ40ScriptName "instance_temple_of_ahnqiraj"
-#define DataHeader "AQT"
+constexpr char const* DataHeader = "AQT";
 
 uint32 const EncounterCount = 9;
 

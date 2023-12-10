@@ -23,7 +23,7 @@
 
 namespace ShadowfangKeep
 {
-#define DataHeader "SK"
+constexpr char const* DataHeader = "SK";
 #define SKScriptName "instance_shadowfang_keep"
 
 uint32 const EncounterCount = 7;

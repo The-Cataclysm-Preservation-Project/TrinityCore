@@ -23,7 +23,7 @@
 namespace SteamVault
 {
 #define SteamVaultScriptName "instance_steam_vault"
-#define DataHeader "SV"
+constexpr char const* DataHeader = "SV";
 
 uint32 const EncounterCount = 3;
 

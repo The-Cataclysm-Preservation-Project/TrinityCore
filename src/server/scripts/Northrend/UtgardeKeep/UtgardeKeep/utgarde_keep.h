@@ -23,7 +23,7 @@
 namespace UtgardeKeep
 {
 #define UKScriptName "instance_utgarde_keep"
-#define DataHeader "UK"
+constexpr char const* DataHeader = "UK";
 
 uint32 const EncounterCount = 3;
 

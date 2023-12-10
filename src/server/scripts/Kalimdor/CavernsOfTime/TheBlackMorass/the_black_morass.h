@@ -23,7 +23,7 @@
 namespace TheBlackMorass
 {
 #define TBMScriptName "instance_the_black_morass"
-#define DataHeader "TBM"
+constexpr char const* DataHeader = "TBM";
 
 uint32 const EncounterCount             = 2;
 

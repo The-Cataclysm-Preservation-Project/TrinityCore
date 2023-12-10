@@ -23,7 +23,7 @@
 namespace Ankahet
 {
 #define AhnKahetScriptName "instance_ahnkahet"
-#define DataHeader         "AK"
+constexpr char const* DataHeader = "AK";
 
 uint32 const EncounterCount = 5;
 

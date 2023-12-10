@@ -23,7 +23,7 @@
 namespace Zulfarrak
 {
 #define ZFScriptName "instance_zulfarrak"
-#define DataHeader "ZF"
+constexpr char const* DataHeader = "ZF";
 
 enum ZFEntries
 {

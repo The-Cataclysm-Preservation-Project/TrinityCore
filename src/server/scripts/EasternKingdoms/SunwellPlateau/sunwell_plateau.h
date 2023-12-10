@@ -23,7 +23,7 @@
 namespace SunwellPlateau
 {
 #define SunwellPlateauScriptName "instance_sunwell_plateau"
-#define DataHeader "SWP"
+constexpr char const* DataHeader = "SWP";
 
 uint32 const EncounterCount = 6;
 

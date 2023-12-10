@@ -23,7 +23,7 @@
 namespace RagefireChasm
 {
 #define RCScriptName "instance_ragefire_chasm"
-#define DataHeader   "RC"
+constexpr char const* DataHeader = "RC";
 
 uint32 const EncounterCount = 4;
 

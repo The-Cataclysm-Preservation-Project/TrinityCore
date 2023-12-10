@@ -22,7 +22,7 @@
 
 namespace WailingCaverns
 {
-#define DataHeader "WC"
+    constexpr char const* DataHeader = "WC";
 #define WCScriptName "instance_wailing_caverns"
 
 uint32 const EncounterCount = 8;

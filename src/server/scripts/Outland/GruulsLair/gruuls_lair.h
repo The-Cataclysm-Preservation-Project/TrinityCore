@@ -23,7 +23,7 @@
 namespace GruulsLair
 {
 #define GLScriptName "instance_gruuls_lair"
-#define DataHeader   "GL"
+constexpr char const* DataHeader = "GL";
 
 uint32 const EncounterCount = 2;
 

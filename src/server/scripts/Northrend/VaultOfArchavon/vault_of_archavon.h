@@ -23,7 +23,7 @@
 namespace VaultOfArchavon
 {
 #define VoAScriptName "instance_vault_of_archavon"
-#define DataHeader "VA"
+constexpr char const* DataHeader = "VA";
 
 uint32 const EncounterCount = 4;
 

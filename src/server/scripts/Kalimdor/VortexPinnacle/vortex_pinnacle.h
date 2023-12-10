@@ -23,7 +23,7 @@
 namespace VortexPinnacle
 {
 #define VPScriptName "instance_vortex_pinnacle"
-#define DataHeader "VP"
+constexpr char const* DataHeader = "VP";
 
 uint32 const PrismGroundingFieldPoints = 3;
 

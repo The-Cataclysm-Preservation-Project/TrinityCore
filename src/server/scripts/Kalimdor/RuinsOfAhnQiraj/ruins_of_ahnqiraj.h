@@ -23,7 +23,7 @@
 namespace RuinsOfAhnQiraj
 {
 #define AQ20ScriptName "instance_ruins_of_ahnqiraj"
-#define DataHeader "AQR"
+constexpr char const* DataHeader = "AQR";
 
 enum AQRDataTypes
 {

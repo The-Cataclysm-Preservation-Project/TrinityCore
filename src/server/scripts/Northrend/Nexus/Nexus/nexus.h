@@ -23,7 +23,7 @@
 namespace Nexus
 {
 #define NexusScriptName "instance_nexus"
-#define DataHeader "NEX"
+constexpr char const* DataHeader = "NEX";
 
 uint32 const EncounterCount = 5;
 

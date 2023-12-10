@@ -23,7 +23,7 @@
 namespace HellfireRamparts
 {
 #define HRScriptName "instance_ramparts"
-#define DataHeader "HR"
+constexpr char const* DataHeader = "HR";
 
 uint32 const EncounterCount       = 4;
 

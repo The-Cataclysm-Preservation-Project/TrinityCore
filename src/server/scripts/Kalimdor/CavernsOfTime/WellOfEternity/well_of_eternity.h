@@ -23,7 +23,7 @@
 
 namespace WellOfEternity
 {
-#define DataHeader "WOE"
+constexpr char const* DataHeader = "WOE";
 #define WOEScriptName "instance_well_of_eternity"
 
     uint32 const EncounterCount = 3;

@@ -23,7 +23,7 @@
 namespace HallsOfLightning
 {
 #define HoLScriptName "instance_halls_of_lightning"
-#define DataHeader    "HOL"
+constexpr char const* DataHeader = "HOL";
 
 uint32 const EncounterCount = 4;
 

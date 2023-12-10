@@ -23,7 +23,7 @@
 namespace SethekkHalls
 {
 #define SHScriptName "instance_sethekk_halls"
-#define DataHeader "SH"
+constexpr char const* DataHeader = "SH";
 
 uint32 const EncounterCount             = 3;
 

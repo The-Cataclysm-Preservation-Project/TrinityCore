@@ -23,7 +23,7 @@
 namespace HallsOfStone
 {
 #define HoSScriptName "instance_halls_of_stone"
-#define DataHeader    "HOS"
+constexpr char const* DataHeader = "HOS";
 
 uint32 const EncounterCount = 4;
 

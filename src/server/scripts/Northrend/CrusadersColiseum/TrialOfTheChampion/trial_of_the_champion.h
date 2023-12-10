@@ -23,7 +23,7 @@
 namespace TrialOfTheChampion
 {
 #define ToCScriptName "instance_trial_of_the_champion"
-#define DataHeader "TC"
+constexpr char const* DataHeader = "TC";
 
 enum TCData
 {

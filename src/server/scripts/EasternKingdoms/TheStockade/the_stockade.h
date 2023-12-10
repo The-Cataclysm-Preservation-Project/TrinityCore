@@ -24,7 +24,7 @@
 namespace TheStockade
 {
 #define StormwindStockadeScriptName "instance_the_stockade"
-#define DataHeader "SS"
+constexpr char const* DataHeader = "SS";
 
 uint32 const EncounterCount = 3;
 

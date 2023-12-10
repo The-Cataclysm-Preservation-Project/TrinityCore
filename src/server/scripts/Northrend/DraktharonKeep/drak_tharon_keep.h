@@ -23,7 +23,7 @@
 namespace DrakTharonKeep
 {
 #define DrakTharonKeepScriptName "instance_drak_tharon_keep"
-#define DataHeader               "DTK"
+constexpr char const* DataHeader = "DTK";
 
 uint32 const EncounterCount = 4;
 

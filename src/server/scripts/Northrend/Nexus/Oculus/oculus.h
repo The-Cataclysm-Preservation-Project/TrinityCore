@@ -23,7 +23,7 @@
 namespace Oculus
 {
 #define OculusScriptName "instance_oculus"
-#define DataHeader "OC"
+constexpr char const* DataHeader = "OC";
 
 uint32 const EncounterCount = 4;
 

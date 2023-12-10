@@ -23,7 +23,7 @@
 namespace BloodFurnace
 {
 #define BFScriptName "instance_blood_furnace"
-#define DataHeader   "BF"
+constexpr char const* DataHeader = "BF";
 
 uint32 const EncounterCount = 3;
 

@@ -23,7 +23,7 @@
 namespace Stratholme
 {
 #define StratholmeScriptName "instance_stratholme"
-#define DataHeader "STR"
+constexpr char const* DataHeader = "STR";
 
 enum STRData
 {

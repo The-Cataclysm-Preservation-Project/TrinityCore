@@ -23,7 +23,7 @@
 namespace SerpentShrine
 {
 #define SSCScriptName "instance_serpent_shrine"
-#define DataHeader "SS"
+constexpr char const* DataHeader = "SS";
 
 enum SSWaterEventState
 {

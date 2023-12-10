@@ -23,7 +23,7 @@
 namespace Karazhan
 {
 #define KZScriptName "instance_karazhan"
-#define DataHeader "KZ"
+constexpr char const* DataHeader = "KZ";
 
 uint32 const EncounterCount = 12;
 

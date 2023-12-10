@@ -22,7 +22,7 @@
 
 namespace BaradinHold
 {
-#define DataHeader "BH"
+constexpr char const* DataHeader = "BH";
 #define BHScriptName "instance_baradin_hold"
 
 uint32 const EncounterCount = 3;

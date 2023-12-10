@@ -24,7 +24,7 @@ struct Position;
 
 namespace CullingOfStratholme
 {
-#define DataHeader "CS"
+constexpr char const* DataHeader = "CS";
 #define CoSScriptName "instance_culling_of_stratholme"
 
 uint32 constexpr EncounterCount = 5;

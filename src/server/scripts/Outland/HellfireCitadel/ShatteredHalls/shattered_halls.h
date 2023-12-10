@@ -23,7 +23,7 @@
 namespace ShatteredHalls
 {
 #define SHScriptName "instance_shattered_halls"
-#define DataHeader "SH"
+constexpr char const* DataHeader = "SH";
 
 uint32 const EncounterCount          = 4;
 uint32 const VictimCount             = 3;

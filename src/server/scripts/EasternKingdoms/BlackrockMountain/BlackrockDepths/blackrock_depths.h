@@ -23,7 +23,7 @@
 namespace BlackrockDepths
 {
 #define BRDScriptName "instance_blackrock_depths"
-#define DataHeader "BRD"
+constexpr char const* DataHeader = "BRD";
 
 enum BRDFactionIds
 {

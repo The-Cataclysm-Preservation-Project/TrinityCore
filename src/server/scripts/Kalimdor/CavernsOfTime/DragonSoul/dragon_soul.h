@@ -24,7 +24,7 @@
 
 namespace DragonSoul
 {
-#define DataHeader "DS"
+constexpr char const* DataHeader = "DS";
 #define DSScriptName "instance_dragon_soul"
 
 uint32 const EncounterCount = 8;

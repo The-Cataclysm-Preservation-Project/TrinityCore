@@ -23,7 +23,7 @@
 namespace EscapeFromDurnholdeKeep
 {
 #define OHScriptName "instance_old_hillsbrad"
-#define DataHeader "OH"
+constexpr char const* DataHeader = "OH";
 
 enum OHDataTypes
 {

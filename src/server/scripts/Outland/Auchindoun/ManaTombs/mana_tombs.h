@@ -23,7 +23,7 @@
 namespace ManaTombs
 {
 #define MTScriptName "instance_mana_tombs"
-#define DataHeader "MT"
+constexpr char const* DataHeader = "MT";
 
 uint32 const EncounterCount = 4;
 

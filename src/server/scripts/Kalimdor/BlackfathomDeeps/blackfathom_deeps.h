@@ -23,7 +23,7 @@
 namespace BlackfathomDeeps
 {
 #define BFDScriptName "instance_blackfathom_deeps"
-#define DataHeader "BFD"
+constexpr char const* DataHeader = "BFD";
 
 uint32 const EncounterCount = 3;
 

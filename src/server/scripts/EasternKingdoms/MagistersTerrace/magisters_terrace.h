@@ -23,7 +23,7 @@
 namespace MagistersTerrace
 {
 #define MGTScriptName "instance_magisters_terrace"
-#define DataHeader "MT"
+constexpr char const* DataHeader = "MT";
 
 uint32 const EncounterCount = 4;
 

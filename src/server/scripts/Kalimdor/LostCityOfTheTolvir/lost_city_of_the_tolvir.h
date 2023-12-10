@@ -23,7 +23,7 @@
 namespace LostCityOfTheTolvir
 {
 #define LCTScriptName "instance_lost_city_of_the_tolvir"
-#define DataHeader   "LCT"
+constexpr char const* DataHeader = "LCT";
 
 uint32 const EncounterCount = 6;
 

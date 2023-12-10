@@ -20,7 +20,7 @@
 
 #include "CreatureAIImpl.h"
 
-#define DataHeader "ZG"
+constexpr char const* DataHeader = "ZG";
 #define ZGScriptName "instance_zulgurub"
 
 namespace ZulGurub

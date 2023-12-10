@@ -23,7 +23,7 @@
 namespace Gundrak
 {
 #define GundrakScriptName "instance_gundrak"
-#define DataHeader "GD"
+constexpr char const* DataHeader = "GD";
 
 uint32 const EncounterCount = 5;
 

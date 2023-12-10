@@ -24,7 +24,7 @@
 namespace ThroneOfTheTides
 {
 #define TotTScriptName "instance_throne_of_the_tides"
-#define DataHeader "TOTT"
+constexpr char const* DataHeader = "TOTT";
 
 uint32 const EncounterCount = 4;
 

@@ -25,7 +25,7 @@ namespace BlackrockSpire
 uint32 const EncounterCount         = 23;
 
 #define BRSScriptName "instance_blackrock_spire"
-#define DataHeader    "BRS"
+constexpr char const* DataHeader =    "BRS";
 
 enum BRSDataTypes
 {

@@ -23,7 +23,7 @@
 namespace BattleForMountHyjal
 {
 #define HyjalScriptName "instance_hyjal"
-#define DataHeader "HY"
+constexpr char const* DataHeader = "HY";
 
 uint32 const EncounterCount     = 5;
 

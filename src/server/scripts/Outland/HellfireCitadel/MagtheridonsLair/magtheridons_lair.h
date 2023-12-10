@@ -23,7 +23,7 @@
 namespace MagtheridonsLair
 {
 #define MLScriptName "instance_magtheridons_lair"
-#define DataHeader "ML"
+constexpr char const* DataHeader = "ML";
 
 uint32 const EncounterCount = 1;
 

@@ -25,7 +25,7 @@
 namespace HallsOfReflection
 {
 #define HoRScriptName "instance_halls_of_reflection"
-#define DataHeader    "HOR"
+constexpr char const* DataHeader = "HOR";
 
 uint32 const EncounterCount = 3;
 

@@ -20,11 +20,11 @@
 
 #include "CreatureAIImpl.h"
 
-#define RSScriptName "instance_ruby_sanctum"
-#define DataHeader "RS"
-
 namespace RubySanctum
 {
+#define RSScriptName "instance_ruby_sanctum"
+constexpr char const* DataHeader = "RS";
+
 uint32 const EncounterCount = 4;
 
 enum RSDataTypes

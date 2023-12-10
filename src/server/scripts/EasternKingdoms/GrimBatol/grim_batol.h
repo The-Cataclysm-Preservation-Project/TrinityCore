@@ -23,7 +23,7 @@
 namespace GrimBatol
 {
 #define GBScriptName "instance_grim_batol"
-#define DataHeader   "GB"
+constexpr char const* DataHeader =   "GB";
 
 uint32 const EncounterCount = 5;
 

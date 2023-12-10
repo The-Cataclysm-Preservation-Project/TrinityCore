@@ -23,7 +23,7 @@
 
 namespace Deadmines
 {
-#define DataHeader "DM"
+constexpr char const* DataHeader = "DM";
 #define DMScriptName "instance_deadmines"
 
 uint32 const EncounterCount = 6;

@@ -24,7 +24,7 @@
 
 namespace Firelands
 {
-#define DataHeader "FL"
+constexpr char const* DataHeader = "FL";
 #define FirelandsScriptName "instance_firelands"
 
 uint32 const EncounterCount = 7;

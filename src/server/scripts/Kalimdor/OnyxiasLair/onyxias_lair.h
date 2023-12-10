@@ -23,7 +23,7 @@
 namespace OnyxiasLair
 {
 #define OnyxiaScriptName "instance_onyxias_lair"
-#define DataHeader "OL"
+constexpr char const* DataHeader = "OL";
 
 uint32 const EncounterCount     = 1;
 

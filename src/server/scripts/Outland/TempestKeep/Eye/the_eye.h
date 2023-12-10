@@ -23,7 +23,7 @@
 namespace Eye
 {
 #define TheEyeScriptName "instance_the_eye"
-#define DataHeader "TE"
+constexpr char const* DataHeader = "TE";
 
 uint32 const EncounterCount = 4;
 

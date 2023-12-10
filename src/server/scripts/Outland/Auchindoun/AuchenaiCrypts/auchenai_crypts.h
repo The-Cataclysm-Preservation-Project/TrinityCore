@@ -23,7 +23,7 @@
 namespace AuchenaiCrypts
 {
 #define ACScriptName "instance_auchenai_crypts"
-#define DataHeader   "AC"
+constexpr char const* DataHeader = "AC";
 
 uint32 const EncounterCount = 2;
 

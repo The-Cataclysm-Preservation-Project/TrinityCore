@@ -23,7 +23,7 @@
 namespace RazorfenDowns
 {
 #define RFDScriptName "instance_razorfen_downs"
-#define DataHeader "RFD"
+constexpr char const* DataHeader = "RFD";
 
 uint32 const EncounterCount = 5;
 

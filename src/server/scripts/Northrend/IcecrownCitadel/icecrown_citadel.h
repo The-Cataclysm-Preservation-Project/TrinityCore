@@ -27,7 +27,7 @@ enum TriggerCastFlags : uint32;
 namespace IcecrownCitadel
 {
 #define ICCScriptName "instance_icecrown_citadel"
-#define DataHeader    "IC"
+constexpr char const* DataHeader = "IC";
 
 uint32 const EncounterCount = 13;
 uint32 const WeeklyNPCs = 9;

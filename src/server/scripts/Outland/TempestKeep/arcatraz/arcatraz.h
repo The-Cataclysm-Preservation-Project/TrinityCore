@@ -24,7 +24,7 @@ namespace Arcatraz
 {
 
 #define ArcatrazScriptName "instance_arcatraz"
-#define DataHeader         "AZ"
+constexpr char const* DataHeader = "AZ";
 
 uint32 const EncounterCount = 4;
 

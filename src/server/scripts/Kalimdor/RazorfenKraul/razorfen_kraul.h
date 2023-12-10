@@ -20,7 +20,7 @@
 
 namespace RazorfenKraul
 {
-#define DataHeader "RFK"
+constexpr char const* DataHeader = "RFK";
 
 #define EVENT_WARD_KEEPER 1
 }

@@ -23,7 +23,7 @@
 
 namespace HallsOfOrigination
 {
-#define DataHeader "HOO"
+constexpr char const* DataHeader = "HOO";
 #define HoOScriptName "instance_halls_of_origination"
 
 uint32 const EncounterCount = 12;

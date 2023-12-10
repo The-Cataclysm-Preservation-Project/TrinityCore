@@ -24,7 +24,7 @@
 namespace PitOfSaron
 {
 #define PoSScriptName "instance_pit_of_saron"
-#define DataHeader "POS"
+constexpr char const* DataHeader = "POS";
 
 uint32 const EncounterCount = 3;
 

@@ -23,7 +23,7 @@
 namespace ForgeOfSouls
 {
 #define FoSScriptName "instance_forge_of_souls"
-#define DataHeader    "FOS"
+constexpr char const* DataHeader = "FOS";
 
 uint32 const EncounterCount = 2;
 
