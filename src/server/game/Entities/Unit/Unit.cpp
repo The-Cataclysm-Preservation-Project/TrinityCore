@@ -1199,6 +1199,7 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
     // Calculate armor reduction
     if (Unit::IsDamageReducedByArmor((SpellSchoolMask)(damageInfo->DamageSchoolMask)))
         damageInfo->Damage = Unit::CalcArmorReducedDamage(damageInfo->Attacker, damageInfo->Target, damage, nullptr, damageInfo->AttackType);
+    else
         damageInfo->Damage = damage;
 
     damageInfo->HitOutCome = RollMeleeOutcomeAgainst(damageInfo->Target, damageInfo->AttackType);
