@@ -2013,6 +2013,7 @@ void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extr
                 {
                     damageInfo.HitInfo |= HITINFO_RAGE_GAIN;
                     damageInfo.RageGained = RewardRage(rageReward, true);
+                    printf("%u\n", damageInfo.RageGained);
                 }
             }
 
@@ -13473,7 +13474,7 @@ int32 Unit::RewardRage(uint32 baseRage, bool attacker)
     }
 
     addRage *= sWorld->getRate(RATE_POWER_RAGE_INCOME);
-    return ModifyPower(POWER_RAGE, static_cast<uint32>(std::ceil(addRage) * 10), !attacker);
+    return ModifyPower(POWER_RAGE, static_cast<uint32>(std::ceil(addRage) * 10), false);
 }
 
 void Unit::StopAttackFaction(uint32 faction_id)
