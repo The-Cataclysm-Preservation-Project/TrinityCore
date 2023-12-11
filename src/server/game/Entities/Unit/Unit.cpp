@@ -2013,7 +2013,6 @@ void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extr
                 {
                     damageInfo.HitInfo |= HITINFO_RAGE_GAIN;
                     damageInfo.RageGained = RewardRage(rageReward, true);
-                    printf("%u\n", damageInfo.RageGained);
                 }
             }
 
