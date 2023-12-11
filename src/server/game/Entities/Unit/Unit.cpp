@@ -1903,17 +1903,36 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
 // Calculates the normalized rage amount per weapon swing
 inline static uint32 CalcMeleeAttackRageGain(Unit const* attacker, Unit const* victim, WeaponAttackType attType)
 {
-    uint32 rage = uint32((float)attacker->GetAttackTime(attType) / 1000 * 6.5f);
+    Player const* playerAttacker = attacker->ToPlayer();
+    if (!playerAttacker)
+        return 0;
+
+    float attackDelay = [&]()
+    {
+        if (!playerAttacker->IsInFeralForm())
+        {
+            Item const* weapon = playerAttacker->GetWeaponForAttack(attType);
+            if (weapon)
+                return static_cast<float>(weapon->GetTemplate()->GetDelay());
+        }
+        else if (SpellShapeshiftFormEntry const* shapeShiftFormEntry = sSpellShapeshiftFormStore.LookupEntry(playerAttacker->GetShapeshiftForm()))
+            return static_cast<float>(shapeShiftFormEntry->CombatRoundTime);
+
+        return 0.f;
+
+    }();
+
+    uint32 rageAmount = attackDelay / 1000 * 6.5f;
 
     // Sentinel
     if (victim->GetVictim() && victim->GetVictim() != attacker)
         if (AuraEffect* aurEff = attacker->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_GENERIC, 1916, EFFECT_1))
-            rage += CalculatePct(rage, aurEff->GetAmount());
+            rageAmount += CalculatePct(rageAmount, aurEff->GetAmount());
 
     if (attType == OFF_ATTACK)
-        rage *= 0.5f;
+        rageAmount *= 0.5f;
 
-    return rage;
+    return rageAmount;
 }
 
 void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extra)
