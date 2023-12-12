@@ -1903,20 +1903,21 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
 // Calculates the normalized rage amount per weapon swing
 inline static uint32 CalcMeleeAttackRageGain(Unit const* attacker, Unit const* victim, WeaponAttackType attType)
 {
-    Player const* playerAttacker = attacker->ToPlayer();
-    if (!playerAttacker)
-        return 0;
-
     float attackDelay = [&]()
     {
-        if (!playerAttacker->IsInFeralForm())
+        if (Player const* playerAttacker = attacker->ToPlayer())
         {
-            Item const* weapon = playerAttacker->GetWeaponForAttack(attType);
-            if (weapon)
-                return static_cast<float>(weapon->GetTemplate()->GetDelay());
+            if (!playerAttacker->IsInFeralForm())
+            {
+                Item const* weapon = playerAttacker->GetWeaponForAttack(attType);
+                if (weapon)
+                    return static_cast<float>(weapon->GetTemplate()->GetDelay());
+            }
+            else if (SpellShapeshiftFormEntry const* shapeShiftFormEntry = sSpellShapeshiftFormStore.LookupEntry(playerAttacker->GetShapeshiftForm()))
+                return static_cast<float>(shapeShiftFormEntry->CombatRoundTime);
         }
-        else if (SpellShapeshiftFormEntry const* shapeShiftFormEntry = sSpellShapeshiftFormStore.LookupEntry(playerAttacker->GetShapeshiftForm()))
-            return static_cast<float>(shapeShiftFormEntry->CombatRoundTime);
+        else if (Creature const* creature = attacker->ToCreature())
+            return static_cast<float>(creature->GetCreatureTemplate()->BaseAttackTime);
 
         return 0.f;
 
