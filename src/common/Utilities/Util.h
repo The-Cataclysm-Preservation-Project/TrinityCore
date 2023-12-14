@@ -25,6 +25,11 @@
 #include <sstream>
 #include <vector>
 
+namespace Trinity
+{
+    TC_COMMON_API void VerifyOsVersion();
+}
+
 class TC_COMMON_API Tokenizer
 {
 public:

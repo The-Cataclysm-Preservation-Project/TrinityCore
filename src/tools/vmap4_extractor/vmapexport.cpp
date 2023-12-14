@@ -21,6 +21,7 @@
 #include "mpqfile.h"
 #include "wmo.h"
 #include "StringFormat.h"
+#include "Util.h"
 #include "vmapexport.h"
 #include "VMapDefinitions.h"
 #include "Banner.h"
@@ -476,6 +477,8 @@ bool processArgv(int argc, char ** argv, const char *versionString)
 
 int main(int argc, char ** argv)
 {
+    Trinity::VerifyOsVersion();
+
     Trinity::Banner::Show("VMAP data extractor", [](char const* text) { printf("%s\n", text); }, nullptr);
 
     input_path = boost::filesystem::current_path();

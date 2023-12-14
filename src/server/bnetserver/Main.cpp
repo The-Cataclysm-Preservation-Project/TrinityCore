@@ -88,6 +88,8 @@ int main(int argc, char** argv)
 {
     signal(SIGABRT, &Trinity::AbortHandler);
 
+    Trinity::VerifyOsVersion();
+
     auto configFile = fs::absolute(_TRINITY_BNET_CONFIG);
     std::string configService;
     auto vm = GetConsoleArguments(argc, argv, configFile, configService);

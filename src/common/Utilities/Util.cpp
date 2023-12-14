@@ -28,11 +28,27 @@
 #include <cstdarg>
 #include <ctime>
 
-#if TRINITY_COMPILER == TRINITY_COMPILER_GNU
-  #include <sys/socket.h>
-  #include <netinet/in.h>
-  #include <arpa/inet.h>
+void Trinity::VerifyOsVersion()
+{
+#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+    auto isWindowsBuildGreaterOrEqual = [](DWORD build)
+        {
+            OSVERSIONINFOEX osvi = { sizeof(osvi), 0, 0, build, 0, {0}, 0, 0, 0, 0 };
+            ULONGLONG conditionMask = 0;
+            VER_SET_CONDITION(conditionMask, VER_BUILDNUMBER, VER_GREATER_EQUAL);
+
+            return VerifyVersionInfo(&osvi, VER_BUILDNUMBER, conditionMask);
+        };
+
+    if (!isWindowsBuildGreaterOrEqual(TRINITY_REQUIRED_WINDOWS_BUILD))
+    {
+        OSVERSIONINFOEX osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0, 0, 0 };
+        GetVersionEx((LPOSVERSIONINFO)&osvi);
+        ABORT_MSG("TrinityCore requires Windows 10 19H1 (1903) or Windows Server 2019 (1903) - require build number 10.0.%d but found %d.%d.%d",
+            TRINITY_REQUIRED_WINDOWS_BUILD, osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber);
+    }
 #endif
+}
 
 Tokenizer::Tokenizer(const std::string &src, const char sep, uint32 vectorReserve /*= 0*/, bool keepEmptyStrings /*= true*/)
 {

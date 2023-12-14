@@ -133,6 +133,8 @@ extern int main(int argc, char** argv)
 {
     signal(SIGABRT, &Trinity::AbortHandler);
 
+    Trinity::VerifyOsVersion();
+
     auto configFile = fs::absolute(_TRINITY_CORE_CONFIG);
     std::string configService;
 

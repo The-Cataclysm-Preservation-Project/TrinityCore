@@ -16,6 +16,7 @@
  */
 
 #include "StringFormat.h"
+#include "Util.h"
 #include "MapDefines.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -1373,6 +1374,8 @@ void LoadCommonMPQFiles(uint32 build)
 
 int main(int argc, char * arg[])
 {
+    Trinity::VerifyOsVersion();
+
     Trinity::Banner::Show("Map & DBC Extractor", [](char const* text) { printf("%s\n", text); }, nullptr);
 
     PrintProgress = isatty(fileno(stdout));
