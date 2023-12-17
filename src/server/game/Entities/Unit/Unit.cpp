@@ -13664,6 +13664,7 @@ void Unit::SetFacingTo(float ori, bool force)
         init.DisableTransportPathTransformations(); // It makes no sense to target global orientation
     init.SetFacing(ori);
     init.Launch();
+    UpdateSplineMovement(1);
 }
 
 void Unit::SetFacingToObject(WorldObject const* object, bool force)
@@ -13677,6 +13678,7 @@ void Unit::SetFacingToObject(WorldObject const* object, bool force)
     init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ(), false);
     init.SetFacing(GetAngle(object));   // when on transport, GetAngle will still return global coordinates (and angle) that needs transforming
     init.Launch();
+    UpdateSplineMovement(1);
 }
 
 void Unit::SetFacingToPoint(Position const& point, bool force)
@@ -13692,6 +13694,7 @@ void Unit::SetFacingToPoint(Position const& point, bool force)
         init.DisableTransportPathTransformations(); // It makes no sense to target global orientation
     init.SetFacing(point.GetPositionX(), point.GetPositionY(), point.GetPositionZ());
     init.Launch();
+    UpdateSplineMovement(1);
 }
 
 bool Unit::SetWalk(bool enable)
