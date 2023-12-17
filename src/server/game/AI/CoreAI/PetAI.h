@@ -38,11 +38,13 @@ class TC_GAME_API PetAI : public CreatureAI
         void KilledUnit(Unit* /*victim*/) override;
         void AttackStart(Unit* target) override; // only start attacking if not attacking something else already
         void _AttackStart(Unit* target); // always start attacking if possible
-        void MovementInform(uint32 moveType, uint32 data) override;
+        void MovementInform(uint32 type, uint32 id) override;
         void OwnerAttackedBy(Unit* attacker) override;
         void OwnerAttacked(Unit* target) override;
         void DamageTaken(Unit* attacker, uint32& /*damage*/) override { AttackStart(attacker); }
         void ReceiveEmote(Player* player, uint32 textEmote) override;
+        void JustEnteredCombat(Unit* who) override { EngagementStart(who); }
+        void JustExitedCombat() override { EngagementOver(); }
         void OnCharmed(bool isNew) override;
 
         // The following aren't used by the PetAI but need to be defined to override

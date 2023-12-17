@@ -4093,7 +4093,7 @@ void Spell::update(uint32 difftime)
         // if charmed by creature, trust the AI not to cheat and allow the cast to proceed
         // @todo this is a hack, "creature" movesplines don't differentiate turning/moving right now
         // however, checking what type of movement the spline is for every single spline would be really expensive
-        if (!m_caster->ToUnit()->GetCharmerGUID().IsCreature())
+        if (!m_caster->ToUnit()->IsControlledByPlayer())
             cancel();
     }
 
