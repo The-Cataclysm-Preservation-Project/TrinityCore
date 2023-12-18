@@ -1443,22 +1443,23 @@ void Creature::UpdateLevelDependantStats()
     SetHealth(health);
     ResetPlayerDamageReq();
 
+    SetStatFlatModifier(UNIT_MOD_HEALTH, BASE_VALUE, (float)health);
+
     // mana
-    uint32 mana = stats->GenerateMana(cInfo);
-    SetCreateMana(mana);
+    Powers powerType = CalculateDisplayPowerType();
+    SetCreateMana(stats->BaseMana);
+    SetStatPctModifier(UnitMods(UNIT_MOD_POWER_START + AsUnderlyingType(powerType)), BASE_PCT, cInfo->ModMana * cInfo->ModManaExtra);
+    SetPowerType(powerType);
 
     switch (getClass())
     {
         case UNIT_CLASS_PALADIN:
         case UNIT_CLASS_MAGE:
-            SetMaxPower(POWER_MANA, mana);
             SetFullPower(POWER_MANA);
             break;
         default: // We don't set max power here, 0 makes power bar hidden
             break;
     }
-
-    SetStatFlatModifier(UNIT_MOD_HEALTH, BASE_VALUE, (float)health);
 
     // damage
     float basedamage = stats->GenerateBaseDamage(cInfo);

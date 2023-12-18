@@ -5229,7 +5229,7 @@ void Unit::SetPowerType(Powers new_powertype)
     }
 }
 
-void Unit::UpdateDisplayPower()
+Powers Unit::CalculateDisplayPowerType() const
 {
     Powers displayPower = POWER_MANA;
     switch (GetShapeshiftForm())
@@ -5247,34 +5247,34 @@ void Unit::UpdateDisplayPower()
             break;
         default:
         {
-            if (GetTypeId() == TYPEID_PLAYER)
+            ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(getClass());
+            if (cEntry && cEntry->DisplayPower < MAX_POWERS)
+                displayPower = Powers(cEntry->DisplayPower);
+
+            if (Vehicle* vehicle = GetVehicleKit())
             {
-                ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(getClass());
-                if (cEntry && cEntry->DisplayPower < MAX_POWERS)
-                    displayPower = Powers(cEntry->DisplayPower);
+                if (PowerDisplayEntry const* powerDisplay = sPowerDisplayStore.LookupEntry(vehicle->GetVehicleInfo()->PowerDisplayID[0])) // To-do: 4.x has 3 power display id fields.
+                    displayPower = Powers(powerDisplay->ActualType);
+                else if (getClass() == CLASS_ROGUE)
+                    displayPower = POWER_ENERGY;
             }
-            else if (GetTypeId() == TYPEID_UNIT)
+            else if (Pet const* pet = ToPet())
             {
-                if (Vehicle* vehicle = GetVehicleKit())
-                {
-                    if (PowerDisplayEntry const* powerDisplay = sPowerDisplayStore.LookupEntry(vehicle->GetVehicleInfo()->PowerDisplayID[0])) // To-do: 4.x has 3 power display id fields.
-                        displayPower = Powers(powerDisplay->ActualType);
-                    else if (getClass() == CLASS_ROGUE)
-                        displayPower = POWER_ENERGY;
-                }
-                else if (Pet* pet = ToPet())
-                {
-                    if (pet->getPetType() == HUNTER_PET) // Hunter pets have focus
-                        displayPower = POWER_FOCUS;
-                    else if (pet->IsPetGhoul() || pet->IsRisenAlly()) // DK pets have energy
-                        displayPower = POWER_ENERGY;
-                }
+                if (pet->getPetType() == HUNTER_PET) // Hunter pets have focus
+                    displayPower = POWER_FOCUS;
+                else if (pet->IsPetGhoul() || pet->IsRisenAlly()) // DK pets have energy
+                    displayPower = POWER_ENERGY;
             }
             break;
         }
     }
 
-    SetPowerType(displayPower);
+    return displayPower;
+}
+
+void Unit::UpdateDisplayPower()
+{
+    SetPowerType(CalculateDisplayPowerType());
 }
 
 void Unit::SetSheath(SheathState sheathed)
@@ -9367,39 +9367,6 @@ void Unit::SetMaxPower(Powers power, int32 val)
 
     if (val < cur_power)
         SetPower(power, val);
-}
-
-int32 Unit::GetCreatePowers(Powers power) const
-{
-    switch (power)
-    {
-        case POWER_MANA:
-            return GetCreateMana();
-        case POWER_RAGE:
-            return 1000;
-        case POWER_FOCUS:
-            if (GetTypeId() == TYPEID_PLAYER && getClass() == CLASS_HUNTER)
-                return 100;
-            return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->IsPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : 100);
-        case POWER_ENERGY:
-            return 100;
-        case POWER_RUNIC_POWER:
-            return 1000;
-        case POWER_RUNE:
-            return 0;
-        case POWER_SOUL_SHARDS:
-            return 3;
-        case POWER_ECLIPSE:
-            return 100;
-        case POWER_HOLY_POWER:
-            return 3;
-        case POWER_HEALTH:
-            return 0;
-        default:
-            break;
-    }
-
-    return 0;
 }
 
 void Unit::Regenerate(Powers powerType, uint32 diff)

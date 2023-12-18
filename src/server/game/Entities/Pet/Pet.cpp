@@ -757,12 +757,16 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
         for (uint8 i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
             SetStatFlatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + i), BASE_VALUE, float(cinfo->resistance[i]));
 
+    Powers powerType = CalculateDisplayPowerType();
+
     // Health, mana, armor and resistance
     PetLevelInfo const* pInfo = sObjectMgr->GetPetLevelInfo(creature_ID, petlevel);
     if (pInfo)                                      // exist in DB
     {
         SetCreateHealth(pInfo->health);
         SetCreateMana(pInfo->mana);
+
+        SetStatPctModifier(UnitMods(UNIT_MOD_POWER_START + AsUnderlyingType(powerType)), BASE_PCT, 1.0f);
 
         if (pInfo->armor > 0)
             SetStatFlatModifier(UNIT_MOD_ARMOR, BASE_VALUE, float(pInfo->armor));
@@ -778,10 +782,9 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
         float healthmod = _GetHealthMod(cinfo->rank);
         uint32 basehp = stats->GenerateHealth(cinfo);
         uint32 health = uint32(basehp * healthmod);
-        uint32 mana = stats->GenerateMana(cinfo);
 
         SetCreateHealth(health);
-        SetCreateMana(mana);
+        SetCreateMana(stats->BaseMana);
         SetCreateStat(STAT_STRENGTH, 22);
         SetCreateStat(STAT_AGILITY, 22);
         SetCreateStat(STAT_STAMINA, 25);
@@ -793,15 +796,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     }
 
     // Power
-    if (petType == HUNTER_PET) // Hunter pets have focus
-        SetPowerType(POWER_FOCUS);
-    else if (IsPetGhoul() || IsRisenAlly()) // DK pets have energy
-    {
-        SetPowerType(POWER_ENERGY);
-        SetFullPower(POWER_ENERGY);
-    }
-    else
-        SetPowerType(POWER_MANA);
+    SetPowerType(powerType);
 
     // Damage
     SetBonusDamage(0);
