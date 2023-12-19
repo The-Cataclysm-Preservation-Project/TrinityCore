@@ -114,7 +114,8 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                 switch (creature->GetEntry())
                 {
                     case NPC_INVISIBLE_STALKER:
-                        _dancingFlamesInvisibleStalkerGUIDs.insert(creature->GetGUID());
+                        if (creature->GetPositionZ() < 850.0f)
+                            _dancingFlamesInvisibleStalkerGUIDs.insert(creature->GetGUID());
                         break;
                     case NPC_COLLAPSING_TWILIGHT_PORTAL:
                         if (Creature* valiona = GetCreature(DATA_VALIONA))
