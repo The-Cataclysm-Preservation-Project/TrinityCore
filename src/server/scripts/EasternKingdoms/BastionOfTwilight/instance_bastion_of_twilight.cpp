@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "CreatureAI.h"
+#include "Containers.h"
 #include "bastion_of_twilight.h"
 #include "GameObject.h"
 #include "InstanceScript.h"
@@ -39,6 +40,10 @@ ObjectData const creatureData[] =
     { BOSS_CHOGALL,                     DATA_CHOGALL                        },
     { BOSS_SINESTRA,                    DATA_SINESTRA                       },
     { NPC_PROTO_BEHEMOTH,               DATA_PROTO_BEHEMOTH                 },
+    { NPC_SLATE_DRAGON,                 DATA_SLATE_DRAGON                   },
+    { NPC_NETHER_SCION,                 DATA_NETHER_SCION                   },
+    { NPC_STORM_RIDER,                  DATA_STORM_RIDER                    },
+    { NPC_TIME_WARDEN,                  DATA_TIME_WARDEN                    },
     { NPC_ASCENDANT_COUNCIL_CONTROLLER, DATA_ASCENDANT_COUNCIL_CONTROLLER   },
     { NPC_CORRUPTION,                   DATA_CORRUPTION                     },
     { NPC_CHOGALL,                      DATA_CHOGALL_EVENT                  },
@@ -48,6 +53,7 @@ ObjectData const creatureData[] =
 ObjectData const gameobjectData[] =
 {
     { GO_GRIM_BATOL_RAID_TRAP_DOOR, DATA_GRIM_BATOL_RAID_TRAP_DOOR  },
+    { GO_WHELP_CAGE,                DATA_WHELP_CAGE                 },
     { 0,                            0                               } // END
 };
 
@@ -63,13 +69,12 @@ DoorData const doorData[] =
     { 0,                                    0,                              DOOR_TYPE_ROOM      } // END
 };
 
-uint32 HalfusDragonEntries[] =
+enum MapEvents
 {
-    NPC_NETHER_SCION,
-    NPC_SLATE_DRAGON,
-    NPC_STORM_RIDER,
-    NPC_TIME_WARDEN,
-    NPC_ORPHANED_EMERALD_WELP
+    EVENT_ID_NETHER_SCION_FREED = 26077,
+    EVENT_ID_SLATE_DRAGON_FREED = 26078,
+    EVENT_ID_STORM_RIDER_FREED  = 26079,
+    EVENT_ID_TIME_WARDEN_FREED  = 26064
 };
 
 Position const BreathFlightTargetStalkerSortPos = { -740.677f, -592.328f, 859.455f };
@@ -87,30 +92,19 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                 SetBossNumber(!map->IsHeroic() ? EncounterCountNormal : EncounterCountHeroic); // Sinestra only in heroic mode
                 LoadDoorData(doorData);
                 LoadObjectData(creatureData, gameobjectData);
-                _unresponsiveDragonEntryFirst = 0;
-                _unresponsiveDragonEntrySecond = 0;
-                _deadOrphanedEmeraldWhelps = 0;
-                _fullHeroicId = instance->IsHeroic();
-                GenerateHalfusDragonData();
-            }
+                _activeDragonFlags = DRAGON_FLAG_ALL_ACTIVE;
 
-            void GenerateHalfusDragonData()
-            {
-                for (uint8 i = 0; i < 5; i++)
-                    _activeDragonEntries.insert(HalfusDragonEntries[i]);
-
-                if (!instance->IsHeroic())
+                if (!map->IsHeroic())
                 {
-                    for (uint8 i = 0; i < 2; i++)
-                    {
-                        uint32 entry = Trinity::Containers::SelectRandomContainerElement(_activeDragonEntries);
-                        _activeDragonEntries.erase(entry);
-                        if (i == 0)
-                            _unresponsiveDragonEntryFirst = entry;
-                        else
-                            _unresponsiveDragonEntrySecond = entry;
-                    }
+                    _activeDragonFlags = 0;
+                    std::vector<BoTHalfusDragonFlags> activeDragons = { DRAGON_FLAG_NETHER_SCION, DRAGON_FLAG_SLATE_DRAGON, DRAGON_FLAG_STORM_RIDER, DRAGON_FLAG_TIME_WARDEN, DRAGON_FLAG_EMERALD_WHELPS };
+                    Trinity::Containers::RandomResize(activeDragons, 3);
+                    for (BoTHalfusDragonFlags flag : activeDragons)
+                        _activeDragonFlags |= flag;
                 }
+
+                if ((_activeDragonFlags & DRAGON_FLAG_TIME_WARDEN) != 0)
+                    events.ScheduleEvent(EVENT_CAST_DANCING_FLAMES, 1s);
             }
 
             void OnCreatureCreate(Creature* creature) override
@@ -119,20 +113,8 @@ class instance_bastion_of_twilight final : public InstanceMapScript
 
                 switch (creature->GetEntry())
                 {
-                    case NPC_NETHER_SCION:
-                    case NPC_SLATE_DRAGON:
-                    case NPC_STORM_RIDER:
-                    case NPC_TIME_WARDEN:
-                        if (Creature* halfus = GetCreature(DATA_HALFUS_WYRMBREAKER))
-                            halfus->AI()->JustSummoned(creature);
-                        [[fallthrough]];
-                    case NPC_ORPHANED_EMERALD_WELP:
-                    case NPC_SPIKE:
-                        _halfusEncounterGUIDs.insert(creature->GetGUID());
-                        break;
                     case NPC_INVISIBLE_STALKER:
-                        if (creature->GetPositionZ() < 850.0f)
-                            _dancingFlamesInvisibleStalkerGUIDs.insert(creature->GetGUID());
+                        _dancingFlamesInvisibleStalkerGUIDs.insert(creature->GetGUID());
                         break;
                     case NPC_COLLAPSING_TWILIGHT_PORTAL:
                         if (Creature* valiona = GetCreature(DATA_VALIONA))
@@ -175,12 +157,16 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                 }
             }
 
+            void OnCreatureRemove(Creature* creature) override
+            {
+                InstanceScript::OnCreatureRemove(creature);
+                if (creature->GetEntry() == NPC_INVISIBLE_STALKER)
+                    _dancingFlamesInvisibleStalkerGUIDs.erase(creature->GetGUID());
+            }
+
             void OnGameObjectCreate(GameObject* go) override
             {
                 InstanceScript::OnGameObjectCreate(go);
-
-                if (go->GetEntry() == GO_GRIM_BATOL_RAID_TRAP_DOOR && instance->IsHeroic() && _fullHeroicId && GetBossState(DATA_CHOGALL) == DONE)
-                    go->SetGoState(GO_STATE_ACTIVE);
             }
 
             bool SetBossState(uint32 type, EncounterState state) override
@@ -191,51 +177,8 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                 switch (type)
                 {
                     case DATA_HALFUS_WYRMBREAKER:
-                        if (state == IN_PROGRESS)
+                        if (state == DONE)
                         {
-                            for (ObjectGuid guid : _halfusEncounterGUIDs)
-                            {
-                                if (Creature* creature = instance->GetCreature(guid))
-                                {
-                                    if (creature->GetEntry() != NPC_SPIKE
-                                        && creature->GetEntry() != _unresponsiveDragonEntryFirst
-                                        && creature->GetEntry() != _unresponsiveDragonEntrySecond)
-                                    {
-                                        switch (creature->GetEntry())
-                                        {
-                                            case NPC_NETHER_SCION:
-                                                creature->UpdateEntry(NPC_NETHER_SCION_ENCOUNTER);
-                                                break;
-                                            case NPC_SLATE_DRAGON:
-                                                creature->UpdateEntry(NPC_SLATE_DRAGON_ENCOUNTER);
-                                                break;
-                                            case NPC_STORM_RIDER:
-                                                creature->UpdateEntry(NPC_STORM_RIDER_ENCOUNTER);
-                                                break;
-                                            case NPC_TIME_WARDEN:
-                                                creature->UpdateEntry(NPC_TIME_WARDEN_ENCOUNTER);
-                                                break;
-                                            default:
-                                                break;
-                                        }
-
-                                        creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-
-                                        if (creature->GetEntry() != NPC_ORPHANED_EMERALD_WELP)
-                                            creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                                    }
-                                }
-                            }
-                        }
-                        else if (state == FAIL)
-                        {
-                            _halfusEncounterGUIDs.clear();
-                            _deadOrphanedEmeraldWhelps = 0;
-                            events.CancelEvent(EVENT_CAST_DANCING_FLAMES);
-                        }
-                        else if (state == DONE)
-                        {
-                            events.CancelEvent(EVENT_CAST_DANCING_FLAMES);
                             if (Creature* chogall = GetCreature(DATA_CHOGALL_EVENT))
                                 chogall->AI()->DoAction(ACTION_TALK_HALFUS_WYRMBREAKER_DEAD);
                         }
@@ -270,66 +213,13 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                     default:
                         break;
                 }
-
-                if (state == DONE && !instance->IsHeroic())
-                    _fullHeroicId = 0;
                 return true;
             }
 
-            void OnUnitDeath(Unit* unit) override
-            {
-                if (unit->GetEntry() == NPC_ORPHANED_EMERALD_WELP)
-                {
-                    _deadOrphanedEmeraldWhelps++;
-                    if (_deadOrphanedEmeraldWhelps == 8)
-                        if (Creature* protoBehemoth = GetCreature(DATA_PROTO_BEHEMOTH))
-                            protoBehemoth->AI()->DoAction(ACTION_CAST_DRAGONS_VENGEANCE);
-                }
-            }
-
-            void SetData(uint32 type, uint32 data) override
+            void SetData(uint32 type, uint32 /*data*/) override
             {
                 switch (type)
                 {
-                    case DATA_CAST_DRAGON_BUFFS:
-                        if (data == DRAGON_BUFFS_HALFUS_WYRMBREAKER)
-                        {
-                            if (Creature* halfus = GetCreature(DATA_HALFUS_WYRMBREAKER))
-                            {
-                                for (uint32 entry : _activeDragonEntries)
-                                {
-                                    if (entry == NPC_SLATE_DRAGON)
-                                        halfus->AI()->DoAction(ACTION_ENABLE_MALEVOLENT_STRIKES);
-                                    if (entry == NPC_NETHER_SCION)
-                                        halfus->AI()->DoAction(ACTION_ENABLE_FRENZIED_ASSAULT);
-                                    if (entry == NPC_STORM_RIDER)
-                                        halfus->AI()->DoAction(ACTION_ENABLE_SHADOW_NOVA);
-                                }
-                            }
-                        }
-                        else if (data == DRAGON_BUFFS_PROTO_BEHEMOTH)
-                        {
-                            if (Creature* protoBehemoth = GetCreature(DATA_PROTO_BEHEMOTH))
-                            {
-                                for (uint32 entry : _activeDragonEntries)
-                                {
-                                    if (entry == NPC_ORPHANED_EMERALD_WELP)
-                                        protoBehemoth->AI()->DoAction(ACTION_ENABLE_SCORCHING_BREATH);
-                                    if (entry == NPC_TIME_WARDEN)
-                                    {
-                                        protoBehemoth->AI()->DoAction(ACTION_ENABLE_FIREBALL_BARRAGE);
-                                        events.RescheduleEvent(EVENT_CAST_DANCING_FLAMES, 500ms, 1s);
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case DATA_OPEN_ORPHANED_EMERALD_WHELP_CAGE:
-                        for (ObjectGuid guid : _halfusEncounterGUIDs)
-                            if (Creature* orphanedEmeraldWhelp = instance->GetCreature(guid))
-                                if (orphanedEmeraldWhelp->GetEntry() == NPC_ORPHANED_EMERALD_WELP)
-                                    orphanedEmeraldWhelp->AI()->DoAction(ACTION_MOVE_OUT_OF_CAGE);
-                        break;
                     case DATA_AT_HALFUS_WYRMBREAKER_INTRO:
                         if (GetBossState(DATA_HALFUS_WYRMBREAKER) != DONE)
                             if (Creature* chogall = GetCreature(DATA_CHOGALL_EVENT))
@@ -392,12 +282,6 @@ class instance_bastion_of_twilight final : public InstanceMapScript
             {
                 switch (type)
                 {
-                    case DATA_UNRESPONSIVE_DRAGON_FIRST:
-                        return _unresponsiveDragonEntryFirst;
-                    case DATA_UNRESPONSIVE_DRAGON_SECOND:
-                        return _unresponsiveDragonEntrySecond;
-                    case DATA_DRAGON_CAGE_ENABLED:
-                        return uint8((instance->IsHeroic() || HasActiveOrphanedEmeraldWhelps()));
                     case DATA_COLLAPSING_TWILIGHT_PORTAL_COUNT:
                     {
                         uint8 portalCount = 0;
@@ -407,7 +291,9 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                         return portalCount;
                     }
                     case DATA_FULL_HEROIC_ID:
-                        return _fullHeroicId;
+                        return false;
+                    case DATA_ACTIVE_DRAGON_FLAGS:
+                        return _activeDragonFlags;
                     default:
                         return 0;
                 }
@@ -423,12 +309,33 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                     switch (eventId)
                     {
                         case EVENT_CAST_DANCING_FLAMES:
-                            if (ObjectGuid guid = Trinity::Containers::SelectRandomContainerElement(_dancingFlamesInvisibleStalkerGUIDs))
-                                if (Creature* cataclysmStalker = instance->GetCreature(guid))
-                                    cataclysmStalker->CastSpell(cataclysmStalker, SPELL_DANCING_FLAMES_VISUAL, true);
+                        {
+                            if (_dancingFlamesInvisibleStalkerGUIDs.size() < 1)
+                            {
+                                events.Repeat(1s);
+                                break;
+                            }
+
+                            // Between one and three stalkers cast the dancing flames at the same time. We now have to select a range within the guidset
+                            uint32 castingStalkerNum = std::min<uint32>(urand(1, 3), (_dancingFlamesInvisibleStalkerGUIDs.size() - 1));
+                            GuidSet::const_iterator startIterator = _dancingFlamesInvisibleStalkerGUIDs.begin();
+                            GuidSet::const_iterator endIterator = _dancingFlamesInvisibleStalkerGUIDs.begin();
+                            std::advance(endIterator, castingStalkerNum);
+
+                            if (_dancingFlamesInvisibleStalkerGUIDs.size() > (castingStalkerNum))
+                            {
+                                uint32 offset = urand(0, _dancingFlamesInvisibleStalkerGUIDs.size() - castingStalkerNum);
+                                std::advance(startIterator, offset);
+                                std::advance(endIterator, offset);
+                            }
+
+                            for (GuidSet::const_iterator itr = startIterator; itr != endIterator; ++itr)
+                                if (Creature* cataclysmStalker = instance->GetCreature(*itr))
+                                    cataclysmStalker->CastSpell(cataclysmStalker, SPELL_DANCING_FLAMES_VISUAL);
 
                             events.Repeat(500ms, 1s);
                             break;
+                        }
                         case EVENT_CHOGALL_TALK_THERALION_AND_VALIONA_DEAD:
                             if (Creature* chogall = GetCreature(DATA_CHOGALL))
                                 chogall->AI()->DoAction(ACTION_TALK_THERALION_AND_VALIONA_DEAD);
@@ -439,50 +346,33 @@ class instance_bastion_of_twilight final : public InstanceMapScript
                 }
             }
 
-            void WriteSaveDataMore(std::ostringstream& data) override
+            void ProcessEvent(WorldObject* objTarget, uint32 eventId, WorldObject* /*invoker*/) override
             {
-                data << _unresponsiveDragonEntryFirst << ' '
-                    << _unresponsiveDragonEntrySecond << ' '
-                    << _fullHeroicId;
-            }
-
-            void ReadSaveDataMore(std::istringstream& data) override
-            {
-                data >> _unresponsiveDragonEntryFirst;
-                data >> _unresponsiveDragonEntrySecond;
-                data >> _fullHeroicId;
-
-                if (_unresponsiveDragonEntryFirst && _unresponsiveDragonEntrySecond)
+                switch (eventId)
                 {
-                    // Clear default generated unresponsive dragon selection and replace it with our saved data
-                    _activeDragonEntries.clear();
-                    for (uint8 i = 0; i < 5; i++)
-                        _activeDragonEntries.insert(HalfusDragonEntries[i]);
-
-                    _activeDragonEntries.erase(_unresponsiveDragonEntryFirst);
-                    _activeDragonEntries.erase(_unresponsiveDragonEntrySecond);
+                    // These events are sent by the Free Dragon spells in Halfus Wyrmbreaker's encounter. Though it makes zero sense to use them in this context, we will just
+                    // do so to follow Blizzard's intention. Probably some intern's doing or so.
+                    case EVENT_ID_SLATE_DRAGON_FREED:
+                    case EVENT_ID_NETHER_SCION_FREED:
+                    case EVENT_ID_STORM_RIDER_FREED:
+                    case EVENT_ID_TIME_WARDEN_FREED:
+                        if (objTarget->IsCreature())
+                            if (CreatureAI* ai = objTarget->ToCreature()->AI())
+                                ai->DoAction(ACTION_DRAGON_FREED);
+                        break;
+                    default:
+                        break;
                 }
-            }
-
-            bool HasActiveOrphanedEmeraldWhelps() const
-            {
-                return (_unresponsiveDragonEntryFirst != NPC_ORPHANED_EMERALD_WELP
-                    && _unresponsiveDragonEntrySecond != NPC_ORPHANED_EMERALD_WELP);
             }
 
         private:
             EventMap events;
-            GuidSet _halfusEncounterGUIDs;
             GuidSet _dancingFlamesInvisibleStalkerGUIDs;
             GuidSet _valionaDummyGUIDs;
             GuidSet _unstableTwilightGUIDs;
             GuidSet _collapsingTwilightPortalGUIDs;
             ObjectGuid _valionaAuraDummyGUID;
-            std::set<uint32> _activeDragonEntries;
-            uint32 _unresponsiveDragonEntryFirst;
-            uint32 _unresponsiveDragonEntrySecond;
-            uint8 _deadOrphanedEmeraldWhelps;
-            uint8 _fullHeroicId;
+            uint8 _activeDragonFlags;
         };
 
         InstanceScript* GetInstanceScript(InstanceMap* map) const override

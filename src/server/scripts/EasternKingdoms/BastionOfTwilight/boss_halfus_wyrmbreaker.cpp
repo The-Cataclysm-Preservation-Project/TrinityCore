@@ -48,6 +48,7 @@ enum Spells
     SPELL_DANCING_FLAMES        = 84106,
     SPELL_SUPERHEATED_BREATH    = 83956,
     SPELL_FIREBALL              = 86058,
+    SPELL_FIREBALL_SLOW         = 83862,
     SPELL_FIREBALL_BARRAGE      = 83706,
     SPELL_FIREBALL_BARRAGE_FAST = 83720,
     SPELL_FIREBALL_BARRAGE_SLOW = 83733,
@@ -69,7 +70,7 @@ enum Events
     // Halfus Wyrmbreaker
     EVENT_SHADOW_NOVA = 1,
     EVENT_FURIOUS_ROAR,
-    EVENT_RESET_ACHIEVEMT,
+    EVENT_RESET_ACHIEVEMENT,
     EVENT_BERSERK,
 
     // Proto-Behemoth
@@ -81,7 +82,13 @@ enum Events
     EVENT_LIFTOFF,
     EVENT_CAST_DEBUFF,
     EVENT_BIND_TO_HALFUS_WILL,
-    EVENT_MOVE_OUT_OF_CAGE
+    EVENT_MOVE_OUT_OF_CAGE,
+    EVENT_ENGAGE_WITH_PLAYERS
+};
+
+enum Actions
+{
+    ACTION_ORPHANED_EMERALD_WHELP_KILLED = 0,
 };
 
 enum Texts
@@ -93,47 +100,26 @@ enum Texts
     SAY_ANNOUNCE_FURIOUS_ROAR   = 3
 };
 
-Position const SpikePositions[] =
+enum SpawnGroups
 {
-    { -348.538f, -700.247f, 888.19f,  5.53269f },
-    { -353.764f, -706.361f, 888.19f,  2.30383f },
-    { -352.804f, -695.064f, 888.19f,  5.35816f },
-    { -358.964f, -702.148f, 888.19f,  2.30383f },
-    { -320.158f, -727.995f, 888.191f, 3.24631f },
-    { -274.891f, -656.835f, 888.189f, 4.95674f },
-    { -284.868f, -661.151f, 888.19f,  1.71042f },
-    { -277.955f, -687.788f, 888.192f, 3.15905f },
-    { -314.986f, -717.396f, 888.19f,  0.261799f },
-    { -280.724f, -674.46f,  888.19f,  0.0872665f },
-    { -273.922f, -675.948f, 888.189f, 6.19592f },
-    { -283.142f, -685.325f, 888.191f, 3.15905f },
-    { -321.974f, -718.424f, 888.191f, 0.383972f },
-    { -273.01f,  -684.694f, 888.191f, 3.15905f }
+    SPAWN_GROUP_ID_ENCOUNTER_SETUP = 462
 };
 
-Position const OrphanedEmeraldWhelpPositions[] =
+struct EncounterDragonData
 {
-    { -342.002f, -726.528f, 891.764f, 1.16937f },
-    { -340.75f,  -722.476f, 891.764f, 1.16937f },
-    { -350.564f, -721.663f, 891.763f, 1.01229f },
-    { -347.08f,  -728.128f, 891.764f, 1.11701f },
-    { -346.434f, -724.049f, 891.764f, 1.09956f },
-    { -347.578f, -717.302f, 891.763f, 1.0472f  },
-    { -350.571f, -725.417f, 891.763f, 1.06465f },
-    { -344.839f, -720.163f, 891.764f, 1.0821f  }
+    uint32 DataType = 0;
+    uint32 EncounterCreatureId = 0;
 };
 
-Position const NetherScionPos   = { -280.118f, -659.385f, 888.188f, 1.67552f };
-Position const SlateDragonPos   = { -279.111f, -680.594f, 888.191f, 3.10669f };
-Position const StormRiderPos    = { -318.705f, -722.688f, 888.191f, 3.19395f };
-Position const TimeWardenPos    = { -353.179f, -700.667f, 888.19f,  5.53269f };
-Position const ProtoBehemothPos = { -265.891f, -740.023f, 907.363f, 2.33874f };
+static constexpr std::array<EncounterDragonData, 4> const DragonData =
+{
+    EncounterDragonData(DATA_SLATE_DRAGON, NPC_SLATE_DRAGON_ENCOUNTER),
+    EncounterDragonData(DATA_NETHER_SCION, NPC_NETHER_SCION_ENCOUNTER),
+    EncounterDragonData(DATA_STORM_RIDER, NPC_STORM_RIDER_ENCOUNTER),
+    EncounterDragonData(DATA_TIME_WARDEN, NPC_TIME_WARDEN_ENCOUNTER)
+};
 
-Position const WhelpCageBasePos = { -346.672f, -723.26f,  888.106f, 5.53269f };
-QuaternionData const WhelpCageBaseRot = QuaternionData(0.0f, 0.0f, -0.366501f, 0.930418f);
-
-Position const WhelpCagePos     = { -346.672f, -723.26f,  888.106f, 5.53269f };
-QuaternionData const WhelpCageRot = QuaternionData(0.0f, 0.0f, -0.366501f, 0.930418f);
+static constexpr uint8 OrphanedEmeraldWhelpPackSize = 8;
 
 struct boss_halfus_wyrmbreaker final : public BossAI
 {
@@ -142,29 +128,17 @@ struct boss_halfus_wyrmbreaker final : public BossAI
 
     void JustAppeared() override
     {
-        instance->SetData(DATA_CAST_DRAGON_BUFFS, DRAGON_BUFFS_HALFUS_WYRMBREAKER);
+        uint8 activeDragonFlags = static_cast<uint8>(instance->GetData(DATA_ACTIVE_DRAGON_FLAGS));
+        if ((activeDragonFlags & DRAGON_FLAG_SLATE_DRAGON) != 0)
+            DoCastSelf(SPELL_MALEVOLENT_STRIKES);
 
-        if (GameObject* cageBase = me->SummonGameObject(GO_WHELP_CAGE_BASE, WhelpCageBasePos, WhelpCageBaseRot, WEEK, GO_SUMMON_TIMED_DESPAWN))
-            _cageBaseGUID = cageBase->GetGUID();
+        if ((activeDragonFlags & DRAGON_FLAG_NETHER_SCION) != 0)
+            DoCastSelf(SPELL_FRENZIED_ASSAULT);
 
-        if (GameObject* cage = me->SummonGameObject(GO_WHELP_CAGE, WhelpCagePos, WhelpCageRot, WEEK, GO_SUMMON_TIMED_DESPAWN))
-            _cageGUID = cage->GetGUID();
+        if ((activeDragonFlags & DRAGON_FLAG_STORM_RIDER) != 0)
+            DoCastSelf(SPELL_SHADOW_WRAPPED);
 
-        if (Map* map = me->GetMap())
-        {
-            map->SummonCreature(NPC_NETHER_SCION, NetherScionPos);
-            map->SummonCreature(NPC_SLATE_DRAGON, SlateDragonPos);
-            map->SummonCreature(NPC_STORM_RIDER, StormRiderPos);
-            map->SummonCreature(NPC_TIME_WARDEN, TimeWardenPos);
-        }
-
-        for (uint8 i = 0; i < 8; i++)
-            DoSummon(NPC_ORPHANED_EMERALD_WELP, OrphanedEmeraldWhelpPositions[i]);
-
-        for (uint8 i = 0; i < 14; i++)
-            DoSummon(NPC_SPIKE, SpikePositions[i]);
-
-        DoSummon(NPC_PROTO_BEHEMOTH, ProtoBehemothPos);
+        instance->instance->SpawnGroupSpawn(SPAWN_GROUP_ID_ENCOUNTER_SETUP, true);
     }
 
     void JustEngagedWith(Unit* who) override
@@ -176,19 +150,24 @@ struct boss_halfus_wyrmbreaker final : public BossAI
         events.ScheduleEvent(EVENT_BERSERK, 10min);
 
         if (Creature* protoBehemoth = instance->GetCreature(DATA_PROTO_BEHEMOTH))
-            protoBehemoth->AI()->DoZoneInCombat();
+            DoZoneInCombat(protoBehemoth);
 
-        if (instance->GetData(DATA_DRAGON_CAGE_ENABLED))
-            if (GameObject* cage = ObjectAccessor::GetGameObject(*me, _cageGUID))
+        for (EncounterDragonData const& dragonData : DragonData)
+            if (Creature* dragon = instance->GetCreature(dragonData.DataType))
+                if (dragon->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
+                    dragon->UpdateEntry(dragonData.EncounterCreatureId);
+
+        if ((static_cast<uint8>(instance->GetData(DATA_ACTIVE_DRAGON_FLAGS) & DRAGON_FLAG_EMERALD_WHELPS) != 0))
+            if (GameObject* cage = instance->GetGameObject(DATA_WHELP_CAGE))
                 cage->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
 
         if (me->HasAura(SPELL_SHADOW_WRAPPED))
-            events.ScheduleEvent(EVENT_SHADOW_NOVA, Seconds(7));
+            events.ScheduleEvent(EVENT_SHADOW_NOVA, 7s);
     }
 
     void KilledUnit(Unit* victim) override
     {
-        if (victim->GetTypeId() == TYPEID_PLAYER)
+        if (victim->IsPlayer())
             Talk(SAY_SLAY);
     }
 
@@ -196,12 +175,7 @@ struct boss_halfus_wyrmbreaker final : public BossAI
     {
         _JustDied();
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
-
-        if (GameObject* cage = ObjectAccessor::GetGameObject(*me, _cageGUID))
-            cage->DespawnOrUnsummon();
-
-        if (GameObject* cageBase = ObjectAccessor::GetGameObject(*me, _cageBaseGUID))
-            cageBase->DespawnOrUnsummon();
+        instance->instance->SpawnGroupDespawn(SPAWN_GROUP_ID_ENCOUNTER_SETUP);
     }
 
     void EnterEvadeMode(EvadeReason /*why*/) override
@@ -209,13 +183,7 @@ struct boss_halfus_wyrmbreaker final : public BossAI
         _EnterEvadeMode();
         summons.DespawnAll();
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
-
-        if (GameObject* cage = ObjectAccessor::GetGameObject(*me, _cageGUID))
-            cage->DespawnOrUnsummon();
-
-        if (GameObject* cageBase = ObjectAccessor::GetGameObject(*me, _cageBaseGUID))
-            cageBase->DespawnOrUnsummon();
-
+        instance->instance->SpawnGroupDespawn(SPAWN_GROUP_ID_ENCOUNTER_SETUP);
         _DespawnAtEvade();
     }
 
@@ -240,13 +208,13 @@ struct boss_halfus_wyrmbreaker final : public BossAI
                 {
                     _theOnlyEscapeAchievementState = IN_PROGRESS;
                     instance->DoUpdateWorldState(WORLD_STATE_ID_THE_ONLY_ESCAPE, 1);
-                    events.ScheduleEvent(EVENT_RESET_ACHIEVEMT, Seconds(10));
+                    events.ScheduleEvent(EVENT_RESET_ACHIEVEMENT, 10s);
                 }
                 else if (_theOnlyEscapeAchievementState == IN_PROGRESS)
                 {
                     _theOnlyEscapeAchievementState = DONE;
                     instance->DoUpdateWorldState(WORLD_STATE_ID_THE_ONLY_ESCAPE, 2);
-                    events.CancelEvent(EVENT_RESET_ACHIEVEMT);
+                    events.CancelEvent(EVENT_RESET_ACHIEVEMENT);
                 }
                 break;
             default:
@@ -260,24 +228,6 @@ struct boss_halfus_wyrmbreaker final : public BossAI
         {
             events.ScheduleEvent(EVENT_FURIOUS_ROAR, 1ms);
             _furiousRoarEnabled = true;
-        }
-    }
-
-    void DoAction(int32 action) override
-    {
-        switch (action)
-        {
-            case ACTION_ENABLE_MALEVOLENT_STRIKES:
-                me->AddAura(SPELL_MALEVOLENT_STRIKES, me);
-                break;
-            case ACTION_ENABLE_FRENZIED_ASSAULT:
-                me->AddAura(SPELL_FRENZIED_ASSAULT, me);
-                break;
-            case ACTION_ENABLE_SHADOW_NOVA:
-                me->AddAura(SPELL_SHADOW_WRAPPED, me);
-                break;
-            default:
-                break;
         }
     }
 
@@ -316,7 +266,7 @@ struct boss_halfus_wyrmbreaker final : public BossAI
                         _furiousRoarCount = 0;
                     }
                     break;
-                case EVENT_RESET_ACHIEVEMT:
+                case EVENT_RESET_ACHIEVEMENT:
                     _theOnlyEscapeAchievementState = NOT_STARTED;
                     break;
                 case EVENT_BERSERK:
@@ -331,8 +281,6 @@ struct boss_halfus_wyrmbreaker final : public BossAI
     }
 
 private:
-    ObjectGuid _cageGUID;
-    ObjectGuid _cageBaseGUID;
     bool _announcedOrphanedEmeraldWhelpBinding;
     bool _furiousRoarEnabled;
     uint8 _theOnlyEscapeAchievementState;
@@ -341,36 +289,45 @@ private:
 
 struct npc_halfus_proto_behemoth final : public PassiveAI
 {
-    npc_halfus_proto_behemoth(Creature* creature) : PassiveAI(creature), _instance(creature->GetInstanceScript()) {}
+    npc_halfus_proto_behemoth(Creature* creature) : PassiveAI(creature), _instance(nullptr), _killedEmeraldWhelps(0) { }
+
+    void InitializeAI() override
+    {
+        _instance = me->GetInstanceScript();
+    }
+
+    void JustAppeared() override
+    {
+        uint8 activeDragonFlags = static_cast<uint8>(_instance->GetData(DATA_ACTIVE_DRAGON_FLAGS));
+        if ((activeDragonFlags & DRAGON_FLAG_EMERALD_WHELPS) != 0)
+            DoCastSelf(SPELL_SUPERHEATED_BREATH);
+
+        if ((activeDragonFlags & DRAGON_FLAG_TIME_WARDEN) != 0)
+            DoCastSelf(SPELL_DANCING_FLAMES);
+    }
 
     void JustEngagedWith(Unit* /*who*/) override
     {
         _events.ScheduleEvent(EVENT_FIREBALL, 1s);
 
         if (me->HasAura(SPELL_DANCING_FLAMES))
+        {
             _events.ScheduleEvent(EVENT_FIREBALL_BARRAGE, 13s);
-
-        if (me->HasAura(SPELL_SUPERHEATED_BREATH))
-            _events.ScheduleEvent(EVENT_SCORCHING_BREATH, 24s);
-    }
-
-    void JustAppeared() override
-    {
-        _instance->SetData(DATA_CAST_DRAGON_BUFFS, DRAGON_BUFFS_PROTO_BEHEMOTH);
+            if (me->HasAura(SPELL_SUPERHEATED_BREATH))
+                _events.ScheduleEvent(EVENT_SCORCHING_BREATH, 24s);
+        }
+        else if (me->HasAura(SPELL_SUPERHEATED_BREATH))
+            _events.ScheduleEvent(EVENT_SCORCHING_BREATH, 13s);
     }
 
     void DoAction(int32 action) override
     {
         switch (action)
         {
-            case ACTION_CAST_DRAGONS_VENGEANCE:
-                DoCastSelf(SPELL_DRAGONS_VENGEANCE, true);
-                break;
-            case ACTION_ENABLE_SCORCHING_BREATH:
-                me->AddAura(SPELL_SUPERHEATED_BREATH, me);
-                break;
-            case ACTION_ENABLE_FIREBALL_BARRAGE:
-                me->AddAura(SPELL_DANCING_FLAMES, me);
+            case ACTION_ORPHANED_EMERALD_WHELP_KILLED:
+                ++_killedEmeraldWhelps;
+                if (_killedEmeraldWhelps == OrphanedEmeraldWhelpPackSize)
+                    DoCastAOE(SPELL_DRAGONS_VENGEANCE, true);
                 break;
             default:
                 break;
@@ -389,16 +346,26 @@ struct npc_halfus_proto_behemoth final : public PassiveAI
             switch (eventId)
             {
                 case EVENT_FIREBALL:
-                    DoCastAOE(SPELL_FIREBALL);
-                    _events.Repeat(2s + 500ms);
+                    if (!me->HasAura(SPELL_TIME_DILATION))
+                    {
+                        DoCastAOE(SPELL_FIREBALL, CastSpellExtraArgs().AddSpellMod(SPELLVALUE_MAX_TARGETS, 1));
+                        _events.Repeat(2s + 500ms);
+                    }
+                    else
+                    {
+                        DoCastAOE(SPELL_FIREBALL_SLOW, CastSpellExtraArgs().AddSpellMod(SPELLVALUE_MAX_TARGETS, 1));
+                        _events.Repeat(3s + 500ms);
+                    }
                     break;
                 case EVENT_FIREBALL_BARRAGE:
                     DoCastSelf(SPELL_FIREBALL_BARRAGE);
                     _events.Repeat(31s);
+                    _events.RescheduleEvent(EVENT_FIREBALL, 11s);
                     break;
                 case EVENT_SCORCHING_BREATH:
                     DoCastSelf(SPELL_SCORCHING_BREATH);
                     _events.Repeat(31s);
+                    _events.RescheduleEvent(EVENT_FIREBALL, 11s);
                     break;
                 default:
                     break;
@@ -409,25 +376,19 @@ struct npc_halfus_proto_behemoth final : public PassiveAI
 private:
     EventMap _events;
     InstanceScript* _instance;
+    uint8 _killedEmeraldWhelps;
 };
 
 struct npc_halfus_enslaved_dragon final : public ScriptedAI
 {
-    npc_halfus_enslaved_dragon(Creature* creature) : ScriptedAI(creature), _instance(creature->GetInstanceScript()) {}
+    npc_halfus_enslaved_dragon(Creature* creature) : ScriptedAI(creature), _instance(nullptr) { }
 
-    void Reset() override
+    void InitializeAI() override
     {
-        _events.Reset();
-
-        if (_instance->GetData(DATA_UNRESPONSIVE_DRAGON_FIRST) == me->GetEntry()
-            || _instance->GetData(DATA_UNRESPONSIVE_DRAGON_SECOND) == me->GetEntry())
-        {
-            me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            if (me->GetEntry() == NPC_ORPHANED_EMERALD_WELP)
-                DoCastSelf(SPELL_UNRESPONSIVE_WHELP, true);
-            else
-                DoCastSelf(SPELL_UNRESPONSIVE_DRAGON, true);
-        }
+        _instance = me->GetInstanceScript();
+        me->SetReactState(REACT_PASSIVE);
+        if (isUnresponsive())
+            DoCastSelf(me->GetEntry() != NPC_ORPHANED_EMERALD_WELP ? SPELL_UNRESPONSIVE_DRAGON : SPELL_UNRESPONSIVE_WHELP);
     }
 
     void JustDied(Unit* /*killer*/) override
@@ -436,28 +397,35 @@ struct npc_halfus_enslaved_dragon final : public ScriptedAI
         me->SendSetPlayHoverAnim(false);
         me->DespawnOrUnsummon(6s);
 
-        if (me->GetEntry() != NPC_ORPHANED_EMERALD_WELP)
-            if (Creature* protoBehemoth = _instance->GetCreature(DATA_PROTO_BEHEMOTH))
-                protoBehemoth->AI()->DoAction(ACTION_CAST_DRAGONS_VENGEANCE);
-    }
-
-    void SpellHit(WorldObject* /*caster*/, SpellInfo const* spell) override
-    {
-        if (spell->HasEffect(SPELL_EFFECT_SEND_EVENT))
+        if (Creature* protoBehemoth = _instance->GetCreature(DATA_PROTO_BEHEMOTH))
         {
-            me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-            me->RemoveAllAuras();
-            _events.ScheduleEvent(EVENT_LIFTOFF, 1ms);
+            if (me->GetOriginalEntry() != NPC_ORPHANED_EMERALD_WELP)
+                protoBehemoth->CastSpell(nullptr, SPELL_DRAGONS_VENGEANCE, true);
+            else if (CreatureAI* ai = protoBehemoth->AI())
+                ai->DoAction(ACTION_ORPHANED_EMERALD_WHELP_KILLED);
         }
-        else if (spell->Id == SPELL_BIND_WILL_TRIGGERED)
-            if (Player* player = me->SelectNearestPlayer(100.0f))
-                me->AI()->AttackStart(player);
     }
 
     void DoAction(int32 action) override
     {
-        if (action == ACTION_MOVE_OUT_OF_CAGE)
-            _events.ScheduleEvent(EVENT_MOVE_OUT_OF_CAGE, 250ms);
+        switch (action)
+        {
+            case ACTION_DRAGON_FREED:
+                if (me->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK))
+                {
+                    me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+                    me->RemoveAllAuras();
+                    _events.ScheduleEvent(EVENT_LIFTOFF, 1ms);
+                }
+                else if (me->GetEntry() == NPC_ORPHANED_EMERALD_WELP && me->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
+                {
+                    me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    _events.ScheduleEvent(EVENT_MOVE_OUT_OF_CAGE, 1ms);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     void UpdateAI(uint32 diff) override
@@ -475,20 +443,21 @@ struct npc_halfus_enslaved_dragon final : public ScriptedAI
             {
                 case EVENT_LIFTOFF:
                 {
-                    Position pos = me->GetPosition();
-                    pos.m_positionZ += 5.5f;
-                    me->GetMotionMaster()->MoveTakeoff(0, pos);
-                    _events.ScheduleEvent(EVENT_CAST_DEBUFF, 1s + 800ms);
+                    Position const pos = Position(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 5.5f, me->GetOrientation());
+                    me->GetMotionMaster()->MoveTakeoff(0, pos, 4.f);
+                    me->SetDisableGravity(true);
+                    me->SetHover(true);
+                    _events.ScheduleEvent(EVENT_CAST_DEBUFF, 2s + 500ms);
                     break;
                 }
                 case EVENT_MOVE_OUT_OF_CAGE:
                 {
                     float angle = me->GetOrientation();
-                    float x = me->GetPositionX() + cos(angle) * 20.0f;
-                    float y = me->GetPositionY() + sin(angle) * 20.0f;
+                    float x = me->GetPositionX() + std::cos(angle) * 20.f;
+                    float y = me->GetPositionY() + std::sin(angle) * 20.f;
                     float z = 888.1f;
-                    me->GetMotionMaster()->MovePoint(0, x, y, z, true);
-                    _events.ScheduleEvent(EVENT_CAST_DEBUFF, 2s + 600ms);
+                    me->GetMotionMaster()->MovePoint(0, x, y, z);
+                    _events.ScheduleEvent(EVENT_CAST_DEBUFF, 2s + 500ms);
                     break;
                 }
                 case EVENT_CAST_DEBUFF:
@@ -499,43 +468,43 @@ struct npc_halfus_enslaved_dragon final : public ScriptedAI
                     if (!halfus || !protoBehemoth)
                         break;
 
-                    if (me->GetEntry() != NPC_ORPHANED_EMERALD_WELP)
-                    {
-                        me->SetDisableGravity(true);
-                        me->SetHover(true);
-                    }
-
                     switch (me->GetEntry())
                     {
                         case NPC_NETHER_SCION_ENCOUNTER:
                             me->SetFacingToObject(halfus);
-                            DoCastSelf(SPELL_NETHER_BLINDNESS, true);
+                            DoCastSelf(SPELL_NETHER_BLINDNESS);
                             break;
                         case NPC_SLATE_DRAGON_ENCOUNTER:
                             me->SetFacingToObject(halfus);
-                            DoCastSelf(SPELL_STONE_TOUCH, true);
+                            DoCastSelf(SPELL_STONE_TOUCH);
                             break;
                         case NPC_STORM_RIDER_ENCOUNTER:
                             me->SetFacingToObject(halfus);
-                            DoCastSelf(SPELL_CYCLONE_WINDS, true);
+                            DoCastSelf(SPELL_CYCLONE_WINDS);
                             break;
                         case NPC_TIME_WARDEN_ENCOUNTER:
                             me->SetFacingToObject(protoBehemoth);
-                            DoCastSelf(SPELL_TIME_DILATION, true);
+                            DoCastSelf(SPELL_TIME_DILATION);
                             break;
                         case NPC_ORPHANED_EMERALD_WELP:
                             me->SetFacingToObject(protoBehemoth);
-                            DoCastSelf(SPELL_ATROPHIC_POISON, true);
+                            DoCastSelf(SPELL_ATROPHIC_POISON);
                             break;
                         default:
                             break;
                     }
-                    _events.ScheduleEvent(EVENT_BIND_TO_HALFUS_WILL, 1s + 850ms);
+                    _events.ScheduleEvent(EVENT_BIND_TO_HALFUS_WILL, 2s);
                     break;
                 }
                 case EVENT_BIND_TO_HALFUS_WILL:
-                    if (_instance->GetCreature(DATA_HALFUS_WYRMBREAKER))
-                        DoCastSelf(SPELL_BIND_WILL, true);
+                    DoCastSelf(SPELL_BIND_WILL);
+                    _events.ScheduleEvent(EVENT_ENGAGE_WITH_PLAYERS, 1s);
+                    break;
+                case EVENT_ENGAGE_WITH_PLAYERS:
+                    me->SetReactState(REACT_AGGRESSIVE);
+                    if (!me->IsEngaged())
+                        if (Unit* target = me->SelectNearestTarget(100.f))
+                            me->EngageWithTarget(target);
                     break;
                 default:
                     break;
@@ -547,6 +516,27 @@ struct npc_halfus_enslaved_dragon final : public ScriptedAI
 private:
     EventMap _events;
     InstanceScript* _instance;
+
+    bool isUnresponsive()
+    {
+        uint8 activeDragonFlags = static_cast<uint8>(_instance->GetData(DATA_ACTIVE_DRAGON_FLAGS));
+        if (me->GetEntry() == NPC_SLATE_DRAGON && (activeDragonFlags & DRAGON_FLAG_SLATE_DRAGON) == 0)
+            return true;
+
+        if (me->GetEntry() == NPC_NETHER_SCION && (activeDragonFlags & DRAGON_FLAG_NETHER_SCION) == 0)
+            return true;
+
+        if (me->GetEntry() == NPC_STORM_RIDER && (activeDragonFlags & DRAGON_FLAG_STORM_RIDER) == 0)
+            return true;
+
+        if (me->GetEntry() == NPC_TIME_WARDEN && (activeDragonFlags & DRAGON_FLAG_TIME_WARDEN) == 0)
+            return true;
+
+        if (me->GetEntry() == NPC_ORPHANED_EMERALD_WELP && (activeDragonFlags & DRAGON_FLAG_EMERALD_WHELPS) == 0)
+            return true;
+
+        return false;
+    }
 };
 
 struct go_halfus_whelp_cage final : public GameObjectAI
@@ -555,8 +545,18 @@ struct go_halfus_whelp_cage final : public GameObjectAI
 
     bool OnReportUse(Player* /*player*/) override
     {
+        if (me->HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE))
+            return true;
+
         me->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
-        _instance->SetData(DATA_OPEN_ORPHANED_EMERALD_WHELP_CAGE, DONE);
+
+        // There is no event linked to releasing the whelps so we have to resort to grid searching.
+        std::vector<Creature*> whelpVector;
+        me->GetCreatureListWithEntryInGrid(whelpVector, NPC_ORPHANED_EMERALD_WELP, 20.f);
+        for (Creature* whelp : whelpVector)
+            if (CreatureAI* ai = whelp->AI())
+                ai->DoAction(ACTION_DRAGON_FREED);
+
         return true;
     }
 
@@ -584,35 +584,51 @@ class spell_halfus_fireball final : public SpellScript
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo(
-            {
-                SPELL_FIREBALL_BARRAGE_FAST,
-                SPELL_FIREBALL_BARRAGE_SLOW
-            });
-    }
-
-    void FilterTargets(std::list<WorldObject*>& targets)
-    {
-        if (targets.empty())
-            return;
-
-        Trinity::Containers::RandomResize(targets, 1);
-    }
-
-    void HandleHit(SpellEffIndex /*effIndex*/)
-    {
-        if (Unit* caster = GetCaster())
         {
-            if (!caster->HasAura(SPELL_TIME_DILATION))
-                caster->CastSpell(GetHitUnit(), SPELL_FIREBALL_BARRAGE_FAST, true);
-            else
-                caster->CastSpell(GetHitUnit(), SPELL_FIREBALL_BARRAGE_SLOW, true);
-        }
+            SPELL_FIREBALL_SLOW,
+            SPELL_FIREBALL_BARRAGE_FAST,
+            SPELL_FIREBALL_BARRAGE_SLOW
+        });
+    }
+
+    void HandleDummyEffect(SpellEffIndex /*effIndex*/)
+    {
+        GetCaster()->CastSpell(GetHitUnit(), GetSpellInfo()->Id == SPELL_FIREBALL_SLOW ? SPELL_FIREBALL_BARRAGE_SLOW : SPELL_FIREBALL_BARRAGE_FAST, true);
     }
 
     void Register() override
     {
-        OnObjectAreaTargetSelect.Register(&spell_halfus_fireball::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
-        OnEffectHitTarget.Register(&spell_halfus_fireball::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnEffectHitTarget.Register(&spell_halfus_fireball::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+class spell_halfus_fireball_barrage final : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo(
+        {
+            SPELL_FIREBALL_BARRAGE_FAST,
+            SPELL_FIREBALL_BARRAGE_SLOW,
+            SPELL_TIME_DILATION
+        });
+    }
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        if (targets.size() > 1)
+            Trinity::Containers::RandomResize(targets, 1);
+    }
+
+    void HandleDummyEffect(SpellEffIndex /*effIndex*/)
+    {
+        GetCaster()->CastSpell(GetHitUnit(), GetCaster()->HasAura(SPELL_TIME_DILATION) ? SPELL_FIREBALL_BARRAGE_SLOW : SPELL_FIREBALL_BARRAGE_FAST, true);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect.Register(&spell_halfus_fireball_barrage::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnEffectHitTarget.Register(&spell_halfus_fireball_barrage::HandleDummyEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
@@ -657,38 +673,36 @@ class spell_halfus_cyclone_winds final : public SpellScript
     }
 };
 
-class DancingFlamesDistanceCheck
-{
-    public:
-        DancingFlamesDistanceCheck(Unit* caster) : _caster(caster) { }
-
-        bool operator()(WorldObject* object)
-        {
-            return (object->GetDistance2d(_caster) <= 40.0f || object->GetDistance2d(_caster) >= 100.0f);
-        }
-    private:
-        Unit* _caster;
-};
-
 class spell_halfus_dancing_flames final : public SpellScript
 {
     void FilterTargets(std::list<WorldObject*>& targets)
     {
-        if (targets.empty())
+        if (targets.size() < 1)
             return;
 
-        if (Unit* caster = GetCaster())
-            targets.remove_if(DancingFlamesDistanceCheck(caster));
+        targets.remove_if([caster = GetCaster()](WorldObject const* target) { return (target->GetDistance2d(caster) <= 40.0f || target->GetDistance2d(caster) >= 100.0f); });
 
-        if (targets.empty())
-            return;
-
-        Trinity::Containers::RandomResize(targets, 1);
+        if (targets.size() > 1)
+            Trinity::Containers::RandomResize(targets, 1);
     }
 
     void Register() override
     {
         OnObjectAreaTargetSelect.Register(&spell_halfus_dancing_flames::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+    }
+};
+
+class spell_halfus_unresponsive final : public SpellScript
+{
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (GetHitUnit()->IsCreature())
+            GetHitUnit()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget.Register(&spell_halfus_unresponsive::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 }
@@ -703,7 +717,9 @@ void AddSC_boss_halfus_wyrmbreaker()
     RegisterGameObjectAI(go_halfus_whelp_cage);
     RegisterSpellScript(spell_halfus_bind_will);
     RegisterSpellScript(spell_halfus_fireball);
+    RegisterSpellScript(spell_halfus_fireball_barrage);
     RegisterSpellScript(spell_halfus_stone_touch);
     RegisterSpellScript(spell_halfus_cyclone_winds);
     RegisterSpellScript(spell_halfus_dancing_flames);
+    RegisterSpellScript(spell_halfus_unresponsive);
 }

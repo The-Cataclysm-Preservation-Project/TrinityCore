@@ -63,11 +63,12 @@ enum BoTDataTypes
 
     // Encounter Related
     /*Halfus Wyrmbreaker*/
-    DATA_UNRESPONSIVE_DRAGON_FIRST,
-    DATA_UNRESPONSIVE_DRAGON_SECOND,
-    DATA_CAST_DRAGON_BUFFS,
-    DATA_DRAGON_CAGE_ENABLED,
-    DATA_OPEN_ORPHANED_EMERALD_WHELP_CAGE,
+    DATA_ACTIVE_DRAGON_FLAGS,
+    DATA_SLATE_DRAGON,
+    DATA_NETHER_SCION,
+    DATA_STORM_RIDER,
+    DATA_TIME_WARDEN,
+    DATA_WHELP_CAGE,
 
     /*Theralion and Valiona*/
     DATA_RANDOM_VALIONA_DUMMY,
@@ -76,12 +77,6 @@ enum BoTDataTypes
 
     /*Cho'Gall*/
     DATA_FULL_HEROIC_ID
-};
-
-enum BoTDataStates
-{
-    DRAGON_BUFFS_HALFUS_WYRMBREAKER = 0,
-    DRAGON_BUFFS_PROTO_BEHEMOTH,
 };
 
 enum BoTCreatures
@@ -160,13 +155,7 @@ enum BoTGameObjects
 enum BoTActions
 {
     // Halfus Wyrmbreaker
-    ACTION_ENABLE_MALEVOLENT_STRIKES        = 1,
-    ACTION_ENABLE_FRENZIED_ASSAULT          = 2,
-    ACTION_ENABLE_SHADOW_NOVA               = 3,
-    ACTION_ENABLE_FIREBALL_BARRAGE          = 1,
-    ACTION_ENABLE_SCORCHING_BREATH          = 2,
-    ACTION_CAST_DRAGONS_VENGEANCE           = 3,
-    ACTION_MOVE_OUT_OF_CAGE                 = 4,
+    ACTION_DRAGON_FREED                     = 0,
 
     // Theralion and Valiona
     ACTION_START_ARGUMENT_INTRO             = 1,
@@ -206,6 +195,17 @@ enum BoTWorldStates
 
     // Cho'Gall
     WORLD_STATE_ID_THE_ABYSS_WILL_GAZE_BACK_INTO_YOU    = 5659
+};
+
+enum BoTHalfusDragonFlags : uint8
+{
+    DRAGON_FLAG_NETHER_SCION    = 0x01,
+    DRAGON_FLAG_SLATE_DRAGON    = 0x02,
+    DRAGON_FLAG_STORM_RIDER     = 0x04,
+    DRAGON_FLAG_TIME_WARDEN     = 0x08,
+    DRAGON_FLAG_EMERALD_WHELPS  = 0x10,
+
+    DRAGON_FLAG_ALL_ACTIVE = DRAGON_FLAG_NETHER_SCION | DRAGON_FLAG_SLATE_DRAGON | DRAGON_FLAG_STORM_RIDER | DRAGON_FLAG_TIME_WARDEN | DRAGON_FLAG_EMERALD_WHELPS
 };
 
 template<class AI>
