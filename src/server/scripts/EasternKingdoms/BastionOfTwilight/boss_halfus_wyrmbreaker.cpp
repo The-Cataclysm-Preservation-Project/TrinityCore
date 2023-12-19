@@ -107,11 +107,13 @@ enum SpawnGroups
 
 struct EncounterDragonData
 {
+    EncounterDragonData(uint32 dataType, uint32 encounterCreatureId) : DataType(dataType), EncounterCreatureId(encounterCreatureId) { }
+
     uint32 DataType = 0;
     uint32 EncounterCreatureId = 0;
 };
 
-static constexpr std::array<EncounterDragonData, 4> const DragonData =
+static std::array<EncounterDragonData const, 4> DragonData =
 {
     EncounterDragonData(DATA_SLATE_DRAGON, NPC_SLATE_DRAGON_ENCOUNTER),
     EncounterDragonData(DATA_NETHER_SCION, NPC_NETHER_SCION_ENCOUNTER),
