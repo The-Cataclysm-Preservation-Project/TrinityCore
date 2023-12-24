@@ -31,6 +31,7 @@
 #include "Realm.h"
 #include "ScriptMgr.h"
 #include "SHA1.h"
+#include "Util.h"
 #include "World.h"
 #include <zlib.h>
 #include <memory>
@@ -740,6 +741,7 @@ void WorldSocket::HandleAuthContinuedSessionCallback(std::shared_ptr<WorldPacket
     uint32 accountId = uint32(key.Fields.AccountId);
     Field* fields = result->Fetch();
     std::string login = fields[0].GetString();
+    Utf8ToUpperOnlyLatin(login);
     BigNumber k;
     k.SetHexStr(fields[1].GetCString());
 
