@@ -1912,8 +1912,24 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         {
             for (WorldObject* target : targets)
             {
-                if (Creature* creature = target->ToCreature())
-                    creature->GetMotionMaster()->MoveJump(e.target.x, e.target.y, e.target.z, 0.0f, (float)e.action.jump.speedxy, (float)e.action.jump.speedz); // @todo add optional jump orientation support?
+                if (!e.action.jump.useGravity)
+                {
+                    if (Creature* creature = target->ToCreature())
+                        creature->GetMotionMaster()->MoveJump(e.target.x, e.target.y, e.target.z, 0.0f, (float)e.action.jump.speedxy, (float)e.action.jump.speedz); // @todo add optional jump orientation support?
+                }
+                else
+                {
+                    if (Creature* creature = target->ToCreature())
+                    {
+                        Position pos;
+                        pos.m_positionX = e.target.x;
+                        pos.m_positionY = e.target.y;
+                        pos.m_positionZ = e.target.z;
+                        pos.SetOrientation(e.target.o);
+
+                        creature->GetMotionMaster()->MoveJumpWithGravity(pos, (float)e.action.jump.speedxy, (float)e.action.jump.speedz);
+                    }
+                }
             }
 
             break;

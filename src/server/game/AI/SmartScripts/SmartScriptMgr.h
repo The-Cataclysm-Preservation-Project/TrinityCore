@@ -27,6 +27,7 @@
 
 class WorldObject;
 enum SpellEffIndex : uint8;
+typedef uint32 SAIBool;
 
 enum eSmartAI
 {
@@ -1009,7 +1010,8 @@ struct SmartAction
         struct
         {
             uint32 speedxy;
-            uint32 speedz;
+            uint32 speedz; // If useGravity true, speedZ is gravity
+            SAIBool useGravity;
         } jump;
 
         struct
