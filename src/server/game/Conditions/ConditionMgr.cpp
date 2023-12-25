@@ -1401,12 +1401,11 @@ bool ConditionMgr::addToGossipMenus(Condition* cond) const
     {
         for (GossipMenusContainer::iterator itr = pMenuBounds.first; itr != pMenuBounds.second; ++itr)
         {
-            if ((*itr).second.MenuID == cond->SourceGroup && (*itr).second.TextID == uint32(cond->SourceEntry))
-            {
-                (*itr).second.Conditions.push_back(cond);
-                return true;
-            }
+            if (itr->second.MenuID == cond->SourceGroup && (itr->second.TextID == uint32(cond->SourceEntry) || cond->SourceEntry == 0))
+                itr->second.Conditions.push_back(cond);
         }
+
+        return true;
     }
 
     TC_LOG_ERROR("sql.sql", "%s GossipMenu %u not found.", cond->ToString().c_str(), cond->SourceGroup);

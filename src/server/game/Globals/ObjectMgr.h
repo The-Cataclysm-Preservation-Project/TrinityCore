@@ -1188,6 +1188,7 @@ class TC_GAME_API ObjectMgr
         void LoadCreatureSparringTemplate();
         void LoadCreatureTemplate(Field* fields);
         void LoadCreatureTemplateModels();
+        void LoadCreatureTemplateGossip();
         void CheckCreatureTemplate(CreatureTemplate const* cInfo);
         void CheckCreatureMovement(char const* table, uint64 id, CreatureMovementData& creatureMovement);
         void LoadGameObjectQuestItems();
