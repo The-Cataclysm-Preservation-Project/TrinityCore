@@ -29,7 +29,7 @@
 #include <optional>
 
 // Helpers
-inline UnitMoveType SelectSpeedType(uint32 moveFlags)
+static UnitMoveType SelectSpeedType(uint32 moveFlags)
 {
     if (moveFlags & MOVEMENTFLAG_FLYING)
     {
@@ -53,12 +53,17 @@ inline UnitMoveType SelectSpeedType(uint32 moveFlags)
     return MOVE_RUN;
 }
 
-inline bool IsTargetMoving(Unit const* target)
+static bool IsTargetMoving(Unit const* target)
 {
     return target->HasUnitMovementFlag(MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD | MOVEMENTFLAG_STRAFE_LEFT | MOVEMENTFLAG_STRAFE_RIGHT) || !target->movespline->Finalized();
 }
 
-inline float GetVelocity(Unit* owner, Unit* target, bool catchUp)
+static bool IsFarFromFollowDistance(Unit const* owner, Unit const* target, float followDistance)
+{
+    return owner->GetExactDistSq(target) > square(followDistance);
+}
+
+static float GetVelocity(Unit const* owner, Unit const* target, bool catchUp)
 {
     float targetSpeed = 0.f;
     float velocity = 0.f;
@@ -90,9 +95,9 @@ inline float GetVelocity(Unit* owner, Unit* target, bool catchUp)
     return velocity;
 }
 
-static void ApplyCatchUpMod(Unit* owner, Position dest, float& velocity)
+static void ApplyCatchUpMod(Unit const* owner, Position dest, float& velocity)
 {
-    float distance = owner->GetExactDist2d(dest);
+    float const distance = owner->GetExactDist2d(dest);
 
     if (!dest.HasInArc(float(M_PI), owner)) // owner is falling back. Catch up
         AddPct(velocity, ((distance / velocity) * 100.f));
@@ -100,7 +105,7 @@ static void ApplyCatchUpMod(Unit* owner, Position dest, float& velocity)
         AddPct(velocity, -((distance / velocity) * 100.f));
 }
 
-static void DoMovementInform(Unit* owner, Unit* target)
+static void DoMovementInform(Unit const* owner, Unit const* target)
 {
     if (owner->GetTypeId() != TYPEID_UNIT)
         return;
@@ -224,7 +229,7 @@ bool FollowMovementGenerator::Update(Unit* owner, uint32 diff)
     {
 
         _followMovementTimer.Reset(FOLLOW_MOVEMENT_INTERVAL);
-        if (IsTargetMoving(target))
+        if (IsTargetMoving(target) || IsFarFromFollowDistance(owner, target, _distance))
         {
             _events.Reset();
             LaunchMovement(owner);
