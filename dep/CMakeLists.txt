@@ -32,6 +32,7 @@ if(SERVERS)
   add_subdirectory(zmqpp)
   add_subdirectory(rapidjson)
   add_subdirectory(efsw)
+  add_subdirectory(short_alloc)
 endif()
 
 if(TOOLS)

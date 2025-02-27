@@ -97,9 +97,9 @@ public:
     void DoAction(int32 info, Predicate&& predicate, uint16 max = 0)
     {
         // We need to use a copy of SummonList here, otherwise original SummonList would be modified
-        StorageType listCopy = storage_;
-        Trinity::Containers::RandomResize<StorageType, Predicate>(listCopy, std::forward<Predicate>(predicate), max);
-        DoActionImpl(info, listCopy);
+        StorageType listCopy;
+        std::copy_if(std::begin(storage_), std::end(storage_), std::inserter(listCopy, std::end(listCopy)), predicate);
+        DoActionImpl(info, listCopy, max);
     }
 
     void DoZoneInCombat(uint32 entry = 0);
@@ -107,7 +107,7 @@ public:
     bool HasEntry(uint32 entry) const;
 
 private:
-    void DoActionImpl(int32 action, StorageType const& summons);
+    void DoActionImpl(int32 action, StorageType& summons, uint16 max);
 
     Creature* me;
     StorageType storage_;

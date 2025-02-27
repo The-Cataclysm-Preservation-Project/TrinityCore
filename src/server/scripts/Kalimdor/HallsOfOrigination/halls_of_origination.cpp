@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "CreatureGroups.h"
 #include "CreatureAI.h"
 #include "GameObject.h"

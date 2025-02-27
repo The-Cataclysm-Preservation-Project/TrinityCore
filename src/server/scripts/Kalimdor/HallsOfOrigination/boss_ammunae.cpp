@@ -16,6 +16,7 @@
  */
 
 #include "halls_of_origination.h"
+#include "Containers.h"
 #include "PassiveAI.h"
 #include "Player.h"
 #include "ScriptMgr.h"

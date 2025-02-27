@@ -17,6 +17,7 @@
 
 #include "Creature.h"
 #include "CreatureAIImpl.h"
+#include "Containers.h"
 #include "InstanceScript.h"
 #include "GridNotifiers.h"
 #include "MotionMaster.h"

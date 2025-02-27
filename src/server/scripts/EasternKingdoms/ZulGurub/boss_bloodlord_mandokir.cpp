@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "GridNotifiers.h"
 #include "InstanceScript.h"
 #include "MotionMaster.h"

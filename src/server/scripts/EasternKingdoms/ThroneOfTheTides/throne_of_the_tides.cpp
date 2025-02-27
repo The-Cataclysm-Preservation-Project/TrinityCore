@@ -17,6 +17,7 @@
 
 #include "throne_of_the_tides.h"
 #include "AreaBoundary.h"
+#include "Containers.h"
 #include "GameObjectAI.h"
 #include "GridNotifiers.h"
 #include "InstanceScript.h"

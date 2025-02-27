@@ -21,6 +21,7 @@
 #include "Creature.h"
 #include "CreatureTextMgr.h"
 #include "CreatureTextMgrImpl.h"
+#include "Containers.h"
 #include "GameEventMgr.h"
 #include "GameObject.h"
 #include "GossipDef.h"

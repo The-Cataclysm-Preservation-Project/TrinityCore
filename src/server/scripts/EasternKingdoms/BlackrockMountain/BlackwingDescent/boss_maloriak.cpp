@@ -17,6 +17,7 @@
 
 #include "blackwing_descent.h"
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "ObjectMgr.h"
 #include "CommonPredicates.h"
 #include "DBCStores.h"

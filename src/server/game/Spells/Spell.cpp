@@ -21,6 +21,7 @@
 #include "Battleground.h"
 #include "CellImpl.h"
 #include "Common.h"
+#include "Containers.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
 #include "DB2Stores.h"
@@ -4807,7 +4808,7 @@ static std::pair<int32, SpellHealPredictionType> CalcPredictedHealing(SpellInfo 
                 points += unitCaster->SpellHealingBonusDone(target,
                     spellInfo, spellEffectInfo.CalcValue(unitCaster, nullptr, target),
                     DIRECT_DAMAGE, i, 1, spell);
-       
+
                 if (target != unitCaster && (spellEffectInfo.TargetA.GetTarget() == TARGET_UNIT_CASTER || spellEffectInfo.TargetB.GetTarget() == TARGET_UNIT_CASTER))
                     type = SPELL_HEAL_PREDICTION_TARGET_AND_CASTER;    // Binding Heal-like spells
                 else if (spellEffectInfo.TargetA.GetCheckType() == TARGET_CHECK_PARTY || spellEffectInfo.TargetB.GetCheckType() == TARGET_CHECK_PARTY)
@@ -4816,7 +4817,7 @@ static std::pair<int32, SpellHealPredictionType> CalcPredictedHealing(SpellInfo 
             default:
                 break;
         }
-       
+
         if (withPeriodic)
         {
             switch (spellEffectInfo.ApplyAuraName)

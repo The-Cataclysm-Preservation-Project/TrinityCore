@@ -17,6 +17,7 @@
 
 #include "gilneas.h"
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "CombatAI.h"
 #include "MotionMaster.h"
 #include "MoveSplineInit.h"

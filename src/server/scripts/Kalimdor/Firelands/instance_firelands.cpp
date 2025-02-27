@@ -19,6 +19,7 @@
 #include "AreaBoundary.h"
 #include "Creature.h"
 #include "CreatureAI.h"
+#include "Containers.h"
 #include "EventProcessor.h"
 #include "firelands.h"
 #include "InstanceScript.h"

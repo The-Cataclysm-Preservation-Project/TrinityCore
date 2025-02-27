@@ -22,6 +22,7 @@ Script Data End */
 #include "ScriptMgr.h"
 #include "CombatAI.h"
 #include "CreatureTextMgr.h"
+#include "Containers.h"
 #include "eye_of_eternity.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"

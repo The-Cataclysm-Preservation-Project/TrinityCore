@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "Containers.h"
 #include "DynamicObject.h"
 #include "InstanceScript.h"
 #include "MotionMaster.h"

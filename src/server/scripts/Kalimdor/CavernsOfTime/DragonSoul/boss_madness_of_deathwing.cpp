@@ -18,6 +18,7 @@
 #include "dragon_soul.h"
 #include "CreatureAI.h"
 #include "CreatureAIImpl.h"
+#include "Containers.h"
 #include "GameObject.h"
 #include "Group.h"
 #include "InstanceScript.h"

@@ -18,6 +18,7 @@
 #include "ScriptMgr.h"
 #include "CellImpl.h"
 #include "CombatAI.h"
+#include "Containers.h"
 #include "CreatureTextMgr.h"
 #include "GameEventMgr.h"
 #include "GridNotifiersImpl.h"
@@ -187,7 +188,7 @@ public:
             AirForceSpawn const& _spawn;
             ObjectGuid _myGuard;
             std::unordered_set<ObjectGuid> _toAttack;
-            
+
     };
 
     CreatureAI* GetAI(Creature* creature) const override

@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "CreatureTextMgr.h"
+#include "Containers.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "Group.h"

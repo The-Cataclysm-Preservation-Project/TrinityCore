@@ -24,6 +24,7 @@
 
 #include "ScriptMgr.h"
 #include "firelands.h"
+#include "Containers.h"
 #include "GridNotifiers.h"
 #include "InstanceScript.h"
 #include "Map.h"

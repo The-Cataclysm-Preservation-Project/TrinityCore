@@ -18,6 +18,7 @@
 #include "ScriptMgr.h"
 #include "CellImpl.h"
 #include "CreatureTextMgr.h"
+#include "Containers.h"
 #include "GossipDef.h"
 #include "GridNotifiersImpl.h"
 #include "icecrown_citadel.h"

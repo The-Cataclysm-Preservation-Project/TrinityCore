@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "AreaBoundary.h"
+#include "Containers.h"
 #include "InstanceScript.h"
 #include "Map.h"
 #include "MotionMaster.h"
@@ -110,7 +111,7 @@ float const TRIANGLE_TOP_Z  = 654.7143f;
 static uint8 const MaxStormTargetTrios = 13;
 static uint8 const MaxStormTargetTrianglePoints = 3;
 
-static std::array<Position, 39> StormTargetSummonPositions = 
+static std::array<Position, 39> StormTargetSummonPositions =
 {
     Position(-633.771f, 490.976f, TRIANGLE_Z, 3.141593f),
     Position(-625.688f, 501.934f, TRIANGLE_Z, 3.141593f),

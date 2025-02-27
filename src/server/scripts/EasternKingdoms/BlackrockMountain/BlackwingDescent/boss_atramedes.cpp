@@ -18,6 +18,7 @@
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "CommonPredicates.h"
+#include "Containers.h"
 #include "GridNotifiers.h"
 #include "Map.h"
 #include "MoveSpline.h"

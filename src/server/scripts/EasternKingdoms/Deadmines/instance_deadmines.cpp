@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "CreatureAI.h"
+#include "Containers.h"
 #include "deadmines.h"
 #include "GameObject.h"
 #include "InstanceScript.h"

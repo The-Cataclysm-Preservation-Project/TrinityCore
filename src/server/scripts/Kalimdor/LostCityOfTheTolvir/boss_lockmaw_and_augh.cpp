@@ -16,6 +16,7 @@
 */
 
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "InstanceScript.h"
 #include "lost_city_of_the_tolvir.h"
 #include "MotionMaster.h"

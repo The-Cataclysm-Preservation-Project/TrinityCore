@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "GridNotifiers.h"
 #include "halls_of_origination.h"
 #include "InstanceScript.h"
@@ -75,7 +76,7 @@ enum Phases
 enum Points
 {
     POINT_ANRAPHET_ACTIVATE,
-    POINT_BRANN_SAY_TROGGS, 
+    POINT_BRANN_SAY_TROGGS,
     POINT_BRANN_SAY_MOMENT,
     POINT_BRANN_TURN_BACK
 };

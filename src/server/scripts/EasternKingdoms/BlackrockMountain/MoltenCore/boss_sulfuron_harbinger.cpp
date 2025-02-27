@@ -23,6 +23,7 @@ SDCategory: Molten Core
 EndScriptData */
 
 #include "ObjectMgr.h"
+#include "Containers.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "molten_core.h"

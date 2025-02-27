@@ -30,6 +30,7 @@ go_captain_tyralius_prison
 EndContentData */
 
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "Log.h"

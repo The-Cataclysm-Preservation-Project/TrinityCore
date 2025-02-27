@@ -16,6 +16,7 @@
  */
 
 #include "halls_of_origination.h"
+#include "Containers.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "Creature.h"

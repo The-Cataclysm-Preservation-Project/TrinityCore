@@ -19,6 +19,7 @@
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
 #include "CellImpl.h"
+#include "Containers.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
 #include "DynamicTree.h"
@@ -53,6 +54,7 @@
 #include "World.h"
 #include "WorldStateMgr.h"
 #include "WorldStatePackets.h"
+#include <boost/heap/fibonacci_heap.hpp>
 #include <unordered_set>
 #include <vector>
 
@@ -64,6 +66,18 @@ GridState* si_GridStates[MAX_GRID_STATE];
 
 ZoneDynamicInfo::ZoneDynamicInfo() : MusicId(0), DefaultWeather(nullptr), WeatherId(WEATHER_STATE_FINE),
 Intensity(0.0f) { }
+
+struct RespawnInfoWithHandle;
+struct RespawnListContainer : boost::heap::fibonacci_heap<RespawnInfoWithHandle*, boost::heap::compare<CompareRespawnInfo>>
+{
+};
+
+struct RespawnInfoWithHandle : RespawnInfo
+{
+    explicit RespawnInfoWithHandle(RespawnInfo const& other) : RespawnInfo(other) { }
+
+    RespawnListContainer::handle_type handle;
+};
 
 RespawnInfo::~RespawnInfo() = default;
 
@@ -125,7 +139,7 @@ m_unloadTimer(0), m_VisibleDistance(DEFAULT_VISIBILITY_DISTANCE),
 m_VisibilityNotifyPeriod(DEFAULT_VISIBILITY_NOTIFY_PERIOD),
 m_activeNonPlayersIter(m_activeNonPlayers.end()), _transportsUpdateIter(_transports.end()),
 i_gridExpiry(expiry), m_terrain(sTerrainMgr.LoadTerrain(id)),  m_forceEnabledNavMeshFilterFlags(0), m_forceDisabledNavMeshFilterFlags(0),
-i_scriptLock(false), _respawnCheckTimer(0)
+i_scriptLock(false), _respawnTimes(std::make_unique<RespawnListContainer>()), _respawnCheckTimer(0)
 {
     for (uint32 x = 0; x < MAX_NUMBER_OF_GRIDS; ++x)
     {
@@ -1874,7 +1888,7 @@ void Map::Respawn(RespawnInfo* info, CharacterDatabaseTransaction dbTrans)
     if (info->respawnTime <= GameTime::GetGameTime())
         return;
     info->respawnTime = GameTime::GetGameTime();
-    _respawnTimes.increase(info->handle);
+    _respawnTimes->increase(static_cast<RespawnInfoWithHandle*>(info)->handle);
     SaveRespawnInfoDB(*info, dbTrans);
 }
 
@@ -1928,8 +1942,8 @@ bool Map::AddRespawnInfo(RespawnInfo const& info)
     else
         ASSERT(false, "Invalid respawn info for spawn id (%u,%u) being inserted", uint32(info.type), info.spawnId);
 
-    RespawnInfo* ri = new RespawnInfo(info);
-    ri->handle = _respawnTimes.push(ri);
+    RespawnInfoWithHandle* ri = new RespawnInfoWithHandle(info);
+    ri->handle = _respawnTimes->push(ri);
     bySpawnIdMap.emplace(ri->spawnId, ri);
     return true;
 }
@@ -1960,9 +1974,9 @@ RespawnInfo* Map::GetRespawnInfo(SpawnObjectType type, ObjectGuid::LowType spawn
 
 void Map::UnloadAllRespawnInfos() // delete everything from memory
 {
-    for (RespawnInfo* info : _respawnTimes)
+    for (RespawnInfo* info : *_respawnTimes)
         delete info;
-    _respawnTimes.clear();
+    _respawnTimes->clear();
     _creatureRespawnTimesBySpawnId.clear();
     _gameObjectRespawnTimesBySpawnId.clear();
 }
@@ -1980,7 +1994,7 @@ void Map::DeleteRespawnInfo(RespawnInfo* info, CharacterDatabaseTransaction dbTr
     spawnMap.erase(it);
 
     // respawn heap
-    _respawnTimes.erase(info->handle);
+    _respawnTimes->erase(static_cast<RespawnInfoWithHandle*>(info)->handle);
 
     // database
     DeleteRespawnInfoFromDB(info->type, info->spawnId, dbTrans);
@@ -2029,16 +2043,16 @@ void Map::DoRespawn(SpawnObjectType type, ObjectGuid::LowType spawnId, uint32 gr
 void Map::ProcessRespawns()
 {
     time_t now = GameTime::GetGameTime();
-    while (!_respawnTimes.empty())
+    while (!_respawnTimes->empty())
     {
-        RespawnInfo* next = _respawnTimes.top();
+        RespawnInfoWithHandle* next = _respawnTimes->top();
         if (now < next->respawnTime) // done for this tick
             break;
 
         if (uint32 poolId = sPoolMgr->IsPartOfAPool(next->type, next->spawnId)) // is this part of a pool?
         { // if yes, respawn will be handled by (external) pooling logic, just delete the respawn time
             // step 1: remove entry from maps to avoid it being reachable by outside logic
-            _respawnTimes.pop();
+            _respawnTimes->pop();
             GetRespawnMapForType(next->type).erase(next->spawnId);
 
             // step 2: tell pooling logic to do its thing
@@ -2051,7 +2065,7 @@ void Map::ProcessRespawns()
         else if (CheckRespawn(next)) // see if we're allowed to respawn
         { // ok, respawn
             // step 1: remove entry from maps to avoid it being reachable by outside logic
-            _respawnTimes.pop();
+            _respawnTimes->pop();
             GetRespawnMapForType(next->type).erase(next->spawnId);
 
             // step 2: do the respawn, which involves external logic
@@ -2063,7 +2077,7 @@ void Map::ProcessRespawns()
         }
         else if (!next->respawnTime)
         { // just remove this respawn entry without rescheduling
-            _respawnTimes.pop();
+            _respawnTimes->pop();
             GetRespawnMapForType(next->type).erase(next->spawnId);
             RemoveRespawnTime(next->type, next->spawnId, nullptr, true);
             delete next;
@@ -2071,7 +2085,7 @@ void Map::ProcessRespawns()
         else
         { // new respawn time, update heap position
             ASSERT(now < next->respawnTime); // infinite loop guard
-            _respawnTimes.decrease(next->handle);
+            _respawnTimes->decrease(next->handle);
             SaveRespawnInfoDB(*next);
         }
     }
@@ -2759,8 +2773,8 @@ void InstanceMap::Update(uint32 t_diff)
 {
     Map::Update(t_diff);
 
-	if (i_data)
-		i_data->Update(t_diff);
+    if (i_data)
+        i_data->Update(t_diff);
 }
 
 void InstanceMap::RemovePlayerFromMap(Player* player, bool remove)

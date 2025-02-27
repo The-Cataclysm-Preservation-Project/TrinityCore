@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "baradin_hold.h"
+#include "Containers.h"
 #include "InstanceScript.h"
 #include "MotionMaster.h"
 #include "MoveSpline.h"

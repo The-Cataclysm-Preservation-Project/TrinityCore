@@ -19,6 +19,7 @@
 #define PacketUtilities_h__
 
 #include "ByteBuffer.h"
+#include <short_alloc/short_alloc.h>
 
 namespace WorldPackets
 {
@@ -31,27 +32,58 @@ namespace WorldPackets
     /**
      * Utility class for automated prevention of loop counter spoofing in client packets
      */
-    template<typename T, std::size_t N = 1000 /*select a sane default limit*/>
+    template<typename T, std::size_t N>
     class Array
     {
-        typedef std::vector<T> storage_type;
-
-        typedef typename storage_type::value_type value_type;
-        typedef typename storage_type::size_type size_type;
-        typedef typename storage_type::reference reference;
-        typedef typename storage_type::const_reference const_reference;
-        typedef typename storage_type::iterator iterator;
-        typedef typename storage_type::const_iterator const_iterator;
-
     public:
-        Array() : _limit(N) { }
-        Array(size_type limit) : _limit(limit) { }
+        using allocator_type = short_alloc::short_alloc<T, (N * sizeof(T) + (alignof(std::max_align_t) - 1)) & ~(alignof(std::max_align_t) - 1)>;
+        using arena_type = typename allocator_type::arena_type;
+
+        using storage_type = std::vector<T, allocator_type>;
+
+        using max_capacity = std::integral_constant<std::size_t, N>;
+
+        using value_type = typename storage_type::value_type;
+        using size_type = typename storage_type::size_type;
+        using pointer = typename storage_type::pointer;
+        using const_pointer = typename storage_type::const_pointer;
+        using reference = typename storage_type::reference;
+        using const_reference = typename storage_type::const_reference;
+        using iterator = typename storage_type::iterator;
+        using const_iterator = typename storage_type::const_iterator;
+
+        Array() : _storage(_data) {}
+
+        Array(Array const& other) : Array()
+        {
+            for (T const& element : other)
+                _storage.push_back(element);
+        }
+
+        Array(Array&& other) noexcept = delete;
+
+        Array& operator=(Array const& other)
+        {
+            if (this == &other)
+                return *this;
+
+            _storage.clear();
+            for (T const& element : other)
+                _storage.push_back(element);
+
+            return *this;
+        }
+
+        Array& operator=(Array&& other) noexcept = delete;
 
         iterator begin() { return _storage.begin(); }
         const_iterator begin() const { return _storage.begin(); }
 
         iterator end() { return _storage.end(); }
         const_iterator end() const { return _storage.end(); }
+
+        pointer data() { return _storage.data(); }
+        const_pointer data() const { return _storage.data(); }
 
         size_type size() const { return _storage.size(); }
         bool empty() const { return _storage.empty(); }
@@ -61,39 +93,48 @@ namespace WorldPackets
 
         void resize(size_type newSize)
         {
-            if (newSize > _limit)
-                throw PacketArrayMaxCapacityException(newSize, _limit);
+            if (newSize > max_capacity::value)
+                throw PacketArrayMaxCapacityException(newSize, max_capacity::value);
 
             _storage.resize(newSize);
         }
 
-        void reserve(size_type newSize)
-        {
-            if (newSize > _limit)
-                throw PacketArrayMaxCapacityException(newSize, _limit);
-
-            _storage.reserve(newSize);
-        }
-
         void push_back(value_type const& value)
         {
-            if (_storage.size() >= _limit)
-                throw PacketArrayMaxCapacityException(_storage.size() + 1, _limit);
+            if (_storage.size() >= max_capacity::value)
+                throw PacketArrayMaxCapacityException(_storage.size() + 1, max_capacity::value);
 
             _storage.push_back(value);
         }
 
         void push_back(value_type&& value)
         {
-            if (_storage.size() >= _limit)
-                throw PacketArrayMaxCapacityException(_storage.size() + 1, _limit);
+            if (_storage.size() >= max_capacity::value)
+                throw PacketArrayMaxCapacityException(_storage.size() + 1, max_capacity::value);
 
             _storage.push_back(std::forward<value_type>(value));
         }
 
+        template<typename... Args>
+        T& emplace_back(Args&&... args)
+        {
+            _storage.emplace_back(std::forward<Args>(args)...);
+            return _storage.back();
+        }
+
+        iterator erase(const_iterator first, const_iterator last)
+        {
+            return _storage.erase(first, last);
+        }
+
+        void clear()
+        {
+            _storage.clear();
+        }
+
     private:
+        arena_type _data;
         storage_type _storage;
-        size_type _limit;
     };
 
     void CheckCompactArrayMaskOverflow(std::size_t index, std::size_t limit);

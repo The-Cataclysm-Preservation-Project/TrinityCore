@@ -42,12 +42,11 @@ EndScriptData */
 #include "VMapManager2.h"
 #include "World.h"
 #include "WorldSession.h"
-
-#include <numeric>
-
+#include <boost/filesystem/directory.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
+#include <numeric>
 
 class server_commandscript : public CommandScript
 {

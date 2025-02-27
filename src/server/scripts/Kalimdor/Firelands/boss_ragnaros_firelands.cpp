@@ -16,6 +16,7 @@
  */
 
 #include "firelands.h"
+#include "Containers.h"
 #include "DynamicObject.h"
 #include "GameObject.h"
 #include "InstanceScript.h"

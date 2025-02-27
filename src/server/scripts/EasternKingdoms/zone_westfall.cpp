@@ -16,6 +16,7 @@
  */
 
 #include "Player.h"
+#include "Containers.h"
 #include "ScriptMgr.h"
 #include "SpellScript.h"
 #include "CombatAI.h"
@@ -307,7 +308,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
         me->SetFacingToObject(player);
 
         uint16 slot = player->FindQuestSlot(QUEST_MURDER_WAS_THE_CASE_THAT_THEY_GAVE_ME);
-        
+
         if (player->GetQuestSlotCounter(slot, CLUE1) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_1);
@@ -315,7 +316,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             me->DespawnOrUnsummon(12s);
             return;
         }
-        
+
         if (player->GetQuestSlotCounter(slot, CLUE2) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_2);
@@ -323,7 +324,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             me->DespawnOrUnsummon(12s);
             return;
         }
-        
+
         if (player->GetQuestSlotCounter(slot, CLUE3) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_3);
@@ -331,7 +332,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             me->DespawnOrUnsummon(12s);
             return;
         }
-        
+
         if (player->GetQuestSlotCounter(slot, CLUE4) == 0)
         {
             player->CastSpell(player, SPELL_HOBO_INFORMATION_4);
@@ -368,7 +369,7 @@ struct npc_westfall_hobo_witness : public ScriptedAI
             who->ToCreature()->AI()->DoAction(ACTION_AGGRO_HOBO_DONE);
         me->CastSpell(me, SPELL_SUMMON_RAGAMUFFIN_LOOTER);
     }
-   
+
     void Reset() override
     {
         ScriptedAI::Reset();
@@ -1303,7 +1304,7 @@ enum WestFallText
     SAY_NPC_HOMELESS_STORMWIND_CITIZEN_2 = 12,
     SAY_NPC_TRANSIENT                    = 17,
     SAY_NPC_WEST_PLAINS_DRIFTER          = 11,
-    SAY_NPC_WEST_PLAINS_DRIFTER_FOLLOWER = 6     
+    SAY_NPC_WEST_PLAINS_DRIFTER_FOLLOWER = 6
 };
 
 struct npc_westfall_westfall_stew: public ScriptedAI
@@ -1398,10 +1399,10 @@ struct npc_westfall_homless_stormwind_citizen : public ScriptedAI
                 case EVENT_START:
                 {
                     me->SetStandState(UNIT_STAND_STATE_STAND);
-                
+
                     if (me->HasAura(SPELL_COSMETIC_SLEEP))
                         me->RemoveAurasDueToSpell(SPELL_COSMETIC_SLEEP);
-                
+
                     _events.ScheduleEvent(EVENT_MOVE_TO_STEW, 2s);
                     break;
                 }
@@ -1511,10 +1512,10 @@ struct npc_westfall_west_plains_drifter : public ScriptedAI
             {
                 case EVENT_START:
                     me->SetStandState(UNIT_STAND_STATE_STAND);
-                
+
                     if (me->HasAura(SPELL_COSMETIC_SLEEP))
                         me->RemoveAurasDueToSpell(SPELL_COSMETIC_SLEEP);
-                
+
                     _events.ScheduleEvent(EVENT_MOVE_TO_STEW, 2s);
                     break;
                 case EVENT_MOVE_TO_STEW:

@@ -32,7 +32,7 @@ template <typename linktag>
 struct Hyperlink : public ContainerTag
 {
     typedef typename linktag::value_type value_type;
-    typedef advstd::remove_cvref_t<value_type> storage_type;
+    typedef std::remove_cvref_t<value_type> storage_type;
 
     public:
         operator value_type() const { return val; }
@@ -105,7 +105,7 @@ struct base_tag
     }
 
     template <typename T>
-    static std::enable_if_t<advstd::is_integral_v<T> && advstd::is_unsigned_v<T>, bool> StoreTo(T& val, char const* pos, size_t len)
+    static std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>, bool> StoreTo(T& val, char const* pos, size_t len)
     {
         try { val = std::stoull(std::string(pos, len)); }
         catch (...) { return false; }
@@ -113,7 +113,7 @@ struct base_tag
     }
 
     template <typename T>
-    static std::enable_if_t<advstd::is_integral_v<T> && advstd::is_signed_v<T>, bool> StoreTo(T& val, char const* pos, size_t len)
+    static std::enable_if_t<std::is_integral_v<T> && std::is_signed_v<T>, bool> StoreTo(T& val, char const* pos, size_t len)
     {
         try { val = std::stoll(std::string(pos, len)); }
         catch (...) { return false; }

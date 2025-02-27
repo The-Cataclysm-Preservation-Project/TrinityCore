@@ -16,6 +16,7 @@
 */
 
 #include "shadowfang_keep.h"
+#include "Containers.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -75,7 +76,7 @@ enum Spells
 
     SPELL_SUMMON_SPIRIT_OF_RAZORCLAW_THE_BUTCHER_DUMMY  = 93921, // Dummy Summon
     SPELL_SUMMON_SPIRIT_OF_RAZORCLAW_THE_BUTCHER_SUMMON = 93924,
-    
+
     SPELL_SUMMON_SPIRIT_OF_RETHILGORE_DUMMY             = 93925, // Dummy Summon
     SPELL_SUMMON_SPIRIT_OF_RETHILGORE_SUMMON            = 93927,
 

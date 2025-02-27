@@ -18,7 +18,6 @@
 #ifndef TRINITY_CHATCOMMAND_H
 #define TRINITY_CHATCOMMAND_H
 
-#include "advstd.h"
 #include "ChatCommandArgs.h"
 #include "ChatCommandTags.h"
 #include "Define.h"
@@ -169,7 +168,7 @@ class TC_GAME_API CommandArgs
         template <typename T1, typename T2, typename... Ts>
         auto TryConsume()
         {
-            Optional<std::tuple<advstd::remove_cvref_t<T1>, advstd::remove_cvref_t<T2>, advstd::remove_cvref_t<Ts>...>> rv;
+            Optional<std::tuple<std::remove_cvref_t<T1>, std::remove_cvref_t<T2>, std::remove_cvref_t<Ts>...>> rv;
             rv.emplace();
             if (!TryConsumeToTuple<0>(rv.value()))
                 rv = std::nullopt;
@@ -179,7 +178,7 @@ class TC_GAME_API CommandArgs
         template <typename T1>
         auto TryConsume()
         {
-            using T = advstd::remove_cvref_t<T1>;
+            using T = std::remove_cvref_t<T1>;
             Optional<T> rv;
             rv.emplace();
             if (char const* next = CommandArgsConsumerSingle<T>::TryConsumeTo(rv.value(), _args))
@@ -214,8 +213,8 @@ class TC_GAME_API CommandArgs
         char const* _args;
 };
 
-template <typename T> struct ChatCommandHandlerToTuple { static_assert(!advstd::is_same_v<T,T>, "Invalid command handler signature"); };
-template <typename... Ts> struct ChatCommandHandlerToTuple<bool(*)(ChatHandler*, Ts...)> { using type = std::tuple<ChatHandler*, advstd::remove_cvref_t<Ts>...>; };
+template <typename T> struct ChatCommandHandlerToTuple { static_assert(!std::is_same_v<T,T>, "Invalid command handler signature"); };
+template <typename... Ts> struct ChatCommandHandlerToTuple<bool(*)(ChatHandler*, Ts...)> { using type = std::tuple<ChatHandler*, std::remove_cvref_t<Ts>...>; };
 
 template <typename T> struct ChatCommandStoreLastArg { static void store(T&, CommandArgs&) {} };
 template <> struct ChatCommandStoreLastArg<char const*> { static void store(char const*& arg, CommandArgs& args) { arg = args.GetRemainingArgs(); } };
@@ -240,9 +239,9 @@ class TC_GAME_API ChatCommand
                 CommandArgs args(argsStr);
                 if (args.TryConsumeToTuple<1>(arguments))
                 {
-                    auto& last = std::get<advstd::tuple_size_v<tuple_type>-1>(arguments);
-                    ChatCommandStoreLastArg<advstd::remove_cvref_t<decltype(last)>>::store(last, args);
-                    return advstd::apply(reinterpret_cast<TypedHandler>(handler), std::move(arguments));
+                    auto& last = std::get<std::tuple_size_v<tuple_type>-1>(arguments);
+                    ChatCommandStoreLastArg<std::remove_cvref_t<decltype(last)>>::store(last, args);
+                    return std::apply(reinterpret_cast<TypedHandler>(handler), std::move(arguments));
                 }
                 else
                     return false;

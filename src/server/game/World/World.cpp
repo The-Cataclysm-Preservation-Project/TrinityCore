@@ -35,6 +35,7 @@
 #include "CharacterDatabaseCleaner.h"
 #include "Chat.h"
 #include "Config.h"
+#include "Containers.h"
 #include "CreatureAIRegistry.h"
 #include "CreatureGroups.h"
 #include "CreatureTextMgr.h"

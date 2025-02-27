@@ -16,6 +16,7 @@
  */
 
 #include "halls_of_origination.h"
+#include "Containers.h"
 #include "Map.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -65,7 +66,7 @@ enum Events
     EVENT_CONTINUE_FIGHT,
     EVENT_CHAOS_BLAST,
     EVENT_SEED_OF_CHAOS,
-    EVENT_REIGN_OF_CHAOS,    
+    EVENT_REIGN_OF_CHAOS,
 
     // Chaos Portal
     EVENT_CAST_VISUAL,
@@ -131,7 +132,7 @@ class boss_setesh : public CreatureScript
                 BossAI::JustEngagedWith(who);
                 Talk(SAY_AGGRO);
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
-                
+
                 events.ScheduleEvent(EVENT_CHAOS_PORTAL, Seconds(5));
                 events.ScheduleEvent(EVENT_CHAOS_BLAST, Seconds(15));
                 events.ScheduleEvent(EVENT_SEED_OF_CHAOS, Seconds(20));
@@ -188,7 +189,7 @@ class boss_setesh : public CreatureScript
                         break;
                 }
 
-                
+
             }
 
             void DoAction(int32 action) override

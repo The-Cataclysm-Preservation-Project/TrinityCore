@@ -17,6 +17,7 @@
 
 #include "ScriptMgr.h"
 #include "throne_of_the_tides.h"
+#include "Containers.h"
 #include "GameObject.h"
 #include "MoveSpline.h"
 #include "ObjectMgr.h"

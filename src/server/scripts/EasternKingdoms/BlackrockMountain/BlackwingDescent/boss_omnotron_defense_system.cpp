@@ -17,6 +17,7 @@
 
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
@@ -328,7 +329,7 @@ struct boss_omnotron_defense_system : public BossAI
                         golem->DespawnOrUnsummon();
                     }
                 }
-  
+
                 instance->SetBossState(DATA_OMNOTRON_DEFENSE_SYSTEM, FAIL);
                 RemoveDebuffsFromRaid();
                 summons.DespawnAll();

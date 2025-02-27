@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "icecrown_citadel.h"
 #include "InstanceScript.h"
 #include "Map.h"

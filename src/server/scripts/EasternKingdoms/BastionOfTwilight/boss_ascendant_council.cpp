@@ -17,6 +17,7 @@
 
 #include "CommonPredicates.h"
 #include "Creature.h"
+#include "Containers.h"
 #include "InstanceScript.h"
 #include "GridNotifiers.h"
 #include "ObjectAccessor.h"

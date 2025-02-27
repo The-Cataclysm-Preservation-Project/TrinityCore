@@ -16,6 +16,7 @@
 */
 
 #include "ObjectMgr.h"
+#include "Containers.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SpellScript.h"

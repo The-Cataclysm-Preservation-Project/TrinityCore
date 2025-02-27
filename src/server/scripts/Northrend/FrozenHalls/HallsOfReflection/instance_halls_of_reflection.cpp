@@ -18,6 +18,7 @@
 #include "ScriptMgr.h"
 #include "Creature.h"
 #include "CreatureAI.h"
+#include "Containers.h"
 #include "GameObject.h"
 #include "halls_of_reflection.h"
 #include "InstanceScript.h"

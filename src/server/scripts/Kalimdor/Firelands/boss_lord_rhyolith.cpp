@@ -16,6 +16,7 @@
 */
 
 #include "firelands.h"
+#include "Containers.h"
 #include "InstanceScript.h"
 #include "PassiveAI.h"
 #include "PathGenerator.h"

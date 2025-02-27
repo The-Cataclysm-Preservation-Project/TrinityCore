@@ -20,6 +20,7 @@
 #include "AreaBoundary.h"
 #include "Creature.h"
 #include "CreatureAI.h"
+#include "Containers.h"
 #include "GameObject.h"
 #include "InstanceScript.h"
 #include "Map.h"

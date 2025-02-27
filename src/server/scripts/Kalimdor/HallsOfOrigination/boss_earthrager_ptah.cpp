@@ -16,6 +16,7 @@
  */
 
 #include "halls_of_origination.h"
+#include "Containers.h"
 #include "ScriptMgr.h"
 #include "InstanceScript.h"
 #include "Map.h"

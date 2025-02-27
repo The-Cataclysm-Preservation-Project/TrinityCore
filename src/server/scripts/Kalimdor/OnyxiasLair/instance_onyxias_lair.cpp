@@ -29,6 +29,7 @@ EndScriptData */
 #include "InstanceScript.h"
 #include "onyxias_lair.h"
 #include "TemporarySummon.h"
+#include <queue>
 
 namespace OnyxiasLair
 {

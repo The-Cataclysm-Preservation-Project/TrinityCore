@@ -25,6 +25,7 @@
 #include "ScriptMgr.h"
 #include "Battleground.h"
 #include "CellImpl.h"
+#include "Containers.h"
 #include "DBCStores.h"
 #include "GameTime.h"
 #include "GridNotifiersImpl.h"
@@ -4278,7 +4279,7 @@ class spell_gen_vengeance_triggered : public AuraScript
 
     void HandleEffectPeriodic(AuraEffect const* /*aurEff*/)
     {
-        Unit* target = GetTarget();    
+        Unit* target = GetTarget();
         // Get the total damage of the last two seconds and clean older damage data
         int32 damageLastTwoSeconds = 0;
         for (DamageInfoContainer::const_iterator itr = _damageInfo.begin(); itr != _damageInfo.end();)
@@ -5006,7 +5007,7 @@ class spell_gen_shadowmeld : public AuraScript
     {
         return ValidateSpellInfo({ SPELL_RACIAL_ELUSIVENESS });
     }
-    
+
     void HandleStealthLevel(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
     {
         if (AuraEffect const* aurEff = GetUnitOwner()->GetAuraEffect(SPELL_RACIAL_ELUSIVENESS, EFFECT_0))

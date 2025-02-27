@@ -20,6 +20,7 @@
 #include "CellImpl.h"
 #include "Chat.h"
 #include "Common.h"
+#include "Containers.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
 #include "GridNotifiersImpl.h"
@@ -402,7 +403,7 @@ void CreatureTextMgr::SendNonChatPacket(WorldObject* source, WorldPacket const* 
         case TEXT_RANGE_PERSONAL:
             if (!whisperTarget || !whisperTarget->IsPlayer())
                 return;
-            
+
             whisperTarget->ToPlayer()->SendDirectMessage(data);
             return;
         case TEXT_RANGE_NORMAL:

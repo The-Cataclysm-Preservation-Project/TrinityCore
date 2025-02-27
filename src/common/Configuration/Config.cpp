@@ -18,6 +18,7 @@
 #include "Config.h"
 #include "Log.h"
 #include "Util.h"
+#include <boost/filesystem/directory.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <algorithm>
 #include <memory>

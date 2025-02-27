@@ -16,6 +16,7 @@
 */
 
 #include "ScriptMgr.h"
+#include "Containers.h"
 #include "G3DPosition.hpp"
 #include "InstanceScript.h"
 #include "MotionMaster.h"

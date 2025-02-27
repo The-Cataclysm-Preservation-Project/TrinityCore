@@ -35,7 +35,6 @@
 #include "WorldStateDefines.h"
 #include "Transaction.h"
 #include "Weather.h"
-#include <boost/heap/fibonacci_heap.hpp>
 #include <bitset>
 #include <list>
 #include <memory>
@@ -118,8 +117,7 @@ struct CompareRespawnInfo
     bool operator()(RespawnInfo const* a, RespawnInfo const* b) const;
 };
 using ZoneDynamicInfoMap = std::unordered_map<uint32 /*zoneId*/, ZoneDynamicInfo>;
-using RespawnListContainer = boost::heap::fibonacci_heap<RespawnInfo*, boost::heap::compare<CompareRespawnInfo>>;
-using RespawnListHandle = RespawnListContainer::handle_type;
+struct RespawnListContainer;
 using RespawnInfoMap = std::unordered_map<ObjectGuid::LowType, RespawnInfo*>;
 struct TC_GAME_API RespawnInfo
 {
@@ -130,7 +128,6 @@ struct TC_GAME_API RespawnInfo
     uint32 entry;
     time_t respawnTime;
     uint32 gridId;
-    RespawnListHandle handle;
 };
 inline bool CompareRespawnInfo::operator()(RespawnInfo const* a, RespawnInfo const* b) const
 {
@@ -700,7 +697,7 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
                 m_activeNonPlayers.erase(obj);
         }
 
-        RespawnListContainer _respawnTimes;
+        std::unique_ptr<RespawnListContainer> _respawnTimes;
         RespawnInfoMap       _creatureRespawnTimesBySpawnId;
         RespawnInfoMap       _gameObjectRespawnTimesBySpawnId;
         RespawnInfoMap& GetRespawnMapForType(SpawnObjectType type)

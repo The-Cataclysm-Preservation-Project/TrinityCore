@@ -16,6 +16,7 @@
 */
 
 #include "CellImpl.h"
+#include "Containers.h"
 #include "CreatureAIImpl.h"
 #include "CreatureGroups.h"
 #include "GameEventMgr.h"
