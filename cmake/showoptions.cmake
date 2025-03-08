@@ -16,7 +16,7 @@ message("")
 if(SERVERS)
   message("* Build world/auth       : Yes (default)")
 else()
-  message("* Build world/bnetserver : No")
+  message("* Build world/authserver : No")
 endif()
 
 if(SCRIPTS AND (NOT SCRIPTS STREQUAL "none"))

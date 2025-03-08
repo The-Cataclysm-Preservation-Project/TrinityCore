@@ -9,6 +9,7 @@
 #    EXAMPLE CONFIG
 #    AUTH SERVER SETTINGS
 #    MYSQL SETTINGS
+#    UPDATE SETTINGS
 #    LOGGING SYSTEM SETTINGS
 #
 ###################################################################################################
@@ -47,18 +48,11 @@ LogsDir = ""
 MaxPingTime = 30
 
 #
-#    WorldserverListenPort
-#        Description: TCP port to listen on for incoming worldserver IPC.
-#        Default:     1118
+#    RealmServerPort
+#        Description: TCP port to reach the auth server.
+#        Default:     3724
 
-WorldserverListenPort = 1118
-
-#
-#    BattlenetPort
-#        Description: TCP port to reach the auth server for battle.net connections.
-#        Default:     1119
-
-BattlenetPort = 1119
+RealmServerPort = 3724
 
 #
 #
@@ -98,10 +92,10 @@ ProcessPriority = 0
 #
 #    RealmsStateUpdateDelay
 #        Description: Time (in seconds) between realm list updates.
-#        Default:     10
+#        Default:     20 - (Enabled)
 #                     0  - (Disabled)
 
-RealmsStateUpdateDelay = 10
+RealmsStateUpdateDelay = 20
 
 #
 #    WrongPass.MaxCount
@@ -129,6 +123,21 @@ WrongPass.BanTime = 600
 WrongPass.BanType = 0
 
 #
+#    WrongPass.Logging
+#        Description: Additionally log attempted wrong password logging
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+WrongPass.Logging = 0
+
+#
+#    BanExpiryCheckInterval
+#        Description: Time (in seconds) between checks for expired bans
+#        Default:     60
+
+BanExpiryCheckInterval = 60
+
+#
 #    SourceDirectory
 #        Description: The path to your TrinityCore source directory.
 #                     If the path is left empty, the built-in CMAKE_SOURCE_DIR is used.
@@ -141,12 +150,21 @@ SourceDirectory  = ""
 #    MySQLExecutable
 #        Description: The path to your mysql cli binary.
 #                     If the path is left empty, built-in path from cmake is used.
-#        Example:     "C:/Program Files/MySQL/MySQL Server 5.7/bin/mysql.exe"
+#        Example:     "C:/Program Files/MySQL/MySQL Server 5.6/bin/mysql.exe"
 #                     "mysql.exe"
 #                     "/usr/bin/mysql"
 #        Default:     ""
 
 MySQLExecutable = ""
+
+#
+#    IPLocationFile
+#        Description: The path to your IP2Location database CSV file.
+#        Example:     "C:/Trinity/IP2LOCATION-LITE-DB1.CSV"
+#                     "/home/trinity/IP2LOCATION-LITE-DB1.CSV"
+#        Default:     ""  - (Disabled)
+
+IPLocationFile = ""
 
 #
 ###################################################################################################
@@ -170,6 +188,7 @@ LoginDatabaseInfo = "127.0.0.1;3306;trinity;trinity;auth"
 #    LoginDatabase.WorkerThreads
 #        Description: The amount of worker threads spawned to handle asynchronous (delayed) MySQL
 #                     statements. Each worker thread is mirrored with its own connection to the
+#                     MySQL server and their own thread on the MySQL server.
 #        Default:     1
 
 LoginDatabase.WorkerThreads = 1
@@ -181,13 +200,6 @@ LoginDatabase.WorkerThreads = 1
 
 LoginDatabase.SynchThreads  = 1
 
-#
-#    Wrong.Password.Login.Logging
-#        Description: Additionally log attempted wrong password logging
-#        Default:     0 - (Disabled)
-#                     1 - (Enabled)
-
-Wrong.Password.Login.Logging = 0
 #
 ###################################################################################################
 
@@ -321,7 +333,7 @@ Updates.CleanDeadRefMaxCount = 3
 #
 
 Appender.Console=1,2,0
-Appender.Bnet=2,2,0,Bnet.log,w
+Appender.Auth=2,2,0,Auth.log,w
 
 #  Logger config values: Given a logger "name"
 #    Logger.name
@@ -341,10 +353,7 @@ Appender.Bnet=2,2,0,Bnet.log,w
 #                     (Using spaces as separator).
 #
 
-Logger.root=3,Console Bnet
-Logger.realmlist=3,Console Bnet
-Logger.session=3,Console Bnet
-Logger.session.packets=3,Console Bnet
+Logger.root=3,Console Auth
 
 #
 ###################################################################################################
