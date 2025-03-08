@@ -696,6 +696,8 @@ void Creature::Update(uint32 diff)
 
     UpdateMovementFlags(false);
 
+    GetThreatManager().Update(diff);
+
     switch (m_deathState)
     {
         case JUST_RESPAWNED:
@@ -788,7 +790,6 @@ void Creature::Update(uint32 diff)
             if (!IsAlive())
                 break;
 
-            GetThreatManager().Update(diff);
             if (_spellFocusInfo.ReacquiringTargetDelay)
             {
                 if (_spellFocusInfo.ReacquiringTargetDelay <= diff)
@@ -3296,6 +3297,8 @@ bool Creature::IsEngaged() const
 void Creature::AtEngage(Unit* target)
 {
     Unit::AtEngage(target);
+
+    GetThreatManager().ResetUpdateTimer();
 
     if (!(GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_MOUNTED_COMBAT_ALLOWED))
         Dismount();
