@@ -29,7 +29,7 @@ AreaTrigger::AreaTrigger() : WorldObject(false), _duration(0)
     m_objectType |= TYPEMASK_AREATRIGGER;
     m_objectTypeId = TYPEID_AREATRIGGER;
 
-    m_updateFlag = UPDATEFLAG_STATIONARY_POSITION;
+    m_updateFlag.AreaTrigger = true;
 
     m_valuesCount = AREATRIGGER_END;
 }

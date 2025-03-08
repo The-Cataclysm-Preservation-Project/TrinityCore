@@ -63,6 +63,30 @@ enum ZLiquidStatus : uint32;
 
 typedef std::unordered_map<Player*, UpdateData> UpdateDataMapType;
 
+struct CreateObjectBits
+{
+    bool PlayerHoverAnim : 1;
+    bool SupressedGreetings : 1;
+    bool Rotation : 1;
+    bool AnimKit : 1;
+    bool CombatVictim : 1;
+    bool ThisIsYou : 1;
+    bool Vehicle : 1;
+    bool MovementUpdate : 1;
+    bool NoBirthAnim : 1;
+    bool MovementTransport : 1;
+    bool Stationary : 1;
+    bool AreaTrigger : 1;
+    bool EnablePortals : 1;
+    bool ServerTime : 1;
+
+
+    void Clear()
+    {
+        memset(this, 0, sizeof(CreateObjectBits));
+    }
+};
+
 float const DEFAULT_COLLISION_HEIGHT = 2.03128f; // Most common value in dbc
 
 class TC_GAME_API Object
@@ -199,13 +223,13 @@ class TC_GAME_API Object
 
         uint32 GetUpdateFieldData(Player const* target, uint32*& flags) const;
 
-        void BuildMovementUpdate(ByteBuffer* data, uint32 flags) const;
+        void BuildMovementUpdate(ByteBuffer* data, CreateObjectBits flags) const;
         virtual void BuildValuesUpdate(uint8 updatetype, ByteBuffer* data, Player* target) const;
 
         uint16 m_objectType;
 
         TypeID m_objectTypeId;
-        uint32 m_updateFlag;
+        CreateObjectBits m_updateFlag;
 
         union
         {

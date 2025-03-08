@@ -477,7 +477,8 @@ GameObject::GameObject() : WorldObject(false), MapObject(),
     m_objectType |= TYPEMASK_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
 
-    m_updateFlag = (UPDATEFLAG_STATIONARY_POSITION | UPDATEFLAG_ROTATION);
+    m_updateFlag.Stationary = true;
+    m_updateFlag.Rotation = true;
 
     m_valuesCount = GAMEOBJECT_END;
     m_respawnTime = 0;
@@ -661,7 +662,7 @@ bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, P
 
     if (goinfo->type == GAMEOBJECT_TYPE_TRANSPORT)
     {
-        m_updateFlag |= UPDATEFLAG_TRANSPORT;
+        m_updateFlag.ServerTime = true;
         guidHigh = HighGuid::Mo_Transport;
     }
 

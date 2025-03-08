@@ -310,7 +310,7 @@ Unit::Unit(bool isWorldObject) :
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
 
-    m_updateFlag = UPDATEFLAG_LIVING;
+    m_updateFlag.MovementUpdate = true;
 
     m_attackTimer = { };
     m_modAttackSpeedPct.fill(1.0f);
@@ -11779,7 +11779,7 @@ bool Unit::CreateVehicleKit(uint32 id, uint32 creatureEntry, bool loading /*= fa
         return false;
 
     m_vehicleKit = std::make_unique<Vehicle>(this, vehInfo, creatureEntry);
-    m_updateFlag |= UPDATEFLAG_VEHICLE;
+    m_updateFlag.Vehicle = true;
     m_unitTypeMask |= UNIT_MASK_VEHICLE;
 
     if (!loading)
@@ -11799,7 +11799,7 @@ void Unit::RemoveVehicleKit(bool onRemoveFromWorld /*= false*/)
     m_vehicleKit->Uninstall();
     m_vehicleKit.reset();
 
-    m_updateFlag &= ~UPDATEFLAG_VEHICLE;
+    m_updateFlag.Vehicle = false;
     m_unitTypeMask &= ~UNIT_MASK_VEHICLE;
     RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK | UNIT_NPC_FLAG_PLAYER_VEHICLE);
 }

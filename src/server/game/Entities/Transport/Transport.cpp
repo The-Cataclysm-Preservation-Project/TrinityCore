@@ -84,7 +84,9 @@ Transport::Transport() : GameObject(),
     _transportInfo(nullptr), _movementState(TransportMovementState::Moving), _eventsToTrigger(std::make_unique<boost::dynamic_bitset<uint8>>()),
     _currentPathLeg(0), _pathProgress(0), _delayedAddModel(false)
 {
-    m_updateFlag = UPDATEFLAG_TRANSPORT | UPDATEFLAG_LOWGUID | UPDATEFLAG_STATIONARY_POSITION | UPDATEFLAG_ROTATION;
+    m_updateFlag.ServerTime = true;
+    m_updateFlag.Stationary = true;
+    m_updateFlag.Rotation = true;
 }
 
 Transport::~Transport()
