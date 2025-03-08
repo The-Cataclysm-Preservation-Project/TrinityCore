@@ -322,10 +322,13 @@ InstanceMapLoadAllGrids = 0
 SocketTimeOutTime = 900000
 
 #
-#    SessionAddDelay
-#        Description: Time (in microseconds) that a network thread will sleep after authentication
-#                     protocol handling before adding a connection to the world session map.
-#        Default:     10000 - (10 milliseconds, 0.01 second)
+#    SocketTimeOutTimeActive
+#        Description: Time (in milliseconds) after which an idle connection is dropped while
+#                     logged into the world.
+#                     The client sends keepalive packets every 30 seconds. Values <= 30s are not recommended.
+#        Default:     60000 - (1 minute)
+
+SocketTimeOutTimeActive = 60000
 
 SessionAddDelay = 10000
 

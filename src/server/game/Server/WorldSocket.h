@@ -105,7 +105,7 @@ public:
 protected:
     void OnClose() override;
     void ReadHandler() override;
-    bool ReadHeaderHandler();
+    bool ReadHeaderHandler(bool initialized);
 
     enum class ReadDataHandlerResult
     {
@@ -118,6 +118,7 @@ protected:
 
 private:
     void CheckIpCallback(PreparedQueryResult result);
+    void InitializeHandler(boost::system::error_code error, std::size_t transferedBytes);
 
     /// writes network.opcode log
     /// accessing WorldSession is not threadsafe, only do it when holding _worldSessionLock
@@ -154,8 +155,6 @@ private:
 
     MPSCQueue<EncryptablePacket, &EncryptablePacket::SocketQueueLink> _bufferQueue;
     std::size_t _sendBufferSize;
-
-    bool _initialized;
 
     QueryCallbackProcessor _queryProcessor;
     std::string _ipCountry;

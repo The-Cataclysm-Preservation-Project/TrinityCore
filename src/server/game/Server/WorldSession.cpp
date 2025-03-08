@@ -150,7 +150,7 @@ WorldSession::WorldSession(uint32 id, std::string&& name, uint32 battlenetAccoun
     if (sock)
     {
         m_Address = sock->GetRemoteIpAddress().to_string();
-        ResetTimeOutTime();
+        ResetTimeOutTime(false);
         LoginDatabase.PExecute("UPDATE account SET online = 1 WHERE id = %u;", GetAccountId());     // One-time query
     }
 
@@ -753,9 +753,12 @@ char const* WorldSession::GetTrinityString(uint32 entry) const
     return sObjectMgr->GetTrinityString(entry, GetSessionDbLocaleIndex());
 }
 
-void WorldSession::ResetTimeOutTime()
+void WorldSession::ResetTimeOutTime(bool onlyActive)
 {
-    m_timeOutTime = int32(sWorld->getIntConfig(CONFIG_SOCKET_TIMEOUTTIME));
+    if (GetPlayer())
+        m_timeOutTime = GameTime::GetGameTime() + time_t(sWorld->getIntConfig(CONFIG_SOCKET_TIMEOUTTIME_ACTIVE));
+    else if (!onlyActive)
+        m_timeOutTime = GameTime::GetGameTime() + time_t(sWorld->getIntConfig(CONFIG_SOCKET_TIMEOUTTIME));
 }
 
 void WorldSession::Handle_NULL(WorldPacket& null)
@@ -1247,7 +1250,7 @@ void WorldSession::InitializeSessionCallback(CharacterDatabaseQueryHolder const&
         SendAuthWaitQue(0);
 
     SetInQueue(false);
-    ResetTimeOutTime();
+    ResetTimeOutTime(false);
 
     SendAddonsInfo();
     SendClientCacheVersion(sWorld->getIntConfig(CONFIG_CLIENTCACHE_VERSION));

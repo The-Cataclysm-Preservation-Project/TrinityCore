@@ -93,6 +93,7 @@ class WorldPacket : public ByteBuffer
         ConnectionType GetConnection() const { return _connection; }
 
         std::chrono::steady_clock::time_point GetReceivedTime() const { return m_receivedTime; }
+        void SetReceiveTime(std::chrono::steady_clock::time_point receivedTime) { m_receivedTime = receivedTime; }
 
     protected:
         uint16 m_opcode;
