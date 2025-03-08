@@ -162,23 +162,23 @@ namespace Movement
         Unit*  unit;
     };
 
-    inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
+    inline void MoveSplineInit::SetFly() { args.flags.Flying = true; }
     inline void MoveSplineInit::SetWalk(bool enable) { args.walk = enable; }
-    inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
-    inline void MoveSplineInit::SetUncompressed() { args.flags.uncompressedPath = true; }
-    inline void MoveSplineInit::SetCyclic() { args.flags.cyclic = true; }
+    inline void MoveSplineInit::SetSmooth() { args.flags.Catmullrom = true; }
+    inline void MoveSplineInit::SetUncompressed() { args.flags.UncompressedPath = true; }
+    inline void MoveSplineInit::SetCyclic() { args.flags.Cyclic = true; }
     inline void MoveSplineInit::SetVelocity(float vel) { args.velocity = vel; args.HasVelocity = true; }
-    inline void MoveSplineInit::SetBackward() { args.flags.backward = true;}
-    inline void MoveSplineInit::SetTransportEnter() { args.flags.EnableTransportEnter(); }
-    inline void MoveSplineInit::SetTransportExit() { args.flags.EnableTransportExit(); }
-    inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.orientationFixed = enable; }
+    inline void MoveSplineInit::SetBackward() { args.flags.Backward = true; }
+    inline void MoveSplineInit::SetTransportEnter() { args.flags.TransportEnter = true; }
+    inline void MoveSplineInit::SetTransportExit() { args.flags.TransportExit = true; }
+    inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.OrientationFixed = enable; }
 
     inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
     {
         args.effect_start_time_percent = time_shift;
         args.parabolic_amplitude = amplitude;
         args.vertical_acceleration = 0.0f;
-        args.flags.EnableParabolic();
+        args.flags.Parabolic = true;
     }
 
     inline void MoveSplineInit::SetParabolicVerticalAcceleration(float vertical_acceleration, float time_shift)
@@ -186,7 +186,7 @@ namespace Movement
         args.effect_start_time_percent = time_shift;
         args.parabolic_amplitude = 0.0f;
         args.vertical_acceleration = vertical_acceleration;
-        args.flags.EnableParabolic();
+        args.flags.Parabolic = true;
     }
 
     inline void MoveSplineInit::SetAnimation(AnimationTier anim, Milliseconds transitionStartTime /*= 0ms*/)
@@ -194,7 +194,7 @@ namespace Movement
         args.effect_start_time_percent = 0.f;
         args.effect_start_time = transitionStartTime;
         args.animTier = anim;
-        args.flags.EnableAnimation();
+        args.flags.Animation = true;
     }
 
     inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }

@@ -16,6 +16,7 @@
  */
 
 #include "MoveSplineFlag.h"
+#include "MovementTypedefs.h"
 #include <cmath>
 
 namespace Movement
@@ -178,10 +179,10 @@ namespace Movement
         STR(Unknown9           ), // 0x80000000,
     };
 
-    template<class Flags, int N>
+    template<class Flags, uint32 N>
     void print_flags(Flags t, char const* (&names)[N], std::string& str)
     {
-        for (int i = 0; i < N; ++i)
+        for (uint32 i = 0; i < N; ++i)
         {
             if ((t & Flags(1 << i)) && names[i] != nullptr)
                 str.append(" ").append(names[i]);
@@ -191,18 +192,18 @@ namespace Movement
     std::string MoveSplineFlag::ToString() const
     {
         std::string str;
-        print_flags(raw(), g_SplineFlag_names, str);
+        print_flags(Raw.AsUnderlyingType(), g_SplineFlag_names, str);
         return str;
     }
 
-    std::string MovementFlags_ToString(uint32 flags)
+    std::string MovementFlags_ToString(MovementFlags flags)
     {
         std::string str;
         print_flags(flags, g_MovementFlag_names, str);
         return str;
     }
 
-    std::string MovementFlagsExtra_ToString(uint32 flags)
+    std::string MovementFlagsExtra_ToString(MovementFlags2 flags)
     {
         std::string str;
         print_flags(flags, g_MovementFlagExtra_names, str);

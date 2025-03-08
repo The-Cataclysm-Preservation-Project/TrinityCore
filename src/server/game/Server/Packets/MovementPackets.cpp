@@ -375,14 +375,13 @@ void WorldPackets::Movement::MonsterMove::InitializeSplineData(::Movement::MoveS
     WorldPackets::Movement::MovementSpline& movementSpline = SplineData.Move;
 
     ::Movement::MoveSplineFlag splineFlags = moveSpline.splineflags;
-    splineFlags.enter_cycle = moveSpline.isCyclic();
-    movementSpline.Flags = uint32(splineFlags & uint32(~::Movement::MoveSplineFlag::Mask_No_Monster_Move));
+    movementSpline.Flags = uint32(splineFlags & ~::Movement::MoveSplineFlagEnum::Mask_No_Monster_Move);
     movementSpline.Face = moveSpline.facing.type;
     movementSpline.FaceDirection = moveSpline.facing.angle;
     movementSpline.FaceGUID = moveSpline.facing.target;
     movementSpline.FaceSpot = Position(moveSpline.facing.f.x, moveSpline.facing.f.y, moveSpline.facing.f.z);
 
-    if (splineFlags.animation)
+    if (splineFlags.Animation)
     {
         movementSpline.Animation.emplace();
         movementSpline.Animation->TierTransStartTime = moveSpline.effect_start_time;
@@ -391,7 +390,7 @@ void WorldPackets::Movement::MonsterMove::InitializeSplineData(::Movement::MoveS
 
     movementSpline.MoveTime = moveSpline.Duration();
 
-    if (splineFlags.parabolic)
+    if (splineFlags.Parabolic)
     {
         movementSpline.JumpExtraData.emplace();
         movementSpline.JumpExtraData->JumpGravity = moveSpline.vertical_acceleration;
@@ -401,15 +400,15 @@ void WorldPackets::Movement::MonsterMove::InitializeSplineData(::Movement::MoveS
     ::Movement::Spline<int32> const& spline = moveSpline.spline;
     std::vector<G3D::Vector3> const& array = spline.getPoints();
 
-    if (splineFlags & ::Movement::MoveSplineFlag::UncompressedPath)
+    if (splineFlags.UncompressedPath)
     {
-        uint32 count = spline.getPointCount() - (!splineFlags.cyclic ? 3 : 4);
+        uint32 count = spline.getPointCount() - (splineFlags.Cyclic ? 4 : 3);
         for (uint32 i = 0; i < count; ++i)
             movementSpline.Points.emplace_back(array[i + 2].x, array[i + 2].y, array[i + 2].z);
     }
     else
     {
-        uint32 lastIdx = spline.getPointCount() - 3;
+        uint32 lastIdx = spline.getPointCount() - (splineFlags.Cyclic ? 4 : 3);
         G3D::Vector3 const* realPath = &spline.getPoint(1);
 
         movementSpline.Points.emplace_back(realPath[lastIdx].x, realPath[lastIdx].y, realPath[lastIdx].z);

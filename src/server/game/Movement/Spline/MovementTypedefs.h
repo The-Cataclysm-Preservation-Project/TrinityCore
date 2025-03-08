@@ -19,6 +19,10 @@
 #define TRINITYSERVER_TYPEDEFS_H
 
 #include "Common.h"
+
+enum MovementFlags : uint32;
+enum MovementFlags2 : uint32;
+
 namespace G3D
 {
     class Vector3;
@@ -78,8 +82,8 @@ namespace Movement
 
     TC_GAME_API extern float gravity;
     TC_GAME_API extern UInt32Counter splineIdGen;
-    extern std::string MovementFlags_ToString(uint32 flags);
-    extern std::string MovementFlagsExtra_ToString(uint32 flags);
+    TC_GAME_API extern std::string MovementFlags_ToString(MovementFlags flags);
+    TC_GAME_API extern std::string MovementFlags_ToString(MovementFlags2 flags);
 }
 
 #endif // TRINITYSERVER_TYPEDEFS_H

@@ -41,7 +41,7 @@ namespace Movement
             return;
 
         data.WriteBits(uint8(moveSpline.spline.mode()), 2);
-        data.WriteBit(moveSpline.splineflags & (MoveSplineFlag::Parabolic | MoveSplineFlag::Animation));
+        data.WriteBit(moveSpline.splineflags.HasFlag(MoveSplineFlagEnum::Parabolic | MoveSplineFlagEnum::Animation));
         data.WriteBits(moveSpline.getPath().size(), 22);
 
         switch (moveSpline.facing.type)
@@ -71,8 +71,8 @@ namespace Movement
                 break;
         }
 
-        data.WriteBit((moveSpline.splineflags & MoveSplineFlag::Parabolic) != 0 && moveSpline.effect_start_time < moveSpline.Duration());
-        data.WriteBits(moveSpline.splineflags.raw(), 25);
+        data.WriteBit(moveSpline.splineflags.HasFlag(MoveSplineFlagEnum::Parabolic) && moveSpline.effect_start_time < moveSpline.Duration());
+        data.WriteBits(moveSpline.splineflags.Raw.AsUnderlyingType(), 25);
     }
 
     void PacketBuilder::WriteCreateData(MoveSpline const& moveSpline, ByteBuffer& data)
@@ -81,7 +81,7 @@ namespace Movement
         {
             MoveSplineFlag const& splineFlags = moveSpline.splineflags;
 
-            if ((splineFlags & MoveSplineFlag::Parabolic) && moveSpline.effect_start_time < moveSpline.Duration())
+            if (splineFlags.HasFlag(MoveSplineFlagEnum::Parabolic) && moveSpline.effect_start_time < moveSpline.Duration())
                 data << moveSpline.vertical_acceleration;   // added in 3.1
 
             data << moveSpline.timePassed();
@@ -114,7 +114,7 @@ namespace Movement
 
             data << float(1.f);                             // splineInfo.duration_mod_next; added in 3.1
             data << moveSpline.Duration();
-            if (splineFlags & (MoveSplineFlag::Parabolic | MoveSplineFlag::Animation))
+            if (splineFlags.HasFlag(MoveSplineFlagEnum::Parabolic | MoveSplineFlagEnum::Animation))
                 data << moveSpline.effect_start_time;       // added in 3.1
 
             data << float(1.f);                             // splineInfo.duration_mod; added in 3.1
