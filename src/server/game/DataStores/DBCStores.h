@@ -238,7 +238,7 @@ public:
     static uint32 GetLiquidFlags(uint32 liquidType);
     static uint32 GetDefaultMapLight(uint32 mapId);
     PvPDifficultyEntry const* GetBattlegroundBracketByLevel(uint32 mapid, uint32 level);
-    PvPDifficultyEntry const* GetBattlegroundBracketById(uint32 mapid, BattlegroundBracketId id);  
+    PvPDifficultyEntry const* GetBattlegroundBracketById(uint32 mapid, BattlegroundBracketId id);
     CharStartOutfitEntry const* GetCharStartOutfitEntry(uint8 race, uint8 class_, uint8 gender);
     CharSectionsEntry const* GetCharSectionEntry(uint8 race, CharSectionType genType, uint8 gender, uint8 type, uint8 color);
     uint32 GetPowerIndexByClass(Powers power, uint32 classId);
@@ -248,7 +248,10 @@ public:
     std::vector<SkillLineAbilityEntry const*> const* GetSkillLineAbilitiesBySkill(uint32 skillId) const;
     SkillRaceClassInfoEntry const* GetSkillRaceClassInfo(uint32 skill, uint8 race, uint8 class_);
     ResponseCodes ValidateName(std::wstring const& name, LocaleConstant locale);
-    EmotesTextSoundEntry const* FindTextSoundEmoteFor(uint32 emote, uint32 race, uint32 gender); 
+    EmotesTextSoundEntry const* FindTextSoundEmoteFor(uint32 emote, uint32 race, uint32 gender);
+    static float GetBasePowerRegen(Powers powerType, bool isInCombat, uint32 powerBarId = 0);
+    static bool IsPowerTypeAffectedByHaste(Powers powerType);
+    static float GetGtOCTRegenMPPerSpirit(uint8 classId, uint8 level);
 };
 
 #define sDBCManager DBCManager::Instance()

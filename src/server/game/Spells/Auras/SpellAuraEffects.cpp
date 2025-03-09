@@ -200,7 +200,7 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
     &AuraEffect::HandleAuraModIncreaseHealthPercent,              //133 SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT
     &AuraEffect::HandleAuraModRegenInterrupt,                     //134 SPELL_AURA_MOD_MANA_REGEN_INTERRUPT
     &AuraEffect::HandleModHealingDone,                            //135 SPELL_AURA_MOD_HEALING_DONE
-    &AuraEffect::HandleModHealingDonePercent,                     //136 SPELL_AURA_MOD_HEALING_DONE_PERCENT 
+    &AuraEffect::HandleModHealingDonePercent,                     //136 SPELL_AURA_MOD_HEALING_DONE_PERCENT
     &AuraEffect::HandleModTotalPercentStat,                       //137 SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE
     &AuraEffect::HandleModMeleeSpeedPct,                          //138 SPELL_AURA_MOD_MELEE_HASTE
     &AuraEffect::HandleForceReaction,                             //139 SPELL_AURA_FORCE_REACTION
@@ -2197,7 +2197,7 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
                         {
                             if (caster->HasAura(52648))         // Glyph of the Penguin
                                 model_id = 26452;
-                            else if (caster->HasAura(57927))	// Glyph of the Monkey
+                            else if (caster->HasAura(57927))    // Glyph of the Monkey
                                 model_id = 21362;
                         }
                     }
@@ -2316,7 +2316,7 @@ void AuraEffect::HandleFeignDeath(AuraApplication const* aurApp, uint8 mode, boo
                 }
             }
         }
-		
+
         for (auto& pair : target->GetThreatManager().GetThreatenedByMeList())
           pair.second->ScaleThreat(0.0f);
 
@@ -3344,7 +3344,7 @@ void AuraEffect::HandleAuraModSchoolImmunity(AuraApplication const* aurApp, uint
         target->GetThreatManager().EvaluateSuppressed();
     }
     else
-    { 
+    {
         // do not remove unit flag if there are more than this auraEffect of that kind on unit
         if (target->HasAuraType(GetAuraType()))
             return;
@@ -4108,12 +4108,6 @@ void AuraEffect::HandleModMeleeRangedSpeedPct(AuraApplication const* aurApp, uin
     target->ApplyAttackTimePercentMod(BASE_ATTACK, (float)GetAmount(), apply);
     target->ApplyAttackTimePercentMod(OFF_ATTACK, (float)GetAmount(), apply);
     target->ApplyAttackTimePercentMod(RANGED_ATTACK, (float)GetAmount(), apply);
-
-    if (GetAuraType() != SPELL_AURA_MOD_MELEE_RANGED_HASTE_2 && GetAuraType() != SPELL_AURA_MOD_RANGED_HASTE_2)
-    {
-        target->ApplyHasteRegenMod(BASE_ATTACK, (float)GetAmount(), apply);
-        target->ApplyHasteRegenMod(RANGED_ATTACK, (float)GetAmount(), apply);
-    }
 }
 
 void AuraEffect::HandleModCombatSpeedPct(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -4122,7 +4116,7 @@ void AuraEffect::HandleModCombatSpeedPct(AuraApplication const* aurApp, uint8 mo
         return;
 
     Unit* target = aurApp->GetTarget();
-    int32 spellGroupVal = target->GetHighestExclusiveSameEffectSpellGroupValue(this, SPELL_AURA_MELEE_SLOW);
+    int32 spellGroupVal = target->GetHighestExclusiveSameEffectSpellGroupValue(this, GetAuraType());
     if (abs(spellGroupVal) >= abs(GetAmount()))
         return;
 
@@ -4132,16 +4126,16 @@ void AuraEffect::HandleModCombatSpeedPct(AuraApplication const* aurApp, uint8 mo
         target->ApplyAttackTimePercentMod(BASE_ATTACK, float(spellGroupVal), !apply);
         target->ApplyAttackTimePercentMod(OFF_ATTACK, float(spellGroupVal), !apply);
         target->ApplyAttackTimePercentMod(RANGED_ATTACK, float(spellGroupVal), !apply);
+
+        target->ApplyHasteRegenMod(float(spellGroupVal), !apply);
     }
+
     target->ApplyCastTimePercentMod(float(GetAmount()), apply);
     target->ApplyAttackTimePercentMod(BASE_ATTACK, float(GetAmount()), apply);
     target->ApplyAttackTimePercentMod(OFF_ATTACK, float(GetAmount()), apply);
     target->ApplyAttackTimePercentMod(RANGED_ATTACK, float(GetAmount()), apply);
-    if (GetAuraType() != SPELL_AURA_MOD_MELEE_RANGED_HASTE_2 && GetAuraType() != SPELL_AURA_MOD_RANGED_HASTE_2)
-    {
-        target->ApplyHasteRegenMod(BASE_ATTACK, (float)GetAmount(), apply);
-        target->ApplyHasteRegenMod(RANGED_ATTACK, (float)GetAmount(), apply);
-    }
+
+    target->ApplyHasteRegenMod((float)GetAmount(), apply);
 }
 
 void AuraEffect::HandleModAttackSpeed(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -4152,8 +4146,6 @@ void AuraEffect::HandleModAttackSpeed(AuraApplication const* aurApp, uint8 mode,
     Unit* target = aurApp->GetTarget();
 
     target->ApplyAttackTimePercentMod(BASE_ATTACK, float(GetAmount()), apply);
-    if (GetAuraType() != SPELL_AURA_MOD_MELEE_RANGED_HASTE_2 && GetAuraType() != SPELL_AURA_MOD_RANGED_HASTE_2)
-        target->ApplyHasteRegenMod(BASE_ATTACK, (float)GetAmount(), apply);
     target->UpdateDamagePhysical(BASE_ATTACK);
 }
 
@@ -4163,35 +4155,26 @@ void AuraEffect::HandleModMeleeSpeedPct(AuraApplication const* aurApp, uint8 mod
         return;
 
     Unit* target = aurApp->GetTarget();
-    bool applyRegenPct = GetAuraType() != SPELL_AURA_MOD_MELEE_HASTE_3 && GetAuraType() != SPELL_AURA_MOD_RANGED_HASTE_2;
-
     int32 spellGroupVal = target->GetHighestExclusiveSameEffectSpellGroupValue(this, GetAuraType());
-    if (abs(spellGroupVal) >= abs(GetAmount()))
+    bool applyHasteRegenMod = GetAuraType() == SPELL_AURA_MOD_MELEE_HASTE;
+
+    if (std::abs(spellGroupVal) >= std::abs(GetAmount()))
         return;
 
     if (spellGroupVal)
     {
-        if (target->GetTypeId() == TYPEID_PLAYER && applyRegenPct && GetBase()->HasEffectType(SPELL_AURA_MOD_MELEE_HASTE_3))
-            target->ApplyHasteRegenMod(BASE_ATTACK, (float)GetAmount(), !apply);
-        else
-        {
-            target->ApplyAttackTimePercentMod(BASE_ATTACK, (float)GetAmount(), !apply);
-            target->ApplyAttackTimePercentMod(OFF_ATTACK, (float)GetAmount(), !apply);
-            if (applyRegenPct)
-                target->ApplyHasteRegenMod(BASE_ATTACK, (float)GetAmount(), !apply);
-        }
+        target->ApplyAttackTimePercentMod(BASE_ATTACK, float(spellGroupVal), !apply);
+        target->ApplyAttackTimePercentMod(OFF_ATTACK, float(spellGroupVal), !apply);
+
+        if (applyHasteRegenMod)
+            target->ApplyHasteRegenMod(float(spellGroupVal), !apply);
     }
 
-    // Auras that only increase regeneration
-    if (target->GetTypeId() == TYPEID_PLAYER && applyRegenPct && GetBase()->HasEffectType(SPELL_AURA_MOD_MELEE_HASTE_3))
-        target->ApplyHasteRegenMod(BASE_ATTACK, (float)GetAmount(), apply);
-    else
-    {
-        target->ApplyAttackTimePercentMod(BASE_ATTACK, (float)GetAmount(), apply);
-        target->ApplyAttackTimePercentMod(OFF_ATTACK, (float)GetAmount(), apply);
-        if (applyRegenPct)
-            target->ApplyHasteRegenMod(BASE_ATTACK, (float)GetAmount(), apply);
-    }
+    target->ApplyAttackTimePercentMod(BASE_ATTACK, float(GetAmount()), apply);
+    target->ApplyAttackTimePercentMod(OFF_ATTACK, float(GetAmount()), apply);
+
+    if (applyHasteRegenMod)
+        target->ApplyHasteRegenMod(float(GetAmount()), apply);
 }
 
 void AuraEffect::HandleAuraModRangedHaste(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -4201,19 +4184,22 @@ void AuraEffect::HandleAuraModRangedHaste(AuraApplication const* aurApp, uint8 m
 
     Unit* target = aurApp->GetTarget();
     int32 spellGroupVal = target->GetHighestExclusiveSameEffectSpellGroupValue(this, GetAuraType());
-    if (abs(spellGroupVal) >= abs(GetAmount()))
+    bool applyHasteRegenMod = GetAuraType() == SPELL_AURA_MOD_RANGED_HASTE;
+
+    if (std::abs(spellGroupVal) >= std::abs(GetAmount()))
         return;
 
     if (spellGroupVal)
     {
-        target->ApplyAttackTimePercentMod(RANGED_ATTACK, (float)GetAmount(), !apply);
-        if (GetAuraType() != SPELL_AURA_MOD_MELEE_RANGED_HASTE_2 && GetAuraType() != SPELL_AURA_MOD_RANGED_HASTE_2)
-            target->ApplyHasteRegenMod(RANGED_ATTACK, (float)GetAmount(), !apply);
-    }
+        target->ApplyAttackTimePercentMod(RANGED_ATTACK, float(spellGroupVal), !apply);
 
-    target->ApplyAttackTimePercentMod(RANGED_ATTACK, (float)GetAmount(), apply);
-    if (GetAuraType() != SPELL_AURA_MOD_MELEE_RANGED_HASTE_2 && GetAuraType() != SPELL_AURA_MOD_RANGED_HASTE_2)
-        target->ApplyHasteRegenMod(RANGED_ATTACK, (float)GetAmount(), apply);
+        if (applyHasteRegenMod)
+            target->ApplyHasteRegenMod(float(spellGroupVal), !apply);
+    }
+    target->ApplyAttackTimePercentMod(RANGED_ATTACK, float(GetAmount()), apply);
+
+    if (applyHasteRegenMod)
+        target->ApplyHasteRegenMod(float(GetAmount()), apply);
 }
 
 /********************************/

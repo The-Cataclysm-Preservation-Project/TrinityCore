@@ -876,8 +876,6 @@ class TC_GAME_API Unit : public WorldObject
         void ClearUnitState(uint32 f) { m_state &= ~f; }
         bool CanFreeMove() const;
 
-        virtual void UpdatePowerRegeneration(Powers /*powerType*/) { }
-
         uint32 HasUnitTypeMask(uint32 mask) const { return mask & m_unitTypeMask; }
         void AddUnitTypeMask(uint32 mask) { m_unitTypeMask |= mask; }
         bool IsSummon() const   { return (m_unitTypeMask & UNIT_MASK_SUMMON) != 0; }
@@ -938,12 +936,13 @@ class TC_GAME_API Unit : public WorldObject
         void SetMaxPower(Powers power, int32 val);
         void SetPowerBarID(uint32 id) { _powerBarId = id; }
         void Regenerate(Powers powerType, uint32 diff);
+        void UpdatePowerRegeneration(Powers powerType);
+        void RegisterPowerTypes();
 
         inline void SetFullPower(Powers power) { SetPower(power, GetMaxPower(power)); }
 
         // returns the change in power
         int32 ModifyPower(Powers power, int32 val, bool withPowerUpdate = true);
-        static float GetBasePowerRegen(uint32 powerBarId, Powers powerType, bool isInCombat);
         float GetPowerRegen(Powers powerType, bool isInCombat) const;
 
         virtual void RegenerateHealth() { }
@@ -951,7 +950,7 @@ class TC_GAME_API Unit : public WorldObject
         uint32 GetAttackTime(WeaponAttackType att) const;
         void SetAttackTime(WeaponAttackType att, uint32 val) { SetFloatValue(UNIT_FIELD_BASEATTACKTIME + AsUnderlyingType(att), val * m_modAttackSpeedPct[att]); }
         void ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply);
-        void ApplyHasteRegenMod(WeaponAttackType att, float val, bool apply);
+        void ApplyHasteRegenMod(float val, bool apply);
         void ApplyCastTimePercentMod(float val, bool apply, bool withCastHaste = true, bool withCastSpeed = true);
 
         SheathState GetSheath() const { return SheathState(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHEATH_STATE)); }
@@ -1846,10 +1845,17 @@ class TC_GAME_API Unit : public WorldObject
 
         uint32 m_unitTypeMask;
         LiquidTypeEntry const* _lastLiquid;
+
         uint32 _powerBarId;
-        std::array<float, MAX_POWERS_PER_CLASS> _powerFraction;
         int32 _powerUpdateTimer;
         int32 _healthRegenerationTimer;
+        std::array<float, MAX_POWERS_PER_CLASS> _powerFraction;
+        std::array<Powers, MAX_POWERS_PER_CLASS> _usedPowerTypes;
+    public:
+        // Returns an array that contains information about which power type is used at which power index. MAX_POWERS implies that a power at given index is not used.
+        std::array<Powers, MAX_POWERS_PER_CLASS> const& GetUsedPowerTypes() const { return _usedPowerTypes; }
+
+    protected:
 
         bool IsAlwaysVisibleFor(WorldObject const* seer) const override;
         bool IsAlwaysDetectableFor(WorldObject const* seer) const override;

@@ -119,6 +119,140 @@ int32 Unit::GetCreatePowerValue(Powers power) const
     return 0;
 }
 
+void Unit::UpdatePowerRegeneration(Powers powerType)
+{
+    uint32 powerIndex = GetPowerIndex(powerType);
+    if ((powerIndex == MAX_POWERS || powerIndex >= MAX_POWERS_PER_CLASS) && powerType != POWER_RUNE)
+        return;
+
+    // Runes are not officially considered a power type for the class so we gotta bypass the rules this way
+    if (powerType == POWER_RUNE && (!IsPlayer() || getClass() != CLASS_DEATH_KNIGHT))
+        return;
+
+    float powerRegenMod = GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, powerType) / 5.f;
+    float powerRegenModPct = GetTotalAuraMultiplierByMiscValue(SPELL_AURA_MOD_POWER_REGEN_PERCENT, powerType);
+
+    switch (powerType)
+    {
+        case POWER_MANA:
+        {
+            // Get base of Mana Pool in sBaseMPGameTable
+            uint32 basemana = 0, basehp = 0;
+            if (IsPlayer())
+                sObjectMgr->GetPlayerClassLevelInfo(getClass(), getLevel(), basemana, basehp);
+            else
+                basemana = GetCreateMana(); // this should also get replaced by the base mana game table in the future.
+
+            // BaseRegen = 5% of Base Mana per five seconds
+            float baseRegen = basemana / 100.f;
+            // SPELL_AURA_MOD_POWER_REGEN flat bonus
+            baseRegen += powerRegenMod;
+
+            // SpiritRegen = Spirit * GTRegenMpPerSpt * Sqrt(INT) * 5
+            float spiritRegen = GetStat(STAT_SPIRIT) * DBCManager::GetGtOCTRegenMPPerSpirit(getClass(), getLevel());
+            if (GetStat(STAT_INTELLECT) > 0.0f)
+                spiritRegen *= std::sqrt(GetStat(STAT_INTELLECT));
+
+            // SPELL_AURA_MOD_POWER_REGEN_PERCENT pct bonus
+            baseRegen *= powerRegenModPct;
+            spiritRegen *= powerRegenModPct;
+
+            // SPELL_AURA_MOD_MANA_REGEN_INTERRUPT allow some of the spirit regeneration to bypass the combat restriction
+            int32 modManaRegenInterrupt = GetTotalAuraModifier(SPELL_AURA_MOD_MANA_REGEN_INTERRUPT);
+
+            SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, baseRegen + CalculatePct(spiritRegen, modManaRegenInterrupt));
+            SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + powerIndex, baseRegen + spiritRegen);
+            break;
+        }
+        case POWER_RUNE:
+        {
+            float baseRegen = DBCManager::GetBasePowerRegen(powerType, false, 0);
+
+            // Hase Regen
+            if (DBCManager::IsPowerTypeAffectedByHaste(powerType) && IsPlayer())
+            {
+                float hasteRegen = GetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN);
+                if (G3D::fuzzyNe(hasteRegen, 0.0f))
+                    baseRegen /= hasteRegen;
+            }
+
+            baseRegen += powerRegenMod;
+
+            if (IsPlayer())
+                for (uint8 i = 0; i < NUM_RUNE_TYPES; ++i)
+                    SetFloatValue(PLAYER_RUNE_REGEN_1 + i, baseRegen);
+            break;
+        }
+        default:
+        {
+            // Base Regen
+            float peaceRegen = DBCManager::GetBasePowerRegen(powerType, false, 0);
+            float combatRegen = DBCManager::GetBasePowerRegen(powerType, true, 0);
+
+            // Hase Regen
+            if (DBCManager::IsPowerTypeAffectedByHaste(powerType) && IsPlayer())
+            {
+                float hasteRegen = GetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN);
+                if (G3D::fuzzyNe(hasteRegen, 0.0f))
+                {
+                    peaceRegen /= hasteRegen;
+                    combatRegen /= hasteRegen;
+                }
+            }
+
+            peaceRegen *= powerRegenModPct;
+            combatRegen *= powerRegenModPct;
+
+            // Subtract the base value to get the proper offset
+            peaceRegen -= DBCManager::GetBasePowerRegen(powerType, false, 0);
+            combatRegen -= DBCManager::GetBasePowerRegen(powerType, true, 0);
+
+            peaceRegen += powerRegenMod;
+            combatRegen += powerRegenMod;
+
+            SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, combatRegen);
+            SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + powerIndex, peaceRegen);
+        }
+
+        /*
+        case POWER_FOCUS:
+        case POWER_ENERGY:
+        {
+            // Energy and Focus regeneration is always consistent in and out of combat
+            float baseRegen = DBCManager::GetBasePowerRegen(powerType, false, 0);
+            SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, baseRegen * powerRegenModPct - baseRegen + powerRegenMod);
+            SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + powerIndex, baseRegen * powerRegenModPct - baseRegen + powerRegenMod);
+            break;
+        }
+        case POWER_RUNIC_POWER:
+        case POWER_RAGE:
+            // Butchery and Anger Management
+            SetStatFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, powerRegenMod);
+            break;
+        case POWER_RUNE:
+        {
+            // Formular: base cooldown / (1 - haste)
+            float regeneration = 0.1f;
+            float haste = GetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN);
+            if (haste != 0.f)
+                regeneration /= haste;
+
+            for (int8 i = 0; i < NUM_RUNE_TYPES; i++)
+            {
+                float mod = 0.f;
+                for (AuraEffect const* effect : GetAuraEffectsByType(SPELL_AURA_MOD_POWER_REGEN))
+                    if (effect->GetMiscValue() == int32(powerType) && effect->GetMiscValueB() == i)
+                        mod += effect->GetAmount();
+
+                SetFloatValue(PLAYER_RUNE_REGEN_1 + i, regeneration + mod);
+            }
+            break;
+        }
+        */
+    }
+}
+
+
 /*#######################################
 ########                         ########
 ########   PLAYERS STAT SYSTEM   ########
@@ -817,76 +951,6 @@ void Player::ApplyHealthRegenBonus(int32 amount, bool apply)
     _ModifyUInt32(apply, m_baseHealthRegen, amount);
 }
 
-void Player::UpdatePowerRegeneration(Powers powerType)
-{
-    uint32 powerIndex = GetPowerIndex(powerType);
-    if (powerIndex == MAX_POWERS && powerType != POWER_RUNE)
-        return;
-
-    float powerRegenMod = GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, powerType) / 5.f;
-    float powerRegenModPct = GetTotalAuraMultiplierByMiscValue(SPELL_AURA_MOD_POWER_REGEN_PERCENT, powerType);
-
-    switch (powerType)
-    {
-        case POWER_MANA:
-        {
-            // Mana regen from spirit
-            float spirit_regen = OCTRegenMPPerSpirit();
-            // Apply PCT bonus from SPELL_AURA_MOD_POWER_REGEN_PERCENT aura on spirit base regen
-            spirit_regen *= powerRegenModPct;
-
-            // SpiritRegen(SPI, INT, LEVEL) = (0.001 + (SPI x sqrt(INT) x BASE_REGEN[LEVEL])) x 5
-            if (GetStat(STAT_INTELLECT) > 0.0f)
-                spirit_regen *= std::sqrt(GetStat(STAT_INTELLECT));
-
-            // CombatRegen = 5% of Base Mana per five seconds
-            float base_regen = CalculatePct(GetCreateMana(), 1) + powerRegenMod;
-
-            // Set regen rate in cast state apply only on spirit based regen
-            int32 modManaRegenInterrupt = GetTotalAuraModifier(SPELL_AURA_MOD_MANA_REGEN_INTERRUPT);
-
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, base_regen + CalculatePct(spirit_regen, modManaRegenInterrupt));
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + powerIndex, spirit_regen + base_regen);
-            break;
-        }
-        case POWER_FOCUS:
-        case POWER_ENERGY:
-        {
-            // Energy and Focus regeneration is always consistent in and out of combat
-            float baseRegen = Unit::GetBasePowerRegen(0, powerType, false);
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, baseRegen * powerRegenModPct - baseRegen + powerRegenMod);
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + powerIndex, baseRegen * powerRegenModPct - baseRegen + powerRegenMod);
-            break;
-        }
-        case POWER_RUNIC_POWER:
-        case POWER_RAGE:
-            // Butchery and Anger Management
-            SetStatFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, powerRegenMod);
-            break;
-        case POWER_RUNE:
-        {
-            // Formular: base cooldown / (1 - haste)
-            float regeneration = 0.1f;
-            float haste = GetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN);
-            if (haste != 0.f)
-                regeneration /= haste;
-
-            for (int8 i = 0; i < NUM_RUNE_TYPES; i++)
-            {
-                float mod = 0.f;
-                for (AuraEffect const* effect : GetAuraEffectsByType(SPELL_AURA_MOD_POWER_REGEN))
-                    if (effect->GetMiscValue() == int32(powerType) && effect->GetMiscValueB() == i)
-                        mod += effect->GetAmount();
-
-                SetFloatValue(PLAYER_RUNE_REGEN_1 + i, regeneration + mod);
-            }
-            break;
-        }
-        default:
-            break;
-    }
-}
-
 void Player::_ApplyAllStatBonuses()
 {
     SetCanModifyStats(false);
@@ -981,37 +1045,6 @@ void Creature::UpdateMaxPower(Powers power)
     value *= GetPctModifierValue(unitMod, TOTAL_PCT);
 
     SetMaxPower(power, uint32(std::lroundf(value)));
-}
-
-void Creature::UpdatePowerRegeneration(Powers powerType)
-{
-    float powerRegenMod = GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, powerType) / 5.f;
-    float powerRegenModPct = GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN_PERCENT, powerType);
-
-    switch (powerType)
-    {
-        case POWER_MANA:
-            // Regeneration for controlled units
-            if (!GetCharmerGUID().IsEmpty() || !GetOwnerGUID().IsEmpty())
-            {
-                float spiritRegen = (GetStat(STAT_SPIRIT) / 5.f + 17.f);
-                SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, spiritRegen + powerRegenMod);
-                SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, powerRegenMod);
-            }
-            else // Default creature regeneration value.
-                SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, 8.714059f + powerRegenMod); // Most common value in sniffs. Todo: research
-            break;
-        case POWER_ENERGY:
-        case POWER_FOCUS:
-        {
-            float regenerationRate = CalculatePct<float>(10, powerRegenModPct) + powerRegenMod;
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, regenerationRate);
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, regenerationRate);
-            break;
-        }
-        default:
-            break;
-    }
 }
 
 void Creature::UpdateAttackPowerAndDamage(bool ranged)

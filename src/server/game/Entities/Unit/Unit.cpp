@@ -368,10 +368,11 @@ Unit::Unit(bool isWorldObject) :
 
     _powerBarId = 0;
 
-    _powerFraction.fill(0.0f);
-
     _powerUpdateTimer = GetPowerUpdateInterval();
     _healthRegenerationTimer = UNIT_HEALTH_REGENERATION_INTERVAL;
+
+    _powerFraction.fill(0.0f);
+    _usedPowerTypes.fill(MAX_POWERS);
 
     _oldFactionId = 0;
     _isWalkingBeforeCharm = false;
@@ -5205,12 +5206,19 @@ void Unit::SendAttackStateUpdate(uint32 HitInfo, Unit* target, uint8 /*SwingType
     SendAttackStateUpdate(&dmgInfo);
 }
 
-void Unit::SetPowerType(Powers new_powertype)
+void Unit::SetPowerType(Powers power)
 {
-    if (GetPowerType() == new_powertype)
+    if (GetPowerType() == power)
         return;
 
-    SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_POWER_TYPE, new_powertype);
+    SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_POWER_TYPE, power);
+
+    // Creatures can swap out their power type at index 0 so we do keep track of the new power type here
+    if (IsCreature())
+    {
+        _usedPowerTypes[GetPowerIndex(power)] = power;
+        UpdatePowerRegeneration(power);
+    }
 
     if (GetTypeId() == TYPEID_PLAYER)
     {
@@ -5228,10 +5236,10 @@ void Unit::SetPowerType(Powers new_powertype)
     }
 
     // Update max power
-    UpdateMaxPower(new_powertype);
+    UpdateMaxPower(power);
 
     // Update current power
-    switch (new_powertype)
+    switch (power)
     {
         case POWER_MANA: // Keep the same (druid form switching...)
         case POWER_ENERGY:
@@ -5240,7 +5248,7 @@ void Unit::SetPowerType(Powers new_powertype)
             SetPower(POWER_RAGE, 0);
             break;
         case POWER_FOCUS: // Make it full
-            SetFullPower(new_powertype);
+            SetFullPower(power);
             break;
         default:
             break;
@@ -8218,39 +8226,12 @@ int32 Unit::ModifyPower(Powers power, int32 dVal, bool withPowerUpdate /*= true*
     return gain;
 }
 
-/*static */ float Unit::GetBasePowerRegen(uint32 powerBarId, Powers powerType, bool isInCombat)
-{
-    if (powerType != POWER_ALTERNATE_POWER)
-    {
-        switch (powerType)
-        {
-            case POWER_RAGE:        return isInCombat ? 0.f : -12.5f;
-            case POWER_FOCUS:       return 5.f;
-            case POWER_RUNIC_POWER: return isInCombat ? 0.f : -12.5f;
-            case POWER_ENERGY:      return 10.f;
-            case POWER_HOLY_POWER:  return isInCombat ? 0.f : -0.1f;
-            default:
-                return 0.f;
-        }
-    }
-    else
-    {
-        UnitPowerBarEntry const* powerBar = sUnitPowerBarStore.LookupEntry(powerBarId);
-        if (!powerBar)
-            return 0.f;
-
-        return isInCombat ? powerBar->RegenerationCombat : powerBar->RegenerationPeace;
-    }
-
-    return 0.f;
-}
-
 // Based on client function
 float Unit::GetPowerRegen(Powers powerType, bool isInCombat) const
 {
     uint32 powerSlot = MAX_POWERS;
     float totalRegeneration = 0.f;
-    double result = GetBasePowerRegen(_powerBarId, powerType, isInCombat); // base power regen
+    double result = DBCManager::GetBasePowerRegen(powerType, isInCombat, _powerBarId);
     float combatRegeneration = result;
 
     powerSlot = GetPowerIndex(powerType);
@@ -8263,10 +8244,10 @@ float Unit::GetPowerRegen(Powers powerType, bool isInCombat) const
     else
         totalRegeneration = result;
 
-    if (IsPlayer() && (powerType == POWER_ENERGY || powerType == POWER_FOCUS))
+    if (IsPlayer() && DBCManager::IsPowerTypeAffectedByHaste(powerType))
     {
         float hasteRegen = GetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN);
-        if (hasteRegen != 0.f)
+        if (G3D::fuzzyNe(hasteRegen, 0.f))
             result = totalRegeneration / hasteRegen;
     }
 
@@ -9480,6 +9461,18 @@ void Unit::Regenerate(Powers powerType, uint32 diff)
         UpdateUInt32Value(UNIT_FIELD_POWER1 + powerIndex, curValue);
 }
 
+void Unit::RegisterPowerTypes()
+{
+    for (uint8 i = POWER_MANA; i < MAX_POWERS; ++i)
+    {
+        uint32 powerIndex = GetPowerIndex(Powers(i));
+        if (powerIndex == MAX_POWERS || powerIndex == MAX_POWERS_PER_CLASS)
+            continue;
+
+        _usedPowerTypes[powerIndex] = static_cast<Powers>(i);
+    }
+}
+
 void Unit::AIUpdateTick(uint32 diff)
 {
     if (UnitAI* ai = GetAI())
@@ -10652,32 +10645,31 @@ void Unit::ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply
     m_attackTimer[att] = uint32(GetAttackTime(att) * m_modAttackSpeedPct[att] * remainingTimePct);
 }
 
-void Unit::ApplyHasteRegenMod(WeaponAttackType att, float val, bool apply)
+void Unit::ApplyHasteRegenMod(float val, bool apply)
 {
-    if (GetTypeId() != TYPEID_PLAYER)
+    if (!IsPlayer())
         return;
 
     float amount = GetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN);
 
     if (val > 0.f)
-    {
-        if (att == BASE_ATTACK && getClass() != CLASS_HUNTER)
-            ApplyPercentModFloatVar(amount, val, !apply);
-        else if (att == RANGED_ATTACK && getClass() == CLASS_HUNTER)
-            ApplyPercentModFloatVar(amount, val, !apply);
-    }
+        ApplyPercentModFloatVar(amount, val, !apply);
     else
-    {
-        if (att == BASE_ATTACK && getClass() != CLASS_HUNTER)
-            ApplyPercentModFloatVar(amount, -val, apply);
-        else if (att == RANGED_ATTACK && getClass() == CLASS_HUNTER)
-            ApplyPercentModFloatVar(amount, -val, apply);
-    }
+        ApplyPercentModFloatVar(amount, -val, apply);
 
     SetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN, amount);
 
-    if (getClass() == CLASS_DEATH_KNIGHT)
-        ToPlayer()->UpdatePowerRegeneration(POWER_RUNE);
+    for (Powers powerType : GetUsedPowerTypes())
+    {
+        if (powerType == MAX_POWERS || GetPowerIndex(powerType) == MAX_POWERS)
+            continue;
+
+        if (DBCManager::IsPowerTypeAffectedByHaste(powerType))
+            UpdatePowerRegeneration(powerType);
+    }
+
+    if (IsPlayer() && getClass() == CLASS_DEATH_KNIGHT)
+        UpdatePowerRegeneration(POWER_RUNE);
 }
 
 void Unit::ApplyCastTimePercentMod(float val, bool apply, bool withCastHaste /*= true*/, bool withCastSpeed /*= true*/)

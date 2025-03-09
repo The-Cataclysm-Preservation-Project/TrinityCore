@@ -1332,6 +1332,59 @@ EmotesTextSoundEntry const* DBCManager::FindTextSoundEmoteFor(uint32 emote, uint
     return itr != sEmotesTextSoundMap.end() ? itr->second : nullptr;
 }
 
+/*static*/ float DBCManager::GetBasePowerRegen(Powers powerType, bool isInCombat, uint32 powerBarId)
+{
+    if (powerType != POWER_ALTERNATE_POWER)
+    {
+        switch (powerType)
+        {
+            case POWER_RAGE:        return isInCombat ? 0.f : -12.5f;
+            case POWER_FOCUS:       return 5.f;
+            case POWER_RUNIC_POWER: return isInCombat ? 0.f : -12.5f;
+            case POWER_ENERGY:      return 10.f;
+            case POWER_HOLY_POWER:  return isInCombat ? 0.f : -0.1f;
+            case POWER_RUNE:        return 0.1f;
+            default:
+                return 0.f;
+        }
+    }
+    else
+    {
+        UnitPowerBarEntry const* powerBar = sUnitPowerBarStore.LookupEntry(powerBarId);
+        if (!powerBar)
+            return 0.f;
+
+        return isInCombat ? powerBar->RegenerationCombat : powerBar->RegenerationPeace;
+    }
+
+    return 0.f;
+}
+
+/*static*/ bool DBCManager::IsPowerTypeAffectedByHaste(Powers powerType)
+{
+    switch (powerType)
+    {
+        case POWER_ENERGY:
+        case POWER_FOCUS:
+        case POWER_RUNE:
+            return true;
+        default:
+            return false;
+    }
+
+    return false;
+}
+
+/*static*/ float DBCManager::GetGtOCTRegenMPPerSpirit(uint8 classId, uint8 level)
+{
+    level = std::min<uint8>(level, GT_MAX_LEVEL);
+    GtRegenMPPerSptEntry  const* gt = sGtRegenMPPerSptStore.LookupEntry((classId - 1) * GT_MAX_LEVEL + level - 1);
+    if (gt == nullptr)
+        return 0.0f;
+
+    return gt->ratio;
+}
+
 bool DBCManager::IsInArea(uint32 objectAreaId, uint32 areaId)
 {
     do

@@ -451,6 +451,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_CLASS, createInfo->Class);
     SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_GENDER, createInfo->Gender);
     SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_POWER_TYPE, powertype);
+    RegisterPowerTypes();
     InitDisplayIds();
     if (sWorld->getIntConfig(CONFIG_GAME_TYPE) == REALM_TYPE_PVP || sWorld->getIntConfig(CONFIG_GAME_TYPE) == REALM_TYPE_RPPVP)
     {
@@ -4929,25 +4930,6 @@ float Player::GetExpertiseDodgeOrParryReduction(WeaponAttackType attType) const
     return 0.0f;
 }
 
-float Player::OCTRegenMPPerSpirit() const
-{
-    uint8 level = getLevel();
-    uint32 pclass = getClass();
-
-    if (level > GT_MAX_LEVEL)
-        level = GT_MAX_LEVEL;
-
-//    GtOCTRegenMPEntry     const* baseRatio = sGtOCTRegenMPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
-    GtRegenMPPerSptEntry  const* moreRatio = sGtRegenMPPerSptStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
-    if (moreRatio == nullptr)
-        return 0.0f;
-
-    // Formula get from PaperDollFrame script
-    float spirit    = GetStat(STAT_SPIRIT);
-    float regen     = spirit * moreRatio->ratio;
-    return regen;
-}
-
 void Player::ApplyRatingMod(CombatRating combatRating, int32 value, bool apply)
 {
     // explicit affected values
@@ -4959,16 +4941,16 @@ void Player::ApplyRatingMod(CombatRating combatRating, int32 value, bool apply)
             ApplyAttackTimePercentMod(BASE_ATTACK, (m_baseRatingValue[combatRating] + (apply ? value : -value)) * GetRatingMultiplier(combatRating), true);
             ApplyAttackTimePercentMod(OFF_ATTACK, m_baseRatingValue[combatRating] * GetRatingMultiplier(combatRating), false);
             ApplyAttackTimePercentMod(OFF_ATTACK, (m_baseRatingValue[combatRating] + (apply ? value : -value)) * GetRatingMultiplier(combatRating), true);
-            ApplyHasteRegenMod(BASE_ATTACK, m_baseRatingValue[combatRating] * GetRatingMultiplier(combatRating), false);
-            ApplyHasteRegenMod(BASE_ATTACK, (m_baseRatingValue[combatRating] + (apply ? value : -value)) * GetRatingMultiplier(combatRating), true);
+
+            // Haste Rating affects all three haste types so we only have to apply it once here
+            ApplyHasteRegenMod(m_baseRatingValue[combatRating] * GetRatingMultiplier(combatRating), false);
+            ApplyHasteRegenMod((m_baseRatingValue[combatRating] + (apply ? value : -value)) * GetRatingMultiplier(combatRating), true);
             break;
         }
         case CR_HASTE_RANGED:
         {
             ApplyAttackTimePercentMod(RANGED_ATTACK, m_baseRatingValue[combatRating] * GetRatingMultiplier(combatRating), false);
             ApplyAttackTimePercentMod(RANGED_ATTACK, (m_baseRatingValue[combatRating] + (apply ? value : -value)) * GetRatingMultiplier(combatRating), true);
-            ApplyHasteRegenMod(RANGED_ATTACK, m_baseRatingValue[combatRating] * GetRatingMultiplier(combatRating), false);
-            ApplyHasteRegenMod(RANGED_ATTACK, (m_baseRatingValue[combatRating] + (apply ? value : -value)) * GetRatingMultiplier(combatRating), true);
             break;
         }
         case CR_HASTE_SPELL:
@@ -16973,6 +16955,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     //mails are loaded only when needed ;-) - when player in game click on mailbox.
     //_LoadMail();
 
+    RegisterPowerTypes();
     UpdateDisplayPower();
     _LoadTalents(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_TALENTS));
     _LoadSpells(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_SPELLS));

@@ -1793,7 +1793,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         float GetMeleeCritFromAgility() const;
         void GetDodgeFromAgility(float &diminishing, float &nondiminishing) const;
         float GetSpellCritFromIntellect() const;
-        float OCTRegenMPPerSpirit() const;
         float GetRatingMultiplier(CombatRating cr) const;
         float GetRatingBonusValue(CombatRating cr) const;
 
@@ -1819,7 +1818,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void UpdateExpertise(WeaponAttackType attType);
         void ApplyManaRegenBonus(int32 amount, bool apply);
         void ApplyHealthRegenBonus(int32 amount, bool apply);
-        void UpdatePowerRegeneration(Powers powerType) override;
         uint32 GetRuneTimer(uint8 index) const { return m_runeGraceCooldown[index]; }
         void SetRuneTimer(uint8 index, uint32 timer) { m_runeGraceCooldown[index] = timer; }
         uint32 GetLastRuneGraceTimer(uint8 index) const { return m_lastRuneGraceTimers[index]; }

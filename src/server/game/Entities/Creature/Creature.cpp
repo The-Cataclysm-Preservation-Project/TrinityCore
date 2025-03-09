@@ -1428,6 +1428,7 @@ void Creature::UpdateLevelDependantStats()
     Powers powerType = CalculateDisplayPowerType();
     SetCreateMana(stats->BaseMana);
     SetStatPctModifier(UnitMods(UNIT_MOD_POWER_START + AsUnderlyingType(powerType)), BASE_PCT, cInfo->ModMana * cInfo->ModManaExtra);
+    RegisterPowerTypes();
     SetPowerType(powerType);
 
     switch (getClass())
