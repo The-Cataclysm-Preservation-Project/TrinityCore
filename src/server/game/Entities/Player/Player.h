@@ -410,7 +410,7 @@ enum PlayerFlags
     PLAYER_FLAGS_UNK21                              = 0x00200000,
     PLAYER_FLAGS_COMMENTATOR2                       = 0x00400000,
     PLAYER_FLAGS_DISABLE_CASTING_EXCEPT_ABILITIES   = 0x00800000,       // disables casting any ability except for the ones specified in the aura effect's SpellClassMask
-    PLAYER_FLAGS_DISABLE_ATTACKING_EXCEPT_ABILITIES = 0x01000000,       // disables all attacks including ability casts except for the ones specified in the aura effect's SpellClassMask 
+    PLAYER_FLAGS_DISABLE_ATTACKING_EXCEPT_ABILITIES = 0x01000000,       // disables all attacks including ability casts except for the ones specified in the aura effect's SpellClassMask
     PLAYER_FLAGS_NO_XP_GAIN                         = 0x02000000,
     PLAYER_FLAGS_UNK26                              = 0x04000000,
     PLAYER_FLAGS_AUTO_DECLINE_GUILD                 = 0x08000000,       // Automatically declines guild invites
@@ -1044,6 +1044,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         void Update(uint32 time) override;
 
+        void Heartbeat() override;
+
         bool IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, WorldObject const* caster, bool requireImmunityPurgesEffectAttribute = false) const override;
 
         bool IsInAreaTriggerRadius(AreaTriggerEntry const* trigger) const;
@@ -1118,11 +1120,12 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SetRestBonus(float rest_bonus_new);
 
         bool HasRestFlag(RestFlag restFlag) const { return (_restFlagMask & restFlag) != 0; }
-        void SetRestFlag(RestFlag restFlag, uint32 triggerId = 0);
+        void SetRestFlag(RestFlag restFlag);
         void RemoveRestFlag(RestFlag restFlag);
 
         uint32 GetXPRestBonus(uint32 xp);
         uint32 GetInnTriggerId() const { return inn_triggerId; }
+        void SetInnTriggerID(uint32 id) { inn_triggerId = id; }
 
         Pet* GetPet() const;
         Pet* SummonPet(uint32 entry, float x, float y, float z, float ang, PetType petType, uint32 despwtime);
@@ -1924,8 +1927,13 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SetSemaphoreTeleportFar(bool semphsetting) { mSemaphoreTeleport_Far = semphsetting; }
         void ProcessDelayedOperations();
 
-        void CheckAreaExploreAndOutdoor(void);
+        void CheckAreaExplore();
         void SetAreaExplored(uint32 areaId);
+
+        // These methods are used to periodically update certain area and aura based mechanics used in Heartbeat and Movement
+        void UpdateZoneAndAreaId();
+        void UpdateIndoorsOutdoorsAuras();
+        void UpdateTavernRestingState();
 
         static uint32 TeamForRace(uint8 race);
         uint32 GetTeam() const { return m_team; }
@@ -2390,7 +2398,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
     protected:
         // Gamemaster whisper whitelist
         GuidList WhisperList;
-        uint32 m_foodEmoteTimerCount;
         uint32 m_contestedPvPTimer;
 
         /*********************************************************/
@@ -2615,7 +2622,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32 m_weaponChangeTimer;
 
         uint32 m_zoneUpdateId;
-        uint32 m_zoneUpdateTimer;
         uint32 m_areaUpdateId;
 
         uint32 m_deathTimer;
@@ -2758,7 +2764,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         std::vector<PlayerPetData*> PlayerPetDataStore;
 
         TimeTrackerSmall m_petScalingSynchTimer;
-        TimeTrackerSmall m_groupUpdateTimer;
 };
 
 TC_GAME_API void AddItemsSetItem(Player* player, Item* item);

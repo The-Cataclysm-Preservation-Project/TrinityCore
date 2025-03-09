@@ -445,11 +445,32 @@ void WorldSession::HandleMovementOpcode(uint16 opcode, MovementInfo& movementInf
                 }
             }
         }
+        else
+            plrMover->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_IS_OUT_OF_BOUNDS);
 
         if (opcode == MSG_MOVE_JUMP)
         {
             plrMover->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags2::Jump);
             Unit::ProcSkillsAndAuras(plrMover, nullptr, PROC_FLAG_JUMP, PROC_FLAG_NONE, PROC_SPELL_TYPE_MASK_ALL, PROC_SPELL_PHASE_NONE, PROC_HIT_NONE, nullptr, nullptr, nullptr);
+        }
+
+        // Whenever a player stops a movement action, several position based checks and updates are being performed
+        switch (opcode)
+        {
+            case CMSG_MOVE_SET_CAN_FLY:
+            case MSG_MOVE_FALL_LAND:
+            case MSG_MOVE_STOP:
+            case MSG_MOVE_STOP_STRAFE:
+            case MSG_MOVE_STOP_TURN:
+            case MSG_MOVE_STOP_SWIM:
+            case MSG_MOVE_STOP_PITCH:
+            case MSG_MOVE_STOP_ASCEND:
+                plrMover->UpdateZoneAndAreaId();
+                plrMover->UpdateIndoorsOutdoorsAuras();
+                plrMover->UpdateTavernRestingState();
+                break;
+            default:
+                break;
         }
     }
 }

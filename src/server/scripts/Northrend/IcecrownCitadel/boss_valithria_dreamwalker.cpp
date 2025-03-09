@@ -528,7 +528,6 @@ class npc_green_dragon_combat_trigger : public CreatureScript
                 EngagementStart(target);
 
                 me->setActive(true);
-                me->SetCombatPulseDelay(5);
                 DoZoneInCombat();
                 instance->SetBossState(DATA_VALITHRIA_DREAMWALKER, IN_PROGRESS);
                 if (Creature* valithria = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VALITHRIA_DREAMWALKER)))

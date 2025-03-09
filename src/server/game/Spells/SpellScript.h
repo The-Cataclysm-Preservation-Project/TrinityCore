@@ -229,7 +229,7 @@ class TC_GAME_API _SpellScript
 
             template <typename Derived = _SpellScript>
             EffectNameHookHandler(Derived* owner, HookType<Derived> hookFunction, uint8 effIndex, uint16 effName)
-                : BaseHookHandler(owner, hookFunction, effIndex, 
+                : BaseHookHandler(owner, hookFunction, effIndex,
                     [_effectName = effName](SpellEffectInfo const& effectInfo) {
                         return _effectName == SPELL_EFFECT_ANY || effectInfo.Effect == _effectName;
                     }), _effName(effName)
@@ -491,7 +491,7 @@ class TC_GAME_API SpellScript : public _SpellScript
     // internal use classes & functions
     // DO NOT OVERRIDE THESE IN SCRIPTS
     public:
-        
+
         using CheckCastHook             = HookHandler<SpellCastResult>;
         using EffectNameHook            = EffectNameHookHandler<void, SpellEffIndex>;
         using HitHook                   = HookHandler<void>;
@@ -742,6 +742,7 @@ enum AuraScriptHookType
     AURA_SCRIPT_HOOK_CHECK_AREA_TARGET,
     AURA_SCRIPT_HOOK_DISPEL,
     AURA_SCRIPT_HOOK_AFTER_DISPEL,
+    AURA_SCRIPT_HOOK_ON_HEARTBEAT,
     // Spell Proc Hooks
     AURA_SCRIPT_HOOK_CHECK_PROC,
     AURA_SCRIPT_HOOK_CHECK_EFFECT_PROC,
@@ -767,6 +768,7 @@ class TC_GAME_API AuraScript : public _SpellScript
 
         using AuraCheckAreaTargetHookHandler        = HookHandler<bool, Unit*>;
         using AuraDispelHookHandler                 = HookHandler<void, DispelInfo*>;
+        using AuraHeartbeatHookHandler              = HookHandler<void>;
         using AuraEffectPeriodicHookHandler         = AuraNameHookHandler<void, AuraEffect const*>;
         using AuraEffectUpdatePeriodicHookHandler   = AuraNameHookHandler<void, AuraEffect*>;
         using AuraEffectCalcAmountHookHandler       = AuraNameHookHandler<void, AuraEffect const*, int32&, bool&>;
@@ -811,7 +813,7 @@ class TC_GAME_API AuraScript : public _SpellScript
         };
 
         using AuraEffectApplyHookHandler = AuraEffectHandleModeHookHandler<void, AuraEffect const*, AuraEffectHandleModes>;
-        
+
         struct TC_GAME_API AuraEffectAbsorbHookHandler : AuraNameHookHandler<void, AuraEffect*, DamageInfo&, uint32&>
         {
             //> Base type shorthand.
@@ -878,7 +880,7 @@ class TC_GAME_API AuraScript : public _SpellScript
         AuraScript()
             : _SpellScript(), m_aura(nullptr), m_auraApplication(nullptr), m_defaultActionPrevented(false),
             DoCheckAreaTarget(this),
-            OnDispel(this), AfterDispel(this),
+            OnDispel(this), AfterDispel(this), OnHeartbeat(this),
             OnEffectApply(this), AfterEffectApply(this),
             OnEffectRemove(this), AfterEffectRemove(this),
             OnEffectPeriodic(this), OnEffectUpdatePeriodic(this),
@@ -934,6 +936,11 @@ class TC_GAME_API AuraScript : public _SpellScript
         // example: AfterDispel.Register(this, &class::function);
         // where function is: void function (DispelInfo* dispelInfo);
         AuraDispelHookHandler::HookList AfterDispel;
+
+        // executed on every heartbeat of a unit
+        // example: OnHeartbeat.Register(this, class::function);
+        // where function is: void function();
+        AuraHeartbeatHookHandler::HookList OnHeartbeat;
 
         // executed when aura effect is applied with specified mode to target
         // should be used when when effect handler preventing/replacing is needed, do not use this hook for triggering spellcasts/removing auras etc - may be unsafe

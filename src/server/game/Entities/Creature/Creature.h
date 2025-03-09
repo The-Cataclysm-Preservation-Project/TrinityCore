@@ -86,7 +86,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         ObjectGuid::LowType GetSpawnId() const { return m_spawnId; }
 
-        void Update(uint32 time) override;                         // overwrited Unit::Update
+        void Update(uint32 time) override;                         // overwritten Unit::Update
+        void Heartbeat() override;
+
         void GetRespawnPosition(float &x, float &y, float &z, float* ori = nullptr, float* dist = nullptr) const;
         bool IsSpawnedOnTransport() const { return m_creatureData && m_creatureData->mapId != GetMapId(); }
 
@@ -273,13 +275,6 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         void SetWanderDistance(float dist) { m_wanderDistance = dist; }
 
         void DoImmediateBoundaryCheck() { m_boundaryCheckTime = 0; }
-        uint32 GetCombatPulseDelay() const { return m_combatPulseDelay; }
-        void SetCombatPulseDelay(uint32 delay) // (secs) interval at which the creature pulses the entire zone into combat (only works in dungeons)
-        {
-            m_combatPulseDelay = delay;
-            if (m_combatPulseTime == 0 || m_combatPulseTime > delay)
-                m_combatPulseTime = delay;
-        }
 
         uint32 m_groupLootTimer;                            // (msecs)timer used for group loot
         ObjectGuid::LowType lootingGroupLowGUID;                         // used to find group which is looting corpse
@@ -377,6 +372,8 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         void AtEngage(Unit* target) override;
         void AtDisengage() override;
 
+        void ForcePartyMembersIntoCombat();
+
         bool HasStaticFlag(CreatureStaticFlags flag) const { return _staticFlags.HasFlag(flag); }
         bool HasStaticFlag(CreatureStaticFlags2 flag) const { return _staticFlags.HasFlag(flag); }
         bool HasStaticFlag(CreatureStaticFlags3 flag) const { return _staticFlags.HasFlag(flag); }
@@ -416,8 +413,6 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         uint32 m_corpseDelay;                               // (secs) delay between death and corpse disappearance
         float m_wanderDistance;
         uint32 m_boundaryCheckTime;                         // (msecs) remaining time for next evade boundary check
-        uint32 m_combatPulseTime;                           // (msecs) remaining time for next zone-in-combat pulse
-        uint32 m_combatPulseDelay;                          // (secs) how often the creature puts the entire zone in combat (only works in dungeons)
 
         ReactStates m_reactState;                           // for AI, not charmInfo
         void RegenerateHealth() override;

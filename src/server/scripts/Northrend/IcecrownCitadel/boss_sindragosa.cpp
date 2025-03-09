@@ -284,7 +284,6 @@ class boss_sindragosa : public CreatureScript
                 DoCast(me, SPELL_PERMAEATING_CHILL);
                 Talk(SAY_AGGRO);
                 instance->SetBossState(DATA_SINDRAGOSA, IN_PROGRESS);
-                me->SetCombatPulseDelay(5);
                 me->setActive(true);
                 me->SetFarVisible(true);
                 DoZoneInCombat();

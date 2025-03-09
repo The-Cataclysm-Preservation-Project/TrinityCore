@@ -178,7 +178,6 @@ struct boss_four_horsemen_baseAI : public BossAI
                 case ACTION_BEGIN_FIGHTING:
                     if (_ourMovementFinished)
                         break;
-                    me->SetCombatPulseDelay(5);
                     BeginFighting();
                     _ourMovementFinished = true;
                     break;
@@ -306,7 +305,6 @@ struct boss_four_horsemen_baseAI : public BossAI
             _ourMovementFinished = false;
             me->SetReactState(REACT_AGGRESSIVE);
             SetCombatMovement(false);
-            me->SetCombatPulseDelay(0);
             me->ResetLootMode();
             events.Reset();
             summons.DespawnAll();

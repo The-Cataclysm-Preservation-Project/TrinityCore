@@ -346,7 +346,6 @@ class boss_gothik : public CreatureScript
                 if (me->IsInCombat())
                 {
                     summon->AI()->DoAction(_gateIsOpen ? ACTION_GATE_OPENED : ACTION_ACQUIRE_TARGET);
-                    summon->SetCombatPulseDelay(5);
                 }
                 else
                     summon->DespawnOrUnsummon();

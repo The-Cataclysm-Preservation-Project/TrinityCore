@@ -2056,6 +2056,19 @@ void Aura::CallScriptAfterDispel(DispelInfo* dispelInfo)
     }
 }
 
+void Aura::CallScriptOnHeartbeat()
+{
+    for (auto scritr = m_loadedScripts.begin(); scritr != m_loadedScripts.end(); ++scritr)
+    {
+        (*scritr)->_PrepareScriptCall(AURA_SCRIPT_HOOK_ON_HEARTBEAT);
+        auto hookItrEnd = (*scritr)->OnHeartbeat.end(), hookItr = (*scritr)->OnHeartbeat.begin();
+        for (; hookItr != hookItrEnd; ++hookItr)
+            hookItr->Call();
+
+        (*scritr)->_FinishScriptCall();
+    }
+}
+
 bool Aura::CallScriptEffectApplyHandlers(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes mode)
 {
     bool preventDefault = false;
@@ -2534,6 +2547,29 @@ void UnitAura::AddStaticApplication(Unit* target, uint8 effMask)
 
     _staticApplications[target->GetGUID()] |= effMask;
 }
+
+void UnitAura::Heartbeat()
+{
+    Aura::Heartbeat();
+
+    // Periodic food and drink emote animation
+    HandlePeriodicFoodSpellVisualKit();
+}
+
+void UnitAura::HandlePeriodicFoodSpellVisualKit()
+{
+    SpellSpecificType specificType = GetSpellInfo()->GetSpellSpecific();
+
+    bool food = specificType == SPELL_SPECIFIC_FOOD || specificType == SPELL_SPECIFIC_FOOD_AND_DRINK;
+    bool drink = specificType == SPELL_SPECIFIC_DRINK || specificType == SPELL_SPECIFIC_FOOD_AND_DRINK;
+
+    if (food)
+        GetUnitOwner()->SendPlaySpellVisualKit(SPELL_VISUAL_KIT_FOOD, 0, 0);
+
+    if (drink)
+        GetUnitOwner()->SendPlaySpellVisualKit(SPELL_VISUAL_KIT_DRINK, 0, 0);
+}
+
 
 DynObjAura::DynObjAura(AuraCreateInfo const& createInfo)
     : Aura(createInfo)

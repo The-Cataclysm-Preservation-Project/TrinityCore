@@ -550,7 +550,6 @@ class boss_the_lich_king : public CreatureScript
                 }
 
                 me->setActive(true);
-                me->SetCombatPulseDelay(5);
                 DoZoneInCombat();
 
                 events.SetPhase(PHASE_ONE);

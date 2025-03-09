@@ -825,6 +825,9 @@ class TC_GAME_API Unit : public WorldObject
 
         virtual void Update(uint32 time) override;
 
+        void Heartbeat() override;
+        void TriggerAuraHeartbeat();
+
         void setAttackTimer(WeaponAttackType type, uint32 time) { m_attackTimer[type] = time; }
         void resetAttackTimer(WeaponAttackType type = BASE_ATTACK);
         uint32 getAttackTimer(WeaponAttackType type) const { return m_attackTimer[type]; }
@@ -1871,6 +1874,7 @@ class TC_GAME_API Unit : public WorldObject
 
         void UpdateSplineMovement(uint32 t_diff);
         void UpdateSplinePosition();
+        void SendFlightSplineSyncUpdate();
 
         // player or player's pet
         float GetCombatRatingReduction(CombatRating cr) const;
@@ -1886,7 +1890,6 @@ class TC_GAME_API Unit : public WorldObject
 
     private:
         uint32 m_state;                                     // Even derived shouldn't modify
-        TimeTrackerSmall m_splineSyncTimer;
 
         std::array<DiminishingReturn, DIMINISHING_MAX> m_Diminishing;
 

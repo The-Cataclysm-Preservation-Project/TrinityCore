@@ -467,7 +467,6 @@ void BossAI::_Reset()
     if (!me->IsAlive())
         return;
 
-    me->SetCombatPulseDelay(0);
     me->ResetLootMode();
     events.Reset();
     summons.DespawnAll();
@@ -503,7 +502,6 @@ void BossAI::_JustEngagedWith(Unit* who)
         instance->SetBossState(_bossId, IN_PROGRESS);
     }
 
-    me->SetCombatPulseDelay(5);
     me->setActive(true);
     DoZoneInCombat();
     ScheduleTasks();
