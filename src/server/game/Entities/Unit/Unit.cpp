@@ -1043,7 +1043,7 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
                     uint32 crit_bonus = damage;
                     // Apply crit_damage bonus for melee spells
                     if (Player* modOwner = GetSpellModOwner())
-                        modOwner->ApplySpellMod(spellInfo->Id, SpellModOp::CritDamageAndHealing, crit_bonus);
+                        modOwner->ApplySpellMod(spellInfo, SpellModOp::CritDamageAndHealing, crit_bonus);
                     damage += crit_bonus;
 
                     // Apply SPELL_AURA_MOD_ATTACKER_RANGED_CRIT_DAMAGE or SPELL_AURA_MOD_ATTACKER_MELEE_CRIT_DAMAGE
@@ -1527,7 +1527,7 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
 
         if (spellInfo)
             if (Player* modOwner = attacker->GetSpellModOwner())
-                modOwner->ApplySpellMod(spellInfo->Id, SpellModOp::TargetResistance, armor);
+                modOwner->ApplySpellMod(spellInfo, SpellModOp::TargetResistance, armor);
 
         for (AuraEffect const* aurEff : attacker->GetAuraEffectsByType(SPELL_AURA_MOD_IGNORE_TARGET_RESIST))
         {
@@ -6394,7 +6394,7 @@ int32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, int3
         if (Player* modOwner = GetSpellModOwner())
         {
             spellPowerCoeff *= 100.0f;
-            modOwner->ApplySpellMod(spellProto->Id, SpellModOp::BonusCoefficient, spellPowerCoeff);
+            modOwner->ApplySpellMod(spellProto, SpellModOp::BonusCoefficient, spellPowerCoeff);
             spellPowerCoeff /= 100.0f;
         }
 
@@ -6406,7 +6406,7 @@ int32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, int3
 
     // apply spellmod to Done damage (flat and pct)
     if (Player* modOwner = GetSpellModOwner())
-        modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SpellModOp::PeriodicHealingAndDamage : SpellModOp::HealingAndDamage, tmpDamage);
+        modOwner->ApplySpellMod(spellProto, damagetype == DOT ? SpellModOp::PeriodicHealingAndDamage : SpellModOp::HealingAndDamage, tmpDamage);
 
     return int32(std::max(tmpDamage, 0.0f));
 }
@@ -6762,7 +6762,7 @@ float Unit::SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask scho
     // percent done
     // only players use intelligence for critical chance computations
     if (Player* modOwner = GetSpellModOwner())
-        modOwner->ApplySpellMod(spellInfo->Id, SpellModOp::CritChance, crit_chance);
+        modOwner->ApplySpellMod(spellInfo, SpellModOp::CritChance, crit_chance);
 
     return std::max(crit_chance, 0.0f);
 }
@@ -7003,7 +7003,7 @@ float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo,
         {
             // adds additional damage to critBonus (from talents)
             if (Player* modOwner = caster->GetSpellModOwner())
-                modOwner->ApplySpellMod(spellProto->Id, SpellModOp::CritDamageAndHealing, crit_bonus);
+                modOwner->ApplySpellMod(spellProto, SpellModOp::CritDamageAndHealing, crit_bonus);
         }
 
         crit_bonus += damage;
@@ -7102,7 +7102,7 @@ int32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, int
         if (Player* modOwner = GetSpellModOwner())
         {
             coeff *= 100.0f;
-            modOwner->ApplySpellMod(spellProto->Id, SpellModOp::BonusCoefficient, coeff);
+            modOwner->ApplySpellMod(spellProto, SpellModOp::BonusCoefficient, coeff);
             coeff /= 100.0f;
         }
 
@@ -7133,7 +7133,7 @@ int32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, int
 
     // apply spellmod to Done amount
     if (Player* modOwner = GetSpellModOwner())
-        modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SpellModOp::PeriodicHealingAndDamage : SpellModOp::HealingAndDamage, heal);
+        modOwner->ApplySpellMod(spellProto, damagetype == DOT ? SpellModOp::PeriodicHealingAndDamage : SpellModOp::HealingAndDamage, heal);
 
     return int32(std::max(heal, 0.0f));
 }
@@ -7665,7 +7665,7 @@ int32 Unit::MeleeDamageBonusDone(Unit* victim, int32 damage, WeaponAttackType at
    // apply spellmod to Done damage
     if (spellProto)
         if (Player* modOwner = GetSpellModOwner())
-            modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SpellModOp::PeriodicHealingAndDamage : SpellModOp::HealingAndDamage, damageF);
+            modOwner->ApplySpellMod(spellProto, damagetype == DOT ? SpellModOp::PeriodicHealingAndDamage : SpellModOp::HealingAndDamage, damageF);
 
     // bonus result can be negative
     return int32(std::max(damageF, 0.0f));
@@ -7848,7 +7848,7 @@ float Unit::GetPPMProcChance(uint32 WeaponSpeed, float PPM, SpellInfo const* spe
     // Apply chance modifer aura
     if (spellProto)
         if (Player* modOwner = GetSpellModOwner())
-            modOwner->ApplySpellMod(spellProto->Id, SpellModOp::ProcFrequency, PPM);
+            modOwner->ApplySpellMod(spellProto, SpellModOp::ProcFrequency, PPM);
 
     return std::floor((WeaponSpeed * PPM) / 600.0f);   // result is chance in percents (probability = Speed_in_sec * (PPM / 60))
 }
@@ -12109,7 +12109,7 @@ float Unit::MeleeSpellMissChance(Unit const* victim, WeaponAttackType attType, S
     float resistMissChance = 100.0f;
     if (spellInfo)
         if (Player* modOwner = GetSpellModOwner())
-            modOwner->ApplySpellMod(spellInfo->Id, SpellModOp::HitChance, resistMissChance);
+            modOwner->ApplySpellMod(spellInfo, SpellModOp::HitChance, resistMissChance);
 
     missChance -= resistMissChance - 100.0f;
 

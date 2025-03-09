@@ -619,7 +619,7 @@ class spell_warl_health_funnel : public AuraScript
         uint32 damage = caster->CountPctFromMaxHealth(aurEff->GetBaseAmount());
 
         if (Player* modOwner = caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(GetId(), SpellModOp::PowerCost0, damage);
+            modOwner->ApplySpellMod(GetSpellInfo(), SpellModOp::PowerCost0, damage);
 
         SpellNonMeleeDamage damageInfo(caster, caster, GetSpellInfo()->Id, GetSpellInfo()->SchoolMask);
         damageInfo.damage = damage;
@@ -1684,17 +1684,19 @@ class spell_warl_fear : public SpellScript
 // 56244 - Glyph of Fear
 class spell_warl_glyph_of_fear : public AuraScript
 {
-    void HandleCooldownMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
+    void HandleCooldownMod(AuraEffect const* aurEff, SpellModifier*& spellModifier)
     {
-        if (!spellMod)
+        if (!spellModifier)
         {
-            spellMod = new SpellModifier(GetAura());
+            SpellModifierByClassMask* spellMod = new SpellModifierByClassMask(GetAura());
             spellMod->op = SpellModOp::Cooldown;
             spellMod->type = SPELLMOD_FLAT;
             spellMod->spellId = GetId();
             spellMod->mask = GetSpellInfo()->Effects[aurEff->GetEffIndex()].SpellClassMask;
+            spellModifier = spellMod;
         }
-        spellMod->value = aurEff->GetAmount() * IN_MILLISECONDS;
+
+        static_cast<SpellModifierByClassMask*>(spellModifier)->value = aurEff->GetAmount() * IN_MILLISECONDS;
     }
 
     void Register() override

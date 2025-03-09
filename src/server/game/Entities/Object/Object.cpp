@@ -2449,17 +2449,19 @@ float WorldObject::ApplyEffectModifiers(SpellInfo const* spellProto, uint8 effec
 {
     if (Player* modOwner = GetSpellModOwner())
     {
-        modOwner->ApplySpellMod(spellProto->Id, SpellModOp::Points, value);
+        modOwner->ApplySpellMod(spellProto, SpellModOp::Points, value);
         switch (effect_index)
         {
             case EFFECT_0:
-                modOwner->ApplySpellMod(spellProto->Id, SpellModOp::PointsIndex0, value);
+                modOwner->ApplySpellMod(spellProto, SpellModOp::PointsIndex0, value);
                 break;
             case EFFECT_1:
-                modOwner->ApplySpellMod(spellProto->Id, SpellModOp::PointsIndex1, value);
+                modOwner->ApplySpellMod(spellProto, SpellModOp::PointsIndex1, value);
                 break;
             case EFFECT_2:
-                modOwner->ApplySpellMod(spellProto->Id, SpellModOp::PointsIndex2, value);
+                modOwner->ApplySpellMod(spellProto, SpellModOp::PointsIndex2, value);
+                break;
+            default:
                 break;
         }
     }
@@ -2556,12 +2558,14 @@ void WorldObject::ModSpellCastTime(SpellInfo const* spellInfo, int32& castTime, 
 
     // called from caster
     if (Player* modOwner = GetSpellModOwner())
-        modOwner->ApplySpellMod(spellInfo->Id, SpellModOp::ChangeCastTime, castTime, spell);
+        modOwner->ApplySpellMod(spellInfo, SpellModOp::ChangeCastTime, castTime, spell);
 
     Unit const* unitCaster = ToUnit();
     if (!unitCaster)
         return;
 
+    if (unitCaster->IsPlayer() && unitCaster->ToPlayer()->GetCommandStatus(CHEAT_CASTTIME))
+        castTime = 0;
     if (!(spellInfo->HasAttribute(SPELL_ATTR0_IS_ABILITY) || spellInfo->HasAttribute(SPELL_ATTR0_IS_TRADESKILL) || spellInfo->HasAttribute(SPELL_ATTR3_IGNORE_CASTER_MODIFIERS)) &&
         ((GetTypeId() == TYPEID_PLAYER && spellInfo->SpellFamilyName) || GetTypeId() == TYPEID_UNIT))
         castTime = int32(float(castTime) * GetFloatValue(UNIT_MOD_CAST_SPEED));
@@ -2625,7 +2629,7 @@ SpellMissInfo WorldObject::MagicSpellHitResult(Unit* victim, SpellInfo const* sp
 
     // Spellmod from SpellModOp::HitChance
     if (Player* modOwner = GetSpellModOwner())
-        modOwner->ApplySpellMod(spellInfo->Id, SpellModOp::HitChance, modHitChance);
+        modOwner->ApplySpellMod(spellInfo, SpellModOp::HitChance, modHitChance);
 
     // Spells with SPELL_ATTR3_ALWAYS_HIT will ignore target's avoidance effects
     if (!spellInfo->HasAttribute(SPELL_ATTR3_ALWAYS_HIT))

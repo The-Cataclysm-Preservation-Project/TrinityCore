@@ -367,18 +367,20 @@ class spell_pri_glyph_of_prayer_of_healing : public AuraScript
 
 class spell_pri_improved_power_word_shield : public AuraScript
 {
-    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
+    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellModifier)
     {
-        if (!spellMod)
+        if (!spellModifier)
         {
-            spellMod = new SpellModifier(GetAura());
+            SpellModifierByClassMask* spellMod = new SpellModifierByClassMask(GetAura());
             spellMod->op = SpellModOp(aurEff->GetMiscValue());
             spellMod->type = SPELLMOD_PCT;
             spellMod->spellId = GetId();
             spellMod->mask = GetSpellInfo()->Effects[aurEff->GetEffIndex()].SpellClassMask;
+
+            spellModifier = spellMod;
         }
 
-        spellMod->value = aurEff->GetAmount();
+        static_cast<SpellModifierByClassMask*>(spellModifier)->value = aurEff->GetAmount();
     }
 
     void Register() override
@@ -1780,7 +1782,7 @@ class spell_pri_harnessed_shadows : public AuraScript
     }
 };
 
-// 2944 - Devouring Plague 
+// 2944 - Devouring Plague
 class spell_pri_devouring_plague : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override

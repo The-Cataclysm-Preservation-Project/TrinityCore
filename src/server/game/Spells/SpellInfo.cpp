@@ -609,7 +609,7 @@ float SpellEffectInfo::CalcValueMultiplier(WorldObject* caster, Spell* spell) co
 {
     float multiplier = Amplitude;
     if (Player* modOwner = (caster ? caster->GetSpellModOwner() : nullptr))
-        modOwner->ApplySpellMod(_spellInfo->Id, SpellModOp::Amplitude, multiplier, spell);
+        modOwner->ApplySpellMod(_spellInfo, SpellModOp::Amplitude, multiplier, spell);
     return multiplier;
 }
 
@@ -617,7 +617,7 @@ float SpellEffectInfo::CalcDamageMultiplier(WorldObject* caster, Spell* spell) c
 {
     float multiplierPercent = DamageMultiplier * 100.0f;
     if (Player* modOwner = (caster ? caster->GetSpellModOwner() : nullptr))
-        modOwner->ApplySpellMod(_spellInfo->Id, SpellModOp::ChainAmplitude, multiplierPercent, spell);
+        modOwner->ApplySpellMod(_spellInfo, SpellModOp::ChainAmplitude, multiplierPercent, spell);
     return multiplierPercent / 100.0f;
 }
 
@@ -669,7 +669,7 @@ float SpellEffectInfo::CalcRadius(WorldObject* caster /*= nullptr*/, SpellTarget
         radius = std::min(radius, entry->RadiusMax);
 
         if (Player* modOwner = caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(_spellInfo->Id, SpellModOp::Radius, radius, spell);
+            modOwner->ApplySpellMod(_spellInfo, SpellModOp::Radius, radius, spell);
     }
 
     return radius;
@@ -1571,9 +1571,18 @@ bool SpellInfo::IsAffectedBySpellMod(SpellModifier const* mod) const
     if (!affectSpell)
         return false;
 
-    // TEMP: dont use IsAffected - !familyName and !familyFlags are not valid options for spell mods
-    // TODO: investigate if the !familyName and !familyFlags conditions are even valid for all other (nonmod) uses of SpellInfo::IsAffected
-    return affectSpell->SpellFamilyName == SpellFamilyName && mod->mask & SpellFamilyFlags;
+    switch (mod->type)
+    {
+        case SPELLMOD_FLAT:
+        case SPELLMOD_PCT:
+            // TEMP: dont use IsAffected - !familyName and !familyFlags are not valid options for spell mods
+            // TODO: investigate if the !familyName and !familyFlags conditions are even valid for all other (nonmod) uses of SpellInfo::IsAffected
+            return affectSpell->SpellFamilyName == SpellFamilyName && static_cast<SpellModifierByClassMask const*>(mod)->mask & SpellFamilyFlags;
+        default:
+            break;
+    }
+
+    return false;
 }
 
 bool SpellInfo::CanPierceImmuneAura(SpellInfo const* auraSpellInfo) const
@@ -3411,7 +3420,7 @@ float SpellInfo::GetMaxRange(bool positive, WorldObject* caster, Spell* spell) c
         range = RangeEntry->RangeMax[0];
     if (caster)
         if (Player* modOwner = caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(Id, SpellModOp::Range, range, spell);
+            modOwner->ApplySpellMod(this, SpellModOp::Range, range, spell);
     return range;
 }
 
@@ -3476,7 +3485,7 @@ int32 SpellInfo::CalcDuration(WorldObject const* caster /*= nullptr*/) const
     }
 
     if (Player const* modOwner = unitCaster->GetSpellModOwner())
-        modOwner->ApplySpellMod(Id, SpellModOp::Duration, duration);
+        modOwner->ApplySpellMod(this, SpellModOp::Duration, duration);
 
     if (HasAttribute(SPELL_ATTR8_HASTE_AFFECTS_DURATION) || HasAttribute(SPELL_ATTR5_SPELL_HASTE_AFFECTS_PERIODIC))
     {
@@ -3529,7 +3538,7 @@ int32 SpellInfo::CalcPeriod(WorldObject const* caster, SpellEffIndex effIndex, O
         return period;
 
     if (Player const* modOwner = unitCaster->GetSpellModOwner())
-        modOwner->ApplySpellMod(Id, SpellModOp::Period, period);
+        modOwner->ApplySpellMod(this, SpellModOp::Period, period);
 
     if (!HasAttribute(SPELL_ATTR3_IGNORE_CASTER_MODIFIERS) && (HasAttribute(SPELL_ATTR5_SPELL_HASTE_AFFECTS_PERIODIC) || HasAttribute(SPELL_ATTR8_MELEE_HASTE_AFFECTS_PERIODIC)))
     {
@@ -3723,7 +3732,7 @@ int32 SpellInfo::CalcPowerCost(WorldObject const* caster, SpellSchoolMask school
 
     // Apply cost mod by spell
     if (Player* modOwner = caster->GetSpellModOwner())
-        modOwner->ApplySpellMod(Id, SpellModOp::PowerCost0, powerCost, spell);
+        modOwner->ApplySpellMod(this, SpellModOp::PowerCost0, powerCost, spell);
 
     if (!unitCaster->IsControlledByPlayer())
     {

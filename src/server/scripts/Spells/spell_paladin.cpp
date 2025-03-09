@@ -426,18 +426,19 @@ private:
 // 33695 - Exorcism and Holy Wrath Damage
 class spell_pal_exorcism_and_holy_wrath_damage : public AuraScript
 {
-    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
+    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellModifier)
     {
-        if (!spellMod)
+        if (!spellModifier)
         {
-            spellMod = new SpellModifier(aurEff->GetBase());
+            SpellModifierByClassMask* spellMod = new SpellModifierByClassMask(aurEff->GetBase());
             spellMod->op = SpellModOp::HealingAndDamage;
             spellMod->type = SPELLMOD_FLAT;
             spellMod->spellId = GetId();
             spellMod->mask[1] = 0x200002;
+            spellModifier = spellMod;
         }
 
-        spellMod->value = aurEff->GetAmount();
+        static_cast<SpellModifierByClassMask*>(spellModifier)->value = aurEff->GetAmount();
     }
 
     void Register() override
@@ -1400,7 +1401,7 @@ class spell_pal_guardian_of_ancient_kings : public SpellScript
 class spell_pal_ancient_healer : public AuraScript
 {
     bool Load() override
-    {    
+    {
         _procCount = 0;
         return true;
     }
@@ -1815,7 +1816,7 @@ class spell_pal_speed_of_light : public AuraScript
     }
 };
 
-// -53695 - Judgements of the Just 
+// -53695 - Judgements of the Just
 class spell_pal_judgements_of_the_just : public AuraScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override

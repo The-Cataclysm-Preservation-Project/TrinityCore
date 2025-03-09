@@ -1957,7 +1957,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
 
     int32 duration = m_spellInfo->GetDuration();
     if (Player* modOwner = caster->GetSpellModOwner())
-        modOwner->ApplySpellMod(m_spellInfo->Id, SpellModOp::Duration, duration);
+        modOwner->ApplySpellMod(m_spellInfo, SpellModOp::Duration, duration);
 
     SummonCreatureExtraArgs extraArgs;
     extraArgs.SummonProperties = properties;

@@ -552,17 +552,17 @@ private:
 // 60779 - Idol of Lush Moss
 class spell_dru_idol_lifebloom : public AuraScript
 {
-    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
+    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellModifier)
     {
-        if (!spellMod)
+        if (!spellModifier)
         {
-            spellMod = new SpellModifier(GetAura());
+            SpellModifierByClassMask* spellMod = new SpellModifierByClassMask(GetAura());
             spellMod->op = SpellModOp::PeriodicHealingAndDamage;
             spellMod->type = SPELLMOD_FLAT;
             spellMod->spellId = GetId();
             spellMod->mask = GetSpellInfo()->Effects[aurEff->GetEffIndex()].SpellClassMask;
         }
-        spellMod->value = aurEff->GetAmount() / 7;
+        static_cast<SpellModifierByClassMask*>(spellModifier)->value = aurEff->GetAmount() / 7;
     }
 
     void Register() override

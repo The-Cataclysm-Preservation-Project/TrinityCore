@@ -279,18 +279,19 @@ class spell_warr_execute : public SpellScript
 // 58387 - Glyph of Sunder Armor
 class spell_warr_glyph_of_sunder_armor : public AuraScript
 {
-    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
+    void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellModifier)
     {
-        if (!spellMod)
+        if (!spellModifier)
         {
-            spellMod = new SpellModifier(aurEff->GetBase());
+            SpellModifierByClassMask* spellMod = new SpellModifierByClassMask(aurEff->GetBase());
             spellMod->op = SpellModOp(aurEff->GetMiscValue());
             spellMod->type = SPELLMOD_FLAT;
             spellMod->spellId = GetId();
             spellMod->mask = GetSpellInfo()->Effects[aurEff->GetEffIndex()].SpellClassMask;
+            spellModifier = spellMod;
         }
 
-        spellMod->value = aurEff->GetAmount();
+        static_cast<SpellModifierByClassMask*>(spellModifier)->value = aurEff->GetAmount();
     }
 
     void Register() override
@@ -734,7 +735,7 @@ class spell_warr_victory_rush : public SpellScript
 
                 // Glyph: Victory Rush
                 if (Player* modOwner = caster->GetSpellModOwner())
-                    modOwner->ApplySpellMod(m_scriptSpellId, SpellModOp::PointsIndex2, damage);
+                    modOwner->ApplySpellMod(GetSpellInfo(), SpellModOp::PointsIndex2, damage);
 
                 SetEffectValue(damage);
             }

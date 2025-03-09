@@ -39,6 +39,7 @@
 #include "Spell.h"
 #include "SpellHistory.h"
 #include "SpellMgr.h"
+#include "SpellScript.h"
 #include "ThreatManager.h"
 #include "Unit.h"
 #include "Util.h"
@@ -716,19 +717,46 @@ void AuraEffect::CalculateSpellMod()
         case SPELL_AURA_ADD_PCT_MODIFIER:
             if (!m_spellmod)
             {
-                m_spellmod = new SpellModifier(GetBase());
-                m_spellmod->op = SpellModOp(GetMiscValue());
+                SpellModifierByClassMask* spellmod = new SpellModifierByClassMask(GetBase());
+                spellmod->op = SpellModOp(GetMiscValue());
 
-                m_spellmod->type = GetAuraType() == SPELL_AURA_ADD_PCT_MODIFIER ? SPELLMOD_PCT : SPELLMOD_FLAT;
-                m_spellmod->spellId = GetId();
-                m_spellmod->mask = GetSpellInfo()->Effects[GetEffIndex()].SpellClassMask;
+                spellmod->type = GetAuraType() == SPELL_AURA_ADD_PCT_MODIFIER ? SPELLMOD_PCT : SPELLMOD_FLAT;
+                spellmod->spellId = GetId();
+                spellmod->mask = GetSpellInfo()->Effects[GetEffIndex()].SpellClassMask;
+                m_spellmod = spellmod;
             }
-            m_spellmod->value = GetAmount();
+            static_cast<SpellModifierByClassMask*>(m_spellmod)->value = GetAmount();
             break;
         default:
             break;
     }
     GetBase()->CallScriptEffectCalcSpellModHandlers(this, m_spellmod);
+
+    // validate modifier
+    if (m_spellmod)
+    {
+        bool isValid = true;
+        auto logErrors = [&] { return std::ranges::any_of(GetBase()->m_loadedScripts, [](AuraScript const* script) { return script->DoEffectCalcSpellMod.size() > 0; }); };
+        if (AsUnderlyingType(m_spellmod->op) >= MAX_SPELLMOD)
+        {
+            isValid = false;
+            if (logErrors())
+                TC_LOG_ERROR("spells.aura.effect", "Aura script for spell id {} created invalid spell modifier op {}", GetId(), AsUnderlyingType(m_spellmod->op));
+        }
+
+        if (m_spellmod->type >= SPELLMOD_END)
+        {
+            isValid = false;
+            if (logErrors())
+                TC_LOG_ERROR("spells.aura.effect", "Aura script for spell id {} created invalid spell modifier type {}", GetId(), AsUnderlyingType(m_spellmod->type));
+        }
+
+        if (!isValid)
+        {
+            delete m_spellmod;
+            m_spellmod = nullptr;
+        }
+    }
 }
 
 void AuraEffect::ChangeAmount(int32 newAmount, bool mark, bool onStackOrReapply)

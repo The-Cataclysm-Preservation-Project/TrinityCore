@@ -894,7 +894,7 @@ void Aura::SetDuration(int32 duration, bool withMods)
     if (withMods)
         if (Unit* caster = GetCaster())
             if (Player* modOwner = caster->GetSpellModOwner())
-                modOwner->ApplySpellMod(GetId(), SpellModOp::Duration, duration);
+                modOwner->ApplySpellMod(m_spellInfo, SpellModOp::Duration, duration);
 
     m_duration = duration;
     SetNeedClientUpdateForTargets();
@@ -960,7 +960,7 @@ uint8 Aura::CalcMaxCharges(Unit* caster) const
 
     if (caster)
         if (Player* modOwner = caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(GetId(), SpellModOp::ProcCharges, maxProcCharges);
+            modOwner->ApplySpellMod(m_spellInfo, SpellModOp::ProcCharges, maxProcCharges);
 
     return uint8(maxProcCharges);
 }
@@ -1182,7 +1182,7 @@ int32 Aura::CalcDispelChance(Unit const* auraTarget, bool offensive) const
     // Apply dispel mod from aura caster
     if (Unit* caster = GetCaster())
         if (Player* modOwner = caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(GetId(), SpellModOp::DispelResistance, resistChance);
+            modOwner->ApplySpellMod(m_spellInfo, SpellModOp::DispelResistance, resistChance);
 
     // Dispel resistance from target SPELL_AURA_MOD_DISPEL_RESIST
     // Only affects offensive dispels
@@ -1966,7 +1966,7 @@ float Aura::CalcProcChance(SpellProcEntry const& procEntry, ProcEventInfo& event
         }
         // apply chance modifer aura, applies also to ppm chance (see improved judgement of light spell)
         if (Player* modOwner = caster->GetSpellModOwner())
-            modOwner->ApplySpellMod(GetId(), SpellModOp::ProcChance, chance);
+            modOwner->ApplySpellMod(m_spellInfo, SpellModOp::ProcChance, chance);
     }
 
     // proc chance is reduced by an additional 3.333% per level past 60
