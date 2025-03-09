@@ -213,42 +213,6 @@ void Unit::UpdatePowerRegeneration(Powers powerType)
             SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, combatRegen);
             SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + powerIndex, peaceRegen);
         }
-
-        /*
-        case POWER_FOCUS:
-        case POWER_ENERGY:
-        {
-            // Energy and Focus regeneration is always consistent in and out of combat
-            float baseRegen = DBCManager::GetBasePowerRegen(powerType, false, 0);
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, baseRegen * powerRegenModPct - baseRegen + powerRegenMod);
-            SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + powerIndex, baseRegen * powerRegenModPct - baseRegen + powerRegenMod);
-            break;
-        }
-        case POWER_RUNIC_POWER:
-        case POWER_RAGE:
-            // Butchery and Anger Management
-            SetStatFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, powerRegenMod);
-            break;
-        case POWER_RUNE:
-        {
-            // Formular: base cooldown / (1 - haste)
-            float regeneration = 0.1f;
-            float haste = GetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN);
-            if (haste != 0.f)
-                regeneration /= haste;
-
-            for (int8 i = 0; i < NUM_RUNE_TYPES; i++)
-            {
-                float mod = 0.f;
-                for (AuraEffect const* effect : GetAuraEffectsByType(SPELL_AURA_MOD_POWER_REGEN))
-                    if (effect->GetMiscValue() == int32(powerType) && effect->GetMiscValueB() == i)
-                        mod += effect->GetAmount();
-
-                SetFloatValue(PLAYER_RUNE_REGEN_1 + i, regeneration + mod);
-            }
-            break;
-        }
-        */
     }
 }
 
