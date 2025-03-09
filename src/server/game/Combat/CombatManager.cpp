@@ -368,14 +368,14 @@ bool CombatManager::UpdateOwnerCombatState() const
 
     if (combatState)
     {
-        _owner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+        _owner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT | UNIT_FLAG_PET_IN_COMBAT);
         _owner->AtEnterCombat();
         if (_owner->GetTypeId() != TYPEID_UNIT)
             _owner->AtEngage(GetAnyTarget());
     }
     else
     {
-        _owner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+        _owner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT | UNIT_FLAG_PET_IN_COMBAT);
         _owner->AtExitCombat();
         if (_owner->GetTypeId() != TYPEID_UNIT)
             _owner->AtDisengage();

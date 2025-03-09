@@ -45,7 +45,7 @@ enum CreatureFlagsExtra : uint32
     CREATURE_FLAG_EXTRA_NO_XP_AT_KILL        = 0x00000040,       // creature kill not provide XP
     CREATURE_FLAG_EXTRA_TRIGGER              = 0x00000080,       // trigger creature
     CREATURE_FLAG_EXTRA_NO_TAUNT             = 0x00000100,       // creature is immune to taunt auras and effect attack me
-    CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE = 0x00000200,       // creature won't update movement flags
+    CREATURE_FLAG_EXTRA_UNUSED_9             = 0x00000200,
     CREATURE_FLAG_EXTRA_GHOST_VISIBILITY     = 0x00000400,       // creature will be only visible for dead players
     CREATURE_FLAG_EXTRA_USE_OFFHAND_ATTACK   = 0x00000800,       // creature will use offhand attacks
     CREATURE_FLAG_EXTRA_NO_SELL_VENDOR       = 0x00001000,       // players can't sell items to this vendor
@@ -296,24 +296,6 @@ private:
     EnumFlag<CreatureStaticFlags5> _flags5;
 };
 
-enum class CreatureGroundMovementType : uint8
-{
-    None,
-    Run,
-    Hover,
-
-    Max
-};
-
-enum class CreatureFlightMovementType : uint8
-{
-    None,
-    DisableGravity,
-    CanFly,
-
-    Max
-};
-
 enum class CreatureRandomMovementType : uint8
 {
     Walk,
@@ -327,22 +309,13 @@ struct TC_GAME_API CreatureMovementData
 {
     CreatureMovementData();
 
-    CreatureGroundMovementType Ground;
-    CreatureFlightMovementType Flight;
-    bool Swim;
-    bool Rooted;
+    bool HoverInitiallyEnabled;
     CreatureRandomMovementType Random;
     uint32 InteractionPauseTimer;
 
-    bool IsGroundAllowed() const { return Ground != CreatureGroundMovementType::None; }
-    bool IsSwimAllowed() const { return Swim; }
-    bool IsFlightAllowed() const { return Flight != CreatureFlightMovementType::None; }
-    bool IsRooted() const { return Rooted; }
-    bool IsGravityDisabled() const { return  Flight == CreatureFlightMovementType::DisableGravity; }
-    bool CanFly() const { return  Flight == CreatureFlightMovementType::CanFly; }
-    bool IsHoverEnabled() const { return  Ground == CreatureGroundMovementType::Hover; }
-
     CreatureRandomMovementType GetRandom() const { return Random; }
+
+    bool IsHoverInitiallyEnabled() const { return HoverInitiallyEnabled; }
 
     uint32 GetInteractionPauseTimer() const { return InteractionPauseTimer; }
 
