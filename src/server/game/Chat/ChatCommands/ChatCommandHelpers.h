@@ -19,6 +19,7 @@
 #define TRINITY_CHATCOMMANDHELPERS_H
 
 #include "advstd.h"
+#include <cstddef>
 #include <type_traits>
 
 namespace Trinity {

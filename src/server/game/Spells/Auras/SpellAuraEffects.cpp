@@ -741,14 +741,14 @@ void AuraEffect::CalculateSpellMod()
         {
             isValid = false;
             if (logErrors())
-                TC_LOG_ERROR("spells.aura.effect", "Aura script for spell id {} created invalid spell modifier op {}", GetId(), AsUnderlyingType(m_spellmod->op));
+                TC_LOG_ERROR("spells.aura.effect", "Aura script for spell id %u created invalid spell modifier op %u", GetId(), AsUnderlyingType(m_spellmod->op));
         }
 
         if (m_spellmod->type >= SPELLMOD_END)
         {
             isValid = false;
             if (logErrors())
-                TC_LOG_ERROR("spells.aura.effect", "Aura script for spell id {} created invalid spell modifier type {}", GetId(), AsUnderlyingType(m_spellmod->type));
+                TC_LOG_ERROR("spells.aura.effect", "Aura script for spell id %u created invalid spell modifier type %u", GetId(), AsUnderlyingType(m_spellmod->type));
         }
 
         if (!isValid)
