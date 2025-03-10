@@ -47,7 +47,6 @@ namespace Movement
 
     struct AnimTierTransition
     {
-        uint32 TierTransitionId = 0;
         ::AnimTier AnimTier = ::AnimTier(0);
     };
 

@@ -75,7 +75,7 @@ namespace Movement
         /* Plays animation after movement done
          * can't be combined with parabolic movement
          */
-        void SetAnimation(AnimTier anim, uint32 tierTransitionId = 0, Milliseconds transitionStartTime = 0ms);
+        void SetAnimation(AnimTier anim, Milliseconds transitionStartTime = 0ms);
 
         /* Adds final facing animation
          * sets unit's facing to specified point/angle after all path done
@@ -189,15 +189,13 @@ namespace Movement
         args.flags.Parabolic = true;
     }
 
-    inline void MoveSplineInit::SetAnimation(AnimTier anim, uint32 tierTransitionId /*= 0*/, Milliseconds transitionStartTime /*= 0ms*/)
+    inline void MoveSplineInit::SetAnimation(AnimTier anim,  Milliseconds transitionStartTime /*= 0ms*/)
     {
         args.effect_start_time_percent = 0.f;
         args.effect_start_time = transitionStartTime;
         args.animTier.emplace();
-        args.animTier->TierTransitionId = tierTransitionId;
         args.animTier->AnimTier = anim;
-        if (!tierTransitionId)
-            args.flags.Animation = true;
+        args.flags.Animation = true;
     }
 
     inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }

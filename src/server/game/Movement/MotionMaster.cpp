@@ -343,13 +343,13 @@ void MotionMaster::MoveCloserAndStop(uint32 id, Unit* target, float distance)
     }
 }
 
-void MotionMaster::MoveLand(uint32 id, Position const& pos, Optional<int32> tierTransitionId /*= { }*/, Optional<float> velocity /*= { }*/)
+void MotionMaster::MoveLand(uint32 id, Position const& pos, Optional<float> velocity /*= { }*/)
 {
     TC_LOG_DEBUG("movement.motionmaster", "MotionMaster::MoveLand: '%s', landing point Id: %u (X: %f, Y: %f, Z: %f)", _owner->GetGUID().ToString().c_str(), id, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(PositionToVector3(pos), false);
-    init.SetAnimation(AnimTier::Ground, tierTransitionId.value_or(1));
+    init.SetAnimation(AnimTier::Ground);
     init.SetSmooth();
     init.SetFly();
     if (velocity)
@@ -357,14 +357,14 @@ void MotionMaster::MoveLand(uint32 id, Position const& pos, Optional<int32> tier
     Mutate(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id), MOTION_SLOT_ACTIVE);
 }
 
-void MotionMaster::MoveTakeoff(uint32 id, Position const& pos, Optional<int32> tierTransitionId /*= { }*/, Optional<float> velocity /*= { }*/)
+void MotionMaster::MoveTakeoff(uint32 id, Position const& pos, Optional<float> velocity /*= { }*/)
 {
     TC_LOG_DEBUG("movement.motionmaster", "MotionMaster::MoveTakeoff: '%s', landing point Id: %u (X: %f, Y: %f, Z: %f)", _owner->GetGUID().ToString().c_str(), id, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(PositionToVector3(pos), false);
     init.SetSmooth();
-    init.SetAnimation(AnimTier::Fly, tierTransitionId.value_or(2));
+    init.SetAnimation(AnimTier::Fly);
     init.SetFly(); // ensure smooth animation even if gravity is disabled after calling this function
     if (velocity)
         init.SetVelocity(velocity.value());
