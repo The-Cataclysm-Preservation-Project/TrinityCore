@@ -122,7 +122,6 @@ struct boss_high_priestess_kilnara : public BossAI
         DoCastAOE(SPELL_CLEAR_ACHIEVEMENT_CREDITS);
 
         me->SetHover(false);
-        me->SendSetPlayHoverAnim(false);
         me->RemoveAurasDueToSpell(SPELL_KILNARA_HOVER_VISUAL_1);
         me->RemoveAurasDueToSpell(SPELL_KILNARA_HOVER_VISUAL_2);
         instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);

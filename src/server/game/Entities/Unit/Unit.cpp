@@ -376,6 +376,7 @@ Unit::Unit(bool isWorldObject) :
 
     _oldFactionId = 0;
     _isWalkingBeforeCharm = false;
+    _playHoverAnim = false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -550,8 +551,8 @@ void Unit::UpdateSplineMovement(uint32 t_diff)
     if (arrived)
     {
         DisableSpline();
-        if (Optional<AnimationTier> animTier = movespline->GetAnimation())
-            SetAnimationTier(*animTier);
+        if (Optional<AnimTier> animTier = movespline->GetAnimation())
+            SetAnimTier(*animTier);
     }
 
     UpdateSplinePosition();
@@ -10345,6 +10346,19 @@ void Unit::SetStandState(uint8 state)
     }
 }
 
+void Unit::SetAnimTier(AnimTier animTier, bool notifyClient /*= true*/)
+{
+    SetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_ANIM_TIER, AsUnderlyingType(animTier));
+
+    if (notifyClient)
+    {
+        WorldPackets::Misc::SetAnimTier setAnimTier;
+        setAnimTier.Unit = GetGUID();
+        setAnimTier.Tier = AsUnderlyingType(animTier);
+        SendMessageToSet(setAnimTier.Write(), true);
+    }
+}
+
 bool Unit::IsPolymorphed() const
 {
     uint32 transformId = getTransForm();
@@ -10356,17 +10370,6 @@ bool Unit::IsPolymorphed() const
         return false;
 
     return spellInfo->GetSpellSpecific() == SPELL_SPECIFIC_MAGE_POLYMORPH;
-}
-
-void Unit::SetAnimationTier(AnimationTier tier, bool immediate /* = true */)
-{
-    if (!IsCreature() || tier == GetAnimationTier())
-        return;
-
-    SetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_ANIM_TIER, static_cast<uint8>(tier));
-
-    if (immediate)
-        SendMovementSetSplineAnim(tier);
 }
 
 void Unit::RecalculateObjectScale()
@@ -12195,7 +12198,7 @@ void Unit::KnockbackFrom(float x, float y, float speedXY, float speedZ)
         SendMoveKnockBack(GetGameClientMovingMe()->GetBasePlayer(), speedXY, -speedZ, vcos, vsin);
 
         if (HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) || HasAuraType(SPELL_AURA_FLY))
-            SetCanFly(true, false);
+            SetCanFly(true);
     }
 }
 
@@ -13714,26 +13717,33 @@ bool Unit::SetWalk(bool enable)
     return true;
 }
 
-bool Unit::SetDisableGravity(bool disable, bool packetOnly /*= false*/, bool /*updateAnimationTier = true*/)
+bool Unit::SetDisableGravity(bool disable, bool /*updateAnimTier = true*/)
 {
-    if (!packetOnly)
-    {
-        if (disable == IsGravityDisabled())
-            return false;
+    if (disable == IsGravityDisabled())
+        return false;
 
-        if (disable)
-        {
-            AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
-            RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
-            SetFall(false);
-        }
-        else
-        {
-            RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
-            if (!HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
-                SetFall(true);
-        }
+    if (disable)
+    {
+        AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+        RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
+        SetFall(false);
     }
+    else
+    {
+        RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+        if (!HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
+            SetFall(true);
+    }
+
+    if (IsAlive())
+    {
+        if (IsGravityDisabled() || IsHovering())
+            SetPlayHoverAnim(true);
+        else
+            SetPlayHoverAnim(false);
+    }
+    else if (IsPlayer()) // To update player who dies while flying/hovering
+        SetPlayHoverAnim(false, false);
 
     return true;
 }
@@ -13772,25 +13782,22 @@ bool Unit::SetSwim(bool enable)
     return true;
 }
 
-bool Unit::SetCanFly(bool enable, bool packetOnly)
+bool Unit::SetCanFly(bool enable)
 {
-    if (!packetOnly)
-    {
-        if (enable == HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
-            return false;
+    if (enable == HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
+        return false;
 
-        if (enable)
-        {
-            AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
-            RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
-            SetFall(false);
-        }
-        else
-        {
-            if (IsFlying() && !IsGravityDisabled())
-                SetFall(true);
-            RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_MASK_MOVING_FLY);
-        }
+    if (enable)
+    {
+        AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+        RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
+        SetFall(false);
+    }
+    else
+    {
+        if (IsFlying() && !IsGravityDisabled())
+            SetFall(true);
+        RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_MASK_MOVING_FLY);
     }
 
     return true;
@@ -13809,18 +13816,15 @@ bool Unit::SetCanTransitionBetweenSwimAndFly(bool enable)
     return true;
 }
 
-bool Unit::SetWaterWalking(bool enable, bool packetOnly /*= false */)
+bool Unit::SetWaterWalking(bool enable)
 {
-    if (!packetOnly)
-    {
-        if (enable == HasUnitMovementFlag(MOVEMENTFLAG_WATERWALKING))
-            return false;
+    if (enable == HasUnitMovementFlag(MOVEMENTFLAG_WATERWALKING))
+        return false;
 
-        if (enable)
-            AddUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
-        else
-            RemoveUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
-    }
+    if (enable)
+        AddUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
+    else
+        RemoveUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
 
     if (enable)
         Movement::PacketSender(this, SMSG_SPLINE_MOVE_SET_WATER_WALK, SMSG_MOVE_WATER_WALK).Send();
@@ -13830,18 +13834,15 @@ bool Unit::SetWaterWalking(bool enable, bool packetOnly /*= false */)
     return true;
 }
 
-bool Unit::SetFeatherFall(bool enable, bool packetOnly /*= false */)
+bool Unit::SetFeatherFall(bool enable)
 {
-    if (!packetOnly)
-    {
-        if (enable == HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW))
-            return false;
+    if (enable == HasUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW))
+        return false;
 
-        if (enable)
-            AddUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
-        else
-            RemoveUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
-    }
+    if (enable)
+        AddUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
+    else
+        RemoveUnitMovementFlag(MOVEMENTFLAG_FALLING_SLOW);
 
     if (enable)
         Movement::PacketSender(this, SMSG_SPLINE_MOVE_SET_FEATHER_FALL, SMSG_MOVE_FEATHER_FALL).Send();
@@ -13851,32 +13852,29 @@ bool Unit::SetFeatherFall(bool enable, bool packetOnly /*= false */)
     return true;
 }
 
-bool Unit::SetHover(bool enable, bool packetOnly /*= false*/, bool /*updateAnimationTier = true*/)
+bool Unit::SetHover(bool enable, bool /*updateAnimTier = true*/)
 {
-    if (!packetOnly)
+    if (enable == HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
+        return false;
+
+    float hoverHeight = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+
+    if (enable)
     {
-        if (enable == HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
-            return false;
-
-        float hoverHeight = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
-
-        if (enable)
+        //! No need to check height on ascent
+        AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
+        if (hoverHeight && GetPositionZ() - GetFloorZ() < hoverHeight)
+            UpdateHeight(GetPositionZ() + hoverHeight);
+    }
+    else
+    {
+        RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
+        //! Dying creatures will MoveFall from setDeathState
+        if (hoverHeight && (!isDying() || GetTypeId() != TYPEID_UNIT))
         {
-            //! No need to check height on ascent
-            AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
-            if (hoverHeight && GetPositionZ() - GetFloorZ() < hoverHeight)
-                UpdateHeight(GetPositionZ() + hoverHeight);
-        }
-        else
-        {
-            RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
-            //! Dying creatures will MoveFall from setDeathState
-            if (hoverHeight && (!isDying() || GetTypeId() != TYPEID_UNIT))
-            {
-                float newZ = std::max<float>(GetFloorZ(), GetPositionZ() - hoverHeight);
-                UpdateAllowedPositionZ(GetPositionX(), GetPositionY(), newZ);
-                UpdateHeight(newZ);
-            }
+            float newZ = std::max<float>(GetFloorZ(), GetPositionZ() - hoverHeight);
+            UpdateAllowedPositionZ(GetPositionX(), GetPositionY(), newZ);
+            UpdateHeight(newZ);
         }
     }
 
@@ -13885,7 +13883,15 @@ bool Unit::SetHover(bool enable, bool packetOnly /*= false*/, bool /*updateAnima
     else
         Movement::PacketSender(this, SMSG_SPLINE_MOVE_UNSET_HOVER, SMSG_MOVE_UNSET_HOVER).Send();
 
-    SendSetPlayHoverAnim(enable);
+    if (IsAlive())
+    {
+        if (IsGravityDisabled() || IsHovering())
+            SetPlayHoverAnim(true);
+        else
+            SetPlayHoverAnim(false);
+    }
+    else if (IsPlayer()) // To update player who dies while flying/hovering
+        SetPlayHoverAnim(false, false);
 
     return true;
 }
@@ -13898,20 +13904,20 @@ void Unit::SendSetVehicleRecId(uint32 vehicleId)
     SendMessageToSet(setVehicleRec.Write(), true);
 }
 
-void Unit::SendSetPlayHoverAnim(bool enable)
+void Unit::SetPlayHoverAnim(bool enable, bool sendUpdate /*= true*/)
 {
+    if (IsPlayingHoverAnim() == enable)
+        return;
+
+    _playHoverAnim = enable;
+
+    if (!sendUpdate)
+        return;
+
     WorldPackets::Misc::SetPlayHoverAnim packet;
     packet.UnitGUID = GetGUID();
     packet.PlayHoverAnim = enable;
-    SendMessageToSet(packet.Write(), IsPlayer());
-}
-
-void Unit::SendMovementSetSplineAnim(AnimationTier anim)
-{
-    WorldPackets::Misc::SetAnimTier packet;
-    packet.Unit = GetGUID();
-    packet.Tier = AsUnderlyingType(anim);
-    SendMessageToSet(packet.Write(), false);
+    SendMessageToSet(packet.Write(), true);
 }
 
 bool Unit::IsSplineEnabled() const

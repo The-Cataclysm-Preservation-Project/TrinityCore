@@ -22,7 +22,7 @@
 
 class Unit;
 
-enum class AnimationTier : uint8;
+enum class AnimTier : uint8;
 
 namespace Movement
 {
@@ -75,7 +75,7 @@ namespace Movement
         /* Plays animation after movement done
          * can't be combined with parabolic movement
          */
-        void SetAnimation(AnimationTier anim, Milliseconds transitionStartTime = 0ms);
+        void SetAnimation(AnimTier anim, uint32 tierTransitionId = 0, Milliseconds transitionStartTime = 0ms);
 
         /* Adds final facing animation
          * sets unit's facing to specified point/angle after all path done
@@ -189,12 +189,15 @@ namespace Movement
         args.flags.Parabolic = true;
     }
 
-    inline void MoveSplineInit::SetAnimation(AnimationTier anim, Milliseconds transitionStartTime /*= 0ms*/)
+    inline void MoveSplineInit::SetAnimation(AnimTier anim, uint32 tierTransitionId /*= 0*/, Milliseconds transitionStartTime /*= 0ms*/)
     {
         args.effect_start_time_percent = 0.f;
         args.effect_start_time = transitionStartTime;
-        args.animTier = anim;
-        args.flags.Animation = true;
+        args.animTier.emplace();
+        args.animTier->TierTransitionId = tierTransitionId;
+        args.animTier->AnimTier = anim;
+        if (!tierTransitionId)
+            args.flags.Animation = true;
     }
 
     inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }

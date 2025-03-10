@@ -783,8 +783,7 @@ struct boss_ragnaros_firelands : public BossAI
                     if (GameObject* platform = instance->GetGameObject(DATA_RAGNAROS_PLATFORM))
                         platform->SetDestructibleState(GO_DESTRUCTIBLE_DAMAGED);
                     me->RemoveAurasDueToSpell(SPELL_LEGS_SUBMERGE);
-                    me->SendSetPlayHoverAnim(true);
-                    me->SetAnimationTier(AnimationTier::Fly, false);
+                    me->SetDisableGravity(true);
                     me->SetControlled(false, UNIT_STATE_ROOT);
                     me->PlayOneShotAnimKitId(ANIM_KIT_ID_EMERGE_HEROIC);
                     instance->SetData(DATA_MAGMA_KNOCKBACK, 0);
@@ -808,8 +807,6 @@ struct boss_ragnaros_firelands : public BossAI
                     Talk(SAY_BREAK_FREE);
                     DoCastSelf(SPELL_DREADFLAME_SUMMON_CONTROLLER);
                     me->PlayOneShotAnimKitId(ANIM_KIT_ID_BREAK_FREE);
-                    me->SendSetPlayHoverAnim(false);
-                    me->SetAnimationTier(AnimationTier::Ground, false);
                     me->SetDisableGravity(false);
                     _canBeKilled = true;
                     events.ScheduleEvent(EVENT_SET_AGGRESSIVE_REACT_STATE, 5s, 0, PHASE_FOUR);

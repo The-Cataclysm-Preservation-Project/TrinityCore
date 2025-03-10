@@ -279,7 +279,7 @@ class npc_enslaved_proto_drake : public CreatureScript
             {
                 if (type == WAYPOINT_MOTION_TYPE && id == POINT_LAST)
                 {
-                    me->SetAnimationTier(AnimationTier::Ground);
+                    me->SetAnimTier(AnimTier::Ground);
                 }
             }
 
@@ -288,7 +288,7 @@ class npc_enslaved_proto_drake : public CreatureScript
                 if (type == TYPE_PROTODRAKE_AT && data == DATA_PROTODRAKE_MOVE && !_setData && me->GetDistance(protodrakeCheckPos) < 5.0f)
                 {
                     _setData = true;
-                    me->SetAnimationTier(AnimationTier::Fly);
+                    me->SetAnimTier(AnimTier::Fly);
                     me->GetMotionMaster()->MovePath(PATH_PROTODRAKE, false);
                 }
             }

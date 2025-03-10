@@ -4066,7 +4066,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
 
     setDeathState(ALIVE);
 
-    SetWaterWalking(false, true);
+    SetWaterWalking(false);
     if (!HasUnitState(UNIT_STATE_STUNNED))
         SetRooted(false);
 
@@ -23331,13 +23331,13 @@ void Player::SendAurasForTarget(Unit* target) const
         These movement packets are usually found in SMSG_COMPRESSED_MOVES
     */
     if (target->HasAuraType(SPELL_AURA_FEATHER_FALL))
-        target->SetFeatherFall(true, true);
+        target->SetFeatherFall(true);
 
     if (target->HasAuraType(SPELL_AURA_WATER_WALK))
-        target->SetWaterWalking(true, true);
+        target->SetWaterWalking(true);
 
     if (target->HasAuraType(SPELL_AURA_HOVER))
-        target->SetHover(true, true);
+        target->SetHover(true);
 
     Unit::VisibleAuraMap const* visibleAuras = target->GetVisibleAuras();
 
@@ -25338,7 +25338,7 @@ void Player::HandleFall(MovementInfo const& movementInfo)
     }
 }
 
-bool Player::SetDisableGravity(bool disable, bool /*packetOnly = false*/, bool /*updateAnimationTier = true*/)
+bool Player::SetDisableGravity(bool disable, bool /*updateAnimTier = true*/)
 {
     if (disable == IsGravityDisabled())
         return false;
@@ -25346,12 +25346,12 @@ bool Player::SetDisableGravity(bool disable, bool /*packetOnly = false*/, bool /
     if (IsMovedByClient() && IsInWorld())
         MovementPacketSender::SendMovementFlagChangeToMover(this, MOVEMENTFLAG_DISABLE_GRAVITY, disable);
 
-    Unit::SetDisableGravity(disable, false, false);
+    Unit::SetDisableGravity(disable, false);
 
     return true;
 }
 
-bool Player::SetCanFly(bool enable, bool /*packetOnly = false*/)
+bool Player::SetCanFly(bool enable)
 {
     if (enable == HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
         return false;

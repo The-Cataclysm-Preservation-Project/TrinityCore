@@ -977,8 +977,8 @@ class TC_GAME_API Unit : public WorldObject
         bool IsStandState() const;
         void SetStandState(uint8 state);
 
-        void SetAnimationTier(AnimationTier tier, bool immediate = true);
-        AnimationTier GetAnimationTier() const { return static_cast<AnimationTier>(GetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_ANIM_TIER)); }
+        void SetAnimTier(AnimTier tier, bool immediate = true);
+        AnimTier GetAnimTier() const { return static_cast<AnimTier>(GetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_ANIM_TIER)); }
 
         void  SetStandFlags(uint8 flags) { SetByteFlag(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_VIS_FLAG, flags); }
         void  RemoveStandFlags(uint8 flags) { RemoveByteFlag(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_VIS_FLAG, flags); }
@@ -1166,21 +1166,21 @@ class TC_GAME_API Unit : public WorldObject
 
         void MonsterMoveWithSpeed(float x, float y, float z, float speed, bool generatePath = false, bool forceDestination = false);
 
-        void SendSetPlayHoverAnim(bool enable);
-        void SendMovementSetSplineAnim(AnimationTier anim);
+        bool IsPlayingHoverAnim() const { return _playHoverAnim; }
+        void SetPlayHoverAnim(bool enable, bool sendUpdate = true);
 
         bool IsGravityDisabled() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY); }
         bool IsWalking() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING); }
         bool IsHovering() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_HOVER); }
         bool SetWalk(bool enable);
-        virtual bool SetDisableGravity(bool disable, bool packetOnly = false, bool updateAnimationTier = true);
+        virtual bool SetDisableGravity(bool disable, bool updateAnimTier = true);
         bool SetFall(bool enable);
         bool SetSwim(bool enable);
-        virtual bool SetCanFly(bool enable, bool packetOnly = false);
+        virtual bool SetCanFly(bool enable);
         virtual bool SetCanTransitionBetweenSwimAndFly(bool enable);
-        bool SetWaterWalking(bool enable, bool packetOnly = false);
-        bool SetFeatherFall(bool enable, bool packetOnly = false);
-        virtual bool SetHover(bool enable, bool packetOnly = false, bool updateAnimationTier = true);
+        bool SetWaterWalking(bool enable);
+        bool SetFeatherFall(bool enable);
+        virtual bool SetHover(bool enable, bool updateAnimTier = true);
         void SendSetVehicleRecId(uint32 vehicleId);
 
         void SetOrientationTowards(WorldObject const* target);
@@ -1919,6 +1919,8 @@ class TC_GAME_API Unit : public WorldObject
 
         uint32 _oldFactionId;           ///< faction before charm
         bool _isWalkingBeforeCharm;     ///< Are we walking before we were charmed?
+
+        bool _playHoverAnim;
 
         std::unique_ptr<SpellHistory> m_spellHistory;
 

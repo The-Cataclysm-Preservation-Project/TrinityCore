@@ -187,8 +187,6 @@ struct npc_grim_batol_battered_red_drake: public VehicleAI
             me->RemoveAurasDueToSpell(SPELL_NET);
             DoCastSelf(SPELL_BOMBING_RUN_PROTECTION_TRIGGER);
 
-            // Yes, this is stupid. Don't argue. Confirmed by 2012 sniffs.
-            me->SetDisableGravity(true, false, false);
             summon->CastSpell(summon, SPELL_NET_SCRIPT);
             summon->DespawnOrUnsummon(3s);
         }
@@ -221,7 +219,6 @@ struct npc_grim_batol_battered_red_drake: public VehicleAI
             _instance->SetData(DATA_START_BATTERED_RED_DRAKE_DESPAWN_EVENT, IN_PROGRESS);
             me->SetControlled(true, UNIT_STATE_ROOT);
             me->PlayOneShotAnimKitId(ANIM_KIT_ID_LIFTOFF);
-            me->SetAnimationTier(AnimationTier::Fly);
 
             _playerGuid = player->GetGUID();
 

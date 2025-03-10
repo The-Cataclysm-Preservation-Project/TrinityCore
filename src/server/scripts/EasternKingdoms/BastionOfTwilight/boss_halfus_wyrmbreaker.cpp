@@ -397,7 +397,6 @@ struct npc_halfus_enslaved_dragon final : public ScriptedAI
     void JustDied(Unit* /*killer*/) override
     {
         me->SetDisableGravity(false);
-        me->SendSetPlayHoverAnim(false);
         me->DespawnOrUnsummon(6s);
 
         if (Creature* protoBehemoth = _instance->GetCreature(DATA_PROTO_BEHEMOTH))

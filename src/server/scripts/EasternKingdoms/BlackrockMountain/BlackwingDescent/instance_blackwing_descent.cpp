@@ -341,7 +341,6 @@ class instance_blackwing_descent : public InstanceMapScript
 
                                 atramedes->SetDisableGravity(true);
                                 atramedes->SetReactState(REACT_PASSIVE);
-                                atramedes->SendSetPlayHoverAnim(true);
 
                                 if (atramedes->IsAIEnabled())
                                     atramedes->AI()->DoAction(ACTION_START_ATRAMEDES_INTRO);

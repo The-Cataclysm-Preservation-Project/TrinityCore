@@ -300,9 +300,7 @@ class boss_sindragosa : public CreatureScript
             {
                 BossAI::JustReachedHome();
                 instance->SetBossState(DATA_SINDRAGOSA, FAIL);
-                me->SetCanFly(false);
                 me->SetDisableGravity(false);
-                me->SetAnimationTier(AnimationTier::Ground);
                 me->SetReactState(REACT_DEFENSIVE);
             }
 

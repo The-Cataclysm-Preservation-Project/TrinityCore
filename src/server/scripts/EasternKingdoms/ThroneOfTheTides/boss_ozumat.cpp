@@ -473,14 +473,12 @@ struct npc_ozumat_neptulon : public ScriptedAI
             case NPC_UNYIELDING_BEHEMOTH:
                 summon->SetReactState(REACT_PASSIVE);
                 summon->SetDisableGravity(true);
-                summon->SendSetPlayHoverAnim(true);
                 summon->SetCorpseDelay(4);
                 summon->m_Events.AddEvent(new ChargeToWindowEvent(summon), summon->m_Events.CalculateTime(2 * IN_MILLISECONDS));
                 break;
             case NPC_BLIGHT_BEAST:
                 summon->SetReactState(REACT_PASSIVE);
                 summon->SetDisableGravity(true);
-                summon->SendSetPlayHoverAnim(true);
                 summon->SetCorpseDelay(4);
                 summon->m_Events.AddEvent(new ChargeToWindowEvent(summon), summon->m_Events.CalculateTime(2400));
                 break;
@@ -671,7 +669,6 @@ struct npc_ozumat_unyielding_behemoth : public ScriptedAI
             me->AttackStop();
             me->SetReactState(REACT_PASSIVE);
             me->SetDisableGravity(true);
-            me->SendSetPlayHoverAnim(true);
             DoCast(summon, SPELL_SHADOW_BLAST_RIDE_VEHICLE);
             _events.ScheduleEvent(EVENT_DISABLE_HOVER_ANIM, 400ms);
             _events.ScheduleEvent(EVENT_SHADOW_BLAST_VISUAL, 1s + 200ms);
@@ -709,14 +706,13 @@ struct npc_ozumat_unyielding_behemoth : public ScriptedAI
                     DoCastAOE(SPELL_SHADOW_BLAST);
                     break;
                 case EVENT_DISABLE_HOVER_ANIM:
-                    me->SendSetPlayHoverAnim(false);
+                    me->SetPlayHoverAnim(false);
                     break;
                 case EVENT_SHADOW_BLAST_VISUAL:
                     DoCastAOE(SPELL_SHADOW_BLAST_VISUAL);
                     break;
                 case EVENT_FINISH_SHADOW_BLAST:
                     me->SetDisableGravity(false);
-                    me->SendSetPlayHoverAnim(false);
                     me->SetReactState(REACT_AGGRESSIVE);
                     if (Unit* victim = me->GetVictim())
                         AttackStart(victim);
@@ -773,7 +769,6 @@ class spell_ozumat_jump_to_ground : public SpellScript
         if (Unit* caster = GetCaster())
         {
             caster->SetDisableGravity(false);
-            caster->SendSetPlayHoverAnim(false);
         }
     }
 
@@ -821,7 +816,7 @@ class spell_ozumat_shadow_blast_AuraScript : public AuraScript
     {
         if (Unit* target = GetTarget())
         {
-            target->SendSetPlayHoverAnim(true);
+            target->SetPlayHoverAnim(true);
             target->CastSpell(target, SPELL_SHADOW_BLAST_MISSILE);
 
             if (Vehicle* vehicle = target->GetVehicleKit())

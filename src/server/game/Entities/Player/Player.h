@@ -2176,8 +2176,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         WorldObject* m_seer;
         void SetFallInformation(uint32 time, float z);
         void HandleFall(MovementInfo const& movementInfo);
-        bool SetDisableGravity(bool disable, bool packetOnly = false, bool updateAnimationTier = true) override;
-        bool SetCanFly(bool enable, bool packetOnly = false) override;
+        bool SetDisableGravity(bool disable, bool updateAnimTier = true) override;
+        bool SetCanFly(bool enable) override;
         bool SetCanTransitionBetweenSwimAndFly(bool enable) override;
         void SendMovementSetCollisionHeight(float height, UpdateCollisionHeightReason reason);
 

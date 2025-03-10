@@ -973,7 +973,7 @@ class spell_alakir_wind_burst : public AuraScript
 {
     void HandlePeriodic(AuraEffect const* /*aurEff*/)
     {
-        GetTarget()->SetCanFly(true, true);
+        GetTarget()->SetCanFly(true);
     }
 
     void Register() override

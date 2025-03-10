@@ -692,7 +692,7 @@ void ObjectMgr::LoadCreatureTemplateAddons()
             creatureAddon.standState = 0;
         }
 
-        if (AnimationTier(creatureAddon.animTier) >= AnimationTier::Max)
+        if (AnimTier(creatureAddon.animTier) >= AnimTier::Max)
         {
             TC_LOG_ERROR("sql.sql", "Creature (Entry: %u) has invalid animation tier (%u) defined in `creature_template_addon`. Truncated to 0.", entry, creatureAddon.animTier);
             creatureAddon.animTier = 0;
@@ -1237,7 +1237,7 @@ void ObjectMgr::LoadCreatureAddons()
             creatureAddon.standState = 0;
         }
 
-        if (AnimationTier(creatureAddon.animTier) >= AnimationTier::Max)
+        if (AnimTier(creatureAddon.animTier) >= AnimTier::Max)
         {
             TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) has invalid animation tier (%u) defined in `creature_addon`. Truncated to 0.", guid, creatureAddon.animTier);
             creatureAddon.animTier = 0;

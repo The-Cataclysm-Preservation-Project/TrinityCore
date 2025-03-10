@@ -650,7 +650,7 @@ struct npc_gilnean_crow : public PassiveAI
             {
                 case EVENT_APPLY_HOVER_BYTES:
                     me->SetStandState(UNIT_STAND_STATE_SIT);
-                    me->SetAnimationTier(AnimationTier::Submerged);
+                    me->SetAnimTier(AnimTier::Submerged);
                     _events.ScheduleEvent(EVENT_FLY_AWAY_1, 1s);
                     break;
                 case EVENT_FLY_AWAY_1:

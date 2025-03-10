@@ -707,7 +707,6 @@ struct npc_maloriak_experiment : public ScriptedAI
         {
             case POINT_GROUND:
                 me->SetDisableGravity(false);
-                me->SendSetPlayHoverAnim(false);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                 me->SetReactState(REACT_AGGRESSIVE);
                 DoZoneInCombat();

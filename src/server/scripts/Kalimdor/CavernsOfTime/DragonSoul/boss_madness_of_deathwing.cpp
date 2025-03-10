@@ -1359,7 +1359,6 @@ struct npc_madness_of_deathwing_thrall : public ScriptedAI
             case ACTION_FIRE_DRAGON_SOUL:
                 _events.Reset();
                 me->SetDisableGravity(true);
-                me->SendSetPlayHoverAnim(true);
                 DoCastAOE(SPELL_FIRE_DRAGON_SOUL_ASPECTS);
                 DoCastAOE(SPELL_TRIGGER_ASPECT_YELL);
                 DoCastSelf(SPELL_ASTRAL_RECALL_OUTRO);
@@ -1396,7 +1395,6 @@ struct npc_madness_of_deathwing_thrall : public ScriptedAI
                 case EVENT_PLAY_MOVIE:
                     DoCastAOE(SPELL_PLAY_MOVIE);
                     me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                    me->SendSetPlayHoverAnim(false);
                     me->SetDisableGravity(false);
 
                     if (Creature* ysera = _instance->GetCreature(DATA_YSERA_MADNESS_OF_DEATHWING))
@@ -2142,14 +2140,14 @@ class spell_madness_of_deathwing_concentration : public AuraScript
                 if (creature->IsAIEnabled())
                     creature->AI()->SetGUID(GetTarget()->GetGUID(), DATA_FOCUSED_LIMB);
 
-        GetTarget()->SetAnimationTier(AnimationTier::Fly);
+        GetTarget()->SetAnimTier(AnimTier::Fly);
         for (uint8 i = 0; i < 2; ++i)
             GetTarget()->CastSpell(GetTarget(), SPELL_SUMMON_COSMETIC_TENTACLE);
     }
 
     void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        GetTarget()->SetAnimationTier(AnimationTier::Ground);
+        GetTarget()->SetAnimTier(AnimTier::Ground);
     }
 
     void Register() override

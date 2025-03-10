@@ -274,7 +274,6 @@ struct boss_glubtok : public BossAI
                     Talk(SAY_ARCANE_POWER);
                     DoCastSelf(SPELL_ARCANE_POWER);
                     me->SetDisableGravity(true);
-                    me->SendSetPlayHoverAnim(true);
 
                     Movement::MoveSplineInit init(me);
                     init.MoveTo(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 2.0f, false);

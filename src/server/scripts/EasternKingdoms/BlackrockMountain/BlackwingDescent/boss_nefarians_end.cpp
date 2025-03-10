@@ -400,14 +400,13 @@ struct boss_nefarians_end : public BossAI
         {
             events.ScheduleEvent(EVENT_CHAIN_ONYXIA, 1s, 0, PHASE_ONE);
             events.ScheduleEvent(EVENT_REMOVE_TRANSFORM_AURA, 26s + 700ms, 0, PHASE_ONE);
-            me->SendSetPlayHoverAnim(false);
+            me->SetDisableGravity(false);
             DoCastSelf(SPELL_INTRO_2_STALKER_TRANSFORM);
             DoCastSelf(SPELL_INTRO_3_SHRINK_AURA);
         }
         else
         {
-            me->AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
-            me->SetAnimationTier(AnimationTier::Fly);
+            me->SetDisableGravity(true);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_SELECTABLE);
             me->GetMotionMaster()->MoveCyclicPath(NefarianCyclicRespawnPath, CyclicRespawnPathPoints, false, true, 14.0f);
             DoCastSelf(SPELL_INTRO_5A_START_FIGHT_PROC);
@@ -634,7 +633,6 @@ struct boss_nefarians_end : public BossAI
                     me->RemoveAurasDueToSpell(SPELL_INTRO_2_STALKER_TRANSFORM);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     me->SetDisableGravity(true);
-                    me->SendSetPlayHoverAnim(true);
                     events.ScheduleEvent(EVENT_LIFT_OFF, 2s, 0, PHASE_ONE);
                     break;
                 case EVENT_LIFT_OFF:
@@ -666,7 +664,6 @@ struct boss_nefarians_end : public BossAI
                     break;
                 case EVENT_LANDED:
                     me->SetDisableGravity(false);
-                    me->SendSetPlayHoverAnim(false);
 
                     if (events.IsInPhase(PHASE_ONE))
                     {
@@ -735,7 +732,6 @@ struct boss_nefarians_end : public BossAI
                 case EVENT_LIFTOFF_PHASE_TWO:
                     DoCastSelf(SPELL_NEFARIAN_PHASE_2_HEALTH_AURA);
                     me->SetDisableGravity(true);
-                    me->SendSetPlayHoverAnim(true);
                     me->GetMotionMaster()->MovePoint(POINT_NONE, NefarianElevatorLiftOffPosition);
                     events.ScheduleEvent(EVENT_SUMMON_CHROMATIC_PROTOTYPES, 400ms, 0, PHASE_TWO);
                     events.ScheduleEvent(EVENT_LOWER_ELEVATOR, 800ms, 0, PHASE_TWO);
@@ -790,7 +786,6 @@ struct boss_nefarians_end : public BossAI
                         instance->DoUpdateWorldState(WORLD_STATE_ID_KEEPING_IT_IN_THE_FAMILY, 0);
 
                     me->RemoveAurasDueToSpell(SPELL_NEFARIAN_PHASE_2_HEALTH_AURA);
-                    me->SendSetPlayHoverAnim(true);
                     me->GetMotionMaster()->MoveLand(POINT_LAND, NefarianElevatorLandPhaseThreePosition);
                     break;
                 case EVENT_ELECTROCUTE:

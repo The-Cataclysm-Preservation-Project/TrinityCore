@@ -129,7 +129,6 @@ class PrepareDelayedAttackEvent : public BasicEvent
         {
             _owner->RemoveAurasDueToSpell(SPELL_WATER_JUMP_THROUGH_WINDOW_VISUAL);
             _owner->SetDisableGravity(false);
-            _owner->SendSetPlayHoverAnim(false);
             _owner->SetMovementAnimKitId(0);
             _owner->m_Events.AddEvent(new DelayedAttackEvent(_owner), _owner->m_Events.CalculateTime(1000));
             return true;
@@ -281,7 +280,6 @@ struct boss_lady_nazjar : public BossAI
                 {
                     invader->SetReactState(REACT_PASSIVE);
                     invader->SetDisableGravity(true);
-                    invader->SendSetPlayHoverAnim(true);
                     invader->SetMovementAnimKitId(3);
                     invader->CastSpell(invader, SPELL_WATER_WINDOW_BREAK_VISUAL);
                     invader->GetMotionMaster()->MoveJump(LadyNazjarAddJumpPositions[i], 16.0f, 11.0f);

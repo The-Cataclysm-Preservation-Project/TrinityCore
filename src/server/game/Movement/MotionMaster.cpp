@@ -343,29 +343,29 @@ void MotionMaster::MoveCloserAndStop(uint32 id, Unit* target, float distance)
     }
 }
 
-void MotionMaster::MoveLand(uint32 id, Position const& pos, Optional<float> velocity /*= { }*/)
+void MotionMaster::MoveLand(uint32 id, Position const& pos, Optional<int32> tierTransitionId /*= { }*/, Optional<float> velocity /*= { }*/)
 {
     TC_LOG_DEBUG("movement.motionmaster", "MotionMaster::MoveLand: '%s', landing point Id: %u (X: %f, Y: %f, Z: %f)", _owner->GetGUID().ToString().c_str(), id, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(PositionToVector3(pos), false);
+    init.SetAnimation(AnimTier::Ground, tierTransitionId.value_or(1));
     init.SetSmooth();
     init.SetFly();
-    init.SetAnimation(AnimationTier::Ground);
     if (velocity)
         init.SetVelocity(velocity.value());
     Mutate(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id), MOTION_SLOT_ACTIVE);
 }
 
-void MotionMaster::MoveTakeoff(uint32 id, Position const& pos, Optional<float> velocity /*= { }*/)
+void MotionMaster::MoveTakeoff(uint32 id, Position const& pos, Optional<int32> tierTransitionId /*= { }*/, Optional<float> velocity /*= { }*/)
 {
     TC_LOG_DEBUG("movement.motionmaster", "MotionMaster::MoveTakeoff: '%s', landing point Id: %u (X: %f, Y: %f, Z: %f)", _owner->GetGUID().ToString().c_str(), id, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(PositionToVector3(pos), false);
     init.SetSmooth();
-    init.SetFly();
-    init.SetAnimation(AnimationTier::Hover);
+    init.SetAnimation(AnimTier::Fly, tierTransitionId.value_or(2));
+    init.SetFly(); // ensure smooth animation even if gravity is disabled after calling this function
     if (velocity)
         init.SetVelocity(velocity.value());
     Mutate(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id), MOTION_SLOT_ACTIVE);
@@ -501,20 +501,15 @@ void MotionMaster::MoveCirclePath(float x, float y, float z, float radius, bool 
         init.Path().push_back(point);
     }
 
+    init.SetCyclic();
     if (_owner->IsFlying())
     {
         init.SetFly();
-        init.SetCyclic();
-        init.SetAnimation(AnimationTier::Hover);
-        init.SetUncompressed();
+        init.SetAnimation(AnimTier::Hover);
     }
     else
-    {
         init.SetWalk(true);
-        init.SetCyclic();
-    }
 
-    init.SetSmooth();
     if (velocity > 0.f)
         init.SetVelocity(velocity);
 

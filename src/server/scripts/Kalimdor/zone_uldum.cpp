@@ -520,7 +520,6 @@ class spell_uldum_rescue_survivor : public SpellScript
         {
             creature->ExitVehicle();
             creature->SetDisableGravity(false);
-            creature->SetAnimationTier(AnimationTier::Ground, false);
             creature->DespawnOrUnsummon(30s);
 
             Position dest = creature->GetPosition();

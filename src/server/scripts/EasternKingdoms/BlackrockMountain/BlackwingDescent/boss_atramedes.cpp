@@ -367,7 +367,6 @@ struct boss_atramedes : public BossAI
                 break;
             case POINT_LAND_INTRO:
                 me->SetDisableGravity(false);
-                me->SendSetPlayHoverAnim(false);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
                 me->SetReactState(REACT_AGGRESSIVE);
                 break;
@@ -380,7 +379,6 @@ struct boss_atramedes : public BossAI
                 break;
             case POINT_LAND:
                 me->SetDisableGravity(false);
-                me->SendSetPlayHoverAnim(false);
                 events.SetPhase(PHASE_GROUND);
                 events.ScheduleEvent(EVENT_REENGAGE_PLAYERS, 800ms, 0, PHASE_GROUND);
                 events.ScheduleEvent(EVENT_SONAR_PULSE, 14s, 0, PHASE_GROUND);

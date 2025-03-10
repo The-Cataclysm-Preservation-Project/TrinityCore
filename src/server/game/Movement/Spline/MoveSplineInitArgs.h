@@ -25,7 +25,7 @@
 
 class Unit;
 
-enum class AnimationTier : uint8;
+enum class AnimTier : uint8;
 
 namespace Movement
 {
@@ -45,6 +45,12 @@ namespace Movement
         FacingInfo() : angle(0.0f), type(MONSTER_MOVE_NORMAL) { f.x = f.y = f.z = 0.0f; }
     };
 
+    struct AnimTierTransition
+    {
+        uint32 TierTransitionId = 0;
+        ::AnimTier AnimTier = ::AnimTier(0);
+    };
+
     struct MoveSplineInitArgs
     {
         explicit MoveSplineInitArgs(size_t path_capacity = 16);
@@ -62,7 +68,7 @@ namespace Movement
         Milliseconds effect_start_time;  // absolute value
         uint32 splineId;
         float initialOrientation;
-        Optional<AnimationTier> animTier;
+        Optional<AnimTierTransition> animTier;
         bool walk;
         bool HasVelocity;
         bool TransformForTransport;

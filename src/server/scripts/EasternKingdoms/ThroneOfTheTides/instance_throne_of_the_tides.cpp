@@ -94,7 +94,6 @@ class FaceDirectionEvent : public BasicEvent
         {
             _owner->RemoveAurasDueToSpell(SPELL_WATER_JUMP_THROUGH_WINDOW_VISUAL);
             _owner->SetDisableGravity(false);
-            _owner->SendSetPlayHoverAnim(false);
             _owner->SetMovementAnimKitId(0);
             _owner->SetFacingTo(_facingAngle);
             _owner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
@@ -401,7 +400,6 @@ class instance_throne_of_the_tides : public InstanceMapScript
                                     {
                                         invader->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                                         invader->SetDisableGravity(true);
-                                        invader->SendSetPlayHoverAnim(true);
                                         invader->SetMovementAnimKitId(3);
                                         invader->SetReactState(REACT_PASSIVE);
                                         invader->GetMotionMaster()->MovePoint(0, TotTFirstInvaderInitialMovePositions[i], false);
@@ -418,7 +416,6 @@ class instance_throne_of_the_tides : public InstanceMapScript
                                     {
                                         invader->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                                         invader->SetDisableGravity(true);
-                                        invader->SendSetPlayHoverAnim(true);
                                         invader->SetMovementAnimKitId(3);
                                         invader->SetReactState(REACT_PASSIVE);
                                         invader->GetMotionMaster()->MovePoint(0, TotTLadyNazjarInvaderInitialMovePositions[i], false);
@@ -543,7 +540,7 @@ class instance_throne_of_the_tides : public InstanceMapScript
                         break;
                     default:
                         break;
- 
+
                 }
             }
 

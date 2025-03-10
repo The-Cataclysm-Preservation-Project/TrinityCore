@@ -31,7 +31,7 @@ namespace WorldPackets
     }
 }
 
-enum class AnimationTier : uint8;
+enum class AnimTier : uint8;
 
 namespace Movement
 {
@@ -82,7 +82,7 @@ namespace Movement
         int32           point_Idx;
         int32           point_Idx_offset;
         float           velocity;
-        Optional<AnimationTier> anim_tier;
+        Optional<AnimTierTransition> anim_tier;
 
         void init_spline(MoveSplineInitArgs const& args);
 
@@ -142,7 +142,7 @@ namespace Movement
         int32 MaxPathIdx() const { return spline.last() - 1; }
         bool HasStarted() const { return time_passed > 0; }
 
-        Optional<AnimationTier> GetAnimation() const { return anim_tier; }
+        Optional<AnimTier> GetAnimation() const { return anim_tier ? anim_tier->AnimTier : Optional<AnimTier>{}; }
 
         bool onTransport;
         bool splineIsFacingOnly;

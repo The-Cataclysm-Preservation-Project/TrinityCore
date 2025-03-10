@@ -273,7 +273,6 @@ struct boss_theralion final : public BossAI
     {
         _EnterEvadeMode();
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
-        me->SendSetPlayHoverAnim(false);
         me->SetDisableGravity(false);
 
         summons.DespawnAll();
@@ -311,7 +310,6 @@ struct boss_theralion final : public BossAI
                 me->SetReactState(REACT_PASSIVE);
                 me->PlayOneShotAnimKitId(ANIM_KIT_LIFTOFF);
                 me->SetDisableGravity(true);
-                me->SendSetPlayHoverAnim(true);
                 _dazzlingDestructionCount = 0;
                 events.SetPhase(PHASE_AIR);
                 events.CancelEvent(EVENT_FABULOUS_FLAMES);
@@ -355,7 +353,6 @@ struct boss_theralion final : public BossAI
                 break;
             case POINT_LAND:
                 me->SetDisableGravity(false);
-                me->SendSetPlayHoverAnim(false);
                 events.ScheduleEvent(EVENT_ATTACK_PLAYERS, 2s);
                 break;
             default:
@@ -514,7 +511,6 @@ struct boss_valiona final : public BossAI
     {
         _EnterEvadeMode();
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
-        me->SendSetPlayHoverAnim(false);
         me->SetDisableGravity(false);
         summons.DespawnAll();
         _DespawnAtEvade();
@@ -554,7 +550,6 @@ struct boss_valiona final : public BossAI
                 events.CancelEvent(EVENT_DEVOURING_FLAMES);
                 me->PlayOneShotAnimKitId(ANIM_KIT_LIFTOFF);
                 me->SetDisableGravity(true);
-                me->SendSetPlayHoverAnim(true);
                 _deepBreathCount = 0;
                 events.ScheduleEvent(EVENT_FLY_TO_DESTINATION, 1s);
                 events.ScheduleEvent(EVENT_DEEP_BREATH, 1min + 25s + 100ms);
@@ -606,7 +601,6 @@ struct boss_valiona final : public BossAI
                 break;
             case POINT_LAND:
                 me->SetDisableGravity(false);
-                me->SendSetPlayHoverAnim(false);
                 events.ScheduleEvent(EVENT_ATTACK_PLAYERS, 2s);
                 events.ScheduleEvent(EVENT_BLACKOUT, 10s + 500ms);
                 events.ScheduleEvent(EVENT_DEVOURING_FLAMES, 25s);

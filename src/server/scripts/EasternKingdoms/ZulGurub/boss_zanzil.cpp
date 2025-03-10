@@ -386,7 +386,6 @@ struct npc_zanzil_zanzili_berserker : public ScriptedAI
                 me->SetAIAnimKitId(0);
                 me->GetMotionMaster()->MoveFall();
                 me->SetDisableGravity(false);
-                me->SendSetPlayHoverAnim(false);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
                 DoZoneInCombat();
                 _events.ScheduleEvent(EVENT_PURSUIT, 2s);

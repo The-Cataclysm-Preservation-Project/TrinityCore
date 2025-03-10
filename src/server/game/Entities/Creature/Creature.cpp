@@ -1097,19 +1097,19 @@ Unit* Creature::SelectVictim()
     return nullptr;
 }
 
-bool Creature::SetDisableGravity(bool disable, bool packetOnly /*= false*/, bool updateAnimationTier /*= true*/)
+bool Creature::SetDisableGravity(bool disable, bool updateAnimTier /*= true*/)
 {
-    if (!Unit::SetDisableGravity(disable, packetOnly, updateAnimationTier))
+    if (!Unit::SetDisableGravity(disable, updateAnimTier))
         return false;
 
-    if (updateAnimationTier && IsAlive() && !HasUnitState(UNIT_STATE_ROOT))
+    if (updateAnimTier && IsAlive() && !HasUnitState(UNIT_STATE_ROOT))
     {
         if (IsGravityDisabled())
-            SetAnimationTier(AnimationTier::Fly);
+            SetAnimTier(AnimTier::Fly);
         else if (IsHovering())
-            SetAnimationTier(AnimationTier::Hover);
+            SetAnimTier(AnimTier::Hover);
         else
-            SetAnimationTier(AnimationTier::Ground);
+            SetAnimTier(AnimTier::Ground);
     }
 
     WorldPacket data(disable ? SMSG_SPLINE_MOVE_GRAVITY_DISABLE : SMSG_SPLINE_MOVE_GRAVITY_ENABLE);
@@ -1119,27 +1119,27 @@ bool Creature::SetDisableGravity(bool disable, bool packetOnly /*= false*/, bool
     return true;
 }
 
-bool Creature::SetHover(bool enable, bool packetOnly /*= false*/, bool updateAnimationTier /*= true*/)
+bool Creature::SetHover(bool enable, bool updateAnimTier /*= true*/)
 {
-    if (!Unit::SetHover(enable, packetOnly, updateAnimationTier))
+    if (!Unit::SetHover(enable, updateAnimTier))
         return false;
 
-    if (updateAnimationTier && IsAlive() && !HasUnitState(UNIT_STATE_ROOT))
+    if (updateAnimTier && IsAlive() && !HasUnitState(UNIT_STATE_ROOT))
     {
         if (IsGravityDisabled())
-            SetAnimationTier(AnimationTier::Fly);
+            SetAnimTier(AnimTier::Fly);
         else if (IsHovering())
-            SetAnimationTier(AnimationTier::Hover);
+            SetAnimTier(AnimTier::Hover);
         else
-            SetAnimationTier(AnimationTier::Ground);
+            SetAnimTier(AnimTier::Ground);
     }
 
     return true;
 }
 
-bool Creature::SetCanFly(bool enable, bool packetOnly /*= false*/)
+bool Creature::SetCanFly(bool enable)
 {
-    if (!Unit::SetCanFly(enable, packetOnly))
+    if (!Unit::SetCanFly(enable))
         return false;
 
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_FLYING : SMSG_SPLINE_MOVE_UNSET_FLYING);
@@ -2540,7 +2540,7 @@ bool Creature::LoadCreaturesAddon()
 
     // UNIT_FIELD_BYTES_1 values
     SetStandState(UnitStandStateType(creatureAddon->standState));
-    SetAnimationTier(AnimationTier(creatureAddon->animTier));
+    SetAnimTier(AnimTier(creatureAddon->animTier));
     SetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_VIS_FLAG, creatureAddon->visFlags);
 
     // UNIT_FIELD_BYTES_2 values

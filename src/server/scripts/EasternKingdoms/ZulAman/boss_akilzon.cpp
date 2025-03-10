@@ -563,7 +563,6 @@ class spell_akilzon_electrical_storm : public AuraScript
     {
         Unit* target = GetTarget();
         target->SetDisableGravity(true);
-        target->SendSetPlayHoverAnim(true);
         target->SetControlled(true, UNIT_STATE_ROOT);
         target->CastSpell(target, SPELL_ELECTRICAL_STORM_AREA_AURA, true);
         target->CastSpell(target, SPELL_TELEPORT_SELF, true);
@@ -575,7 +574,6 @@ class spell_akilzon_electrical_storm : public AuraScript
         target->SetDisableGravity(false);
         target->SetControlled(false, UNIT_STATE_ROOT);
         target->RemoveAurasDueToSpell(SPELL_ELECTRICAL_STORM_AREA_AURA);
-        target->SendSetPlayHoverAnim(false);
         target->CastSpell(target, GetSpellInfo()->Effects[EFFECT_2].BasePoints);
     }
 

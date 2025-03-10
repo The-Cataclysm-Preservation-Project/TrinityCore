@@ -129,9 +129,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool CanEnterWater() const override { return (CanSwim() || IsAmphibious()); };
         bool CanFly()  const override { return (IsFlying() || HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY)); }
 
-        bool SetDisableGravity(bool disable, bool packetOnly = false, bool updateAnimationTier = true) override;
-        bool SetHover(bool enable, bool packetOnly = false, bool updateAnimationTier = true) override;
-        bool SetCanFly(bool enable, bool packetOnly = false) override;
+        bool SetDisableGravity(bool disable, bool updateAnimTier = true) override;
+        bool SetHover(bool enable, bool updateAnimTier = true) override;
+        bool SetCanFly(bool enable) override;
 
         bool IsDungeonBoss() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_DUNGEON_BOSS) != 0; }
         bool IsAffectedByDiminishingReturns() const override { return Unit::IsAffectedByDiminishingReturns() || (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_ALL_DIMINISH) != 0; }

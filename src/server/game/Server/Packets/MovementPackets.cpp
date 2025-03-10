@@ -381,11 +381,11 @@ void WorldPackets::Movement::MonsterMove::InitializeSplineData(::Movement::MoveS
     movementSpline.FaceGUID = moveSpline.facing.target;
     movementSpline.FaceSpot = Position(moveSpline.facing.f.x, moveSpline.facing.f.y, moveSpline.facing.f.z);
 
-    if (splineFlags.Animation)
+    if (moveSpline.anim_tier)
     {
         movementSpline.Animation.emplace();
         movementSpline.Animation->TierTransStartTime = moveSpline.effect_start_time;
-        movementSpline.Animation->AnimTier = AsUnderlyingType(*moveSpline.anim_tier);
+        movementSpline.Animation->AnimTier = AsUnderlyingType(moveSpline.anim_tier->AnimTier);
     }
 
     movementSpline.MoveTime = moveSpline.Duration();
