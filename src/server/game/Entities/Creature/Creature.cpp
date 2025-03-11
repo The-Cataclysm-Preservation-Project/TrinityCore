@@ -582,8 +582,8 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
 
     SetFaction(cInfo->faction);
 
-    uint32 npcflags, unitFlags, unitFlags2, dynamicFlags;
-    ObjectMgr::ChooseCreatureFlags(cInfo, &npcflags, &unitFlags, &unitFlags2, &dynamicFlags, _staticFlags, data);
+    uint32 npcflags, unitFlags, unitFlags2;
+    ObjectMgr::ChooseCreatureFlags(cInfo, &npcflags, &unitFlags, &unitFlags2, _staticFlags, data);
 
     if (cInfo->flags_extra & CREATURE_FLAG_EXTRA_WORLDEVENT)
         npcflags |= sGameEventMgr->GetNPCFlag(this);
@@ -598,7 +598,7 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
     SetUInt32Value(UNIT_FIELD_FLAGS, unitFlags);
     SetUInt32Value(UNIT_FIELD_FLAGS_2, unitFlags2);
 
-    SetUInt32Value(UNIT_DYNAMIC_FLAGS, dynamicFlags);
+    SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
 
     SetCanDualWield(cInfo->flags_extra & CREATURE_FLAG_EXTRA_USE_OFFHAND_ATTACK);
 
@@ -1307,7 +1307,7 @@ void Creature::SaveToDB(uint32 mapid, uint8 spawnMask)
     uint32 displayId = GetNativeDisplayId();
     uint32 npcflag = GetUInt32Value(UNIT_NPC_FLAGS);
     uint32 unit_flags = GetUInt32Value(UNIT_FIELD_FLAGS);
-    uint32 dynamicflags = GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+    uint32 unit_flags2 = GetUInt32Value(UNIT_FIELD_FLAGS_2);
 
     // check if it's a custom model and if not, use 0 for displayId
     CreatureTemplate const* cinfo = GetCreatureTemplate();
@@ -1323,8 +1323,8 @@ void Creature::SaveToDB(uint32 mapid, uint8 spawnMask)
         if (unit_flags == cinfo->unit_flags)
             unit_flags = 0;
 
-        if (dynamicflags == cinfo->dynamicflags)
-            dynamicflags = 0;
+        if (unit_flags2 == cinfo->unit_flags2)
+            unit_flags2 = 0;
     }
 
     if (!data.spawnId)
@@ -1355,7 +1355,7 @@ void Creature::SaveToDB(uint32 mapid, uint8 spawnMask)
     data.spawnMask = spawnMask;
     data.npcflag = npcflag;
     data.unit_flags = unit_flags;
-    data.dynamicflags = dynamicflags;
+    data.unit_flags2 = unit_flags2;
     if (!data.spawnGroupData)
         data.spawnGroupData = sObjectMgr->GetDefaultSpawnGroup();
 
@@ -1393,7 +1393,7 @@ void Creature::SaveToDB(uint32 mapid, uint8 spawnMask)
     stmt->setUInt8(index++, uint8(GetDefaultMovementType()));
     stmt->setUInt32(index++, npcflag);
     stmt->setUInt32(index++, unit_flags);
-    stmt->setUInt32(index++, dynamicflags);
+    stmt->setUInt32(index++, unit_flags2);
     trans->Append(stmt);
 
     WorldDatabase.CommitTransaction(trans);
@@ -1991,13 +1991,13 @@ void Creature::setDeathState(DeathState s)
             CreatureData const* creatureData = GetCreatureData();
             CreatureTemplate const* cinfo = GetCreatureTemplate();
 
-            uint32 npcflag, unitFlags, unitFlags2, dynamicFlags;
-            ObjectMgr::ChooseCreatureFlags(cinfo, &npcflag, &unitFlags, &unitFlags2, &dynamicFlags, _staticFlags, creatureData);
+            uint32 npcflag, unitFlags, unitFlags2;
+            ObjectMgr::ChooseCreatureFlags(cinfo, &npcflag, &unitFlags, &unitFlags2, _staticFlags, creatureData);
 
             SetUInt32Value(UNIT_NPC_FLAGS, npcflag);
             SetUInt32Value(UNIT_FIELD_FLAGS, unitFlags);
             SetUInt32Value(UNIT_FIELD_FLAGS_2, unitFlags2);
-            SetUInt32Value(UNIT_DYNAMIC_FLAGS, dynamicFlags);
+            SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
 
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 
@@ -3265,7 +3265,7 @@ void Creature::AtDisengage()
 
     ClearUnitState(UNIT_STATE_ATTACK_PLAYER);
     if (IsAlive() && HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED))
-        SetUInt32Value(UNIT_DYNAMIC_FLAGS, GetCreatureTemplate()->dynamicflags);
+        RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_TAPPED);
 }
 
 void Creature::ForcePartyMembersIntoCombat()

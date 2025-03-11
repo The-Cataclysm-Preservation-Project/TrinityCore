@@ -381,7 +381,6 @@ struct TC_GAME_API CreatureTemplate
     uint32  unit_class;                                     // enum Classes. Note only 4 classes are known for creatures.
     uint32  unit_flags;                                     // enum UnitFlags mask values
     uint32  unit_flags2;                                    // enum UnitFlags2 mask values
-    uint32  dynamicflags;
     CreatureFamily  family;                                 // enum CreatureFamily values (optional)
     uint32  trainer_class;
     uint32  type;                                           // enum CreatureType values
@@ -511,7 +510,6 @@ struct CreatureData : public SpawnData
     uint32 curhealth = 0;
     uint32 curmana = 0;
     uint8 movementType = 0;
-    Optional<uint32> dynamicflags;
     Optional<uint32> npcflag;
     Optional<uint32> unit_flags;                                  // enum UnitFlags mask values
     Optional<uint32> unit_flags2;                                 // enum UnitFlags2 mask values
