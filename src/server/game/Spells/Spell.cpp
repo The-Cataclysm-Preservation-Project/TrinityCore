@@ -6956,7 +6956,7 @@ SpellCastResult Spell::CheckRange(bool strict) const
         if (m_caster->GetExactDistSq(target) > maxRange)
             return SPELL_FAILED_OUT_OF_RANGE;
 
-        if (minRange > 0.0f && m_caster->GetExactDistSq(target) < minRange && !target->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_IGNORE_SPELL_MIN_RANGE_RESTRICTIONS))
+        if (minRange > 0.0f && m_caster->GetExactDistSq(target) < minRange && !target->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ATTACKER_IGNORES_MINIMUM_RANGES))
             return SPELL_FAILED_TOO_CLOSE;
 
         if (m_caster->IsPlayer() && m_spellInfo->FacingCasterFlags.HasFlag(SpellFacingCasterFlags::Infront))

@@ -389,7 +389,7 @@ struct boss_magmaw : public BossAI
                 break;
             case ACTION_ENABLE_MOUNTING:
                 me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ALLOW_ENEMY_INTERACT);
+                me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_INTERACT_WHILE_HOSTILE);
 
                 if (Creature* head = GetBodyPart(BODY_PART_EXPOSED_HEAD_1))
                     head->CastSpell(head, SPELL_RIDE_VEHICLE_HEAD, true);
@@ -401,7 +401,7 @@ struct boss_magmaw : public BossAI
                 break;
             case ACTION_DISABLE_MOUNTING:
                 me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
-                me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ALLOW_ENEMY_INTERACT);
+                me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_INTERACT_WHILE_HOSTILE);
 
                 if (events.IsInPhase(PHASE_COMBAT))
                 {

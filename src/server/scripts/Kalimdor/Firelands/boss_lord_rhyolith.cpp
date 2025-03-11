@@ -428,7 +428,7 @@ struct boss_lord_rhyolith : public BossAI
                 if (CreatureAI* ai = controller->AI())
                     ai->DoAction(ACTION_STOP_MOVEMENT_CONTROL);
 
-            me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_UNIT_FRAME);
+            me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_UNTARGETABLE_BY_CLIENT);
             me->SetAIAnimKitId(AI_ANIM_KIT_LORD_RHYOLITH_SITTING);
             DoCastSelf(SPELL_IMMOLATION_1);
             Talk(SAY_ANNOUNCE_ARMOR_BROKEN);

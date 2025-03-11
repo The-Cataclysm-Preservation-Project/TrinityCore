@@ -782,7 +782,7 @@ class boss_sister_svalna : public CreatureScript
                         {
                             Talk(EMOTE_SVALNA_IMPALE, target);
                             summon->CastSpell(target, VEHICLE_SPELL_RIDE_HARDCODED, { SPELLVALUE_BASE_POINT0, 1 });
-                            summon->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_UNK1 | UNIT_FLAG2_ALLOW_ENEMY_INTERACT);
+                            summon->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_HIDE_BODY | UNIT_FLAG2_INTERACT_WHILE_HOSTILE);
                         }
                         break;
                     default:

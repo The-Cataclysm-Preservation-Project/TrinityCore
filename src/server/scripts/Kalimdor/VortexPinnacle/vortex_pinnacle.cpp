@@ -487,7 +487,7 @@ class spell_vp_lurk_search_periodic : public AuraScript
     void HandlePeriodic(AuraEffect const* /*aurEff*/)
     {
         Unit* target = GetTarget();
-        if (!target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_29))
+        if (!target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT))
         {
             target->CastSpell(target, SPELL_LURK_SEARCH_FACING_PLAYERS, true);
             target->CastSpell(target, SPELL_LURK_SEARCH_SELECT_TARGET, true);
@@ -533,7 +533,7 @@ class spell_vp_lurk_search : public SpellScript
                     return !target->HasInArc(float(M_PI), caster);
                 });
 
-                if (!caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_29) && !targets.empty())
+                if (!caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT) && !targets.empty())
                     caster->CastSpell(caster, SPELL_FEIGN_DEATH);
                 break;
             case SPELL_LURK_SEARCH_DEATH_CHECK:
@@ -542,7 +542,7 @@ class spell_vp_lurk_search : public SpellScript
                     return !target->HasInArc(float(M_PI), caster);
                 });
 
-                if (caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_29) && targets.empty() && !caster->HasAura(SPELL_LURK_RESSURECT, caster->GetGUID()))
+                if (caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT) && targets.empty() && !caster->HasAura(SPELL_LURK_RESSURECT, caster->GetGUID()))
                     caster->CastSpell(caster, SPELL_LURK_RESSURECT);
                 break;
             case SPELL_LURK_SEARCH_SELECT_TARGET:
@@ -603,12 +603,12 @@ class spell_vp_feign_death_AuraScript : public AuraScript
 {
     void AfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        GetTarget()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_29);
+        GetTarget()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
     }
 
     void AfterRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        GetTarget()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_29);
+        GetTarget()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
     }
 
     void Register() override

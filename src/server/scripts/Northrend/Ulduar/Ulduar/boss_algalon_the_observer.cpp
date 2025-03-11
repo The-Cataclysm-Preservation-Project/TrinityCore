@@ -350,7 +350,7 @@ class boss_algalon_the_observer : public CreatureScript
                 {
                     case ACTION_START_INTRO:
                     {
-                        me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_INSTANTLY_APPEAR_MODEL);
+                        me->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DONT_FADE_IN);
                         me->SetDisableGravity(true);
                         DoCast(me, SPELL_ARRIVAL, true);
                         DoCast(me, SPELL_RIDE_THE_LIGHTNING, true);
