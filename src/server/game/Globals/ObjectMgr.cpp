@@ -2056,8 +2056,8 @@ void ObjectMgr::LoadCreatures()
 
     //                                               0              1   2    3           4           5           6            7        8             9              10
     QueryResult result = WorldDatabase.Query("SELECT creature.guid, id, map, position_x, position_y, position_z, orientation, modelid, equipment_id, spawntimesecs, wander_distance, "
-    //   11               12         13       14            15         16          17           18                19                    20                   21                     22
-        "currentwaypoint, curhealth, curmana, MovementType, spawnMask, eventEntry, poolSpawnId, creature.npcflag, creature.unit_flags,  creature.unit_flags, creature.dynamicflags, creature.phaseUseFlags, "
+    //   11               12         13       14            15         16          17           18                19                    20                    21                     22
+        "currentwaypoint, curhealth, curmana, MovementType, spawnMask, eventEntry, poolSpawnId, creature.npcflag, creature.unit_flags,  creature.unit_flags2, creature.dynamicflags, creature.phaseUseFlags, "
     //   23                24                   25                       26
         "creature.PhaseId, creature.PhaseGroup, creature.terrainSwapMap, creature.ScriptName "
         "FROM creature "
