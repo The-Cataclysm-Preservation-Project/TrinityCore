@@ -552,7 +552,8 @@ bool Creature::InitEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
     for (uint8 i = 0; i < MAX_CREATURE_SPELLS; ++i)
         m_spells[i] = GetCreatureTemplate()->spells[i];
 
-    ApplyAllStaticFlags(cinfo->StaticFlags);
+    CreatureStaticFlagsHolder staticFlags = GenerateStaticFlags(cinfo, GetSpawnId(), GetMap()->GetDifficulty());
+    ApplyAllStaticFlags(staticFlags);
 
     _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_NO_XP, cinfo->type == CREATURE_TYPE_CRITTER
         || IsPet()
@@ -665,6 +666,20 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
 
     GetThreatManager().EvaluateSuppressed();
     return true;
+}
+
+CreatureStaticFlagsHolder Creature::GenerateStaticFlags(CreatureTemplate const* cInfo, ObjectGuid::LowType spawnId, Difficulty difficultyId) const
+{
+    CreatureStaticFlagsOverride const* staticFlagsOverride = sObjectMgr->GetCreatureStaticFlagsOverride(spawnId, difficultyId);
+    if (!staticFlagsOverride)
+        return cInfo->StaticFlags;
+
+    return CreatureStaticFlagsHolder(
+        staticFlagsOverride->StaticFlags1.value_or(cInfo->StaticFlags.GetFlags()),
+        staticFlagsOverride->StaticFlags2.value_or(cInfo->StaticFlags.GetFlags2()),
+        staticFlagsOverride->StaticFlags3.value_or(cInfo->StaticFlags.GetFlags3()),
+        staticFlagsOverride->StaticFlags4.value_or(cInfo->StaticFlags.GetFlags4()),
+        staticFlagsOverride->StaticFlags5.value_or(cInfo->StaticFlags.GetFlags5()));
 }
 
 void Creature::ApplyAllStaticFlags(CreatureStaticFlagsHolder const& flags)

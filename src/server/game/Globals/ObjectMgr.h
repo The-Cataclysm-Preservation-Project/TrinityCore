@@ -572,6 +572,7 @@ typedef std::unordered_map<uint32, PageTextLocale> PageTextLocaleContainer;
 typedef std::unordered_map<uint32, uint8> TaxiNodeLevelDataContainer;
 typedef std::unordered_map<uint32, VehicleSeatAddon> VehicleSeatAddonContainer;
 typedef std::unordered_map<uint32, CreatureMovementInfoOverride> CreatureMovementInfoOverrideContainer;
+typedef std::unordered_map<std::pair<ObjectGuid::LowType, Difficulty>, CreatureStaticFlagsOverride> CreatureStaticFlagsOverrideMap;
 
 struct GossipMenuItemsLocale
 {
@@ -1190,6 +1191,7 @@ class TC_GAME_API ObjectMgr
         void CheckCreatureMovement(char const* table, uint64 id, CreatureMovementData& creatureMovement);
         void LoadGameObjectQuestItems();
         void LoadCreatureQuestItems();
+        void LoadCreatureStaticFlagsOverride();
         void LoadTempSummons();
         void LoadCreatures();
         void LoadLinkedRespawn();
@@ -1607,6 +1609,8 @@ class TC_GAME_API ObjectMgr
 
         uint8 const* GetSummonPropertiesParameter(uint32 summonPropertiesRecID) const;
 
+        CreatureStaticFlagsOverride const* GetCreatureStaticFlagsOverride(ObjectGuid::LowType spawnId, Difficulty difficultyId) const;
+
     private:
         // first free id for selected id type
         uint32 _auctionId;
@@ -1742,6 +1746,7 @@ class TC_GAME_API ObjectMgr
         GameObjectAddonContainer _gameObjectAddonStore;
         GameObjectQuestItemMap _gameObjectQuestItemStore;
         CreatureQuestItemMap _creatureQuestItemStore;
+        CreatureStaticFlagsOverrideMap _creatureStaticFlagsOverrideStore;
         EquipmentInfoContainer _equipmentInfoStore;
         LinkedRespawnContainer _linkedRespawnStore;
         CreatureLocaleContainer _creatureLocaleStore;
