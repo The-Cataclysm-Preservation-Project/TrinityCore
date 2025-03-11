@@ -581,23 +581,23 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
 
     SetFaction(cInfo->faction);
 
-    uint32 npcflag, unit_flags, unit_flags2, dynamicflags;
-    ObjectMgr::ChooseCreatureFlags(cInfo, npcflag, unit_flags, unit_flags2, dynamicflags, _staticFlags, data);
+    uint32 npcflags, unitFlags, unitFlags2, dynamicFlags;
+    ObjectMgr::ChooseCreatureFlags(cInfo, &npcflags, &unitFlags, &unitFlags2, &dynamicFlags, _staticFlags, data);
 
     if (cInfo->flags_extra & CREATURE_FLAG_EXTRA_WORLDEVENT)
-        SetUInt32Value(UNIT_NPC_FLAGS, npcflag | sGameEventMgr->GetNPCFlag(this));
-    else
-        SetUInt32Value(UNIT_NPC_FLAGS, npcflag);
+        npcflags |= sGameEventMgr->GetNPCFlag(this);
+
+    SetUInt32Value(UNIT_NPC_FLAGS, npcflags);
 
     // if unit is in combat, keep this flag
-    unit_flags &= ~UNIT_FLAG_IN_COMBAT;
+    unitFlags &= ~UNIT_FLAG_IN_COMBAT;
     if (IsInCombat())
-        unit_flags |= UNIT_FLAG_IN_COMBAT;
+        unitFlags |= UNIT_FLAG_IN_COMBAT;
 
-    SetUInt32Value(UNIT_FIELD_FLAGS, unit_flags);
-    SetUInt32Value(UNIT_FIELD_FLAGS_2, cInfo->unit_flags2 | unit_flags2);
+    SetUInt32Value(UNIT_FIELD_FLAGS, unitFlags);
+    SetUInt32Value(UNIT_FIELD_FLAGS_2, unitFlags2);
 
-    SetUInt32Value(UNIT_DYNAMIC_FLAGS, dynamicflags);
+    SetUInt32Value(UNIT_DYNAMIC_FLAGS, dynamicFlags);
 
     SetCanDualWield(cInfo->flags_extra & CREATURE_FLAG_EXTRA_USE_OFFHAND_ATTACK);
 
@@ -1976,13 +1976,15 @@ void Creature::setDeathState(DeathState s)
             CreatureData const* creatureData = GetCreatureData();
             CreatureTemplate const* cinfo = GetCreatureTemplate();
 
-            uint32 npcflag, unit_flags, unit_flags2, dynamicflags;
-            ObjectMgr::ChooseCreatureFlags(cinfo, npcflag, unit_flags, unit_flags2, dynamicflags, _staticFlags, creatureData);
+            uint32 npcflag, unitFlags, unitFlags2, dynamicFlags;
+            ObjectMgr::ChooseCreatureFlags(cinfo, &npcflag, &unitFlags, &unitFlags2, &dynamicFlags, _staticFlags, creatureData);
 
             SetUInt32Value(UNIT_NPC_FLAGS, npcflag);
-            SetUInt32Value(UNIT_FIELD_FLAGS, unit_flags);
-            SetUInt32Value(UNIT_FIELD_FLAGS_2, cinfo->unit_flags2 | unit_flags2);
-            SetUInt32Value(UNIT_DYNAMIC_FLAGS, dynamicflags);
+            SetUInt32Value(UNIT_FIELD_FLAGS, unitFlags);
+            SetUInt32Value(UNIT_FIELD_FLAGS_2, unitFlags2);
+            SetUInt32Value(UNIT_DYNAMIC_FLAGS, dynamicFlags);
+
+            RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 
             SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
         }

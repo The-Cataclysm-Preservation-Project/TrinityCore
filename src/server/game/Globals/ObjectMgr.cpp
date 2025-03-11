@@ -1585,36 +1585,45 @@ CreatureModel const* ObjectMgr::ChooseDisplayId(CreatureTemplate const* cinfo, C
     return cinfo->GetFirstInvisibleModel();
 }
 
-void ObjectMgr::ChooseCreatureFlags(CreatureTemplate const* cinfo, uint32& npcflag, uint32& unit_flags, uint32& unitFlags2, uint32& dynamicflags, CreatureStaticFlagsHolder const& staticFlags, CreatureData const* data /*= nullptr*/)
+void ObjectMgr::ChooseCreatureFlags(CreatureTemplate const* cInfo, uint32* npcFlags, uint32* unitFlags, uint32* unitFlags2, uint32* dynamicFlags, CreatureStaticFlagsHolder const& staticFlags, CreatureData const* data /*= nullptr*/)
 {
-    npcflag = cinfo->npcflag;
-    unit_flags = cinfo->unit_flags;
-    dynamicflags = cinfo->dynamicflags;
-    unitFlags2 = 0;
+#define ChooseCreatureFlagSource(field) ((data && data->field.has_value()) ? *data->field : cInfo->field)
 
     if (data)
     {
-        if (data->npcflag)
-            npcflag = data->npcflag;
+        if (npcFlags)
+            *npcFlags = ChooseCreatureFlagSource(npcflag);
 
-        if (data->unit_flags)
-            unit_flags = data->unit_flags;
+        if (unitFlags)
+        {
+            *unitFlags = ChooseCreatureFlagSource(unit_flags);
 
-        if (data->dynamicflags)
-            dynamicflags = data->dynamicflags;
+            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_CAN_SWIM))
+                *unitFlags |= UNIT_FLAG_CAN_SWIM;
+
+            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_SWIM))
+                *unitFlags |= UNIT_FLAG_CANT_SWIM;
+        }
+
+        if (unitFlags2)
+        {
+            *unitFlags2 = ChooseCreatureFlagSource(unit_flags2);
+
+            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_TURN))
+                *unitFlags2 |= UNIT_FLAG2_CANNOT_TURN;
+
+            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_4_PREVENT_SWIM))
+                *unitFlags2 |= UNIT_FLAG2_AI_WILL_ONLY_SWIM_IF_TARGET_SWIMS;
+        }
+
+        if (dynamicFlags)
+        {
+            *dynamicFlags = ChooseCreatureFlagSource(dynamicflags);
+        }
     }
 
-    if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_CAN_SWIM))
-        unit_flags |= UNIT_FLAG_CAN_SWIM;
 
-    if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_SWIM))
-        unit_flags |= UNIT_FLAG_CANT_SWIM;
-
-    if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_TURN))
-        unitFlags2 |= UNIT_FLAG2_CANNOT_TURN;
-
-    if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_4_PREVENT_SWIM))
-        unitFlags2 |= UNIT_FLAG2_AI_WILL_ONLY_SWIM_IF_TARGET_SWIMS;
+#undef ChooseCreatureFlagSource
 }
 
 CreatureModelInfo const* ObjectMgr::GetCreatureModelRandomGender(CreatureModel* model, CreatureTemplate const* creatureTemplate) const
@@ -2035,9 +2044,9 @@ void ObjectMgr::LoadCreatures()
 
     //                                               0              1   2    3           4           5           6            7        8             9              10
     QueryResult result = WorldDatabase.Query("SELECT creature.guid, id, map, position_x, position_y, position_z, orientation, modelid, equipment_id, spawntimesecs, wander_distance, "
-    //   11               12         13       14            15         16          17           18                19                    20                    21
-        "currentwaypoint, curhealth, curmana, MovementType, spawnMask, eventEntry, poolSpawnId, creature.npcflag, creature.unit_flags, creature.dynamicflags, creature.phaseUseFlags, "
-    //   22                23                   24                       25
+    //   11               12         13       14            15         16          17           18                19                    20                   21                     22
+        "currentwaypoint, curhealth, curmana, MovementType, spawnMask, eventEntry, poolSpawnId, creature.npcflag, creature.unit_flags,  creature.unit_flags, creature.dynamicflags, creature.phaseUseFlags, "
+    //   23                24                   25                       26
         "creature.PhaseId, creature.PhaseGroup, creature.terrainSwapMap, creature.ScriptName "
         "FROM creature "
         "LEFT OUTER JOIN game_event_creature ON creature.guid = game_event_creature.guid "
@@ -2091,14 +2100,19 @@ void ObjectMgr::LoadCreatures()
         data.spawnMask      = fields[15].GetUInt8();
         int16 gameEvent     = fields[16].GetInt8();
         data.poolId         = fields[17].GetUInt32();
-        data.npcflag        = fields[18].GetUInt32();
-        data.unit_flags     = fields[19].GetUInt32();
-        data.dynamicflags   = fields[20].GetUInt32();
-        data.phaseUseFlags  = fields[21].GetUInt8();
-        data.phaseId        = fields[22].GetUInt32();
-        data.phaseGroup     = fields[23].GetUInt32();
-        data.terrainSwapMap = fields[24].GetInt32();
-        data.scriptId = GetScriptId(fields[25].GetString());
+        if (!fields[18].IsNull())
+            data.npcflag = fields[18].GetUInt64();
+        if (!fields[19].IsNull())
+            data.unit_flags = fields[19].GetUInt32();
+        if (!fields[20].IsNull())
+            data.unit_flags2 = fields[20].GetUInt32();
+        if (!fields[21].IsNull())
+            data.dynamicflags = fields[21].GetUInt32();
+        data.phaseUseFlags  = fields[22].GetUInt8();
+        data.phaseId        = fields[23].GetUInt32();
+        data.phaseGroup     = fields[24].GetUInt32();
+        data.terrainSwapMap = fields[25].GetInt32();
+        data.scriptId = GetScriptId(fields[26].GetString());
         data.spawnGroupData = GetDefaultSpawnGroup();
 
         MapEntry const* mapEntry = sMapStore.LookupEntry(data.mapId);
@@ -2218,6 +2232,26 @@ void ObjectMgr::LoadCreatures()
                 data.terrainSwapMap = -1;
             }
         }
+
+        /*
+        if (data.unit_flags.has_value())
+        {
+            if (uint32 disallowedUnitFlags = (*data.unit_flags & ~UNIT_FLAG_ALLOWED))
+            {
+                TC_LOG_ERROR("sql.sql", "Table `creature` has creature (GUID: {} Entry: {}) with disallowed `unit_flags` {}, removing incorrect flag.", guid, data.id, disallowedUnitFlags);
+                *data.unit_flags &= UNIT_FLAG_ALLOWED;
+            }
+        }
+
+        if (data.unit_flags2.has_value())
+        {
+            if (uint32 disallowedUnitFlags2 = (*data.unit_flags2 & ~UNIT_FLAG2_ALLOWED))
+            {
+                TC_LOG_ERROR("sql.sql", "Table `creature` has creature (GUID: {} Entry: {}) with disallowed `unit_flags2` {}, removing incorrect flag.", guid, data.id, disallowedUnitFlags2);
+                *data.unit_flags2 &= UNIT_FLAG2_ALLOWED;
+            }
+        }
+        */
 
         if (sWorld->getBoolConfig(CONFIG_CALCULATE_CREATURE_ZONE_AREA_DATA))
         {
