@@ -2413,35 +2413,36 @@ void AuraEffect::HandleAuraModDisarm(AuraApplication const* aurApp, uint8 mode, 
 
     Unit* target = aurApp->GetTarget();
 
-    //Prevent handling aura twice
     AuraType type = GetAuraType();
-    if (apply ? target->GetAuraEffectsByType(type).size() > 1 : target->HasAuraType(type))
-        return;
 
-    // Prevent handling aura twice
-    if (apply ? target->GetAuraEffectsByType(type).size() > 1 : target->HasAuraType(type))
-        return;
+    bool(*flagChangeFunc)(Unit* u) = nullptr;
 
-    uint32 field, flag, slot;
+    uint32 slot;
     WeaponAttackType attType;
     switch (type)
     {
         case SPELL_AURA_MOD_DISARM:
-            field = UNIT_FIELD_FLAGS;
-            flag = UNIT_FLAG_DISARMED;
+            if (apply)
+                flagChangeFunc = [](Unit* u) { if (u->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED)) { return false; } u->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED); return true; };
+            else
+                flagChangeFunc = [](Unit* u) { if (u->HasAuraType(SPELL_AURA_MOD_DISARM)) { return false; } u->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED); return true; };
             slot = EQUIPMENT_SLOT_MAINHAND;
             attType = BASE_ATTACK;
             break;
         case SPELL_AURA_MOD_DISARM_OFFHAND:
-            field = UNIT_FIELD_FLAGS_2;
-            flag = UNIT_FLAG2_DISARM_OFFHAND;
+            if (apply)
+                flagChangeFunc = [](Unit* u) { if (u->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISARM_OFFHAND)) { return false; } u->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISARM_OFFHAND); return true; };
+            else
+                flagChangeFunc = [](Unit* u) { if (u->HasAuraType(SPELL_AURA_MOD_DISARM_OFFHAND)) { return false; } u->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISARM_OFFHAND); return true; };
             slot = EQUIPMENT_SLOT_OFFHAND;
             attType = OFF_ATTACK;
             break;
         case SPELL_AURA_MOD_DISARM_RANGED:
-            field = UNIT_FIELD_FLAGS_2;
-            flag = UNIT_FLAG2_DISARM_RANGED;
-            slot = EQUIPMENT_SLOT_RANGED;
+            if (apply)
+                flagChangeFunc = [](Unit* u) { if (u->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISARM_RANGED)) { return false; } u->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISARM_RANGED); return true; };
+            else
+                flagChangeFunc = [](Unit* u) { if (u->HasAuraType(SPELL_AURA_MOD_DISARM_RANGED)) { return false; } u->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISARM_RANGED); return true; };
+            slot = EQUIPMENT_SLOT_MAINHAND;
             attType = RANGED_ATTACK;
             break;
         default:
@@ -2449,10 +2450,9 @@ void AuraEffect::HandleAuraModDisarm(AuraApplication const* aurApp, uint8 mode, 
     }
 
     // set/remove flag before weapon bonuses so it's properly reflected in CanUseAttackType
-    if (apply)
-        target->SetFlag(field, flag);
-    else
-        target->RemoveFlag(field, flag);
+    if (flagChangeFunc)
+        if (!flagChangeFunc(target)) //Prevent handling aura twice
+            return;
 
     // Handle damage modification, shapeshifted druids are not affected
     if (target->GetTypeId() == TYPEID_PLAYER && !target->IsInFeralForm())
@@ -5029,16 +5029,12 @@ void AuraEffect::HandleAuraModFaction(AuraApplication const* aurApp, uint8 mode,
     if (apply)
     {
         target->SetFaction(GetMiscValue());
-        target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_IGNORE_REPUTATION);
-
         if (target->IsPlayer())
             target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
     }
     else
     {
         target->RestoreFaction();
-        target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_IGNORE_REPUTATION);
-
         if (target->IsPlayer())
             target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
     }

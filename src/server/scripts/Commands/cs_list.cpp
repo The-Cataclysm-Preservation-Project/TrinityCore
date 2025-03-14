@@ -508,7 +508,7 @@ public:
             if (auraList.empty())
                 continue;
 
-            handler->PSendSysMessage(LANG_COMMAND_TARGET_LISTAURATYPE, auraList.size(), i);
+            handler->PSendSysMessage(LANG_COMMAND_TARGET_LISTAURATYPE, std::to_string(std::distance(auraList.begin(), auraList.end())).c_str(), i);
 
             for (Unit::AuraEffectList::const_iterator itr = auraList.begin(); itr != auraList.end(); ++itr)
                 handler->PSendSysMessage(LANG_COMMAND_TARGET_AURASIMPLE, (*itr)->GetId(), (*itr)->GetEffIndex(), (*itr)->GetAmount());

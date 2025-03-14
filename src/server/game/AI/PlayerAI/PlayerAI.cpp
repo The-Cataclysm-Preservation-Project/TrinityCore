@@ -687,7 +687,7 @@ void PlayerAI::DoAutoAttackIfReady()
 
 void PlayerAI::CancelAllShapeshifts()
 {
-    std::list<AuraEffect*> const& shapeshiftAuras = me->GetAuraEffectsByType(SPELL_AURA_MOD_SHAPESHIFT);
+    Unit::AuraEffectList const& shapeshiftAuras = me->GetAuraEffectsByType(SPELL_AURA_MOD_SHAPESHIFT);
     std::set<Aura*> removableShapeshifts;
     for (AuraEffect* auraEff : shapeshiftAuras)
     {

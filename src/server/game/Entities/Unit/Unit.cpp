@@ -43,6 +43,7 @@
 #include "InstanceSaveMgr.h"
 #include "InstanceScript.h"
 #include "Item.h"
+#include "ListUtils.h"
 #include "Log.h"
 #include "LootMgr.h"
 #include "LootPackets.h"
@@ -3098,20 +3099,20 @@ void Unit::_AddAura(UnitAura* aura, Unit* caster)
          *        but may be created as a result of aura links.
          */
 
-         // register single target aura
-        caster->GetSingleCastAuras().push_back(aura);
-
-        std::queue<Aura*> aurasSharingLimit;
+        std::vector<Aura*> aurasSharingLimit;
         // remove other single target auras
         for (Aura* scAura : caster->GetSingleCastAuras())
-            if (scAura != aura && scAura->IsSingleTargetWith(aura))
-                aurasSharingLimit.push(scAura);
+            if (scAura->IsSingleTargetWith(aura))
+                aurasSharingLimit.push_back(scAura);
+
+        // register single target aura
+        caster->GetSingleCastAuras().push_front(aura);
 
         uint32 maxOtherAuras = aura->GetSpellInfo()->MaxAffectedTargets - 1;
         while (aurasSharingLimit.size() > maxOtherAuras)
         {
-            aurasSharingLimit.front()->Remove();
-            aurasSharingLimit.pop();
+            aurasSharingLimit.back()->Remove();
+            aurasSharingLimit.pop_back();
         }
     }
 }
@@ -3149,7 +3150,7 @@ AuraApplication* Unit::_CreateAuraApplication(Aura* aura, uint8 effMask)
 
     if (aurSpellInfo->HasAnyAuraInterruptFlag())
     {
-        m_interruptableAuras.push_back(aurApp);
+        m_interruptableAuras.push_front(aurApp);
         AddInterruptMask(aurSpellInfo->AuraInterruptFlags, aurSpellInfo->AuraInterruptFlags2);
     }
 
@@ -3243,7 +3244,7 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator& i, AuraRemoveFlags removeM
 
     if (aura->GetSpellInfo()->HasAnyAuraInterruptFlag())
     {
-        m_interruptableAuras.remove(aurApp);
+        Trinity::Containers::Lists::RemoveUnique(m_interruptableAuras, aurApp);
         UpdateInterruptMask();
     }
 
@@ -3349,7 +3350,7 @@ void Unit::_RegisterAuraEffect(AuraEffect* aurEff, bool apply)
 {
     if (apply)
     {
-        m_modAuras[aurEff->GetAuraType()].push_back(aurEff);
+        m_modAuras[aurEff->GetAuraType()].push_front(aurEff);
         if (Player* player = ToPlayer())
         {
             player->StartAchievementCriteria(AchievementCriteriaStartEvent::GainAuraEffect, aurEff->GetAuraType());
@@ -3357,7 +3358,7 @@ void Unit::_RegisterAuraEffect(AuraEffect* aurEff, bool apply)
         }
     }
     else
-        m_modAuras[aurEff->GetAuraType()].remove(aurEff);
+        Trinity::Containers::Lists::RemoveUnique(m_modAuras[aurEff->GetAuraType()], aurEff);
 }
 
 // All aura base removes should go through this function!
@@ -3371,7 +3372,7 @@ void Unit::RemoveOwnedAura(AuraMap::iterator& i, AuraRemoveFlags removeMode)
         ++m_auraUpdateIterator;
 
     m_ownedAuras.erase(i);
-    m_removedAuras.push_back(aura);
+    m_removedAuras.push_front(aura);
 
     // Unregister single target aura
     if (aura->IsSingleTarget())
@@ -3704,7 +3705,7 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, ObjectGuid casterGUID, W
                             newAura->UnregisterSingleTarget();
                             // bring back single target aura status to the old aura
                             aura->SetIsSingleTarget(true);
-                            caster->GetSingleCastAuras().push_back(aura);
+                            caster->GetSingleCastAuras().push_front(aura);
                         }
                         // FIXME: using aura->GetMaxDuration() maybe not blizzlike but it fixes stealing of spells like Innervate
                         newAura->SetLoadedState(aura->GetMaxDuration(), int32(dur), stealCharge ? stolenCharges : aura->GetCharges(), stolenCharges, recalculateMask, aura->GetCritChance(), aura->CanApplyResilience(), &damage[0]);
@@ -10207,7 +10208,7 @@ void Unit::TriggerAurasProcOnEvent(Unit* actionTarget, uint32 typeMaskActor, uin
                 for (auto itr = modOwner->GetAppliedAuras().begin(); itr != modOwner->GetAppliedAuras().end(); ++itr)
                 {
                     if (spell->m_appliedMods.count(itr->second->GetBase()) != 0)
-                        modAuras.push_back(itr->second);
+                        modAuras.push_front(itr->second);
                 }
                 modOwner->GetProcAurasTriggeredOnEvent(myAurasTriggeringProc, &modAuras, myProcEventInfo);
             }
@@ -10408,7 +10409,7 @@ void Unit::RestoreDisplayId()
     if (!transforms.empty())
     {
         // iterate over already applied transform auras - from newest to oldest
-        for (auto i = transforms.rbegin(); i != transforms.rend(); ++i)
+        for (auto i = transforms.begin(); i != transforms.end(); ++i)
         {
             if (AuraApplication const* aurApp = (*i)->GetBase()->GetApplicationOfTarget(GetGUID()))
             {
@@ -11795,6 +11796,12 @@ void Unit::RemoveCharmedBy(Unit* charmer)
 
 void Unit::RestoreFaction()
 {
+    if (HasAuraType(SPELL_AURA_MOD_FACTION))
+    {
+        SetFaction(GetAuraEffectsByType(SPELL_AURA_MOD_FACTION).front()->GetMiscValue());
+        return;
+    }
+
     if (GetTypeId() == TYPEID_PLAYER)
         ToPlayer()->SetFactionForRace(getRace());
     else
@@ -14302,12 +14309,24 @@ float Unit::GetCollisionHeight() const
 
 SpellInfo const* Unit::GetCastSpellInfo(SpellInfo const* spellInfo, TriggerCastFlags& triggerFlag) const
 {
-    Unit::AuraEffectList swaps = GetAuraEffectsByType(SPELL_AURA_OVERRIDE_ACTIONBAR_SPELLS);
+    Unit::AuraEffectList const& swaps = GetAuraEffectsByType(SPELL_AURA_OVERRIDE_ACTIONBAR_SPELLS);
     Unit::AuraEffectList const& swaps2 = GetAuraEffectsByType(SPELL_AURA_OVERRIDE_ACTIONBAR_SPELLS_TRIGGERED);
-    if (!swaps2.empty())
-        swaps.insert(swaps.end(), swaps2.begin(), swaps2.end());
 
     for (AuraEffect const* auraEffect : swaps)
+    {
+        if (uint32(auraEffect->GetMiscValue()) == spellInfo->Id || auraEffect->IsAffectingSpell(spellInfo))
+        {
+            if (SpellInfo const* newInfo = sSpellMgr->GetSpellInfo(auraEffect->GetAmount()))
+            {
+                if (auraEffect->GetSpellInfo()->HasAttribute(SPELL_ATTR8_IGNORE_SPELLCAST_OVERRIDE_COST))
+                    triggerFlag |= TRIGGERED_IGNORE_POWER_AND_REAGENT_COST;
+
+                return newInfo;
+            }
+        }
+    }
+
+    for (AuraEffect const* auraEffect : swaps2)
     {
         if (uint32(auraEffect->GetMiscValue()) == spellInfo->Id || auraEffect->IsAffectingSpell(spellInfo))
         {

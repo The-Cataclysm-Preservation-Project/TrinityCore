@@ -1623,7 +1623,7 @@ private:
         if (!target)
             return false;
 
-        std::list<AuraEffect*> dotAuraEffects = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE);
+        Unit::AuraEffectList const& dotAuraEffects = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE);
         if (dotAuraEffects.empty())
             return false;
 
@@ -1665,7 +1665,7 @@ class spell_mage_impact_triggered : public SpellScript
         if (!target || !caster || target != launchTarget)
             return;
 
-        std::list<AuraEffect*> dotAuraEffects = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE);
+        Unit::AuraEffectList const& dotAuraEffects = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE);
         if (dotAuraEffects.empty())
             return;
 
