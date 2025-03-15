@@ -3573,16 +3573,23 @@ void Spell::EffectSanctuary(SpellEffIndex /*effIndex*/)
     if (!unitTarget)
         return;
 
+    auto isAffectedBySanctuary = [](Unit const* attacker)
+    {
+        Creature const* attackerCreature = attacker->ToCreature();
+        return !attackerCreature || !attackerCreature->IsIgnoringSanctuarySpellEffect();
+    };
+
     if (unitTarget->GetTypeId() == TYPEID_PLAYER && !unitTarget->GetMap()->IsDungeon())
     {
         // stop all pve combat for players outside dungeons, suppress pvp combat
-        unitTarget->CombatStop(false, false);
+        unitTarget->CombatStop(false, false, isAffectedBySanctuary);
     }
     else
     {
         // in dungeons (or for nonplayers), reset this unit on all enemies' threat lists
-        for (auto const& pair : unitTarget->GetThreatManager().GetThreatenedByMeList())
-            pair.second->ScaleThreat(0.0f);
+        for (auto const& [guid, ref] : unitTarget->GetThreatManager().GetThreatenedByMeList())
+            if (isAffectedBySanctuary(ref->GetOwner()))
+                ref->ScaleThreat(0.0f);
     }
 
     // makes spells cast before this time fizzle

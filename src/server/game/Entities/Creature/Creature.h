@@ -277,6 +277,8 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction = true) const;
         bool _IsTargetAcceptable(const Unit* target) const;
         bool CanIgnoreFeignDeath() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_IGNORE_FEIGN_DEATH) != 0; }
+        bool IsIgnoringSanctuarySpellEffect() const { return _staticFlags.HasFlag(CREATURE_STATIC_FLAG_2_IGNORE_SANCTUARY); }
+        void SetIngoreSanctuarySpellEffect(bool ignoreSanctuary) { _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_2_IGNORE_SANCTUARY, ignoreSanctuary); }
 
         MovementGeneratorType GetDefaultMovementType() const { return m_defaultMovementType; }
         void SetDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
