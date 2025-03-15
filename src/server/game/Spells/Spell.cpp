@@ -2236,37 +2236,6 @@ void Spell::CleanupTargetList()
     m_delayMoment = 0;
 }
 
-class ProcImpactDelayed : public BasicEvent
-{
-public:
-    ProcImpactDelayed(Unit* owner, ObjectGuid casterGUID, const bool enterCombat, bool enablePVP) : _owner(owner), _casterGUID(casterGUID), _enterCombat(enterCombat), _enablePVP(enablePVP) {}
-
-    bool Execute(uint64 /*e_time*/, uint32 /*p_time*/) override
-    {
-        if (!_owner)
-            return true;
-
-        Unit* caster = ObjectAccessor::GetUnit(*_owner, _casterGUID);
-        if (!caster)
-            return true;
-
-        // This will only cause combat - the target will engage once the projectile hits (in DoAllEffectOnTarget)
-        if (_enterCombat)
-            _owner->SetInCombatWith(caster);
-
-        if (_enablePVP && caster->ToPlayer())
-            caster->ToPlayer()->UpdatePvP(true);
-
-        return true;
-    }
-
-private:
-    Unit* _owner;
-    ObjectGuid _casterGUID;
-    bool _enterCombat;
-    bool _enablePVP;
-};
-
 class ProcReflectDelayed : public BasicEvent
 {
     public:
@@ -2350,12 +2319,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
 
     // Calculate hit result
     WorldObject* caster = m_originalCaster ? m_originalCaster : m_caster;
-    Unit* unitCaster = m_caster->ToUnit();
     targetInfo.MissCondition = caster->SpellHitResult(target, m_spellInfo, m_canReflect && !(IsPositive() && m_caster->IsFriendlyTo(target)));
-
-    // This will only cause combat - the target will engage once the projectile hits (in DoAllEffectOnTarget)
-    if (m_originalCaster && targetInfo.MissCondition != SPELL_MISS_EVADE && !m_originalCaster->IsFriendlyTo(target) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (m_spellInfo->CausesInitialThreat() || target->IsEngaged()))
-        m_originalCaster->SetInCombatWith(target, true);
 
     // Spell have speed - need calculate incoming time
     // Incoming time is zero for self casts. At least I think so.
@@ -2391,15 +2355,6 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         }
 
         targetInfo.TimeDelay += uint64(std::floor(hitDelay * 1000.0f));
-
-        if (unitCaster && targetInfo.MissCondition != SPELL_MISS_EVADE)
-        {
-            bool enterCombat = !caster->IsFriendlyTo(target) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (m_spellInfo->CausesInitialThreat() || target->IsEngaged());
-            bool enablePVP = targetInfo.IsPVPEnabling();
-
-            if (enterCombat || enablePVP)
-                target->m_Events.AddEvent(new ProcImpactDelayed(target, m_originalCasterGUID, enterCombat, enablePVP), target->m_Events.CalculateTime(targetInfo.TimeDelay));
-        }
     }
     else
         targetInfo.TimeDelay = 0ULL;
@@ -2408,7 +2363,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     if (targetInfo.MissCondition == SPELL_MISS_REFLECT)
     {
         // Calculate reflected spell result on caster (shouldn't be able to reflect gameobject spells)
-        ASSERT(unitCaster);
+        Unit* unitCaster = ASSERT_NOTNULL(m_caster->ToUnit());
         targetInfo.ReflectResult = unitCaster->SpellHitResult(unitCaster, m_spellInfo, false); // can't reflect twice
 
         // Proc spell reflect aura when missile hits the original target
@@ -8096,10 +8051,18 @@ void Spell::HandleLaunchPhase()
 
 void Spell::DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uint8 effIndex)
 {
+    Unit* targetUnit = m_caster->GetGUID() == targetInfo.TargetGUID ? m_caster->ToUnit() : ObjectAccessor::GetUnit(*m_caster, targetInfo.TargetGUID);
+    if (!targetUnit)
+        return;
+
+    // This will only cause combat - the target will engage once the projectile hits (in Spell::TargetInfo::PreprocessTarget)
+    if (m_originalCaster && targetInfo.MissCondition != SPELL_MISS_EVADE && !m_originalCaster->IsFriendlyTo(targetUnit) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (m_spellInfo->CausesInitialThreat() || targetUnit->IsEngaged()))
+        m_originalCaster->SetInCombatWith(targetUnit, true);
+
     Unit* unit = nullptr;
     // In case spell hit target, do all effect on that target
     if (targetInfo.MissCondition == SPELL_MISS_NONE || (targetInfo.MissCondition == SPELL_MISS_BLOCK && !m_spellInfo->HasAttribute(SPELL_ATTR3_COMPLETELY_BLOCKED)))
-        unit = m_caster->GetGUID() == targetInfo.TargetGUID ? m_caster->ToUnit() : ObjectAccessor::GetUnit(*m_caster, targetInfo.TargetGUID);
+        unit = targetUnit;
     // In case spell reflect from target, do all effect on caster (if hit)
     else if (targetInfo.MissCondition == SPELL_MISS_REFLECT && targetInfo.ReflectResult == SPELL_MISS_NONE)
         unit = m_caster->ToUnit();

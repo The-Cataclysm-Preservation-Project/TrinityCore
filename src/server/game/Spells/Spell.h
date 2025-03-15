@@ -692,8 +692,6 @@ class TC_GAME_API Spell
             void DoTargetSpellHit(Spell* spell, uint8 effIndex) override;
             void DoDamageAndTriggers(Spell* spell) override;
 
-            bool IsPVPEnabling() const { return _enablePVP; }
-
             ObjectGuid TargetGUID;
             uint64 TimeDelay = 0ULL;
             int32 Damage = 0;
