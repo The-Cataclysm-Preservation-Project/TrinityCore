@@ -239,6 +239,9 @@ ChaseMovementPositionCheckResult ChaseMovementGenerator::checkPosition(ChasePosi
 
 void ChaseMovementGenerator::launchSpline(Unit* owner, Unit* target, Position& destination)
 {
+    if (owner->IsHovering())
+        owner->UpdateAllowedPositionZ(destination.m_positionX, destination.m_positionY, destination.m_positionZ);
+
     Creature* cOwner = owner->ToCreature();
     bool success = _pathGenerator->CalculatePath(destination, owner->CanFly());
     if (!success || (_pathGenerator->GetPathType() & (PATHFIND_NOPATH /* | PATHFIND_INCOMPLETE*/)))
