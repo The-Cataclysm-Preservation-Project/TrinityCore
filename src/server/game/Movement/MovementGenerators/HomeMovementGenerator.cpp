@@ -81,14 +81,18 @@ void HomeMovementGenerator<Creature>::DoFinalize(Creature* owner)
 {
     if (_arrived)
     {
-        owner->ClearUnitState(UNIT_STATE_EVADE);
-        owner->SetWalk(true);
-        owner->InitializeMovementCapabilities();
-        owner->LoadCreaturesAddon();
-        if (owner->IsVehicle())
-            owner->GetVehicleKit()->Reset(true);
+        if (owner->IsStateRestoredOnEvade())
+        {
+            owner->ClearUnitState(UNIT_STATE_EVADE);
+            owner->SetWalk(true);
+            owner->InitializeMovementCapabilities();
+            owner->SetSpawnHealth();
+            owner->LoadCreaturesAddon();
+            if (owner->IsVehicle())
+                owner->GetVehicleKit()->Reset(true);
+        }
+
         owner->AI()->JustReachedHome();
-        owner->SetSpawnHealth();
     }
 }
 
