@@ -2550,6 +2550,9 @@ bool Creature::LoadCreaturesAddon()
     if (!creatureAddon)
         return false;
 
+    if (uint32 mountDisplayId = _defaultMountDisplayIdOverride.value_or(creatureAddon->mount); mountDisplayId != 0)
+        Mount(mountDisplayId);
+
     if (creatureAddon->mount != 0)
         Mount(creatureAddon->mount);
 
@@ -2941,6 +2944,14 @@ void Creature::SetPosition(float x, float y, float z, float o)
         GetVehicleKit()->RelocatePassengers();
 }
 
+void Creature::SetDefaultMount(Optional<uint32> mountCreatureDisplayId)
+{
+    if (mountCreatureDisplayId && !sCreatureDisplayInfoStore.LookupEntry(*mountCreatureDisplayId))
+        mountCreatureDisplayId.reset();
+
+    _defaultMountDisplayIdOverride = mountCreatureDisplayId;
+}
+
 float Creature::GetAggroRange(Unit const* target) const
 {
     // Determines the aggro range for creatures (usually pets), used mainly for aggressive pet target selection.
@@ -3240,7 +3251,7 @@ void Creature::AtEngage(Unit* target)
 
     GetThreatManager().ResetUpdateTimer();
 
-    if (!(GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_MOUNTED_COMBAT_ALLOWED))
+    if (!(GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_MOUNTED_COMBAT_ALLOWED) && !HasStaticFlag(CREATURE_STATIC_FLAG_2_ALLOW_MOUNTED_COMBAT))
         Dismount();
 
     MovementGeneratorType const movetype = GetMotionMaster()->GetCurrentMovementGeneratorType();

@@ -317,6 +317,8 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         void SetCannotReachTarget(bool cannotReach) { if (cannotReach == m_cannotReachTarget) return; m_cannotReachTarget = cannotReach; m_cannotReachTimer = 0; }
         bool CanNotReachTarget() const { return m_cannotReachTarget; }
 
+        void SetDefaultMount(Optional<uint32> mountCreatureDisplayId);
+
         void SetPosition(float x, float y, float z, float o);
         void SetPosition(const Position &pos) { SetPosition(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()); }
 
@@ -502,6 +504,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         CreatureMovementInfo _creatureMovementInfo;
 
+        Optional<uint32> _defaultMountDisplayIdOverride;
         float _noNpcDamageBelowPctHealth;
 };
 
