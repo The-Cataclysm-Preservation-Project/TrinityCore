@@ -819,6 +819,9 @@ void ThreatManager::UnregisterRedirectThreat(uint32 spellId, ObjectGuid const& v
 
 void ThreatManager::SendClearAllThreatToClients() const
 {
+    if (Creature const* owner = _owner->ToCreature(); owner && owner->IsThreatFeedbackDisabled())
+        return;
+
     WorldPackets::Combat::ThreatClear packet;
     packet.UnitGUID = _owner->GetGUID();
     _owner->SendMessageToSet(packet.Write(), false);
@@ -826,6 +829,9 @@ void ThreatManager::SendClearAllThreatToClients() const
 
 void ThreatManager::SendRemoveToClients(Unit const* victim) const
 {
+    if (Creature const* owner = _owner->ToCreature(); owner && owner->IsThreatFeedbackDisabled())
+        return;
+
     WorldPackets::Combat::ThreatRemove packet;
     packet.UnitGUID = _owner->GetGUID();
     packet.AboutGUID = victim->GetGUID();
@@ -834,6 +840,9 @@ void ThreatManager::SendRemoveToClients(Unit const* victim) const
 
 void ThreatManager::SendThreatListToClients(bool newHighest) const
 {
+    if (Creature const* owner = _owner->ToCreature(); owner && owner->IsThreatFeedbackDisabled())
+        return;
+
     auto fillSharedPacketDataAndSend = [&](auto& packet)
     {
         packet.UnitGUID = _owner->GetGUID();
