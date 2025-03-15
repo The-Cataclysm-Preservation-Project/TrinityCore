@@ -2564,7 +2564,7 @@ void Spell::TargetInfo::PreprocessTarget(Spell* spell)
         if (spell->m_originalCaster->IsFriendlyTo(unit))
             return false;
 
-        if (spell->m_originalCaster->IsIgnoringCombat() || !spell->m_spellInfo->CausesInitialThreat())
+        if ((spell->m_originalCaster->IsCreature() && spell->m_originalCaster->ToCreature()->HasReactState(REACT_PASSIVE)) || !spell->m_spellInfo->CausesInitialThreat())
             return false;
 
         return true;
@@ -2829,13 +2829,33 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
             spell->m_needComboPoints = false;
 
         // _spellHitTarget can be null if spell is missed in DoSpellHitOnUnit
-        if (MissCondition != SPELL_MISS_EVADE && _spellHitTarget && !spell->m_caster->IsFriendlyTo(unit) && (!spell->IsPositive() || spell->m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+        bool setInCombat = [&]()
+         {
+            if (MissCondition == SPELL_MISS_EVADE)
+                return false;
+
+            if (!_spellHitTarget)
+                return false;
+
+            if (spell->IsPositive() && !spell->m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL))
+                return false;
+
+            if (spell->m_caster->IsFriendlyTo(unit))
+                return false;
+
+            if ((spell->m_caster->IsCreature() && spell->m_caster->ToCreature()->HasReactState(REACT_PASSIVE)) || !spell->m_spellInfo->CausesInitialThreat())
+                return false;
+
+            return true;
+         }();
+
+        if (setInCombat)
         {
             if (Unit* unitCaster = spell->m_caster->ToUnit())
             {
-                if (!unitCaster->IsCreature() || !unitCaster->ToCreature()->IsTrigger())
+                if (!unitCaster->IsCreature())
                 {
-                    unitCaster->AtTargetAttacked(unit, spell->m_spellInfo->CausesInitialThreat() && !unitCaster->IsIgnoringCombat());
+                    unitCaster->AtTargetAttacked(unit, true);
 
                     if (spell->m_spellInfo->HasAttribute(SPELL_ATTR6_TAPS_IMMEDIATELY))
                         if (Creature* targetCreature = unit->ToCreature())
@@ -8092,7 +8112,7 @@ void Spell::PreprocessSpellLaunch(TargetInfo& targetInfo)
         if (m_originalCaster->IsFriendlyTo(targetUnit))
             return false;
 
-        if (m_originalCaster->IsIgnoringCombat() || !m_spellInfo->CausesInitialThreat())
+        if ((m_originalCaster->IsCreature() && m_originalCaster->ToCreature()->HasReactState(REACT_PASSIVE)) || !m_spellInfo->CausesInitialThreat())
             return false;
 
         return true;

@@ -305,8 +305,7 @@ Unit::Unit(bool isWorldObject) :
     m_charmer(nullptr), m_charmed(nullptr),
     i_motionMaster(std::make_unique<MotionMaster>(this)), m_vehicle(nullptr),
     m_unitTypeMask(UNIT_MASK_NONE), m_isEngaged(false), m_combatManager(this), m_threatManager(this),
-    i_AI(nullptr), m_aiLocked(false), m_spellHistory(std::make_unique<SpellHistory>(this)),
-    _isIgnoringCombat(false)
+    i_AI(nullptr), m_aiLocked(false), m_spellHistory(std::make_unique<SpellHistory>(this))
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;

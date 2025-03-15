@@ -656,9 +656,6 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
     }
 
 
-    if (cInfo->flags_extra & CREATURE_FLAG_EXTRA_NO_COMBAT)
-        SetIgnoringCombat(true);
-
     InitializeMovementCapabilities();
 
     LoadCreaturesAddon();
@@ -1164,7 +1161,7 @@ bool Creature::SetCanFly(bool enable)
 
 void Creature::InitializeReactState()
 {
-    if (IsTotem() || IsTrigger() || IsCritter() || IsSpiritService())
+    if (IsTotem() || IsTrigger() || IsCritter() || IsSpiritService() || _staticFlags.HasFlag(CREATURE_STATIC_FLAG_IGNORE_COMBAT))
         SetReactState(REACT_PASSIVE);
     /*
     else if (IsCivilian())

@@ -1765,11 +1765,6 @@ class TC_GAME_API Unit : public WorldObject
 
         float GetCollisionHeight() const override;
 
-        // returns if the unit is allowed to enter combat
-        bool IsIgnoringCombat() const { return _isIgnoringCombat; }
-        // enables/disables combat permission of this unit
-        void SetIgnoringCombat(bool apply) { _isIgnoringCombat = apply; }
-
         // Queues up a spell cast request that has been received via packet and processes it whenever possible.
         void RequestSpellCast(std::unique_ptr<PendingSpellCastRequest> castRequest, SpellInfo const* spellInfo);
         void CancelPendingCastRequest();
@@ -1930,8 +1925,6 @@ class TC_GAME_API Unit : public WorldObject
         FormationFollowerGUIDContainer _formationFollowers;
 
         std::array<std::unordered_set<AbstractPursuer*>, AsUnderlyingType(PursuingType::Max)> _unitsPursuingMe;
-
-        bool _isIgnoringCombat;
 
         std::unique_ptr<PendingSpellCastRequest> _pendingSpellCastRequest;
         void ProcessPendingSpellCastRequest();
