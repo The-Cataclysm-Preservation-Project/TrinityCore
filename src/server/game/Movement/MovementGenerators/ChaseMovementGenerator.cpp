@@ -239,28 +239,21 @@ ChaseMovementPositionCheckResult ChaseMovementGenerator::checkPosition(ChasePosi
 
 void ChaseMovementGenerator::launchSpline(Unit* owner, Unit* target, Position& destination)
 {
-    Position startPoint = owner->GetPosition();
-    if (owner->IsHovering())
-        startPoint.m_positionZ = owner->GetFloorZ();
-
-    bool success = _pathGenerator->CalculatePath(startPoint, destination, owner->IsFlying());
-    uint32 deniedPathResultTypes = PATHFIND_NOPATH | PATHFIND_INCOMPLETE;
-    if ((!owner->IsFlying() || (target->IsInWater() && !owner->CanEnterWater())) && !owner->HasUnitState(UNIT_STATE_IGNORE_PATHFINDING)) // only flying and swimming units and units with pathfinding disabled may use shortcuts an
-        deniedPathResultTypes |= PATHFIND_SHORTCUT;
-
-    bool cantReachTarget = !success || (_pathGenerator->GetPathType() & deniedPathResultTypes);
-    if (cantReachTarget)
+    Creature* cOwner = owner->ToCreature();
+    bool success = _pathGenerator->CalculatePath(destination, owner->CanFly());
+    if (!success || (_pathGenerator->GetPathType() & (PATHFIND_NOPATH /* | PATHFIND_INCOMPLETE*/)))
     {
-        owner->ToCreature()->SetCannotReachTarget(true);
+        if (Creature* cOwner = owner->ToCreature())
+            cOwner->SetCannotReachTarget(true);
         owner->StopMoving();
         return;
     }
-    else
-        owner->ToCreature()->SetCannotReachTarget(false);
+
+    if (cOwner)
+        cOwner->SetCannotReachTarget(false);
 
     Movement::MoveSplineInit init(owner);
     init.MovebyPath(_pathGenerator->GetPath());
-    init.SetWalk(false);
     init.SetFacing(target);
 
     if (target->isMoving())
