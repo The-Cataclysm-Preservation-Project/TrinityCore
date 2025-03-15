@@ -170,7 +170,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool IsInEvadeMode() const { return HasUnitState(UNIT_STATE_EVADE); }
         bool IsEvadingAttacks() const { return IsInEvadeMode() || CanNotReachTarget(); }
 
-        bool IsStateRestoredOnEvade() const { return !HasFlag(CREATURE_STATIC_FLAG_5_NO_LEAVECOMBAT_STATE_RESTORE); }
+        bool IsStateRestoredOnEvade() const { return !_staticFlags.HasFlag(CREATURE_STATIC_FLAG_5_NO_LEAVECOMBAT_STATE_RESTORE); }
         void SetRestoreStateOnEvade(bool restoreOnEvade) { _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_5_NO_LEAVECOMBAT_STATE_RESTORE, !restoreOnEvade); }
 
         bool AIM_Destroy();
@@ -276,9 +276,10 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool HasSearchedAssistance() const { return m_AlreadySearchedAssistance; }
         bool CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction = true) const;
         bool _IsTargetAcceptable(const Unit* target) const;
-        bool CanIgnoreFeignDeath() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_IGNORE_FEIGN_DEATH) != 0; }
+        bool IsIgnoringFeignDeath() const { return _staticFlags.HasFlag(CREATURE_STATIC_FLAG_2_IGNORE_FEIGN_DEATH); }
+        void SetIgnoreFeignDeath(bool ignoreFeignDeath) { _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_2_IGNORE_FEIGN_DEATH, ignoreFeignDeath); }
         bool IsIgnoringSanctuarySpellEffect() const { return _staticFlags.HasFlag(CREATURE_STATIC_FLAG_2_IGNORE_SANCTUARY); }
-        void SetIngoreSanctuarySpellEffect(bool ignoreSanctuary) { _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_2_IGNORE_SANCTUARY, ignoreSanctuary); }
+        void SetIgnoreSanctuarySpellEffect(bool ignoreSanctuary) { _staticFlags.ApplyFlag(CREATURE_STATIC_FLAG_2_IGNORE_SANCTUARY, ignoreSanctuary); }
 
         MovementGeneratorType GetDefaultMovementType() const { return m_defaultMovementType; }
         void SetDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
