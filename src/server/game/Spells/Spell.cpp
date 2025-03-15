@@ -2550,7 +2550,27 @@ void Spell::TargetInfo::PreprocessTarget(Spell* spell)
     else if (MissCondition == SPELL_MISS_REFLECT && ReflectResult == SPELL_MISS_NONE)
         _spellHitTarget = spell->m_caster->ToUnit();
 
-    if (spell->m_originalCaster && MissCondition != SPELL_MISS_EVADE && !spell->m_originalCaster->IsFriendlyTo(unit) && (!spell->m_spellInfo->IsPositive() || spell->m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (spell->m_spellInfo->CausesInitialThreat() || unit->IsEngaged()))
+    bool setInCombat = [&]()
+    {
+        if (!spell->m_originalCaster)
+            return false;
+
+        if (MissCondition == SPELL_MISS_EVADE)
+            return false;
+
+        if (spell->m_spellInfo->IsPositive() && !spell->m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL))
+            return false;
+
+        if (spell->m_originalCaster->IsFriendlyTo(unit))
+            return false;
+
+        if (spell->m_originalCaster->IsIgnoringCombat() || !spell->m_spellInfo->CausesInitialThreat())
+            return false;
+
+        return true;
+    }();
+
+    if (setInCombat)
         unit->SetInCombatWith(spell->m_originalCaster);
 
     // if target is flagged for pvp also flag caster if a player
@@ -8058,8 +8078,28 @@ void Spell::PreprocessSpellLaunch(TargetInfo& targetInfo)
     if (!targetUnit)
         return;
 
+    bool setInCombat = [&]()
+    {
+        if (!m_originalCaster)
+            return false;
+
+        if (targetInfo.MissCondition == SPELL_MISS_EVADE)
+            return false;
+
+        if (m_spellInfo->IsPositive() && !m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL))
+            return false;
+
+        if (m_originalCaster->IsFriendlyTo(targetUnit))
+            return false;
+
+        if (m_originalCaster->IsIgnoringCombat() || !m_spellInfo->CausesInitialThreat())
+            return false;
+
+        return true;
+    }();
+
     // This will only cause combat - the target will engage once the projectile hits (in Spell::TargetInfo::PreprocessTarget)
-    if (m_originalCaster && targetInfo.MissCondition != SPELL_MISS_EVADE && !m_originalCaster->IsFriendlyTo(targetUnit) && (!m_spellInfo->IsPositive() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)) && (m_spellInfo->CausesInitialThreat() || targetUnit->IsEngaged()))
+    if (setInCombat)
         m_originalCaster->SetInCombatWith(targetUnit, true);
 
     Unit* unit = nullptr;
