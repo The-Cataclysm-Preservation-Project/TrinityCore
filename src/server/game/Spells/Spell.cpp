@@ -8031,6 +8031,9 @@ void Spell::HandleLaunchPhase()
 
     PrepareTargetProcessing();
 
+    for (TargetInfo& target : m_UniqueTargetInfo)
+        PreprocessSpellLaunch(target);
+
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         float multiplier = 1.0f;
@@ -8049,7 +8052,7 @@ void Spell::HandleLaunchPhase()
     FinishTargetProcessing();
 }
 
-void Spell::DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uint8 effIndex)
+void Spell::PreprocessSpellLaunch(TargetInfo& targetInfo)
 {
     Unit* targetUnit = m_caster->GetGUID() == targetInfo.TargetGUID ? m_caster->ToUnit() : ObjectAccessor::GetUnit(*m_caster, targetInfo.TargetGUID);
     if (!targetUnit)
@@ -8063,6 +8066,30 @@ void Spell::DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uin
     // In case spell hit target, do all effect on that target
     if (targetInfo.MissCondition == SPELL_MISS_NONE || (targetInfo.MissCondition == SPELL_MISS_BLOCK && !m_spellInfo->HasAttribute(SPELL_ATTR3_COMPLETELY_BLOCKED)))
         unit = targetUnit;
+    // In case spell reflect from target, do all effect on caster (if hit)
+    else if (targetInfo.MissCondition == SPELL_MISS_REFLECT && targetInfo.ReflectResult == SPELL_MISS_NONE)
+        unit = m_caster->ToUnit();
+
+    if (!unit)
+        return;
+
+    float critChance = m_spellValue->CriticalChance;
+    if (m_originalCaster)
+    {
+        if (!critChance)
+            critChance = m_originalCaster->SpellCritChanceDone(m_spellInfo, m_spellSchoolMask, m_attackType);
+        critChance = unit->SpellCritChanceTaken(m_originalCaster, m_spellInfo, m_spellSchoolMask, critChance, m_attackType);
+    }
+
+    targetInfo.IsCrit = roll_chance_f(critChance);
+}
+
+void Spell::DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uint8 effIndex)
+{
+    Unit* unit = nullptr;
+    // In case spell hit target, do all effect on that target
+    if (targetInfo.MissCondition == SPELL_MISS_NONE)
+        unit = m_caster->GetGUID() == targetInfo.TargetGUID ? m_caster->ToUnit() : ObjectAccessor::GetUnit(*m_caster, targetInfo.TargetGUID);
     // In case spell reflect from target, do all effect on caster (if hit)
     else if (targetInfo.MissCondition == SPELL_MISS_REFLECT && targetInfo.ReflectResult == SPELL_MISS_NONE)
         unit = m_caster->ToUnit();
@@ -8102,16 +8129,6 @@ void Spell::DoEffectOnLaunchTarget(TargetInfo& targetInfo, float multiplier, uin
 
     targetInfo.Damage += m_damage;
     targetInfo.Healing += m_healing;
-
-    float critChance = m_spellValue->CriticalChance;
-    if (m_originalCaster)
-    {
-        if (!critChance)
-            critChance = m_originalCaster->SpellCritChanceDone(m_spellInfo, m_spellSchoolMask, m_attackType);
-        critChance = unit->SpellCritChanceTaken(m_originalCaster, m_spellInfo, m_spellSchoolMask, critChance, m_attackType);
-    }
-
-    targetInfo.IsCrit = roll_chance_f(critChance);
 }
 
 void Spell::ResetCombatTimers()
