@@ -15,21 +15,19 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BattlenetPacketCrypt_h__
-#define BattlenetPacketCrypt_h__
+#ifndef TRINITY_CRYPTO_CONSTANTS_H
+#define TRINITY_CRYPTO_CONSTANTS_H
 
-#include "PacketCrypt.h"
+#include "Define.h"
 
-class BigNumber;
-
-namespace Battlenet
+namespace Trinity::Crypto
 {
-    class PacketCrypt : public ::PacketCrypt
+    struct Constants
     {
-        public:
-            PacketCrypt();
-
-            void Init(SessionKey const& /*K*/) override;
+        static constexpr size_t MD5_DIGEST_LENGTH_BYTES = 16;
+        static constexpr size_t SHA1_DIGEST_LENGTH_BYTES = 20;
+        static constexpr size_t SHA256_DIGEST_LENGTH_BYTES = 32;
     };
 }
-#endif // BattlenetPacketCrypt_h__
+
+#endif

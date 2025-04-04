@@ -15,21 +15,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BattlenetPacketCrypt_h__
-#define BattlenetPacketCrypt_h__
+#ifndef TRINITY_AUTHDEFINES_H
+#define TRINITY_AUTHDEFINES_H
 
-#include "PacketCrypt.h"
+#include "Define.h"
+#include <array>
 
-class BigNumber;
+constexpr size_t SESSION_KEY_LENGTH = 40;
+using SessionKey = std::array<uint8, SESSION_KEY_LENGTH>;
 
-namespace Battlenet
-{
-    class PacketCrypt : public ::PacketCrypt
-    {
-        public:
-            PacketCrypt();
-
-            void Init(SessionKey const& /*K*/) override;
-    };
-}
-#endif // BattlenetPacketCrypt_h__
+#endif

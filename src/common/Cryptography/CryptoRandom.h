@@ -15,21 +15,29 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BattlenetPacketCrypt_h__
-#define BattlenetPacketCrypt_h__
+#ifndef TRINITY_CRYPTORANDOM_H
+#define TRINITY_CRYPTORANDOM_H
 
-#include "PacketCrypt.h"
+#include "Define.h"
+#include <array>
 
-class BigNumber;
-
-namespace Battlenet
+namespace Trinity::Crypto
 {
-    class PacketCrypt : public ::PacketCrypt
-    {
-        public:
-            PacketCrypt();
+    void TC_COMMON_API GetRandomBytes(uint8* buf, size_t len);
 
-            void Init(SessionKey const& /*K*/) override;
-    };
+    template <typename Container>
+    void GetRandomBytes(Container& c)
+    {
+        GetRandomBytes(std::data(c), std::size(c));
+    }
+
+    template <size_t S>
+    std::array<uint8, S> GetRandomBytes()
+    {
+        std::array<uint8, S> arr;
+        GetRandomBytes(arr);
+        return arr;
+    }
 }
-#endif // BattlenetPacketCrypt_h__
+
+#endif

@@ -17,8 +17,8 @@
  */
 
 #include "Helper.hpp"
+#include "CryptoHash.h"
 
-#include <SHA256.h>
 #include <Util.h>
 
 #include <stdexcept>
@@ -48,11 +48,7 @@ namespace Connection_Patcher
 
         std::string GetFileChecksum(std::vector<unsigned char> const& data)
         {
-            SHA256Hash h;
-            h.UpdateData(data.data(), data.size());
-            h.Finalize();
-
-            return ByteArrayToHexStr(h.GetDigest(), h.GetLength());
+            return ByteArrayToHexStr(Trinity::Crypto::SHA256::GetDigestOf(data));
         }
     }
 }

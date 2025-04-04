@@ -16,24 +16,24 @@
  */
 
 #include "PacketCrypt.h"
+#include "BigNumber.h"
+#include "Errors.h"
+#include "HMAC.h"
 
-PacketCrypt::PacketCrypt(uint32 rc4InitSize)
-    : _clientDecrypt(rc4InitSize), _serverEncrypt(rc4InitSize), _initialized(false)
+#include <cstring>
+
+PacketCrypt::PacketCrypt() :  _initialized(false)
 {
 }
 
 void PacketCrypt::DecryptRecv(uint8* data, size_t len)
 {
-    if (!_initialized)
-        return;
-
-    _clientDecrypt.UpdateData(len, data);
+    ASSERT(_initialized);
+    _clientDecrypt.UpdateData(data, len);
 }
 
 void PacketCrypt::EncryptSend(uint8* data, size_t len)
 {
-    if (!_initialized)
-        return;
-
-    _serverEncrypt.UpdateData(len, data);
+    ASSERT(_initialized);
+    _serverEncrypt.UpdateData(data, len);
 }

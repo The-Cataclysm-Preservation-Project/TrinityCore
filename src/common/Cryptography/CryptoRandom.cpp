@@ -15,21 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BattlenetPacketCrypt_h__
-#define BattlenetPacketCrypt_h__
+#include "CryptoRandom.h"
+#include "Errors.h"
+#include <openssl/rand.h>
 
-#include "PacketCrypt.h"
-
-class BigNumber;
-
-namespace Battlenet
+void Trinity::Crypto::GetRandomBytes(uint8* buf, size_t len)
 {
-    class PacketCrypt : public ::PacketCrypt
-    {
-        public:
-            PacketCrypt();
-
-            void Init(SessionKey const& /*K*/) override;
-    };
+    int result = RAND_bytes(buf, len);
+    ASSERT(result == 1, "Not enough randomness in OpenSSL's entropy pool. What in the world are you running on?");
 }
-#endif // BattlenetPacketCrypt_h__

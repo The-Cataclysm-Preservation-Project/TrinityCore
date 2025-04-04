@@ -17,9 +17,9 @@
 
 #include "BattlenetAccountMgr.h"
 #include "AccountMgr.h"
+#include "CryptoHash.h"
 #include "DatabaseEnv.h"
 #include "Util.h"
-#include "SHA256.h"
 
 using GameAccountMgr = AccountMgr;
 

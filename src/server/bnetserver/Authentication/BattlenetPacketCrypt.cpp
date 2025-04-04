@@ -16,27 +16,30 @@
  */
 
 #include "BattlenetPacketCrypt.h"
-#include "Cryptography/HmacHash.h"
-#include "Cryptography/BigNumber.h"
+#include "BigNumber.h"
+#include "Errors.h"
+#include "HMAC.h"
 
-Battlenet::PacketCrypt::PacketCrypt() : ::PacketCrypt(SHA256_DIGEST_LENGTH)
+#include <cstring>
+
+namespace Battlenet
 {
-}
+    PacketCrypt::PacketCrypt() : ::PacketCrypt()
+    {
+    }
 
-void Battlenet::PacketCrypt::Init(BigNumber* K)
-{
-    uint8 ServerEncryptionKey[SEED_KEY_SIZE] = { 0x68, 0xE0, 0xC7, 0x2E, 0xDD, 0xD6, 0xD2, 0xF3, 0x1E, 0x5A, 0xB1, 0x55, 0xB1, 0x8B, 0x63, 0x1E };
-    uint8 ClientDecryptionKey[SEED_KEY_SIZE] = { 0xDE, 0xA9, 0x65, 0xAE, 0x54, 0x3A, 0x1E, 0x93, 0x9E, 0x69, 0x0C, 0xAA, 0x68, 0xDE, 0x78, 0x39 };
+    void PacketCrypt::Init(SessionKey const& K)
+    {
+        uint8 ServerEncryptionKey[] = { 0x68, 0xE0, 0xC7, 0x2E, 0xDD, 0xD6, 0xD2, 0xF3, 0x1E, 0x5A, 0xB1, 0x55, 0xB1, 0x8B, 0x63, 0x1E };
+        _serverEncrypt.Init(Trinity::Crypto::HMAC_SHA256::GetDigestOf(ServerEncryptionKey, K));
+        uint8 ServerDecryptionKey[] = { 0xDE, 0xA9, 0x65, 0xAE, 0x54, 0x3A, 0x1E, 0x93, 0x9E, 0x69, 0x0C, 0xAA, 0x68, 0xDE, 0x78, 0x39 };
+        _clientDecrypt.Init(Trinity::Crypto::HMAC_SHA256::GetDigestOf(ServerDecryptionKey, K));
 
-    HmacSha256 serverEncryptHmac(K->GetNumBytes(), K->AsByteArray().get());
-    serverEncryptHmac.UpdateData(ServerEncryptionKey, SEED_KEY_SIZE);
-    serverEncryptHmac.Finalize();
+        // Drop first 1024 bytes, as WoW uses ARC4-drop1024.
+        //std::array<uint8, 1024> syncBuf;
+        //_serverEncrypt.UpdateData(syncBuf);
+        //_clientDecrypt.UpdateData(syncBuf);
 
-    HmacSha256 clientDecryptHmac(K->GetNumBytes(), K->AsByteArray().get());
-    clientDecryptHmac.UpdateData(ClientDecryptionKey, SEED_KEY_SIZE);
-    clientDecryptHmac.Finalize();
-
-    _clientDecrypt.Init(clientDecryptHmac.GetDigest());
-    _serverEncrypt.Init(serverEncryptHmac.GetDigest());
-    _initialized = true;
+        _initialized = true;
+    }
 }

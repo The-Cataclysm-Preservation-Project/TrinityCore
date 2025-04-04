@@ -584,7 +584,7 @@ bool Utf8ToUpperOnlyLatin(std::string& utf8String)
     return WStrToUtf8(wstr, utf8String);
 }
 
-std::string ByteArrayToHexStr(uint8 const* bytes, uint32 arrayLen, bool reverse /* = false */)
+std::string Trinity::Impl::ByteArrayToHexStr(uint8 const* bytes, size_t arrayLen, bool reverse /* = false */)
 {
     int32 init = 0;
     int32 end = arrayLen;
@@ -608,19 +608,17 @@ std::string ByteArrayToHexStr(uint8 const* bytes, uint32 arrayLen, bool reverse 
     return ss.str();
 }
 
-void HexStrToByteArray(std::string const& str, uint8* out, bool reverse /*= false*/)
+void Trinity::Impl::HexStrToByteArray(std::string_view str, uint8* out, size_t outlen, bool reverse /*= false*/)
 {
-    // string must have even number of characters
-    if (str.length() & 1)
-        return;
+    ASSERT(str.size() == (2 * outlen));
 
     int32 init = 0;
-    int32 end = str.length();
+    int32 end = int32(str.length());
     int8 op = 1;
 
     if (reverse)
     {
-        init = str.length() - 2;
+        init = int32(str.length() - 2);
         end = -2;
         op = -1;
     }

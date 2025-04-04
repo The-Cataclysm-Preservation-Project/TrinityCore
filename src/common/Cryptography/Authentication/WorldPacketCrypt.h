@@ -27,8 +27,7 @@ class TC_COMMON_API WorldPacketCrypt : public PacketCrypt
     public:
         WorldPacketCrypt();
 
-        void Init(BigNumber* K) override;
-        void Init(BigNumber* k, uint8 const* serverKey, uint8 const* clientKey);
+        void Init(SessionKey const& K) override;
 };
 
 #endif // _WORLDPACKETCRYPT_H
