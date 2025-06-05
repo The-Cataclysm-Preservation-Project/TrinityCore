@@ -2418,9 +2418,9 @@ Player* WorldObject::GetSpellModOwner() const
 }
 
 // function uses real base points (typically value - 1)
-int32 WorldObject::CalculateSpellDamage(Unit const* target, SpellInfo const* spellProto, uint8 effectIndex, int32 const* basePoints) const
+int32 WorldObject::CalculateSpellDamage(Unit const* target, SpellInfo const* spellProto, uint8 effIndex, int32 const* basePoints /*= nullptr*/) const
 {
-    return spellProto->Effects[effectIndex].CalcValue(this, basePoints, target);
+    return spellProto->Effects[effIndex].CalcValue(this, basePoints, target);
 }
 
 float WorldObject::GetSpellMaxRangeForTarget(Unit const* target, SpellInfo const* spellInfo) const

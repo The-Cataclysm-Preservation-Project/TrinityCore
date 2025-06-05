@@ -247,8 +247,9 @@ class TC_GAME_API SpellCastTargets
 
 struct SpellValue
 {
-    explicit  SpellValue(SpellInfo const* proto);
+    explicit  SpellValue(SpellInfo const* proto, WorldObject const* caster);
     int32     EffectBasePoints[MAX_SPELL_EFFECTS];
+    uint32    CustomBasePointsMask;
     uint32    MaxAffectedTargets;
     float     RadiusMod;
     uint8     AuraStackAmount;

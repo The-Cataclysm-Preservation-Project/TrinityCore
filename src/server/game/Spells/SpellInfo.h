@@ -294,7 +294,7 @@ public:
     bool IsUnitOwnedAuraEffect() const;
 
     int32 CalcValue(WorldObject const* caster = nullptr, int32 const* basePoints = nullptr, Unit const* target = nullptr) const;
-    int32 CalcBaseValue(int32 value) const;
+    int32 CalcBaseValue(WorldObject const* caster, Unit const* target) const;
     float CalcValueMultiplier(WorldObject* caster, Spell* spell = nullptr) const;
     float CalcDamageMultiplier(WorldObject* caster, Spell* spell = nullptr) const;
 
@@ -592,7 +592,7 @@ class TC_GAME_API SpellInfo
         uint32 GetRecoveryTime() const;
 
         int32 CalcPowerCost(WorldObject const* caster, SpellSchoolMask schoolMask, Spell* spell = nullptr) const;
-        float GetSpellScalingMultiplier(WorldObject const* caster, bool isPowerCostRelated = false) const;
+        float GetSpellScalingMultiplier(int32 targetLevel, bool isPowerCostRelated = false) const;
 
         bool IsRanked() const;
         uint8 GetRank() const;

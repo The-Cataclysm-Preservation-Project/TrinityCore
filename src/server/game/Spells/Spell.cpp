@@ -532,10 +532,13 @@ void SpellCastTargets::Update(WorldObject* caster)
     }
 }
 
-SpellValue::SpellValue(SpellInfo const* proto)
+SpellValue::SpellValue(SpellInfo const* proto, WorldObject const* caster)
 {
+    memset(EffectBasePoints, 0, sizeof(EffectBasePoints));
     for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        EffectBasePoints[i] = proto->Effects[i].BasePoints;
+        EffectBasePoints[i] = proto->Effects[i].CalcBaseValue(caster, nullptr);
+
+    CustomBasePointsMask = 0;
     MaxAffectedTargets = proto->MaxAffectedTargets;
     RadiusMod = 1.0f;
     AuraStackAmount = 1;
@@ -560,7 +563,7 @@ protected:
 Spell::Spell(WorldObject* caster, SpellInfo const* info, TriggerCastFlags triggerFlags, ObjectGuid originalCasterGUID) :
 m_spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(info, caster)),
 m_caster((info->HasAttribute(SPELL_ATTR6_ORIGINATE_FROM_CONTROLLER) && caster->GetCharmerOrOwner()) ? caster->GetCharmerOrOwner() : caster)
-, m_spellValue(new SpellValue(m_spellInfo)), _spellEvent(nullptr)
+, m_spellValue(new SpellValue(m_spellInfo, caster)), _spellEvent(nullptr)
 {
     m_customError = SPELL_CUSTOM_ERROR_NONE;
     m_selfContainer = nullptr;
@@ -3037,7 +3040,10 @@ SpellMissInfo Spell::PreprocessSpellHit(Unit* unit, bool scaleAura, TargetInfo& 
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
-                hitInfo.AuraBasePoints[i] = hitInfo.AuraSpellInfo->Effects[i].BasePoints;
+                hitInfo.AuraBasePoints[i] = (m_spellValue->CustomBasePointsMask & (1 << i)) ?
+                hitInfo.AuraSpellInfo->Effects[i].BasePoints
+                : hitInfo.AuraSpellInfo->Effects[i].CalcBaseValue(m_originalCaster, unit);
+
                 if (m_spellInfo->Effects[i].Effect != hitInfo.AuraSpellInfo->Effects[i].Effect)
                 {
                     hitInfo.AuraSpellInfo = m_spellInfo;
@@ -6903,7 +6909,8 @@ SpellCastResult Spell::CheckMovement() const
 
 int32 Spell::CalculateDamage(uint8 effIndex, Unit const* target) const
 {
-    return m_caster->CalculateSpellDamage(target, m_spellInfo, effIndex, &m_spellValue->EffectBasePoints[effIndex]);
+    bool needRecalculateBasePoints = !(m_spellValue->CustomBasePointsMask & (1 << effIndex));
+    return m_caster->CalculateSpellDamage(target, m_spellInfo, effIndex, needRecalculateBasePoints ? nullptr : &m_spellValue->EffectBasePoints[effIndex]);
 }
 
 bool Spell::CanAutoCast(Unit* target)
@@ -8282,13 +8289,16 @@ void Spell::SetSpellValue(SpellValueMod mod, int32 value)
     switch (mod)
     {
         case SPELLVALUE_BASE_POINT0:
-            m_spellValue->EffectBasePoints[0] = m_spellInfo->Effects[EFFECT_0].CalcBaseValue(value);
+            m_spellValue->EffectBasePoints[0] = value;
+            m_spellValue->CustomBasePointsMask |= 1 << 0;
             break;
         case SPELLVALUE_BASE_POINT1:
-            m_spellValue->EffectBasePoints[1] = m_spellInfo->Effects[EFFECT_1].CalcBaseValue(value);
+            m_spellValue->EffectBasePoints[1] = value;
+            m_spellValue->CustomBasePointsMask |= 1 << 1;
             break;
         case SPELLVALUE_BASE_POINT2:
-            m_spellValue->EffectBasePoints[2] = m_spellInfo->Effects[EFFECT_2].CalcBaseValue(value);
+            m_spellValue->EffectBasePoints[2] = value;
+            m_spellValue->CustomBasePointsMask |= 1 << 2;
             break;
         case SPELLVALUE_RADIUS_MOD:
             m_spellValue->RadiusMod = (float)value / 10000;

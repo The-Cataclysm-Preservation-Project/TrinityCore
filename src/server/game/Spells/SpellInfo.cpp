@@ -435,29 +435,89 @@ bool SpellEffectInfo::IsUnitOwnedAuraEffect() const
     return IsAreaAuraEffect() || Effect == SPELL_EFFECT_APPLY_AURA || Effect == SPELL_EFFECT_APPLY_AURA_2;
 }
 
-int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Unit const* target) const
+int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 const* bp /*= nullptr*/, Unit const* target /*= nullptr*/) const
 {
     float basePointsPerLevel = RealPointsPerLevel;
-    int32 basePoints = bp ? *bp : BasePoints;
-    float comboDamage = PointsPerComboPoint;
+    // TODO: this needs to be a float, not rounded
+    int basePoints = CalcBaseValue(caster, target);
+    double value = bp ? *bp : basePoints;
+    double comboDamage = PointsPerComboPoint;
 
     Unit const* casterUnit = nullptr;
     if (caster)
         casterUnit = caster->ToUnit();
 
+    if (DieSides)
+    {
+        // roll in a range <1;EffectDieSides> as of patch 3.3.3
+        if (DieSides == 1)
+            value += DieSides;
+        else
+            value += (DieSides >= 1) ? irand(1, DieSides) : irand(DieSides, 1);
+    }
+    else if (Scaling.Variance != 0.0f)
+    {
+        float delta = fabs(Scaling.Variance * 0.5f);
+        double valueVariance = frand(-delta, delta);
+        value += double(basePoints) * valueVariance;
+    }
+
     // base amount modification based on spell lvl vs caster lvl
     if (Scaling.Coefficient != 0.0f)
     {
-        int32 level = _spellInfo->SpellLevel;
+        if (Scaling.ComboPointsCoefficient != 0.0f)
+            comboDamage = Scaling.ComboPointsCoefficient * value;
+    }
+    else
+    {
+        if (casterUnit && basePointsPerLevel != 0.0)
+        {
+            int32 level = int32(casterUnit->getLevel());
+            if (level > int32(_spellInfo->MaxLevel) && _spellInfo->MaxLevel > 0)
+                level = int32(_spellInfo->MaxLevel);
+
+            // if base level is greater than spell level, reduce by base level (eg. pilgrims foods)
+            level -= int32(std::max(_spellInfo->BaseLevel, _spellInfo->SpellLevel));
+            if (level < 0)
+                level = 0;
+            value += level * basePointsPerLevel;
+        }
+    }
+
+    // random damage
+    if (casterUnit)
+    {
+        // bonus amount from combo points
+        if (comboDamage)
+            if (int32 comboPoints = casterUnit->GetGameClientMovingMe()->GetBasePlayer()->GetComboPoints())
+                value += comboDamage * comboPoints;
+    }
+
+    if (_spellInfo->HasAttribute(SPELL_ATTR8_MASTERY_AFFECTS_POINTS))
+        if (Player const* playerCaster = caster ? caster->ToPlayer() : nullptr)
+            value += playerCaster->GetFloatValue(PLAYER_MASTERY) * BonusMultiplier;
+
+    if (caster)
+        value = casterUnit->ApplyEffectModifiers(_spellInfo, _effIndex, value);
+
+    return int32(round(value));
+}
+
+int32 SpellEffectInfo::CalcBaseValue(WorldObject const* caster, Unit const* target) const
+{
+    if (Scaling.Coefficient != 0.0f)
+    {
+        uint32 level = _spellInfo->SpellLevel;
         if (target && _spellInfo->HasAttribute(SPELL_ATTR8_USE_TARGETS_LEVEL_FOR_SPELL_SCALING))
             level = target->getLevel();
-        else if (casterUnit)
-            level = casterUnit->getLevel();
+        else if (caster && caster->IsUnit())
+            level = caster->ToUnit()->getLevel();
 
-        if (_spellInfo->HasAttribute(SPELL_ATTR10_USE_SPELL_BASE_LEVEL_FOR_SCALING))
+        if (_spellInfo->BaseLevel &&  _spellInfo->HasAttribute(SPELL_ATTR10_USE_SPELL_BASE_LEVEL_FOR_SCALING))
             level = _spellInfo->BaseLevel;
 
         float value = 0.0f;
+
         if (level > 0)
         {
             if (!_spellInfo->Scaling.Class)
@@ -466,143 +526,20 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster, int32 const* bp, Uni
             if (GtSpellScalingEntry const* gtScaling = sGtSpellScalingStore.LookupEntry(((_spellInfo->Scaling.Class > 0 ? _spellInfo->Scaling.Class : ((MAX_CLASSES - 1 /*last class*/) - _spellInfo->Scaling.Class)) - 1) * 100 + level - 1))
                 value = gtScaling->value;
 
-            if (level < _spellInfo->Scaling.CastTimeMaxLevel && _spellInfo->Scaling.CastTimeMax)
-                value *= float(_spellInfo->Scaling.CastTimeMin + (level - 1) * (_spellInfo->Scaling.CastTimeMax - _spellInfo->Scaling.CastTimeMin) / (_spellInfo->Scaling.CastTimeMaxLevel - 1)) / float(_spellInfo->Scaling.CastTimeMax);
-
-            if (level < _spellInfo->Scaling.NerfMaxLevel)
-                value *= ((((1.0 - _spellInfo->Scaling.NerfFactor) * (level - 1)) / (_spellInfo->Scaling.NerfMaxLevel - 1)) + _spellInfo->Scaling.NerfFactor);
+            value *= _spellInfo->GetSpellScalingMultiplier(level, false);
         }
-
-        if (Scaling.ComboPointsCoefficient)
-            comboDamage = Scaling.ComboPointsCoefficient * value;
 
         value *= Scaling.Coefficient;
-        if (value >= 0.0f && value < 1.0f)
-            value = 1.0f;
+        if (value > 0.0f)
+            value = std::max(value, 1.0f);
 
-        if (Scaling.Variance)
-        {
-            float delta = fabs(Scaling.Variance * value * 0.5f);
-            value += frand(-delta, delta);
-        }
-
-        basePoints = int32(round(value));
+        return int32(round(value));
     }
     else
     {
-        if (casterUnit && basePointsPerLevel != 0.0f)
-        {
-            int32 level = 1;
-            if (target && _spellInfo->HasAttribute(SPELL_ATTR8_USE_TARGETS_LEVEL_FOR_SPELL_SCALING))
-                level = target->getLevel();
-            else if (caster && caster->IsUnit())
-                level = casterUnit->getLevel();
-
-            if (level > int32(_spellInfo->MaxLevel) && _spellInfo->MaxLevel > 0)
-                level = int32(_spellInfo->MaxLevel);
-            else if (level < int32(_spellInfo->BaseLevel))
-                level = int32(_spellInfo->BaseLevel);
-            if (!_spellInfo->IsPassive())
-                level -= int32(_spellInfo->SpellLevel);
-            basePoints += int32(level * basePointsPerLevel);
-        }
-
-        // roll in a range <1;EffectDieSides> as of patch 3.3.3
-        int32 randomPoints = int32(DieSides);
-        switch (randomPoints)
-        {
-            case 0: break;
-            case 1: basePoints += 1; break;                     // range 1..1
-            default:
-            {
-                // range can have positive (1..rand) and negative (rand..1) values, so order its for irand
-                int32 randvalue = (randomPoints >= 1)
-                    ? irand(1, randomPoints)
-                    : irand(randomPoints, 1);
-
-                basePoints += randvalue;
-                break;
-            }
-        }
+        float value = BasePoints;
+        return int32(round(value));
     }
-
-    float value = float(basePoints);
-
-    // random damage
-    if (casterUnit)
-    {
-        // bonus amount from combo points
-        if (_spellInfo->HasAttribute(SPELL_ATTR1_FINISHING_MOVE_DAMAGE) && casterUnit->IsMovedByClient() && comboDamage != 0.f)
-            if (uint8 comboPoints = casterUnit->GetGameClientMovingMe()->GetBasePlayer()->GetComboPoints())
-                value += comboDamage * comboPoints;
-
-        value = casterUnit->ApplyEffectModifiers(_spellInfo, _effIndex, value);
-
-        if (!casterUnit->IsControlledByPlayer() &&
-            _spellInfo->SpellLevel && _spellInfo->SpellLevel != casterUnit->getLevel() &&
-            !basePointsPerLevel && _spellInfo->HasAttribute(SPELL_ATTR0_SCALES_WITH_CREATURE_LEVEL))
-        {
-            bool canEffectScale = false;
-            switch (Effect)
-            {
-                case SPELL_EFFECT_SCHOOL_DAMAGE:
-                case SPELL_EFFECT_DUMMY:
-                case SPELL_EFFECT_POWER_DRAIN:
-                case SPELL_EFFECT_HEALTH_LEECH:
-                case SPELL_EFFECT_HEAL:
-                case SPELL_EFFECT_WEAPON_DAMAGE:
-                case SPELL_EFFECT_POWER_BURN:
-                case SPELL_EFFECT_SCRIPT_EFFECT:
-                case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
-                case SPELL_EFFECT_FORCE_CAST_WITH_VALUE:
-                case SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE:
-                case SPELL_EFFECT_TRIGGER_MISSILE_SPELL_WITH_VALUE:
-                    canEffectScale = true;
-                    break;
-                default:
-                    break;
-            }
-
-            switch (ApplyAuraName)
-            {
-                case SPELL_AURA_PERIODIC_DAMAGE:
-                case SPELL_AURA_DUMMY:
-                case SPELL_AURA_PERIODIC_HEAL:
-                case SPELL_AURA_DAMAGE_SHIELD:
-                case SPELL_AURA_PROC_TRIGGER_DAMAGE:
-                case SPELL_AURA_PERIODIC_LEECH:
-                case SPELL_AURA_PERIODIC_MANA_LEECH:
-                case SPELL_AURA_SCHOOL_ABSORB:
-                case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
-                    canEffectScale = true;
-                    break;
-                default:
-                    break;
-            }
-
-            if (canEffectScale)
-            {
-                GtNPCManaCostScalerEntry const* spellScaler = sGtNPCManaCostScalerStore.LookupEntry(_spellInfo->SpellLevel - 1);
-                GtNPCManaCostScalerEntry const* casterScaler = sGtNPCManaCostScalerStore.LookupEntry(casterUnit->getLevel() - 1);
-                if (spellScaler && casterScaler)
-                {
-                    value *= casterScaler->ratio / spellScaler->ratio;
-                    if (casterUnit->getLevel() > 80)
-                        value *= (casterUnit->getLevel() - 80) * 4.4f; // Cataclysm creatures have a way higher jump in stats than previous expansions so we use this estimated value based on combat log packet research
-                }
-            }
-        }
-    }
-
-    return uint32(std::floor(value + 0.5f));
-}
-
-int32 SpellEffectInfo::CalcBaseValue(int32 value) const
-{
-    if (DieSides == 0)
-        return value;
-    else
-        return value - 1;
 }
 
 float SpellEffectInfo::CalcValueMultiplier(WorldObject* caster, Spell* spell) const
@@ -3397,7 +3334,7 @@ float SpellInfo::CalculateScaledCoefficient(Unit const* caster, float coefficien
     if (coefficient == 0.f || !caster || SpellScalingId == 0)
         return coefficient;
 
-    return coefficient *= GetSpellScalingMultiplier(caster);
+    return coefficient *= GetSpellScalingMultiplier(caster->getLevel());
 }
 
 float SpellInfo::GetMinRange(bool positive) const
@@ -3693,7 +3630,7 @@ int32 SpellInfo::CalcPowerCost(WorldObject const* caster, SpellSchoolMask school
 
         // Scaling
         if (SpellScalingId)
-            powerCost = int32(ceilf(GetSpellScalingMultiplier(unitCaster, true) * (double)powerCost));
+            powerCost = int32(ceilf(GetSpellScalingMultiplier(unitCaster->getLevel(), true) * (double)powerCost));
         else
         {
             uint32 manaCostPerLevel = invertSign ? -int32(ManaCostPerlevel) : ManaCostPerlevel;
@@ -3763,27 +3700,25 @@ int32 SpellInfo::CalcPowerCost(WorldObject const* caster, SpellSchoolMask school
     return powerCost;
 }
 
-float SpellInfo::GetSpellScalingMultiplier(WorldObject const* caster, bool isPowerCostRelated /*= false*/) const
+float SpellInfo::GetSpellScalingMultiplier(int32 targetLevel, bool isPowerCostRelated /*= false*/) const
 {
-    if (!caster || !caster->IsUnit() || SpellScalingId == 0)
+    if (targetLevel <= 0 || Scaling.Class == 0)
         return 1.f;
 
     float multiplier = 1.f;
     float scalingMultiplier = 1.f;
 
-    uint8 casterLevel = caster->ToUnit()->getLevel();
-
-    if (casterLevel < Scaling.CastTimeMaxLevel && Scaling.CastTimeMax)
+    if (targetLevel < Scaling.CastTimeMaxLevel && Scaling.CastTimeMax)
     {
-        int32 castTime = Scaling.CastTimeMin + ((casterLevel - 1) * (Scaling.CastTimeMax - Scaling.CastTimeMin)) / (Scaling.CastTimeMaxLevel - 1);
-        multiplier = castTime / (float)Scaling.CastTimeMax;
-        scalingMultiplier = castTime / (float)Scaling.CastTimeMax;
+        int32 castTime = Scaling.CastTimeMin + ((targetLevel - 1) * (Scaling.CastTimeMax - Scaling.CastTimeMin)) / (Scaling.CastTimeMaxLevel - 1);
+        multiplier = castTime / static_cast<float>(Scaling.CastTimeMax);
+        scalingMultiplier = castTime / static_cast<float>(Scaling.CastTimeMax);
     }
 
     if (!isPowerCostRelated)
     {
-        if (casterLevel < Scaling.NerfMaxLevel)
-            scalingMultiplier = ((((1.f - Scaling.NerfFactor) * (casterLevel - 1)) / (Scaling.NerfMaxLevel - 1)) + Scaling.NerfFactor) * multiplier;
+        if (targetLevel < Scaling.NerfMaxLevel)
+            scalingMultiplier = ((((1.f - Scaling.NerfFactor) * (targetLevel - 1)) / (Scaling.NerfMaxLevel - 1)) + Scaling.NerfFactor) * multiplier;
     }
 
     return scalingMultiplier;
