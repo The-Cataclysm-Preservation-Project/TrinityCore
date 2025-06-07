@@ -1613,6 +1613,7 @@ class TC_GAME_API ObjectMgr
 
         void LoadDatabaseGameTables();
         void LoadNpcTotalHpGameTables();
+        void LoadNpcDamageByClassGameTables();
 
     private:
         // first free id for selected id type

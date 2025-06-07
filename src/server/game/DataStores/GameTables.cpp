@@ -20,6 +20,7 @@
 #include "DBCStructure.h"
 
 GameTable<GtNpcTotalHpEntry> sNpcTotalHpGameTable[MAX_EXPANSIONS];
+GameTable<GtNpcDamageByClassEntry> sNpcDamageByClassGameTable[MAX_EXPANSIONS];
 
 /*static*/ float GameTables::GetSpellScalingValue(uint8 level, UnitClass unitClass)
 {

@@ -37,6 +37,21 @@ struct GtNpcTotalHpEntry
     float Druid = 0.0f;
 };
 
+struct GtNpcDamageByClassEntry
+{
+    float Warrior = 0.0f;
+    float Paladin = 0.0f;
+    float Hunter = 0.0f;
+    float Rogue = 0.0f;
+    float Priest = 0.0f;
+    float DeathKnight = 0.0f;
+    float Shaman = 0.0f;
+    float Mage = 0.0f;
+    float Warlock = 0.0f;
+    float Monk = 0.0f;
+    float Druid = 0.0f;
+};
+
 template<class T>
 class GameTable
 {
@@ -66,6 +81,7 @@ public:
 };
 
 TC_GAME_API extern GameTable<GtNpcTotalHpEntry> sNpcTotalHpGameTable[MAX_EXPANSIONS];
+TC_GAME_API extern GameTable<GtNpcDamageByClassEntry> sNpcDamageByClassGameTable[MAX_EXPANSIONS];
 
 template<class T>
 inline float GetGameTableColumnForClass(T const* row, int32 class_)

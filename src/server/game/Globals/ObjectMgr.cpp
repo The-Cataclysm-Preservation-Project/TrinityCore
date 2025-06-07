@@ -9555,8 +9555,8 @@ CreatureBaseStats const* ObjectMgr::GetCreatureBaseStats(uint8 level, uint8 unit
 void ObjectMgr::LoadCreatureClassLevelStats()
 {
     uint32 oldMSTime = getMSTime();
-    //                                               0      1      2         3          4            5                  6             7           8            9
-    QueryResult result = WorldDatabase.Query("SELECT level, class, basemana, basearmor, attackpower, rangedattackpower, damage_base, damage_exp1, damage_exp2, damage_exp3 FROM creature_classlevelstats");
+    //                                               0      1      2         3          4            5
+    QueryResult result = WorldDatabase.Query("SELECT level, class, basemana, basearmor, attackpower, rangedattackpower FROM creature_classlevelstats");
 
     if (!result)
     {
@@ -9580,8 +9580,7 @@ void ObjectMgr::LoadCreatureClassLevelStats()
         for (uint8 i = 0; i < MAX_EXPANSIONS; ++i)
         {
             stats.BaseHealth[i] = GetGameTableColumnForClass(sNpcTotalHpGameTable[i].GetRow(Level), Class);
-
-            stats.BaseDamage[i] = fields[6 + i].GetFloat();
+            stats.BaseDamage[i] = GetGameTableColumnForClass(sNpcDamageByClassGameTable[i].GetRow(Level), Class);
             if (stats.BaseDamage[i] < 0.0f)
             {
                 TC_LOG_ERROR("sql.sql", "Creature base stats for class %u, level %u has invalid negative base damage[%u] - set to 0.0", Class, Level, i);
@@ -10096,6 +10095,7 @@ CreatureStaticFlagsOverride const* ObjectMgr::GetCreatureStaticFlagsOverride(Obj
 void ObjectMgr::LoadDatabaseGameTables()
 {
     LoadNpcTotalHpGameTables();
+    LoadNpcDamageByClassGameTables();
 }
 
 void ObjectMgr::LoadNpcTotalHpGameTables()
@@ -10166,6 +10166,76 @@ void ObjectMgr::LoadNpcTotalHpGameTables()
     sNpcTotalHpGameTable[EXPANSION_CATACLYSM].SetData(npcTotalHpExp3);
 
     TC_LOG_INFO("server.loading", ">> Loaded %u npc total health game table entries in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+}
+
+void ObjectMgr::LoadNpcDamageByClassGameTables()
+{
+        uint32 oldMSTime = getMSTime();
+
+    QueryResult result = WorldDatabase.Query("SELECT exp0.Level, exp0.Warrior, exp1.Warrior, exp2.Warrior, exp3.Warrior, "
+                                             "exp0.Paladin, exp1.Paladin, exp2.Paladin, exp3.Paladin, "
+                                             "exp0.Hunter, exp1.Hunter, exp2.Hunter, exp3.Hunter, "
+                                             "exp0.Rogue, exp1.Rogue, exp2.Rogue, exp3.Rogue, "
+                                             "exp0.Priest, exp1.Priest, exp2.Priest, exp3.Priest, "
+                                             "exp0.DeathKnight, exp1.DeathKnight, exp2.DeathKnight, exp3.DeathKnight, "
+                                             "exp0.Shaman, exp1.Shaman, exp2.Shaman, exp3.Shaman, "
+                                             "exp0.Mage, exp1.Mage, exp2.Mage, exp3.Mage, "
+                                             "exp0.Warlock, exp1.Warlock, exp2.Warlock, exp3.Warlock, "
+                                             "exp0.Monk, exp1.Monk, exp2.Monk, exp3.Monk, "
+                                             "exp0.Druid, exp1.Druid, exp2.Druid, exp3.Druid "
+                                             "FROM gt_npc_damage_by_class AS exp0 "
+                                             "INNER JOIN gt_npc_damage_by_class_exp1 AS exp1 ON exp0.Level = exp1.Level "
+                                             "INNER JOIN gt_npc_damage_by_class_exp2 AS exp2 ON exp0.Level = exp2.Level "
+                                             "INNER JOIN gt_npc_damage_by_class_exp3 AS exp3 ON exp0.Level = exp3.Level "
+                                             "ORDER BY Level ASC");
+
+    if (!result)
+    {
+        TC_LOG_INFO("server.loading", ">> Loaded 0 npc damage by class game table entries. DB table `gt_npc_total_hp` is empty.");
+        return;
+    }
+
+    uint32 count = 0;
+
+    // Initialize the storages with one extra entry for level 0
+    std::vector<GtNpcDamageByClassEntry> npcDamageByClassExp0(result->GetRowCount() + 1);
+    std::vector<GtNpcDamageByClassEntry> npcDamageByClassExp1(result->GetRowCount() + 1);
+    std::vector<GtNpcDamageByClassEntry> npcDamageByClassExp2(result->GetRowCount() + 1);
+    std::vector<GtNpcDamageByClassEntry> npcDamageByClassExp3(result->GetRowCount() + 1);
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint8 level = fields[0].GetUInt8();
+        uint8 expansion = 0;
+        for (std::vector<GtNpcDamageByClassEntry>* storage : { &npcDamageByClassExp0, &npcDamageByClassExp1, &npcDamageByClassExp2, &npcDamageByClassExp3 })
+        {
+            std::vector<GtNpcDamageByClassEntry>& npcDamageByClass = *storage;
+
+            npcDamageByClass[level].Warrior       = fields[1 + expansion].GetFloat();
+            npcDamageByClass[level].Paladin       = fields[5 + expansion].GetFloat();
+            npcDamageByClass[level].Hunter        = fields[9 + expansion].GetFloat();
+            npcDamageByClass[level].Rogue         = fields[13 + expansion].GetFloat();
+            npcDamageByClass[level].Priest        = fields[17 + expansion].GetFloat();
+            npcDamageByClass[level].DeathKnight   = fields[21 + expansion].GetFloat();
+            npcDamageByClass[level].Shaman        = fields[25 + expansion].GetFloat();
+            npcDamageByClass[level].Mage          = fields[29 + expansion].GetFloat();
+            npcDamageByClass[level].Warlock       = fields[33 + expansion].GetFloat();
+            npcDamageByClass[level].Monk          = fields[37 + expansion].GetFloat();
+            npcDamageByClass[level].Druid         = fields[41 + expansion].GetFloat();
+
+            ++expansion;
+        }
+    }
+    while (result->NextRow());
+
+    sNpcDamageByClassGameTable[EXPANSION_CLASSIC].SetData(npcDamageByClassExp0);
+    sNpcDamageByClassGameTable[EXPANSION_THE_BURNING_CRUSADE].SetData(npcDamageByClassExp1);
+    sNpcDamageByClassGameTable[EXPANSION_WRATH_OF_THE_LICH_KING].SetData(npcDamageByClassExp2);
+    sNpcDamageByClassGameTable[EXPANSION_CATACLYSM].SetData(npcDamageByClassExp3);
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u npc damage by class game table entries in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::LoadGameObjectQuestItems()
