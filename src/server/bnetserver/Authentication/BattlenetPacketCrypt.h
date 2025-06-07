@@ -29,7 +29,7 @@ namespace Battlenet
         public:
             PacketCrypt();
 
-            void Init(SessionKey const& /*K*/) override;
+            void Init(BigNumber* K) override;
     };
 }
 #endif // BattlenetPacketCrypt_h__

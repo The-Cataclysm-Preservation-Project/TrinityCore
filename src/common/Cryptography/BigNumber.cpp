@@ -16,7 +16,6 @@
  */
 
 #include "Cryptography/BigNumber.h"
-#include "Errors.h"
 #include <openssl/bn.h>
 #include <cstring>
 #include <algorithm>
@@ -27,19 +26,18 @@ BigNumber::BigNumber()
 { }
 
 BigNumber::BigNumber(BigNumber const& bn)
-    : _bn(BN_dup(bn.BN()))
+    : _bn(BN_dup(bn._bn))
 { }
+
+BigNumber::BigNumber(uint32 val)
+    : _bn(BN_new())
+{
+    BN_set_word(_bn, val);
+}
 
 BigNumber::~BigNumber()
 {
     BN_free(_bn);
-}
-
-void BigNumber::SetDword(int32 val)
-{
-    SetDword(uint32(abs(val)));
-    if (val < 0)
-        BN_set_negative(_bn, 1);
 }
 
 void BigNumber::SetDword(uint32 val)
@@ -54,18 +52,21 @@ void BigNumber::SetQword(uint64 val)
     BN_add_word(_bn, (uint32)(val & 0xFFFFFFFF));
 }
 
-void BigNumber::SetBinary(uint8 const* bytes, int32 len, bool littleEndian)
+void BigNumber::SetBinary(uint8 const* bytes, int32 len)
 {
-    if (littleEndian)
-        BN_lebin2bn(bytes, len, _bn);
-    else
-        BN_bin2bn(bytes, len, _bn);
+    uint8* array = new uint8[len];
+
+    for (int i = 0; i < len; i++)
+        array[i] = bytes[len - 1 - i];
+
+    BN_bin2bn(array, len, _bn);
+
+    delete[] array;
 }
 
-bool BigNumber::SetHexStr(char const* str)
+void BigNumber::SetHexStr(char const* str)
 {
-    int n = BN_hex2bn(&_bn, str);
-    return (n > 0);
+    BN_hex2bn(&_bn, str);
 }
 
 void BigNumber::SetRand(int32 numbits)
@@ -82,19 +83,19 @@ BigNumber& BigNumber::operator=(BigNumber const& bn)
     return *this;
 }
 
-BigNumber& BigNumber::operator+=(BigNumber const& bn)
+BigNumber BigNumber::operator+=(BigNumber const& bn)
 {
     BN_add(_bn, _bn, bn._bn);
     return *this;
 }
 
-BigNumber& BigNumber::operator-=(BigNumber const& bn)
+BigNumber BigNumber::operator-=(BigNumber const& bn)
 {
     BN_sub(_bn, _bn, bn._bn);
     return *this;
 }
 
-BigNumber& BigNumber::operator*=(BigNumber const& bn)
+BigNumber BigNumber::operator*=(BigNumber const& bn)
 {
     BN_CTX *bnctx;
 
@@ -105,7 +106,7 @@ BigNumber& BigNumber::operator*=(BigNumber const& bn)
     return *this;
 }
 
-BigNumber& BigNumber::operator/=(BigNumber const& bn)
+BigNumber BigNumber::operator/=(BigNumber const& bn)
 {
     BN_CTX *bnctx;
 
@@ -116,7 +117,7 @@ BigNumber& BigNumber::operator/=(BigNumber const& bn)
     return *this;
 }
 
-BigNumber& BigNumber::operator%=(BigNumber const& bn)
+BigNumber BigNumber::operator%=(BigNumber const& bn)
 {
     BN_CTX *bnctx;
 
@@ -127,18 +128,7 @@ BigNumber& BigNumber::operator%=(BigNumber const& bn)
     return *this;
 }
 
-BigNumber& BigNumber::operator<<=(int n)
-{
-    BN_lshift(_bn, _bn, n);
-    return *this;
-}
-
-int32 BigNumber::CompareTo(BigNumber const& bn) const
-{
-    return BN_cmp(_bn, bn._bn);
-}
-
-BigNumber BigNumber::Exp(BigNumber const& bn) const
+BigNumber BigNumber::Exp(BigNumber const& bn)
 {
     BigNumber ret;
     BN_CTX *bnctx;
@@ -150,7 +140,7 @@ BigNumber BigNumber::Exp(BigNumber const& bn) const
     return ret;
 }
 
-BigNumber BigNumber::ModExp(BigNumber const& bn1, BigNumber const& bn2) const
+BigNumber BigNumber::ModExp(BigNumber const& bn1, BigNumber const& bn2)
 {
     BigNumber ret;
     BN_CTX *bnctx;
@@ -162,12 +152,12 @@ BigNumber BigNumber::ModExp(BigNumber const& bn1, BigNumber const& bn2) const
     return ret;
 }
 
-int32 BigNumber::GetNumBytes() const
+int32 BigNumber::GetNumBytes(void)
 {
     return BN_num_bytes(_bn);
 }
 
-uint32 BigNumber::AsDword() const
+uint32 BigNumber::AsDword()
 {
     return (uint32)BN_get_word(_bn);
 }
@@ -182,19 +172,25 @@ bool BigNumber::IsNegative() const
     return BN_is_negative(_bn);
 }
 
-void BigNumber::GetBytes(uint8* buf, size_t bufsize, bool littleEndian) const
+std::unique_ptr<uint8[]> BigNumber::AsByteArray(int32 minSize, bool littleEndian)
 {
-    int res = littleEndian ? BN_bn2lebinpad(_bn, buf, bufsize) : BN_bn2binpad(_bn, buf, bufsize);
-    ASSERT(res > 0, "Buffer of size %zu is too small to hold bignum with %d bytes.\n", bufsize, BN_num_bytes(_bn));
-}
+    int numBytes = GetNumBytes();
+    int length = (minSize >= numBytes) ? minSize : numBytes;
 
-std::vector<uint8> BigNumber::ToByteVector(int32 minSize, bool littleEndian) const
-{
-    std::size_t length = std::max(GetNumBytes(), minSize);
-    std::vector<uint8> v;
-    v.resize(length);
-    GetBytes(v.data(), length, littleEndian);
-    return v;
+    uint8* array = new uint8[length];
+
+    // If we need more bytes than length of BigNumber set the rest to 0
+    if (length > numBytes)
+        memset((void*)array, 0, length);
+
+    BN_bn2bin(_bn, array + (length-numBytes));
+
+    // openssl's BN stores data internally in big endian format, reverse if little endian desired
+    if (littleEndian)
+        std::reverse(array, array + length);
+
+    std::unique_ptr<uint8[]> ret(array);
+    return ret;
 }
 
 std::string BigNumber::AsHexStr() const

@@ -21,7 +21,6 @@
 #include "Define.h"
 #include "Errors.h"
 
-#include <array>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -303,39 +302,8 @@ TC_COMMON_API bool IsIPAddress(char const* ipaddress);
 TC_COMMON_API uint32 CreatePIDFile(std::string const& filename);
 TC_COMMON_API uint32 GetPID();
 
-namespace Trinity::Impl
-{
-    TC_COMMON_API std::string ByteArrayToHexStr(uint8 const* bytes, size_t length, bool reverse = false);
-    TC_COMMON_API void HexStrToByteArray(std::string_view str, uint8* out, size_t outlen, bool reverse = false);
-}
-
-template <typename Container>
-std::string ByteArrayToHexStr(Container const& c, bool reverse = false)
-{
-    return Trinity::Impl::ByteArrayToHexStr(std::data(c), std::size(c), reverse);
-}
-
-template <size_t Size>
-void HexStrToByteArray(std::string_view str, std::array<uint8, Size>& buf, bool reverse = false)
-{
-    Trinity::Impl::HexStrToByteArray(str, buf.data(), Size, reverse);
-}
-template <size_t Size>
-std::array<uint8, Size> HexStrToByteArray(std::string_view str, bool reverse = false)
-{
-    std::array<uint8, Size> arr;
-    HexStrToByteArray(str, arr, reverse);
-    return arr;
-}
-
-inline std::vector<uint8> HexStrToByteVector(std::string_view str, bool reverse = false)
-{
-    std::vector<uint8> buf;
-    size_t const sz = (str.size() / 2);
-    buf.resize(sz);
-    Trinity::Impl::HexStrToByteArray(str, buf.data(), sz, reverse);
-    return buf;
-}
+TC_COMMON_API std::string ByteArrayToHexStr(uint8 const* bytes, uint32 length, bool reverse = false);
+TC_COMMON_API void HexStrToByteArray(std::string const& str, uint8* out, bool reverse = false);
 
 TC_COMMON_API bool StringToBool(std::string const& str);
 

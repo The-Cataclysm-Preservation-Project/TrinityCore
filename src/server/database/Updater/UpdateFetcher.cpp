@@ -17,13 +17,13 @@
 
 #include "UpdateFetcher.h"
 #include "Common.h"
-#include "CryptoHash.h"
 #include "Duration.h"
 #include "DBUpdater.h"
 #include "Field.h"
 #include "Log.h"
 #include "QueryResult.h"
 #include "Util.h"
+#include "SHA1.h"
 #include <boost/filesystem/directory.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <fstream>
@@ -224,7 +224,7 @@ UpdateResult UpdateFetcher::Update(bool const redundancyChecks,
         }
 
         // Calculate a Sha1 hash based on query content.
-        std::string const hash = ByteArrayToHexStr(Trinity::Crypto::SHA1::GetDigestOf(ReadSQLUpdate(availableQuery.first)));
+        std::string const hash = CalculateSHA1Hash(ReadSQLUpdate(availableQuery.first));
 
         UpdateMode mode = MODE_APPLY;
 

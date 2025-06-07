@@ -18,20 +18,34 @@
 #include "ARC4.h"
 #include "Errors.h"
 
-Trinity::Crypto::ARC4::ARC4() : _ctx(EVP_CIPHER_CTX_new())
+ARC4::ARC4(uint32 len) : _ctx(EVP_CIPHER_CTX_new())
 {
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
     _cipher = EVP_CIPHER_fetch(nullptr, "RC4", nullptr);
 #else
-    EVP_CIPHER const* _cipher = EVP_rc4();
+    EVP_CIPHER const *_cipher = EVP_rc4();
 #endif
 
     EVP_CIPHER_CTX_init(_ctx);
-    int result = EVP_EncryptInit_ex(_ctx, _cipher, nullptr, nullptr, nullptr);
-    ASSERT(result == 1);
+    EVP_EncryptInit_ex(_ctx, _cipher, nullptr, nullptr, nullptr);
+    EVP_CIPHER_CTX_set_key_length(_ctx, len);
 }
 
-Trinity::Crypto::ARC4::~ARC4()
+ARC4::ARC4(uint8* seed, uint32 len) : _ctx(EVP_CIPHER_CTX_new())
+{
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    _cipher = EVP_CIPHER_fetch(nullptr, "RC4", nullptr);
+#else
+    EVP_CIPHER const *_cipher = EVP_rc4();
+#endif
+
+    EVP_CIPHER_CTX_init(_ctx);
+    EVP_EncryptInit_ex(_ctx, _cipher, nullptr, nullptr, nullptr);
+    EVP_CIPHER_CTX_set_key_length(_ctx, len);
+    EVP_EncryptInit_ex(_ctx, nullptr, nullptr, seed, nullptr);
+}
+
+ARC4::~ARC4()
 {
     EVP_CIPHER_CTX_free(_ctx);
 
@@ -40,19 +54,14 @@ Trinity::Crypto::ARC4::~ARC4()
 #endif
 }
 
-void Trinity::Crypto::ARC4::Init(uint8 const* seed, size_t len)
+void ARC4::Init(uint8* seed)
 {
-    int result1 = EVP_CIPHER_CTX_set_key_length(_ctx, len);
-    ASSERT(result1 == 1);
-    int result2 = EVP_EncryptInit_ex(_ctx, nullptr, nullptr, seed, nullptr);
-    ASSERT(result2 == 1);
+    EVP_EncryptInit_ex(_ctx, nullptr, nullptr, seed, nullptr);
 }
 
-void Trinity::Crypto::ARC4::UpdateData(uint8* data, size_t len)
+void ARC4::UpdateData(int len, uint8* data)
 {
     int outlen = 0;
-    int result1 = EVP_EncryptUpdate(_ctx, data, &outlen, data, len);
-    ASSERT(result1 == 1);
-    int result2 = EVP_EncryptFinal_ex(_ctx, data, &outlen);
-    ASSERT(result2 == 1);
+    EVP_EncryptUpdate(_ctx, data, &outlen, data, len);
+    EVP_EncryptFinal_ex(_ctx, data, &outlen);
 }

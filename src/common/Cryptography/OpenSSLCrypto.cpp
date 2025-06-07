@@ -24,7 +24,7 @@ OSSL_PROVIDER* LegacyProvider;
 OSSL_PROVIDER* DefaultProvider;
 #endif
 
-void OpenSSLCrypto::threadsSetup([[maybe_unused]] boost::filesystem::path const& providerModulePath)
+void OpenSSLCrypto::threadsSetup([[maybe_unused]] boost::filesystem::path const &providerModulePath)
 {
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
 #if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS

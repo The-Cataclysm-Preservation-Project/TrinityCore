@@ -15,23 +15,36 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_TOTP_H
-#define TRINITY_TOTP_H
+#ifndef SHA256_h__
+#define SHA256_h__
 
 #include "Define.h"
-#include <ctime>
-#include <vector>
+#include <string>
+#include <openssl/sha.h>
+#include <openssl/hmac.h>
 
-namespace Trinity::Crypto
+class BigNumber;
+
+class TC_COMMON_API SHA256Hash
 {
-    struct TC_COMMON_API TOTP
-    {
-        static constexpr size_t RECOMMENDED_SECRET_LENGTH = 20;
-        using Secret = std::vector<uint8>;
+    public:
+        SHA256Hash();
+        ~SHA256Hash();
 
-        static uint32 GenerateToken(Secret const& key, time_t timestamp);
-        static bool ValidateToken(Secret const& key, uint32 token);
-    };
-}
+        void UpdateBigNumbers(BigNumber* bn0, ...);
 
-#endif
+        void UpdateData(const uint8 *dta, int len);
+        void UpdateData(const std::string &str);
+
+        void Initialize();
+        void Finalize();
+
+        uint8 *GetDigest(void) { return mDigest; };
+        int GetLength(void) const { return SHA256_DIGEST_LENGTH; };
+
+    private:
+        EVP_MD_CTX* _ctx;
+        uint8 mDigest[SHA256_DIGEST_LENGTH];
+};
+
+#endif // SHA256_h__
