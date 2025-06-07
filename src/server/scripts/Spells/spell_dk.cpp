@@ -303,55 +303,51 @@ class spell_dk_death_coil : public SpellScript
 
     bool Validate(SpellInfo const* /*spell*/) override
     {
-        return ValidateSpellInfo(
-            {
-                SPELL_DK_DEATH_COIL_DAMAGE,
-                SPELL_DK_DEATH_COIL_HEAL
-            });
+        return ValidateSpellInfo({ SPELL_DK_DEATH_COIL_DAMAGE, SPELL_DK_DEATH_COIL_HEAL });
     }
 
     SpellCastResult CheckCast()
     {
         Unit* caster = GetCaster();
-        if (Unit * target = GetExplTargetUnit())
-        {
-            if (!caster->IsFriendlyTo(target) && !caster->isInFront(target))
-                return SPELL_FAILED_UNIT_NOT_INFRONT;
-
-            if (target->IsFriendlyTo(caster) && target->GetCreatureType() != CREATURE_TYPE_UNDEAD)
-            {
-                GetSpell()->m_customError = SPELL_CUSTOM_ERROR_TARGET_MUST_BE_UNDEAD;
-                return SPELL_FAILED_CUSTOM_ERROR;
-            }
-        }
-        else
+        Unit* target = GetExplTargetUnit();
+        if (!target)
             return SPELL_FAILED_BAD_TARGETS;
 
-        return SPELL_CAST_OK;
+        if (caster->IsValidAttackTarget(target, sSpellMgr->AssertSpellInfo(SPELL_DK_DEATH_COIL_DAMAGE)))
+        {
+            if (!caster->isInFront(target))
+                return SPELL_FAILED_UNIT_NOT_INFRONT;
+
+            return SPELL_CAST_OK;
+        }
+
+        if (caster->IsValidAssistTarget(target, sSpellMgr->AssertSpellInfo(SPELL_DK_DEATH_COIL_HEAL)))
+        {
+            if (target->GetCreatureType() != CREATURE_TYPE_UNDEAD)
+                return SPELL_FAILED_BAD_TARGETS;
+
+            _healTarget = true;
+
+            return SPELL_CAST_OK;
+        }
+
+        return SPELL_FAILED_BAD_TARGETS;
     }
 
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
+        // According to tooltip: ($m1+0.23*$AP)
+        int32 damage = GetEffectValue() + 0.23f * GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK);
+        if (_healTarget)
+            damage *= 3.5f;
+
         Unit* caster = GetCaster();
-        if (!caster)
-            return;
-
         Unit* target = GetHitUnit();
-        int32 bp = GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster, nullptr, GetHitUnit());
-        bp += CalculatePct(caster->GetTotalAttackPowerValue(BASE_ATTACK), 23);
 
-        if (caster->IsFriendlyTo(target))
-        {
-            bp *= 3.5f;
-            caster->CastSpell(target, SPELL_DK_DEATH_COIL_HEAL, CastSpellExtraArgs(false).AddSpellBP0(bp));
-        }
+        if (_healTarget)
+            caster->CastSpell(target, SPELL_DK_DEATH_COIL_HEAL, CastSpellExtraArgs().AddSpellBP0(damage));
         else
-        {
-            if (AuraEffect const* auraEffect = caster->GetAuraEffect(SPELL_DK_ITEM_SIGIL_VENGEFUL_HEART, EFFECT_1))
-                bp += auraEffect->GetBaseAmount();
-
-            caster->CastSpell(target, SPELL_DK_DEATH_COIL_DAMAGE, CastSpellExtraArgs(false).AddSpellBP0(bp));
-        }
+            caster->CastSpell(target, SPELL_DK_DEATH_COIL_DAMAGE, CastSpellExtraArgs().AddSpellBP0(damage));
     }
 
     void Register() override
@@ -359,6 +355,8 @@ class spell_dk_death_coil : public SpellScript
         OnCheckCast.Register(&spell_dk_death_coil::CheckCast);
         OnEffectHitTarget.Register(&spell_dk_death_coil::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
+private:
+    bool _healTarget = false;
 };
 
 // 52751 - Death Gate
