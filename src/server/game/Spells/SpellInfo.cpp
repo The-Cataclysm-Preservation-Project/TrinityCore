@@ -492,7 +492,7 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 
         if (Player const* playerCaster = caster ? caster->ToPlayer() : nullptr)
             value += playerCaster->GetFloatValue(PLAYER_MASTERY) * BonusMultiplier;
 
-    if (caster)
+    if (casterUnit)
         value = casterUnit->ApplyEffectModifiers(_spellInfo, _effIndex, value);
 
     return int32(round(value));
