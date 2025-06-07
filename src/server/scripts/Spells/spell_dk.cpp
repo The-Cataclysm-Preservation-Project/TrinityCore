@@ -1454,19 +1454,10 @@ class spell_dk_disease : public AuraScript
             });
     }
 
-    void CalculateAmount(AuraEffect const* /*aurEff*/, int32 &amount, bool & /*canBeRecalculated*/)
+    // According to tooltip: ($m1*1.15+$AP*0.055*1.15)
+    void CalculateDamage(AuraEffect const* /*aurEff*/, Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        Unit* caster = GetCaster();
-        Unit* target = GetUnitOwner();
-        if (!caster || !target)
-            return;
-
-        // Formular: ${$m1 * 1.15 + $AP * 0.055 * 1.15}
-        AddPct(amount, 15);
-        int32 bonus = caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.055f * 1.15f;
-
-        bonus = caster->SpellDamageBonusDone(target, GetSpellInfo(), bonus, DOT, EFFECT_0);
-        amount += bonus;
+        damage = damage * 1.15f + GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.055f * 1.15f;
     }
 
     void HandleResilientInfection(DispelInfo* /*dispelInfo*/)
@@ -1488,7 +1479,7 @@ class spell_dk_disease : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount.Register(&spell_dk_disease::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        DoEffectCalcDamageAndHealing.Register(&spell_dk_disease::CalculateDamage, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
         AfterDispel.Register(&spell_dk_disease::HandleResilientInfection);
     }
 };
