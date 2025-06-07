@@ -1611,6 +1611,9 @@ class TC_GAME_API ObjectMgr
 
         CreatureStaticFlagsOverride const* GetCreatureStaticFlagsOverride(ObjectGuid::LowType spawnId, Difficulty difficultyId) const;
 
+        void LoadDatabaseGameTables();
+        void LoadNpcTotalHpGameTables();
+
     private:
         // first free id for selected id type
         uint32 _auctionId;

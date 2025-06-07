@@ -27,6 +27,7 @@
 #include "DB2Structure.h"
 #include "DB2Stores.h"
 #include "DisableMgr.h"
+#include "GameTables.h"
 #include "GameTime.h"
 #include "GameObject.h"
 #include "GameObjectAIFactory.h"
@@ -9554,8 +9555,8 @@ CreatureBaseStats const* ObjectMgr::GetCreatureBaseStats(uint8 level, uint8 unit
 void ObjectMgr::LoadCreatureClassLevelStats()
 {
     uint32 oldMSTime = getMSTime();
-    //                                               0      1      2        3        4        5        6         7          8            9                  10           11           12           13
-    QueryResult result = WorldDatabase.Query("SELECT level, class, basehp0, basehp1, basehp2, basehp3, basemana, basearmor, attackpower, rangedattackpower, damage_base, damage_exp1, damage_exp2, damage_exp3 FROM creature_classlevelstats");
+    //                                               0      1      2         3          4            5                  6             7           8            9
+    QueryResult result = WorldDatabase.Query("SELECT level, class, basemana, basearmor, attackpower, rangedattackpower, damage_base, damage_exp1, damage_exp2, damage_exp3 FROM creature_classlevelstats");
 
     if (!result)
     {
@@ -9578,15 +9579,9 @@ void ObjectMgr::LoadCreatureClassLevelStats()
 
         for (uint8 i = 0; i < MAX_EXPANSIONS; ++i)
         {
-            stats.BaseHealth[i] = fields[2 + i].GetUInt32();
+            stats.BaseHealth[i] = GetGameTableColumnForClass(sNpcTotalHpGameTable[i].GetRow(Level), Class);
 
-            if (stats.BaseHealth[i] == 0)
-            {
-                TC_LOG_ERROR("sql.sql", "Creature base stats for class %u, level %u has invalid zero base HP[%u] - set to 1", Class, Level, i);
-                stats.BaseHealth[i] = 1;
-            }
-
-            stats.BaseDamage[i] = fields[10 + i].GetFloat();
+            stats.BaseDamage[i] = fields[6 + i].GetFloat();
             if (stats.BaseDamage[i] < 0.0f)
             {
                 TC_LOG_ERROR("sql.sql", "Creature base stats for class %u, level %u has invalid negative base damage[%u] - set to 0.0", Class, Level, i);
@@ -9594,11 +9589,11 @@ void ObjectMgr::LoadCreatureClassLevelStats()
             }
         }
 
-        stats.BaseMana = fields[6].GetUInt16();
-        stats.BaseArmor = fields[7].GetUInt16();
+        stats.BaseMana = fields[2].GetUInt16();
+        stats.BaseArmor = fields[3].GetUInt16();
 
-        stats.AttackPower = fields[8].GetUInt16();
-        stats.RangedAttackPower = fields[9].GetUInt16();
+        stats.AttackPower = fields[4].GetUInt16();
+        stats.RangedAttackPower = fields[5].GetUInt16();
 
         _creatureBaseStatsStore[MAKE_PAIR16(Level, Class)] = stats;
 
@@ -10096,6 +10091,81 @@ PlayerInfo const* ObjectMgr::GetPlayerInfo(uint32 race, uint32 class_) const
 CreatureStaticFlagsOverride const* ObjectMgr::GetCreatureStaticFlagsOverride(ObjectGuid::LowType spawnId, Difficulty difficultyId) const
 {
     return Trinity::Containers::MapGetValuePtr(_creatureStaticFlagsOverrideStore, std::make_pair(spawnId, difficultyId));
+}
+
+void ObjectMgr::LoadDatabaseGameTables()
+{
+    LoadNpcTotalHpGameTables();
+}
+
+void ObjectMgr::LoadNpcTotalHpGameTables()
+{
+    uint32 oldMSTime = getMSTime();
+
+    QueryResult result = WorldDatabase.Query("SELECT exp0.Level, exp0.Warrior, exp1.Warrior, exp2.Warrior, exp3.Warrior, "
+                                             "exp0.Paladin, exp1.Paladin, exp2.Paladin, exp3.Paladin, "
+                                             "exp0.Hunter, exp1.Hunter, exp2.Hunter, exp3.Hunter, "
+                                             "exp0.Rogue, exp1.Rogue, exp2.Rogue, exp3.Rogue, "
+                                             "exp0.Priest, exp1.Priest, exp2.Priest, exp3.Priest, "
+                                             "exp0.DeathKnight, exp1.DeathKnight, exp2.DeathKnight, exp3.DeathKnight, "
+                                             "exp0.Shaman, exp1.Shaman, exp2.Shaman, exp3.Shaman, "
+                                             "exp0.Mage, exp1.Mage, exp2.Mage, exp3.Mage, "
+                                             "exp0.Warlock, exp1.Warlock, exp2.Warlock, exp3.Warlock, "
+                                             "exp0.Monk, exp1.Monk, exp2.Monk, exp3.Monk, "
+                                             "exp0.Druid, exp1.Druid, exp2.Druid, exp3.Druid "
+                                             "FROM gt_npc_total_hp AS exp0 "
+                                             "INNER JOIN gt_npc_total_hp_exp1 AS exp1 ON exp0.Level = exp1.Level "
+                                             "INNER JOIN gt_npc_total_hp_exp2 AS exp2 ON exp0.Level = exp2.Level "
+                                             "INNER JOIN gt_npc_total_hp_exp3 AS exp3 ON exp0.Level = exp3.Level "
+                                             "ORDER BY Level ASC");
+
+    if (!result)
+    {
+        TC_LOG_INFO("server.loading", ">> Loaded 0 npc total health game table entries. DB table `gt_npc_total_hp` is empty.");
+        return;
+    }
+
+    uint32 count = 0;
+
+    // Initialize the storages with one extra entry for level 0
+    std::vector<GtNpcTotalHpEntry> npcTotalHpExp0(result->GetRowCount() + 1);
+    std::vector<GtNpcTotalHpEntry> npcTotalHpExp1(result->GetRowCount() + 1);
+    std::vector<GtNpcTotalHpEntry> npcTotalHpExp2(result->GetRowCount() + 1);
+    std::vector<GtNpcTotalHpEntry> npcTotalHpExp3(result->GetRowCount() + 1);
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint8 level = fields[0].GetUInt8();
+        uint8 expansion = 0;
+        for (std::vector<GtNpcTotalHpEntry>* storage : { &npcTotalHpExp0, &npcTotalHpExp1, &npcTotalHpExp2, &npcTotalHpExp3 })
+        {
+            std::vector<GtNpcTotalHpEntry>& npcTotalHp = *storage;
+
+            npcTotalHp[level].Warrior       = fields[1 + expansion].GetFloat();
+            npcTotalHp[level].Paladin       = fields[5 + expansion].GetFloat();
+            npcTotalHp[level].Hunter        = fields[9 + expansion].GetFloat();
+            npcTotalHp[level].Rogue         = fields[13 + expansion].GetFloat();
+            npcTotalHp[level].Priest        = fields[17 + expansion].GetFloat();
+            npcTotalHp[level].DeathKnight   = fields[21 + expansion].GetFloat();
+            npcTotalHp[level].Shaman        = fields[25 + expansion].GetFloat();
+            npcTotalHp[level].Mage          = fields[29 + expansion].GetFloat();
+            npcTotalHp[level].Warlock       = fields[33 + expansion].GetFloat();
+            npcTotalHp[level].Monk          = fields[37 + expansion].GetFloat();
+            npcTotalHp[level].Druid         = fields[41 + expansion].GetFloat();
+
+            ++expansion;
+        }
+    }
+    while (result->NextRow());
+
+    sNpcTotalHpGameTable[EXPANSION_CLASSIC].SetData(npcTotalHpExp0);
+    sNpcTotalHpGameTable[EXPANSION_THE_BURNING_CRUSADE].SetData(npcTotalHpExp1);
+    sNpcTotalHpGameTable[EXPANSION_WRATH_OF_THE_LICH_KING].SetData(npcTotalHpExp2);
+    sNpcTotalHpGameTable[EXPANSION_CATACLYSM].SetData(npcTotalHpExp3);
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u npc total health game table entries in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::LoadGameObjectQuestItems()

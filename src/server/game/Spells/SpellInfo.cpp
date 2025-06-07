@@ -21,7 +21,7 @@
 #include "Creature.h"
 #include "DBCStores.h"
 #include "GameClient.h"
-#include "GameTable.h"
+#include "GameTables.h"
 #include "InstanceScript.h"
 #include "Item.h"
 #include "ItemTemplate.h"
@@ -518,7 +518,7 @@ int32 SpellEffectInfo::CalcBaseValue(WorldObject const* caster, Unit const* targ
             if (!_spellInfo->Scaling.Class)
                 return 0;
 
-            value = GameTable::GetSpellScalingValue(level, static_cast<UnitClass>(_spellInfo->Scaling.Class > 0 ? _spellInfo->Scaling.Class: (MAX_CLASSES - 1 /*last class*/) - _spellInfo->Scaling.Class));
+            value = GameTables::GetSpellScalingValue(level, static_cast<UnitClass>(_spellInfo->Scaling.Class > 0 ? _spellInfo->Scaling.Class: (MAX_CLASSES - 1 /*last class*/) - _spellInfo->Scaling.Class));
             value *= _spellInfo->GetSpellScalingMultiplier(level, false);
         }
 
@@ -550,7 +550,7 @@ double SpellEffectInfo::CalcPointsPerResource(WorldObject const* caster) const
             if (scalingClass < 0)
                 scalingClass = (MAX_CLASSES - 1 /*last class*/) - scalingClass;
 
-            float scaledAmount = GameTable::GetSpellScalingValue(caster->ToUnit()->getLevel(), static_cast<UnitClass>(scalingClass));
+            float scaledAmount = GameTables::GetSpellScalingValue(caster->ToUnit()->getLevel(), static_cast<UnitClass>(scalingClass));
             scaledAmount *= _spellInfo->GetSpellScalingMultiplier(caster->ToUnit()->getLevel(), false) * Scaling.ComboPointsCoefficient;
             value = scaledAmount;
         }

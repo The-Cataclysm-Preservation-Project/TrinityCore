@@ -15,11 +15,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GameTable.h"
+#include "GameTables.h"
 #include "DBCStores.h"
 #include "DBCStructure.h"
 
-/*static*/ float GameTable::GetSpellScalingValue(uint8 level, UnitClass unitClass)
+GameTable<GtNpcTotalHpEntry> sNpcTotalHpGameTable[MAX_EXPANSIONS];
+
+/*static*/ float GameTables::GetSpellScalingValue(uint8 level, UnitClass unitClass)
 {
     if (level > GT_MAX_LEVEL)
         return 0.0f;
@@ -29,4 +31,12 @@
         return 0.0f;
 
     return gt->value;
+}
+
+/*float*/ float GameTables::GetNpcTotalHpValue(uint8 level, UnitClass unitClass, Expansions expansion)
+{
+    if (level > GT_MAX_LEVEL || expansion >= MAX_EXPANSIONS)
+        return 0.0f;
+
+    return GetGameTableColumnForClass(sNpcTotalHpGameTable[expansion].GetRow(level), unitClass);
 }

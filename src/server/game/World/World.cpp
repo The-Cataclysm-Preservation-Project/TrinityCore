@@ -1901,7 +1901,10 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Loading Points Of Interest Data...");
     sObjectMgr->LoadPointsOfInterest();
 
-    TC_LOG_INFO("server.loading", "Loading Creature Base Stats...");
+    TC_LOG_INFO("server.loading", "Loading Database Game Tables...");
+    sObjectMgr->LoadDatabaseGameTables();
+
+    TC_LOG_INFO("server.loading", "Loading Creature Base Stats..."); // must be after LoadDatabaseGameTables
     sObjectMgr->LoadCreatureClassLevelStats();
 
     TC_LOG_INFO("server.loading", "Loading Spawn Group Templates...");
