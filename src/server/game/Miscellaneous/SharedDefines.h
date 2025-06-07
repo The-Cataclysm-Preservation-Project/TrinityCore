@@ -139,7 +139,7 @@ enum Classes
     (1<<(CLASS_DEATH_KNIGHT-1)))
 
 // valid classes for creature_template.unit_class
-enum UnitClass
+enum UnitClass : uint8
 {
     UNIT_CLASS_WARRIOR                  = 1,
     UNIT_CLASS_PALADIN                  = 2,

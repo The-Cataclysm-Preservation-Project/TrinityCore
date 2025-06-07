@@ -295,6 +295,7 @@ public:
 
     int32 CalcValue(WorldObject const* caster = nullptr, int32 const* basePoints = nullptr, Unit const* target = nullptr) const;
     int32 CalcBaseValue(WorldObject const* caster, Unit const* target) const;
+    double CalcPointsPerResource(WorldObject const* caster) const;
     float CalcValueMultiplier(WorldObject* caster, Spell* spell = nullptr) const;
     float CalcDamageMultiplier(WorldObject* caster, Spell* spell = nullptr) const;
 

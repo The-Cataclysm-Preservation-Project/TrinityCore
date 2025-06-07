@@ -875,30 +875,18 @@ class spell_rog_eviscerate : public SpellScript
         return true;
     }
 
-    void ChangeDamage(SpellEffIndex /*effIndex*/)
+    void CalculateDamage(Unit* victim, int32& /*damage*/, int32& flatMod, float& pctMod)
     {
-        Unit* caster = GetCaster();
-        Unit* target = GetHitUnit();
-        if (!caster || !target)
-            return;
+        Player const* playerCaster = GetCaster()->ToPlayer();
+        uint8 comboPoints = playerCaster->GetComboPoints();
+        flatMod += static_cast<int32>(comboPoints * playerCaster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.091f);
 
-        if (Player* player = caster->ToPlayer())
-        {
-            int32 damage = GetEffectValue();
-            damage += int32(player->GetComboPoints() * (player->GetTotalAttackPowerValue(BASE_ATTACK) * 0.091f));
+        // Eviscerate and Envenom Bonus Damage (item set effect)
+        if (AuraEffect* aurEff = playerCaster->GetAuraEffect(SPELL_ROGUE_EVISCERATE_AND_ENVENOM_BONUS_DAMAGE, EFFECT_0))
+            flatMod += comboPoints * aurEff->GetAmount();
 
-            // Eviscerate and Envenom Bonus Damage (item set effect)
-            if (AuraEffect* aurEff = caster->GetAuraEffect(SPELL_ROGUE_EVISCERATE_AND_ENVENOM_BONUS_DAMAGE, EFFECT_0))
-                damage += player->GetComboPoints() * aurEff->GetAmount();
-
-            if (AuraEffect* const revealingStrike = target->GetAuraEffect(SPELL_ROGUE_REVEALING_STRIKE, EFFECT_2, caster->GetGUID()))
-            {
-                damage += CalculatePct(damage, revealingStrike->GetAmount());
-                revealingStrike->GetBase()->Remove();
-            }
-
-            SetEffectValue(damage);
-        }
+        if (AuraEffect* const revealingStrike = victim->GetAuraEffect(SPELL_ROGUE_REVEALING_STRIKE, EFFECT_2, playerCaster->GetGUID()))
+            AddPct(pctMod, revealingStrike->GetAmount());
     }
 
     void HandleSerratedBlades(SpellEffIndex /*effIndex*/)
@@ -916,7 +904,7 @@ class spell_rog_eviscerate : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_rog_eviscerate::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        CalcDamage.Register(&spell_rog_eviscerate::CalculateDamage);
         OnEffectHitTarget.Register(&spell_rog_eviscerate::HandleSerratedBlades, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };

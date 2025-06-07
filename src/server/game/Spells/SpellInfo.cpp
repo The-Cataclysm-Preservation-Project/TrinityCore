@@ -21,6 +21,7 @@
 #include "Creature.h"
 #include "DBCStores.h"
 #include "GameClient.h"
+#include "GameTable.h"
 #include "InstanceScript.h"
 #include "Item.h"
 #include "ItemTemplate.h"
@@ -441,13 +442,18 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 
     // TODO: this needs to be a float, not rounded
     int basePoints = CalcBaseValue(caster, target);
     double value = bp ? *bp : basePoints;
-    double comboDamage = PointsPerComboPoint;
 
     Unit const* casterUnit = nullptr;
     if (caster)
         casterUnit = caster->ToUnit();
 
-    if (DieSides)
+    if (Scaling.Variance != 0.0f)
+    {
+        float delta = fabs(Scaling.Variance * 0.5f);
+        double valueVariance = frand(-delta, delta);
+        value += double(basePoints) * valueVariance;
+    }
+    else if (DieSides)
     {
         // roll in a range <1;EffectDieSides> as of patch 3.3.3
         if (DieSides == 1)
@@ -455,20 +461,9 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 
         else
             value += (DieSides >= 1) ? irand(1, DieSides) : irand(DieSides, 1);
     }
-    else if (Scaling.Variance != 0.0f)
-    {
-        float delta = fabs(Scaling.Variance * 0.5f);
-        double valueVariance = frand(-delta, delta);
-        value += double(basePoints) * valueVariance;
-    }
 
     // base amount modification based on spell lvl vs caster lvl
-    if (Scaling.Coefficient != 0.0f)
-    {
-        if (Scaling.ComboPointsCoefficient != 0.0f)
-            comboDamage = Scaling.ComboPointsCoefficient * value;
-    }
-    else
+    if (Scaling.Coefficient == 0.0f)
     {
         if (casterUnit && basePointsPerLevel != 0.0)
         {
@@ -484,12 +479,12 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 
         }
     }
 
-    // random damage
-    if (casterUnit)
+    // bonus amount from combo points
+    if (casterUnit && _spellInfo->HasAttribute(SPELL_ATTR1_FINISHING_MOVE_DAMAGE))
     {
-        // bonus amount from combo points
-        if (comboDamage)
-            if (int32 comboPoints = casterUnit->GetGameClientMovingMe()->GetBasePlayer()->GetComboPoints())
+        double comboDamage = CalcPointsPerResource(casterUnit);
+        if (comboDamage != 0.0)
+            if (uint8 comboPoints = casterUnit->GetGameClientMovingMe()->GetBasePlayer()->GetComboPoints())
                 value += comboDamage * comboPoints;
     }
 
@@ -523,9 +518,7 @@ int32 SpellEffectInfo::CalcBaseValue(WorldObject const* caster, Unit const* targ
             if (!_spellInfo->Scaling.Class)
                 return 0;
 
-            if (GtSpellScalingEntry const* gtScaling = sGtSpellScalingStore.LookupEntry(((_spellInfo->Scaling.Class > 0 ? _spellInfo->Scaling.Class : ((MAX_CLASSES - 1 /*last class*/) - _spellInfo->Scaling.Class)) - 1) * 100 + level - 1))
-                value = gtScaling->value;
-
+            value = GameTable::GetSpellScalingValue(level, static_cast<UnitClass>(_spellInfo->Scaling.Class > 0 ? _spellInfo->Scaling.Class: (MAX_CLASSES - 1 /*last class*/) - _spellInfo->Scaling.Class));
             value *= _spellInfo->GetSpellScalingMultiplier(level, false);
         }
 
@@ -540,6 +533,33 @@ int32 SpellEffectInfo::CalcBaseValue(WorldObject const* caster, Unit const* targ
         float value = BasePoints;
         return int32(round(value));
     }
+}
+
+// Based on client function QuestTextParser::Spell_C_GetPointsPerResource (build 15595)
+double SpellEffectInfo::CalcPointsPerResource(WorldObject const* caster) const
+{
+    double value = 0.0;
+    if (caster && caster->IsUnit())
+    {
+        if (Scaling.Coefficient != 0.0f)
+        {
+            if (!_spellInfo->Scaling.Class)
+                return 0.0;
+
+            int32 scalingClass = _spellInfo->Scaling.Class;
+            if (scalingClass < 0)
+                scalingClass = (MAX_CLASSES - 1 /*last class*/) - scalingClass;
+
+            float scaledAmount = GameTable::GetSpellScalingValue(caster->ToUnit()->getLevel(), static_cast<UnitClass>(scalingClass));
+            scaledAmount *= _spellInfo->GetSpellScalingMultiplier(caster->ToUnit()->getLevel(), false) * Scaling.ComboPointsCoefficient;
+            value = scaledAmount;
+        }
+    }
+
+    if (std::fabs(value) < 0.00000023841858 && PointsPerComboPoint != 0.0f)
+        return PointsPerComboPoint;
+
+    return value;
 }
 
 float SpellEffectInfo::CalcValueMultiplier(WorldObject* caster, Spell* spell) const
