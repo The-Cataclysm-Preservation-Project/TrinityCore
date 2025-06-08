@@ -1228,16 +1228,17 @@ private:
 // 49184 - Howling Blast
 class spell_dk_howling_blast : public SpellScript
 {
-    void HandleDamage(SpellEffIndex /*effIndex*/)
+    // According to tooltip: (($m2+$M2)/2)+($AP*0.44) and (0.5*((($m2+$M2)/2)+($AP*0.44))) for non-primary targets
+    void CalculateDamage(Unit* victim, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        if (GetExplTargetUnit() && GetHitUnit())
-            if (GetExplTargetUnit() != GetHitUnit())
-                SetHitDamage(CalculatePct(GetHitDamage(), GetSpellInfo()->Effects[EFFECT_2].BasePoints));
+        damage += GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.44f;
+        if (victim != GetExplTargetUnit())
+            damage *= 0.5f;
     }
 
     void Register() override
     {
-        OnEffectHitTarget.Register(&spell_dk_howling_blast::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        CalcDamage.Register(&spell_dk_howling_blast::CalculateDamage);
     }
 };
 
