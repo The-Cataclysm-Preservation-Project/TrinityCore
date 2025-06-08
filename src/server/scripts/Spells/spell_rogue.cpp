@@ -1286,6 +1286,37 @@ class spell_rog_gouge : public AuraScript
     }
 };
 
+// 16511 - Hemorrhage
+class spell_rog_hemorrhage : public SpellScript
+{
+    bool Load() override
+    {
+        return GetCaster()->IsPlayer();
+    }
+
+    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& /*flatMod*/, float& pctMod)
+    {
+        for (WeaponAttackType attType : { BASE_ATTACK, OFF_ATTACK })
+        {
+            // Dealing additional 45% damage when a dagger is equipped
+            if (Item* item = GetCaster()->ToPlayer()->GetWeaponForAttack(attType, true))
+            {
+                if (item->GetTemplate()->GetSubClass() == ITEM_SUBCLASS_WEAPON_DAGGER)
+                {
+                    pctMod *= 1.45f;
+                    return;
+                }
+            }
+        }
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_rog_hemorrhage::CalculateDamage);
+    }
+};
+
+
 // -11327 - Vanish
 class spell_rog_vanish : public AuraScript
 {
@@ -1388,6 +1419,7 @@ void AddSC_rogue_spell_scripts()
     RegisterSpellScript(spell_rog_eviscerate);
     RegisterSpellScript(spell_rog_glyph_of_hemorrhage);
     RegisterSpellScript(spell_rog_gouge);
+    RegisterSpellScript(spell_rog_hemorrhage);
     RegisterSpellScript(spell_rog_improved_expose_armor);
     new spell_rog_killing_spree();
     RegisterSpellScript(spell_rog_main_gauche);

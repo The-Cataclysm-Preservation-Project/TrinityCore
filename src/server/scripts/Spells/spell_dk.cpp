@@ -1863,6 +1863,20 @@ class spell_dk_strangulate : public SpellScript
         OnEffectHitTarget.Register(&spell_dk_strangulate::HandleCreatureInterrupt, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
+
+// 45477 - Icy Touch
+class spell_dk_icy_touch : public SpellScript
+{
+    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    {
+        flatMod += GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.2f;
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_dk_icy_touch::CalculateDamage);
+    }
+};
 }
 
 void AddSC_deathknight_spell_scripts()
@@ -1901,6 +1915,7 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_ghoul_taunt);
     RegisterSpellScript(spell_dk_howling_blast);
     RegisterSpellScript(spell_dk_icebound_fortitude);
+    RegisterSpellScript(spell_dk_icy_touch);
     RegisterSpellScript(spell_dk_improved_presence);
     RegisterSpellScript(spell_dk_killing_machine);
     RegisterSpellScript(spell_dk_necrotic_strike);

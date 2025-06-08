@@ -137,6 +137,20 @@ class spell_hun_ancient_hysteria : public SpellScript
     }
 };
 
+// 3044 - Arcane Shot
+class spell_hun_arcane_shot : public SpellScript
+{
+    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    {
+        flatMod += GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.0493f;
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_hun_arcane_shot::CalculateDamage);
+    }
+};
+
 // Universal helper to get the serpent sting aura of all variants of it (original and the procced versions of Serpent Spread)
 static Aura* GetSerpentStingAura(Unit* target, ObjectGuid casterGUID)
 {
@@ -655,6 +669,11 @@ class spell_hun_steady_shot : public SpellScript
         return ValidateSpellInfo({ SPELL_HUNTER_STEADY_SHOT_FOCUS });
     }
 
+    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    {
+        flatMod += GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.021f;
+    }
+
     void HandleLaunch(SpellEffIndex /*effIndex*/)
     {
         Unit* caster = GetCaster();
@@ -676,6 +695,7 @@ class spell_hun_steady_shot : public SpellScript
 
     void Register() override
     {
+        CalcDamage.Register(&spell_hun_steady_shot::CalculateDamage);
         OnEffectLaunch.Register(&spell_hun_steady_shot::HandleLaunch, EFFECT_0, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
     }
 };
@@ -1444,6 +1464,7 @@ void AddSC_hunter_spell_scripts()
 {
     using namespace Spells::Hunter;
     RegisterSpellScript(spell_hun_ancient_hysteria);
+    RegisterSpellScript(spell_hun_arcane_shot);
     RegisterSpellScript(spell_hun_camouflage);
     RegisterSpellScript(spell_hun_camouflage_duration);
     RegisterSpellScript(spell_hun_camouflage_triggered);

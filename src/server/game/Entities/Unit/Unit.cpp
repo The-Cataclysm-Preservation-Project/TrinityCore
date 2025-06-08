@@ -1207,7 +1207,7 @@ void Unit::CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, Weapon
     uint32 damage = 0;
     damage += CalculateDamage(damageInfo->AttackType, false, true);
     // Add melee damage bonus
-    damage = MeleeDamageBonusDone(damageInfo->Target, damage, damageInfo->AttackType, DIRECT_DAMAGE, nullptr, MECHANIC_NONE, true, SpellSchoolMask(damageInfo->DamageSchoolMask));
+    damage = MeleeDamageBonusDone(damageInfo->Target, damage, damageInfo->AttackType, DIRECT_DAMAGE, nullptr, MECHANIC_NONE, SpellSchoolMask(damageInfo->DamageSchoolMask));
     damage = damageInfo->Target->MeleeDamageBonusTaken(this, damage, damageInfo->AttackType, nullptr, SpellSchoolMask(damageInfo->DamageSchoolMask));
 
     // Script Hook For CalculateMeleeDamage -- Allow scripts to change the Damage pre class mitigation calculations
@@ -6382,63 +6382,48 @@ int32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, int3
             break;
     }
 
-    // Check for table values
-    float spellPowerCoeff = spellProto->Effects[effIndex].BonusMultiplier;
-    float attackPowerCoeff = spellProto->BonusCoefficient;
-
-    WeaponAttackType const attType = [&]()
+    if (spellProto->BonusCoefficientFromAP > 0.0f)
     {
-        if ((spellProto->IsRangedWeaponSpell() && spellProto->DmgClass != SPELL_DAMAGE_CLASS_MELEE))
-            return RANGED_ATTACK;
-
-        if (spellProto->HasAttribute(SPELL_ATTR3_REQUIRES_OFF_HAND_WEAPON) && !spellProto->HasAttribute(SPELL_ATTR3_REQUIRES_MAIN_HAND_WEAPON))
-            return OFF_ATTACK;
-
-        return BASE_ATTACK;
-    }();
-
-    if (SpellBonusEntry const* bonus = sSpellMgr->GetSpellBonusData(spellProto->Id))
-    {
-        if (damagetype == DOT)
+        float ApCoeffMod = spellProto->BonusCoefficientFromAP;
+        if (Player* modOwner = GetSpellModOwner())
         {
-            spellPowerCoeff = bonus->dot_damage;
-            attackPowerCoeff = bonus->ap_dot_bonus;
+            ApCoeffMod *= 100.0f;
+            modOwner->ApplySpellMod(spellProto, SpellModOp::BonusCoefficient, ApCoeffMod);
+            ApCoeffMod /= 100.0f;
         }
-        else
+
+        WeaponAttackType const attType = [&]()
         {
-            spellPowerCoeff = bonus->direct_damage;
-            attackPowerCoeff = bonus->ap_bonus;
-        }
-    }
+            if ((spellProto->IsRangedWeaponSpell() && spellProto->DmgClass != SPELL_DAMAGE_CLASS_MELEE))
+                return RANGED_ATTACK;
 
-    if (spellPowerCoeff > 0.f)
-        spellPowerCoeff = spellProto->CalculateScaledCoefficient(this, spellPowerCoeff);
+            if (spellProto->HasAttribute(SPELL_ATTR3_REQUIRES_OFF_HAND_WEAPON) && !spellProto->HasAttribute(SPELL_ATTR3_REQUIRES_MAIN_HAND_WEAPON))
+                return OFF_ATTACK;
 
-    if (attackPowerCoeff > 0.f)
-    {
-        float APbonus = float(victim->GetTotalAuraModifier(attType == BASE_ATTACK ? SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS : SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS));
+            return BASE_ATTACK;
+        }();
+
+        float APbonus = float(victim->GetTotalAuraModifier(attType != RANGED_ATTACK ? SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS : SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS));
         APbonus += GetTotalAttackPowerValue(attType);
-        DoneTotal += int32(attackPowerCoeff * stack * APbonus);
+        DoneTotal += int32(stack * ApCoeffMod * APbonus);
     }
 
     // Default calculation
     if (DoneAdvertisedBenefit)
     {
-        if (spellPowerCoeff < 0.f)
-            spellPowerCoeff = CalculateDefaultCoefficient(spellProto, damagetype);  // As wowwiki says: C = (Cast Time / 3.5)
-
-
+        float coeff = spellProto->Effects[effIndex].BonusMultiplier * spellProto->GetSpellScalingMultiplier(getLevel(), false);
         if (Player* modOwner = GetSpellModOwner())
         {
-            spellPowerCoeff *= 100.0f;
-            modOwner->ApplySpellMod(spellProto, SpellModOp::BonusCoefficient, spellPowerCoeff);
-            spellPowerCoeff /= 100.0f;
+            coeff *= 100.0f;
+            modOwner->ApplySpellMod(spellProto, SpellModOp::BonusCoefficient, coeff);
+            coeff /= 100.0f;
         }
 
-        DoneTotal += int32(DoneAdvertisedBenefit * spellPowerCoeff * stack);
+        DoneTotal += int32(DoneAdvertisedBenefit * coeff * stack);
     }
 
     callDamageScript(pdamage, DoneTotal, DoneTotalMod);
+
     float tmpDamage = float(pdamage + DoneTotal) * DoneTotalMod;
 
     // apply spellmod to Done damage (flat and pct)
@@ -7108,34 +7093,19 @@ int32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, int
 
 
     // Check for table values
-    float coeff = spellProto->Effects[effIndex].BonusMultiplier;
-    if (SpellBonusEntry const* bonus = sSpellMgr->GetSpellBonusData(spellProto->Id))
+    if (spellProto->BonusCoefficientFromAP > 0.0f)
     {
         WeaponAttackType const attType = (spellProto->IsRangedWeaponSpell() && spellProto->DmgClass != SPELL_DAMAGE_CLASS_MELEE) ? RANGED_ATTACK : BASE_ATTACK;
         float APbonus = float(victim->GetTotalAuraModifier(attType == BASE_ATTACK ? SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS : SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS));
         APbonus += GetTotalAttackPowerValue(attType);
 
-        if (damagetype == DOT)
-        {
-            coeff = bonus->dot_damage;
-            if (bonus->ap_dot_bonus > 0)
-                if (bonus->ap_dot_bonus > 0)
-                    DoneTotal += int32(bonus->ap_dot_bonus * stack * APbonus);
-        }
-        else
-        {
-            coeff = bonus->direct_damage;
-            if (bonus->ap_bonus > 0)
-                DoneTotal += int32(bonus->ap_bonus * stack * APbonus);
-        }
+        DoneTotal += int32(spellProto->BonusCoefficientFromAP * stack * APbonus);
     }
 
     // Default calculation
     if (DoneAdvertisedBenefit)
     {
-        if (coeff < 0.f)
-            coeff = CalculateDefaultCoefficient(spellProto, damagetype) * 1.88f;  // As wowwiki says: C = (Cast Time / 3.5) * 1.88 (for healing spells)
-
+        float coeff = spellProto->Effects[effIndex].BonusMultiplier * spellProto->GetSpellScalingMultiplier(getLevel(), false);
         if (Player* modOwner = GetSpellModOwner())
         {
             coeff *= 100.0f;
@@ -7585,7 +7555,7 @@ bool Unit::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index, Worl
     return false;
 }
 
-int32 Unit::MeleeDamageBonusDone(Unit* victim, int32 damage, WeaponAttackType attType, DamageEffectType damagetype, SpellInfo const* spellProto /*= nullptr*/, Mechanics mechanic /*= MECHANIC_NONE*/, bool useSpellBonusData /*= true*/, SpellSchoolMask damageSchoolMask /*= SPELL_SCHOOL_MASK_NORMAL*/, Spell* spell /*= nullptr*/, AuraEffect const* aurEff /*= nullptr*/)
+int32 Unit::MeleeDamageBonusDone(Unit* victim, int32 damage, WeaponAttackType attType, DamageEffectType damagetype, SpellInfo const* spellProto /*= nullptr*/, Mechanics mechanic /*= MECHANIC_NONE*/, SpellSchoolMask damageSchoolMask /*= SPELL_SCHOOL_MASK_NORMAL*/, Spell* spell /*= nullptr*/, AuraEffect const* aurEff /*= nullptr*/)
 {
     if (!victim || damage == 0)
         return 0;
@@ -7623,18 +7593,6 @@ int32 Unit::MeleeDamageBonusDone(Unit* victim, int32 damage, WeaponAttackType at
     {
         bool const normalized = spellProto && spellProto->HasEffect(SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
         DoneFlatBenefit += int32(APbonus / 14.0f * GetAPMultiplier(attType, normalized));
-    }
-
-    if (spellProto && useSpellBonusData)
-    {
-        float attackPowerCoeff = spellProto->BonusCoefficient;
-
-        // Check for table values
-        if (SpellBonusEntry const* bonus = sSpellMgr->GetSpellBonusData(spellProto->Id))
-            attackPowerCoeff = bonus->ap_bonus;
-
-        if (attackPowerCoeff > 0.f)
-            DoneFlatBenefit += attackPowerCoeff * GetTotalAttackPowerValue(attType);
     }
 
     // Done total percent damage auras

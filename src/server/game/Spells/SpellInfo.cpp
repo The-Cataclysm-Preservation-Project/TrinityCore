@@ -890,7 +890,7 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry, SpellEffectEntry const** effe
     SchoolMask = spellEntry->SchoolMask;
     RuneCostID = spellEntry->RuneCostID;
     SpellDifficultyId = spellEntry->Difficulty;
-    BonusCoefficient = spellEntry->BonusCoefficient;
+    BonusCoefficientFromAP = spellEntry->BonusCoefficient;
     SpellScalingId = spellEntry->ScalingID;
     SpellAuraOptionsId = spellEntry->AuraOptionsID;
     SpellAuraRestrictionsId = spellEntry->AuraRestrictionsID;

@@ -48,6 +48,7 @@ enum WarriorSpells
     SPELL_WARRIOR_DEEP_WOUNDS_PERIODIC              = 12721,
     SPELL_WARRIOR_EXECUTE                           = 20647,
     SPELL_WARRIOR_GLYPH_OF_EXECUTION                = 58367,
+    SPELL_WARRIOR_IMPENDING_VICTORY                 = 80128,
     SPELL_WARRIOR_INTERCEPT                         = 20252,
     SPELL_WARRIOR_JUGGERNAUT_CRIT_BONUS_BUFF        = 65156,
     SPELL_WARRIOR_JUGGERNAUT_CRIT_BONUS_TALENT      = 64976,
@@ -95,10 +96,9 @@ class spell_warr_bloodthirst : public SpellScript
         return ValidateSpellInfo({ SPELL_WARRIOR_BLOODTHIRST });
     }
 
-    void HandleDamage(SpellEffIndex /*effIndex*/)
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        if (Unit* caster = GetCaster())
-            SetEffectValue(CalculatePct(caster->GetTotalAttackPowerValue(BASE_ATTACK) * GetEffectValue(), 1));
+        damage = CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), damage);
     }
 
     void HandleBloodthirstHealEffect()
@@ -108,7 +108,7 @@ class spell_warr_bloodthirst : public SpellScript
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_warr_bloodthirst::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        CalcDamage.Register(&spell_warr_bloodthirst::CalculateDamage);
         AfterHit.Register(&spell_warr_bloodthirst::HandleBloodthirstHealEffect);
     }
 };
@@ -175,16 +175,17 @@ class spell_warr_charge : public SpellScript
 };
 
 /// Updated 4.3.4
+// 12809 - Concussion Blow
 class spell_warr_concussion_blow : public SpellScript
 {
-    void HandleDummy(SpellEffIndex /*effIndex*/)
+    void CalculateDamage(Unit* victim, int32& damage, int32& flatMod, float& pctMod)
     {
-        SetEffectValue(CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_2].CalcValue()));
+        damage = CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_2].CalcValue());
     }
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_warr_concussion_blow::HandleDummy, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        CalcDamage.Register(&spell_warr_concussion_blow::CalculateDamage);
     }
 };
 
@@ -237,6 +238,7 @@ class spell_warr_deep_wounds : public AuraScript
 };
 
 /// Updated 4.3.4
+// 5308 - Execute
 class spell_warr_execute : public SpellScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override
@@ -244,36 +246,50 @@ class spell_warr_execute : public SpellScript
         return ValidateSpellInfo({ SPELL_WARRIOR_SUDDEN_DEATH });
     }
 
-    void HandleEffect(SpellEffIndex /*effIndex*/)
+    // Formula: ${10+$AP*0.437*$m1/100}  plus up to $m2 additional rage for up to ${10+$AP*0.437*$m1/100} extra damage
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
         Unit* caster = GetCaster();
-        if (!GetHitUnit())
+        int apPct = GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
+
+        damage = static_cast<int32>(10 + CalculatePct(caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.437, apPct));
+
+        int32 additionalRageCap = GetSpellInfo()->Effects[EFFECT_1].CalcValue(caster) * 10;
+        if (!additionalRageCap)
             return;
 
-        // Formula taken from DBC: "${10+$AP*0.437*$m1/100}"
-        int32 bp = int32(10 + caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.437f * GetEffectValue() / 100.0f);
+        int32 additionalRage = std::min<int32>(caster->GetPower(POWER_RAGE) - GetSpell()->GetPowerCost(), additionalRageCap);
 
-        // Up to 20 additional Rage can be converted into damage
-        // Formula taken from DBC: "to ${$ap*0.874*$m1/100-1}"
-        int32 additionalRage = std::min<int32>(caster->GetPower(POWER_RAGE) - GetSpell()->GetPowerCost(), GetSpellInfo()->Effects[EFFECT_1].CalcValue() * 10);
-        if (additionalRage > 0)
-            bp += (additionalRage * (caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.874f * GetEffectValue() / 100.0f - 1) / 200);
+        // Based on the pct of extra rage consumed the damage will be increased
+        float extraRagePct = additionalRage / additionalRageCap;
+        int32 bonusDamage = std::max<int32>(0, CalculatePct(caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.874f, apPct) - 1);
 
-        SetEffectValue(bp);
+        damage += bonusDamage * extraRagePct;
 
-        int32 preservedRage = 0;
+        _additionalRageConsumed = additionalRage;
+    }
+
+    void ConsumeAdditionalRage()
+    {
+        if (_additionalRageConsumed == 0)
+            return;
+
         // Sudden Death bonus (keep 5/10 Rage after using Execute)
-        if (Aura const* aura = caster->GetAuraOfRankedSpell(SPELL_WARRIOR_SUDDEN_DEATH, caster->GetGUID()))
+        int32 preservedRage = 0;
+        if (Aura const* aura = GetCaster()->GetAuraOfRankedSpell(SPELL_WARRIOR_SUDDEN_DEATH, GetCaster()->GetGUID()))
             if (AuraEffect const* suddenDeath = aura->GetEffect(EFFECT_0))
-                preservedRage = std::min<int32>(suddenDeath->GetAmount() * 10, GetSpell()->GetPowerCost() + additionalRage);
+                preservedRage = std::min<int32>(suddenDeath->GetAmount() * 10, GetSpell()->GetPowerCost() + _additionalRageConsumed);
 
-        caster->ModifyPower(POWER_RAGE, -(additionalRage - preservedRage));
+        GetCaster()->ModifyPower(POWER_RAGE, -(_additionalRageConsumed - preservedRage));
     }
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_warr_execute::HandleEffect, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        CalcDamage.Register(&spell_warr_execute::CalculateDamage);
+        AfterCast.Register(&spell_warr_execute::ConsumeAdditionalRage);
     }
+private:
+    int32 _additionalRageConsumed = 0;
 };
 
 // 58387 - Glyph of Sunder Armor
@@ -479,6 +495,7 @@ class spell_warr_shattering_throw : public SpellScript
 };
 
 /// Updated 4.3.4
+// 1464 - Slam
 class spell_warr_slam : public SpellScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override
@@ -535,27 +552,21 @@ class spell_warr_slam_triggered : public SpellScript
         _affectedByBloodsurge = GetCaster()->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_WARRIOR, 0x0, 0x1000000, 0x0, GetCaster()->GetGUID()) != nullptr;
     }
 
-    void HandleBonusDamage(SpellEffIndex /*effIndex*/)
+    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& /*flatMod*/, float& pctMod)
     {
-        Unit* caster = GetCaster();
-        if (!caster)
+        // Bloodsurge damage bonus
+        if (!_affectedByBloodsurge)
             return;
 
-        int32 basePoints = GetEffectValue();
-
-        // Bloodsurge damage bonus
-        if (_affectedByBloodsurge)
-            if (Aura const* aura = caster->GetAuraOfRankedSpell(SPELL_WARRIOR_BLOODSURGE_R1))
-                if (AuraEffect const* effect = aura->GetEffect(EFFECT_0))
-                    AddPct(basePoints, effect->GetAmount());
-
-        SetEffectValue(basePoints);
+        if (Aura const* aura = GetCaster()->GetAuraOfRankedSpell(SPELL_WARRIOR_BLOODSURGE_R1))
+            if (AuraEffect const* effect = aura->GetEffect(EFFECT_0))
+                AddPct(pctMod, effect->GetAmount());
     }
 
     void Register() override
     {
         BeforeCast.Register(&spell_warr_slam_triggered::HandleBeforeCast);
-        OnEffectLaunchTarget.Register(&spell_warr_slam_triggered::HandleBonusDamage, EFFECT_1, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
+        CalcDamage.Register(&spell_warr_slam_triggered::CalculateDamage);
     }
 private:
     bool _affectedByBloodsurge = false;
@@ -688,7 +699,7 @@ private:
 
 // -46951 - Sword and Board
 class spell_warr_sword_and_board : public AuraScript
-{private:
+{
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_WARRIOR_SHIELD_SLAM });
@@ -719,39 +730,33 @@ class spell_warr_victory_rush : public SpellScript
             });
     }
 
-    void HandleDamage(SpellEffIndex /*effIndex*/)
+    // ${$AP*$m1/100}
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        SetEffectValue(CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_0].CalcValue()));
+        damage = CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), damage);
     }
 
-    void HandleImpendingVictoryHeal(SpellEffIndex effIndex)
+    void CalculateHeal(Unit* /*victim*/, int32& heal, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        if (Unit* caster = GetCaster())
-        {
-            // Impending Victory also allows players to cast Victory Rush but with 5% healing effect only
-            if (caster->HasAura(SPELL_WARRIOR_VICTORIOUS_IMPENDING_VICTORY))
-            {
-                int32 damage = 5;
+        Unit* caster = GetCaster();
 
-                // Glyph: Victory Rush
-                if (Player* modOwner = caster->GetSpellModOwner())
-                    modOwner->ApplySpellMod(GetSpellInfo(), SpellModOp::PointsIndex2, damage);
-
-                SetEffectValue(damage);
-            }
-            else
-                SetEffectValue(GetSpellInfo()->Effects[effIndex].CalcValue());
-
-            caster->RemoveAurasDueToSpell(SPELL_WARRIOR_VICTORIOUS);
-            caster->RemoveAurasDueToSpell(SPELL_WARRIOR_VICTORIOUS_IMPENDING_VICTORY);
-        }
+        // Impending Victory has a chance to allow casting Victory rush but it only heals for $s1% of our health
+        if (caster->HasAura(SPELL_WARRIOR_VICTORIOUS_IMPENDING_VICTORY, caster->GetGUID()))
+            if (AuraEffect const* impendingVictoryEff = caster->GetAuraEffectOfRankedSpell(SPELL_WARRIOR_VICTORIOUS_IMPENDING_VICTORY, EFFECT_0, caster->GetGUID()))
+                heal = caster->CountPctFromMaxHealth(impendingVictoryEff->GetAmount());
     }
 
+    void RemoveVictorious()
+    {
+        GetCaster()->RemoveAurasDueToSpell(SPELL_WARRIOR_VICTORIOUS);
+        GetCaster()->RemoveAurasDueToSpell(SPELL_WARRIOR_VICTORIOUS_IMPENDING_VICTORY);
+    }
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_warr_victory_rush::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        OnEffectHitTarget.Register(&spell_warr_victory_rush::HandleImpendingVictoryHeal, EFFECT_2, SPELL_EFFECT_HEAL_PCT);
+        CalcDamage.Register(&spell_warr_victory_rush::CalculateDamage);
+        CalcHealing.Register(&spell_warr_victory_rush::CalculateHeal);
+        AfterCast.Register(&spell_warr_victory_rush::RemoveVictorious);
     }
 };
 
@@ -889,7 +894,7 @@ class spell_warr_thunder_clap : public SpellScript
         OnEffectHitTarget.Register(&spell_warr_thunder_clap::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 private:
-    bool _allowRendSpread;
+    bool _allowRendSpread = false;
 };
 
 class spell_warr_shield_specialization : public AuraScript
@@ -932,17 +937,18 @@ class spell_warr_blood_craze : public AuraScript
 // 46968 - Shockwave
 class spell_warr_shockwave : public SpellScript
 {
-    void HandleDamage(SpellEffIndex /*effIndex*/)
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        SetEffectValue(CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_2].CalcValue()));
+        damage = CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_2].CalcValue(GetCaster()));
     }
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_warr_shockwave::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        CalcDamage.Register(&spell_warr_shockwave::CalculateDamage);
     }
 };
 
+// 20243 - Devastate
 class spell_warr_devastate : public SpellScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override

@@ -2784,14 +2784,14 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
         {
             case SPELL_EFFECT_WEAPON_DAMAGE:
             case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
-                fixed_bonus += damage;
+                fixed_bonus += CalculateDamage(j, unitTarget);
                 break;
             case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
-                fixed_bonus += damage;
+                fixed_bonus += CalculateDamage(j, unitTarget);
                 normalized = true;
                 break;
             case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
-                ApplyPct(weaponDamagePercentMod, damage);
+                ApplyPct(weaponDamagePercentMod, CalculateDamage(j, unitTarget));
                 break;
             default:
                 continue;                               // not weapon damage effect, just skip
@@ -2805,21 +2805,6 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
     {
         switch (m_spellInfo->SpellFamilyName)
         {
-            case SPELLFAMILY_ROGUE:
-            {
-                // Hemorrhage
-                if (m_spellInfo->SpellFamilyFlags[0] & 0x2000000)
-                {
-                    if (unitCaster->GetTypeId() == TYPEID_PLAYER)
-                        unitCaster->ToPlayer()->AddComboPoints(unitTarget, 1, this);
-                    // 45% more damage with daggers
-                    if (unitCaster->GetTypeId() == TYPEID_PLAYER)
-                        if (Item* item = unitCaster->ToPlayer()->GetWeaponForAttack(m_attackType, true))
-                            if (item->GetTemplate()->GetSubClass() == ITEM_SUBCLASS_WEAPON_DAGGER)
-                                totalDamagePercentMod *= 1.45f;
-                }
-                break;
-            }
             case SPELLFAMILY_SHAMAN:
             {
                 // Skyshatter Harness item set bonus
@@ -2948,7 +2933,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
     weaponDamage = std::max(weaponDamage, 0);
 
     // Add melee damage bonuses (also check for negative)
-    weaponDamage = unitCaster->MeleeDamageBonusDone(unitTarget, weaponDamage, m_attackType, SPELL_DIRECT_DAMAGE, m_spellInfo, mechanic, !useWeaponDamage, m_spellSchoolMask, this);
+    weaponDamage = unitCaster->MeleeDamageBonusDone(unitTarget, weaponDamage, m_attackType, SPELL_DIRECT_DAMAGE, m_spellInfo, mechanic, m_spellSchoolMask, this);
     m_damage += unitTarget->MeleeDamageBonusTaken(unitCaster, weaponDamage, m_attackType, m_spellInfo);
 }
 
