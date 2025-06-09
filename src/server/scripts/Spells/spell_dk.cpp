@@ -1456,9 +1456,12 @@ class spell_dk_disease : public AuraScript
     }
 
     // According to tooltip: ($m1*1.15+$AP*0.055*1.15)
-    void CalculateDamage(AuraEffect const* /*aurEff*/, Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
+    void CalculateDamage(AuraEffect const* /*aurEff*/, Unit* /*victim*/, int32& damage, int32& flatMod, float& /*pctMod*/)
     {
-        damage = damage * 1.15f + GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.055f * 1.15f;
+        damage *= 1.15f;
+
+        if (Unit* caster = GetCaster())
+            flatMod = caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.055f * 1.15f;
     }
 
     void HandleResilientInfection(DispelInfo* /*dispelInfo*/)

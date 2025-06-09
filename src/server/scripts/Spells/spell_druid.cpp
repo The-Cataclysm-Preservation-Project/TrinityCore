@@ -1594,33 +1594,44 @@ class spell_dru_pulverize : public SpellScript
             });
     }
 
-    void ChangeDamage(SpellEffIndex /*effIndex*/)
+    void CalculateDamage(Unit* victim, int32& damage, int32& flatMod, float& /*pctMod*/)
     {
         Unit* caster = GetCaster();
-        Unit* target = GetHitUnit();
-        if (!caster || !target)
-            return;
 
-        // Formular: $m3 * $m1 / 100
-        int32 bp = CalculatePct(GetEffectValue() * GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster), 1);
+        int32 normalizedWeaponDamage = GetSpellInfo()->Effects[EFFECT_2].CalcValue(caster);
 
-        if (Aura* aura = target->GetAura(SPELL_DRUID_LACERATE, caster->GetGUID()))
+        // Subtract the normalized weapon damage bonus because it's not supposed to be used in the regular way
+        damage -= normalizedWeaponDamage;
+
+        if (Aura* aura = victim->GetAura(SPELL_DRUID_LACERATE, caster->GetGUID()))
         {
-            uint8 stacks = aura->GetStackAmount();
-            bp *= stacks;
-            SetEffectValue(bp);
+            // Damage bonus per application of Lacerate:
+            // ${$m3*$m1/100}
+            int32 weaponPctDamage = GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
+            int32 lacerateBonus = CalculatePct(normalizedWeaponDamage, weaponPctDamage);
 
-            uint32 critPerStack = sSpellMgr->GetSpellInfo(SPELL_DRUID_PULVERIZE_TRIGGERED)->Effects[EFFECT_0].BasePoints;
-            caster->CastSpell(caster, SPELL_DRUID_PULVERIZE_TRIGGERED, CastSpellExtraArgs(true).AddSpellBP0(int32(critPerStack * stacks)));
+            flatMod += lacerateBonus * aura->GetStackAmount();
+        }
+    }
+
+    void HandleLacerateRemoval(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+
+        if (Aura* aura = GetHitUnit()->GetAura(SPELL_DRUID_LACERATE, caster->GetGUID()))
+        {
+            // Crit chance bonus per Lacerate stack consumed
+            int32 critPerStack = sSpellMgr->GetSpellInfo(SPELL_DRUID_PULVERIZE_TRIGGERED)->Effects[EFFECT_0].CalcValue(caster);
+            caster->CastSpell(caster, SPELL_DRUID_PULVERIZE_TRIGGERED, CastSpellExtraArgs(TRIGGERED_FULL_MASK).AddSpellBP0(critPerStack * aura->GetStackAmount()));
+
             aura->Remove();
         }
-        else
-            SetEffectValue(0);
     }
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_dru_pulverize::ChangeDamage, EFFECT_2, SPELL_EFFECT_NORMALIZED_WEAPON_DMG);
+        CalcDamage.Register(&spell_dru_pulverize::CalculateDamage);
+        OnEffectHitTarget.Register(&spell_dru_pulverize::HandleLacerateRemoval, EFFECT_0, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
     }
 };
 

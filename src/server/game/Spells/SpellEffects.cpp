@@ -2760,24 +2760,39 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
     if (!unitTarget || !unitTarget->IsAlive())
         return;
 
-    uint32 effectType = m_spellInfo->Effects[effIndex].Effect;
-    bool useWeaponDamage = true;
 
-    /*
-        Multiple weapon damage effect case. SPELL_EFFECT_WEAPON_PERCENT_DAMAGE is being prioritized for calculating weapon damage values.
-        The other effects only add their fixed bonus to the damage sum.
-    */
-    if (m_spellInfo->HasEffect(SPELL_EFFECT_WEAPON_PERCENT_DAMAGE) && effectType != SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
-        useWeaponDamage = false;
+    for(uint8 j = effIndex + 1; j < MAX_SPELL_EFFECTS; ++j)
+    {
+        switch (m_spellInfo->Effects[j].Effect)
+        {
+            case SPELL_EFFECT_WEAPON_DAMAGE:
+            case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+            case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
+            case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+                return;
+            default:
+                break;
+        }
+    }
 
     // some spell specific modifiers
     float totalDamagePercentMod  = 1.0f;                    // applied to final bonus+weapon damage
     int32 fixed_bonus = 0;
 
+    switch (m_spellInfo->SpellFamilyName)
+    {
+        case SPELLFAMILY_SHAMAN:
+        {
+            // Skyshatter Harness item set bonus
+            // Stormstrike
+            if (AuraEffect* aurEff = unitCaster->IsScriptOverriden(m_spellInfo, 5634))
+                unitCaster->CastSpell(nullptr, 38430, aurEff);
+            break;
+        }
+    }
+
     bool normalized = false;
     float weaponDamagePercentMod = 1.0f;
-    Mechanics mechanic = MECHANIC_NONE;
-
     for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
         switch (m_spellInfo->Effects[j].Effect)
@@ -2794,101 +2809,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
                 ApplyPct(weaponDamagePercentMod, CalculateDamage(j, unitTarget));
                 break;
             default:
-                continue;                               // not weapon damage effect, just skip
-        }
-
-        if (m_spellInfo->Effects[j].Mechanic != MECHANIC_NONE && mechanic == MECHANIC_NONE)
-            mechanic = m_spellInfo->Effects[j].Mechanic;
-    }
-
-    if (useWeaponDamage)
-    {
-        switch (m_spellInfo->SpellFamilyName)
-        {
-            case SPELLFAMILY_SHAMAN:
-            {
-                // Skyshatter Harness item set bonus
-                // Stormstrike
-                if (AuraEffect* aurEff = unitCaster->IsScriptOverriden(m_spellInfo, 5634))
-                    unitCaster->CastSpell(unitCaster, 38430, aurEff);
-                break;
-            }
-            case SPELLFAMILY_DRUID:
-            {
-                // Mangle (Cat): CP
-                if (m_spellInfo->SpellFamilyFlags[1] & 0x400)
-                    unitCaster->CastSpell(unitTarget, 34071, true);
-                // Shred, Maul - Rend and Tear
-                else if (m_spellInfo->SpellFamilyFlags[0] & 0x00008800 && unitTarget->HasAuraState(AURA_STATE_BLEEDING))
-                {
-                    if (AuraEffect const* rendAndTear = unitCaster->GetDummyAuraEffect(SPELLFAMILY_DRUID, 2859, 0))
-                        AddPct(totalDamagePercentMod, rendAndTear->GetAmount());
-                }
-                break;
-            }
-            case SPELLFAMILY_DEATHKNIGHT:
-            {
-                // Death Strike
-                if (m_spellInfo->SpellFamilyFlags[0] & 0x10)
-                {
-                    // Glyph of Death Strike
-                    // 2% more damage per 5 runic power, up to a maximum of 40%
-                    if (AuraEffect const* aurEff = unitCaster->GetAuraEffect(59336, EFFECT_0))
-                        if (uint32 runic = std::min<uint32>(uint32(unitCaster->GetPower(POWER_RUNIC_POWER) / 2.5f), aurEff->GetSpellInfo()->Effects[EFFECT_1].CalcValue(unitCaster)))
-                            AddPct(totalDamagePercentMod, runic);
-                }
-
-                // Obliterate / Blood Strike / Blood-Caked Strike (12.5% more damage per disease) / Heart Strike (15% more damage per disease)
-                if (m_spellInfo->SpellFamilyFlags[1] & 0x20000 || m_spellInfo->SpellFamilyFlags[0] & 0x400000
-                    || m_spellInfo->SpellFamilyFlags[0] & 0x1000000 || m_spellInfo->Id == 50463)
-                {
-                    float bonusPct = m_spellInfo->Effects[EFFECT_2].CalcValue(m_caster);
-                    uint8 diseaseCount = unitTarget->GetDiseasesByCaster(m_caster->GetGUID(), false);
-
-                    if (m_spellInfo->SpellFamilyFlags[1] & 0x20000) // Obliterate - 50% of Basepoints as bonus
-                        bonusPct *= 0.5f;
-                    else if (m_spellInfo->SpellFamilyFlags[0] & 0x400000) // Blood Strike - 10% of Basepoints as bonus
-                        bonusPct *= 0.1f;
-
-                    float bonusAmount = bonusPct * diseaseCount;
-                    // Death Knight T8 Melee 4P Bonus
-                    if (AuraEffect const* aurEff = unitCaster->GetAuraEffect(64736, EFFECT_0))
-                        AddPct(bonusAmount, aurEff->GetAmount());
-
-                    AddPct(totalDamagePercentMod, bonusAmount);
-                }
-
-                // Blood-Caked Strike - Blood-Caked Blade
-                if (m_spellInfo->SpellIconID == 1736)
-                    AddPct(totalDamagePercentMod, unitTarget->GetDiseasesByCaster(unitCaster->GetGUID()) * 50.0f);
-
-                // Merciless Combat (Obliterate and Frost Strike)
-                if (m_spellInfo->SpellFamilyFlags[1] & 0x20000 || m_spellInfo->SpellFamilyFlags[1] & 0x4)
-                    if (unitTarget->GetHealthPct() < 35.0f)
-                        if (AuraEffect const* mercilessCombat = unitCaster->GetDummyAuraEffect(SPELLFAMILY_DEATHKNIGHT, 2656, 0))
-                            AddPct(totalDamagePercentMod, mercilessCombat->GetAmount());
-                break;
-            }
-            case SPELLFAMILY_WARLOCK:
-            {
-                if (useWeaponDamage)
-                {
-                    // Felstorm and Legion Strike
-                    if (m_spellInfo->Id == 89753)
-                    {
-                        if (unitCaster->IsPet())
-                            if (Unit* owner = unitCaster->GetOwner())
-                                m_damage += ((owner->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_SHADOW) * 0.5f) * 2) * 0.231f;
-                    }
-                    else if (m_spellInfo->Id == 30213)
-                    {
-                        if (unitCaster->IsPet())
-                            if (Unit* owner = unitCaster->GetOwner())
-                                m_damage += ((owner->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_SHADOW) * 0.5f) * 2) * 0.264f;
-                    }
-                }
-                break;
-            }
+                break;                               // not weapon damage effect, just skip
         }
     }
 
@@ -2911,20 +2832,30 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
             fixed_bonus = int32(fixed_bonus * weapon_total_pct);
     }
 
-    int32 weaponDamage = useWeaponDamage ? unitCaster->CalculateDamage(m_attackType, normalized, addPctMods) : 0;
+    int32 weaponDamage = unitCaster->CalculateDamage(m_attackType, normalized, addPctMods);
+    Mechanics mechanic = MECHANIC_NONE;
 
-    switch (effectType)
+    // Sequence is important
+    for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
-        case SPELL_EFFECT_WEAPON_DAMAGE:
-        case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
-        case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
-            weaponDamage += fixed_bonus;
-            break;
-        case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
-            weaponDamage = int32(weaponDamage * weaponDamagePercentMod);
-            break;
-        default:
-            break;
+        // We assume that a spell have at most one fixed_bonus
+        // and at most one weaponDamagePercentMod
+        switch (m_spellInfo->Effects[j].Effect)
+        {
+            case SPELL_EFFECT_WEAPON_DAMAGE:
+            case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+            case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
+                weaponDamage += fixed_bonus;
+                break;
+            case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+                weaponDamage = int32(weaponDamage * weaponDamagePercentMod);
+                break;
+            default:
+                break;
+        }
+
+        if (m_spellInfo->Effects[j].Mechanic != MECHANIC_NONE && mechanic == MECHANIC_NONE)
+            mechanic = m_spellInfo->Effects[j].Mechanic;
     }
 
     weaponDamage = int32(weaponDamage * totalDamagePercentMod);

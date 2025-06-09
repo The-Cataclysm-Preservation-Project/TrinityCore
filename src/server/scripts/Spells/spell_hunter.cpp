@@ -34,7 +34,6 @@ namespace Spells::Hunter
 {
 enum HunterSpells
 {
-    SPELL_HUNTER_AIMED_SHOT                         = 19434,
     SPELL_HUNTER_BESTIAL_WRATH                      = 19574,
     SPELL_HUNTER_CALL_PET_1                         = 883,
     SPELL_HUNTER_CALL_PET_2                         = 83242,
@@ -140,9 +139,15 @@ class spell_hun_ancient_hysteria : public SpellScript
 // 3044 - Arcane Shot
 class spell_hun_arcane_shot : public SpellScript
 {
-    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        flatMod += GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.0493f;
+        Unit* caster = GetCaster();
+
+        // Due to limited control over weapon damage effects, we have to override the default damage calculation
+        // Arcane shot has a very special calculation pattern
+        damage = CalculatePct(caster->CalculateDamage(RANGED_ATTACK, true, true), GetSpellInfo()->Effects[EFFECT_1].CalcValue(caster));
+        damage += GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.0493f;
+        damage += GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
     }
 
     void Register() override
@@ -173,6 +178,11 @@ class spell_hun_chimera_shot : public SpellScript
         return ValidateSpellInfo({ SPELL_HUNTER_CHIMERA_SHOT_HEAL });
     }
 
+    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    {
+        flatMod += GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.732f;
+    }
+
     void HandleScriptEffect(SpellEffIndex /*effIndex*/)
     {
         Unit* caster = GetCaster();
@@ -187,6 +197,7 @@ class spell_hun_chimera_shot : public SpellScript
 
     void Register() override
     {
+        CalcDamage.Register(&spell_hun_chimera_shot::CalculateDamage);
         OnEffectHitTarget.Register(&spell_hun_chimera_shot::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
@@ -202,6 +213,11 @@ class spell_hun_cobra_shot : public SpellScript
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
         return ValidateSpellInfo({ SPELL_HUNTER_GENERIC_ENERGIZE_FOCUS });
+    }
+
+    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    {
+        flatMod += GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.017f;
     }
 
     void HandleLaunch(SpellEffIndex /*effIndex*/)
@@ -234,6 +250,7 @@ class spell_hun_cobra_shot : public SpellScript
 
     void Register() override
     {
+        CalcDamage.Register(&spell_hun_cobra_shot::CalculateDamage);
         OnEffectLaunch.Register(&spell_hun_cobra_shot::HandleLaunch, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
         OnEffectHitTarget.Register(&spell_hun_cobra_shot::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
     }
@@ -669,9 +686,14 @@ class spell_hun_steady_shot : public SpellScript
         return ValidateSpellInfo({ SPELL_HUNTER_STEADY_SHOT_FOCUS });
     }
 
-    void CalculateDamage(Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        flatMod += GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.021f;
+        Unit* caster = GetCaster();
+        // Due to limited control over weapon damage effects, we have to override the default damage calculation
+        // Steady shot has a very special calculation pattern
+        damage = CalculatePct(caster->CalculateDamage(RANGED_ATTACK, true, true), GetSpellInfo()->Effects[EFFECT_1].CalcValue(caster));
+        damage += caster->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.021f;
+        damage += GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
     }
 
     void HandleLaunch(SpellEffIndex /*effIndex*/)
@@ -904,6 +926,12 @@ class spell_hun_serpent_sting : public AuraScript
         return ValidateSpellInfo({ SPELL_HUNTER_IMPROVED_SERPENT_STING_DAMAGE });
     }
 
+    void CalculateDamage(AuraEffect const* /*aurEff*/, Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    {
+        if (Unit* caster = GetCaster())
+            flatMod += caster->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.4f / 5;
+    }
+
     void HandleImprovedSerpentSting(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
     {
         Unit* caster = GetCaster();
@@ -919,6 +947,7 @@ class spell_hun_serpent_sting : public AuraScript
 
     void Register() override
     {
+        DoEffectCalcDamageAndHealing.Register(&spell_hun_serpent_sting::CalculateDamage, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
         AfterEffectApply.Register(&spell_hun_serpent_sting::HandleImprovedSerpentSting, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
     }
 };
@@ -1458,11 +1487,57 @@ class spell_hun_serpent_spread : public AuraScript
         OnEffectProc.Register(&spell_hun_serpent_spread::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
+
+// 19434 - Aimed Shot
+// 82928 - Aimed Shot! (Master Marksman)
+class spell_hun_aimed_shot : public SpellScript
+{
+    bool Load() override
+    {
+        return GetCaster()->IsPlayer();
+    }
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_HUNTER_STEADY_SHOT_FOCUS });
+    }
+
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
+    {
+        Unit* caster = GetCaster();
+        // Due to limited control over weapon damage effects, we have to override the default damage calculation
+        // Aimed Shot has a very special calculation pattern
+        damage = CalculatePct(caster->CalculateDamage(RANGED_ATTACK, true, true), GetSpellInfo()->Effects[EFFECT_1].CalcValue(caster));
+        damage += caster->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.724f;
+        damage += GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_hun_aimed_shot::CalculateDamage);
+    }
+};
+
+// 53301 - Explosive Shot
+class spell_hun_explosive_shot : public AuraScript
+{
+    void CalculateDamage(AuraEffect const* /*aurEff*/, Unit* /*victim*/, int32& /*damage*/, int32& flatMod, float& /*pctMod*/)
+    {
+        if (Unit* caster = GetCaster())
+            flatMod += caster->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.273f;
+    }
+
+    void Register() override
+    {
+        DoEffectCalcDamageAndHealing.Register(&spell_hun_explosive_shot::CalculateDamage, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+    }
+};
 }
 
 void AddSC_hunter_spell_scripts()
 {
     using namespace Spells::Hunter;
+    RegisterSpellScript(spell_hun_aimed_shot);
     RegisterSpellScript(spell_hun_ancient_hysteria);
     RegisterSpellScript(spell_hun_arcane_shot);
     RegisterSpellScript(spell_hun_camouflage);
@@ -1472,6 +1547,7 @@ void AddSC_hunter_spell_scripts()
     RegisterSpellScript(spell_hun_cobra_shot);
     RegisterSpellScript(spell_hun_crouching_tiger_hidden_chimera);
     RegisterSpellScript(spell_hun_disengage);
+    RegisterSpellScript(spell_hun_explosive_shot);
     RegisterSpellScript(spell_hun_fervor);
     RegisterSpellAndAuraScriptPair(spell_hun_focus_fire, spell_hun_focus_fire_AuraScript);
     RegisterSpellScript(spell_hun_frenzy_effect);
