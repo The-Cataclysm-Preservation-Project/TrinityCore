@@ -1354,6 +1354,23 @@ class spell_dk_reaping : public AuraScript
     }
 };
 
+// 45902 - Blood Strike
+class spell_dk_blood_strike : public SpellScript
+{
+    // Damage bonus per disease on the target
+    void CalculateDamage(Unit* victim, int32& /*damage*/, int32& /*flatMod*/, float& pctMod)
+    {
+        uint8 diseaseCount = victim->GetDiseasesByCaster(GetCaster()->GetGUID(), false);
+        float pctBonus = GetSpellInfo()->Effects[EFFECT_2].CalcValue(GetCaster()) / 10.0f * diseaseCount;
+        AddPct(pctMod, pctBonus);
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_dk_blood_strike::CalculateDamage);
+    }
+};
+
 class spell_dk_blood_rites : public AuraScript
 {
     void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
@@ -1880,6 +1897,42 @@ class spell_dk_icy_touch : public SpellScript
         CalcDamage.Register(&spell_dk_icy_touch::CalculateDamage);
     }
 };
+
+// 49020 - Obliterate
+// 66198 - Obliterate Off-Hand
+class spell_dk_obliterate : public SpellScript
+{
+    // Damage bonus per disease on the target
+    void CalculateDamage(Unit* victim, int32& /*damage*/, int32& /*flatMod*/, float& pctMod)
+    {
+        uint8 diseaseCount = victim->GetDiseasesByCaster(GetCaster()->GetGUID(), false);
+        float pctBonus = GetSpellInfo()->Effects[EFFECT_2].CalcValue(GetCaster()) / 2.0f * diseaseCount;
+        AddPct(pctMod, pctBonus);
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_dk_obliterate::CalculateDamage);
+    }
+};
+
+// 55050 - Heart Strike
+class spell_dk_heart_strike : public SpellScript
+{
+    // Damage bonus per disease on the target
+    void CalculateDamage(Unit* victim, int32& /*damage*/, int32& /*flatMod*/, float& pctMod)
+    {
+        uint8 diseaseCount = victim->GetDiseasesByCaster(GetCaster()->GetGUID(), false);
+        float pctBonus = GetSpellInfo()->Effects[EFFECT_2].CalcValue(GetCaster()) * diseaseCount;
+        AddPct(pctMod, pctBonus);
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_dk_heart_strike::CalculateDamage);
+    }
+};
+
 }
 
 void AddSC_deathknight_spell_scripts()
@@ -1890,6 +1943,7 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_army_of_the_dead);
     RegisterSpellScript(spell_dk_blood_boil);
     RegisterSpellScript(spell_dk_blood_gorged);
+    RegisterSpellScript(spell_dk_blood_strike);
     RegisterSpellScript(spell_dk_blood_rites);
     RegisterSpellScript(spell_dk_butchery);
     RegisterSpellScript(spell_dk_crimson_scourge);
@@ -1916,12 +1970,14 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_festering_strike);
     RegisterSpellScript(spell_dk_ghoul_explode);
     RegisterSpellScript(spell_dk_ghoul_taunt);
+    RegisterSpellScript(spell_dk_heart_strike);
     RegisterSpellScript(spell_dk_howling_blast);
     RegisterSpellScript(spell_dk_icebound_fortitude);
     RegisterSpellScript(spell_dk_icy_touch);
     RegisterSpellScript(spell_dk_improved_presence);
     RegisterSpellScript(spell_dk_killing_machine);
     RegisterSpellScript(spell_dk_necrotic_strike);
+    RegisterSpellScript(spell_dk_obliterate);
     RegisterSpellScript(spell_dk_pestilence);
     RegisterSpellScript(spell_dk_presence);
     RegisterSpellScript(spell_dk_raise_dead);
