@@ -1594,23 +1594,21 @@ class spell_dru_pulverize : public SpellScript
             });
     }
 
-    void CalculateDamage(Unit* victim, int32& damage, int32& flatMod, float& /*pctMod*/)
+    void CalculateDamage(Unit* victim, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
+        // Overriding the default damage calculation since the normalized weapon damage bonus scales
+        // with the amount of Lacerate stacks
+
         Unit* caster = GetCaster();
+        int32 weaponDamagePct = GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
+        int32 weaponDamage = CalculatePct(caster->CalculateDamage(BASE_ATTACK, true, true), weaponDamagePct);
+        damage = weaponDamage;
 
-        int32 normalizedWeaponDamage = GetSpellInfo()->Effects[EFFECT_2].CalcValue(caster);
-
-        // Subtract the normalized weapon damage bonus because it's not supposed to be used in the regular way
-        damage -= normalizedWeaponDamage;
-
+        // Damage bonus per application of Lacerate
         if (Aura* aura = victim->GetAura(SPELL_DRUID_LACERATE, caster->GetGUID()))
         {
-            // Damage bonus per application of Lacerate:
-            // ${$m3*$m1/100}
-            int32 weaponPctDamage = GetSpellInfo()->Effects[EFFECT_0].CalcValue(caster);
-            int32 lacerateBonus = CalculatePct(normalizedWeaponDamage, weaponPctDamage);
-
-            flatMod += lacerateBonus * aura->GetStackAmount();
+            int32 normalizedDamageBonus = GetSpellInfo()->Effects[EFFECT_2].CalcValue(caster);
+            damage += CalculatePct(normalizedDamageBonus, weaponDamagePct) * aura->GetStackAmount();
         }
     }
 
@@ -1903,15 +1901,14 @@ class spell_dru_nourish : public SpellScript
 // 6807 - Maul (Bear Form)
 class spell_dru_maul : public SpellScript
 {
-    void HandleDamage(SpellEffIndex /*effIndex*/)
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
-        int32 damage = 35 + GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.19f - 1;
-        SetEffectValue(damage);
+        damage = 35 + GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.19f -1;
     }
 
     void Register() override
     {
-        OnEffectLaunchTarget.Register(&spell_dru_maul::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        CalcDamage.Register(&spell_dru_maul::CalculateDamage);
     }
 };
 

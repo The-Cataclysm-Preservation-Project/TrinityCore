@@ -616,42 +616,6 @@ class spell_dk_ghoul_explode : public SpellScript
     }
 };
 
-// 48792 - Icebound Fortitude
-class spell_dk_icebound_fortitude : public AuraScript
-{
-    bool Load() override
-    {
-        Unit* caster = GetCaster();
-        return caster && caster->GetTypeId() == TYPEID_PLAYER;
-    }
-
-    void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
-    {
-        if (Unit* caster = GetCaster())
-        {
-            int32 value = amount;
-            uint32 defValue = uint32(caster->ToPlayer()->GetSkillValue(SKILL_DEFENSE) + caster->ToPlayer()->GetRatingBonusValue(CR_DEFENSE_SKILL));
-
-            if (defValue > 400)
-                value -= int32((defValue - 400) * 0.15);
-
-            // Glyph of Icebound Fortitude
-            if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_DK_GLYPH_OF_ICEBOUND_FORTITUDE, EFFECT_0))
-            {
-                int32 valMax = -aurEff->GetAmount();
-                if (value > valMax)
-                    value = valMax;
-            }
-            amount = value;
-        }
-    }
-
-    void Register() override
-    {
-        DoEffectCalcAmount.Register(&spell_dk_icebound_fortitude::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN);
-    }
-};
-
 // 73975 - Necrotic Strike
 class spell_dk_necrotic_strike : public AuraScript
 {
@@ -1933,6 +1897,23 @@ class spell_dk_heart_strike : public SpellScript
     }
 };
 
+// 50463 - Blood-Caked Strike
+class spell_dk_blood_caked_strike : public SpellScript
+{
+    // Damage bonus per disease on the target
+    void CalculateDamage(Unit* victim, int32& /*damage*/, int32& /*flatMod*/, float& pctMod)
+    {
+        uint8 diseaseCount = victim->GetDiseasesByCaster(GetCaster()->GetGUID(), false);
+        float pctBonus = GetSpellInfo()->Effects[EFFECT_0].CalcValue(GetCaster()) / 2.0f * diseaseCount;
+        AddPct(pctMod, pctBonus);
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_dk_blood_caked_strike::CalculateDamage);
+    }
+};
+
 }
 
 void AddSC_deathknight_spell_scripts()
@@ -1942,6 +1923,7 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_anti_magic_zone);
     RegisterSpellScript(spell_dk_army_of_the_dead);
     RegisterSpellScript(spell_dk_blood_boil);
+    RegisterSpellScript(spell_dk_blood_caked_strike);
     RegisterSpellScript(spell_dk_blood_gorged);
     RegisterSpellScript(spell_dk_blood_strike);
     RegisterSpellScript(spell_dk_blood_rites);
@@ -1972,7 +1954,6 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_ghoul_taunt);
     RegisterSpellScript(spell_dk_heart_strike);
     RegisterSpellScript(spell_dk_howling_blast);
-    RegisterSpellScript(spell_dk_icebound_fortitude);
     RegisterSpellScript(spell_dk_icy_touch);
     RegisterSpellScript(spell_dk_improved_presence);
     RegisterSpellScript(spell_dk_killing_machine);
