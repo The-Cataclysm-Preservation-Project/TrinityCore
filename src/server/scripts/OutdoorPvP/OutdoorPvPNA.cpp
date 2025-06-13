@@ -45,7 +45,6 @@ uint32 const FlightPathEndNodes[FLIGHT_NODES_NUM] = { 104, 106, 108, 110 };
 OutdoorPvPNA::OutdoorPvPNA(Map* map) : OutdoorPvP(map)
 {
     m_TypeId = OUTDOOR_PVP_NA;
-    m_obj = nullptr;
 }
 
 void OutdoorPvPNA::OnGameObjectCreate(GameObject* go)
@@ -54,7 +53,7 @@ void OutdoorPvPNA::OnGameObjectCreate(GameObject* go)
     {
         case 182210:
             m_obj->m_capturePointSpawnId = go->GetSpawnId();
-            AddCapturePoint(m_obj);
+            AddCapturePoint(m_obj.get());
             break;
     }
 
@@ -137,6 +136,8 @@ OPvPCapturePointNA::OPvPCapturePointNA(OutdoorPvP* pvp) : OPvPCapturePoint(pvp),
     SetCapturePointData(182210);
 }
 
+OPvPCapturePointNA::~OPvPCapturePointNA() = default;
+
 bool OutdoorPvPNA::SetupOutdoorPvP()
 {
 //    m_TypeId = OUTDOOR_PVP_NA; _MUST_ be set in ctor, because of spawns cleanup
@@ -144,7 +145,7 @@ bool OutdoorPvPNA::SetupOutdoorPvP()
     RegisterZone(NA_BUFF_ZONE);
 
     // halaa
-    m_obj = new OPvPCapturePointNA(this);
+    m_obj = std::make_unique<OPvPCapturePointNA>(this);
 
     return true;
 }

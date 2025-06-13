@@ -131,6 +131,7 @@ class OPvPCapturePointNA : public OPvPCapturePoint
 {
     public:
         OPvPCapturePointNA(OutdoorPvP* pvp);
+        ~OPvPCapturePointNA();
 
         bool Update(uint32 diff) override;
         void ChangeState() override;
@@ -171,7 +172,7 @@ class OutdoorPvPNA : public OutdoorPvP
         void HandleKillImpl(Player* player, Unit* killed) override;
 
     private:
-        OPvPCapturePointNA * m_obj;
+        std::unique_ptr<OPvPCapturePointNA> m_obj;
 };
 }
 

@@ -154,6 +154,7 @@ class OutdoorPvPZM : public OutdoorPvP
 {
     public:
         OutdoorPvPZM(Map* map);
+        ~OutdoorPvPZM();
 
         bool SetupOutdoorPvP() override;
         void OnGameObjectCreate(GameObject* go) override;
@@ -168,7 +169,7 @@ class OutdoorPvPZM : public OutdoorPvP
         void SetHordeTowersControlled(uint32 count);
 
     private:
-        OPvPCapturePointZM_Graveyard * m_Graveyard;
+        std::unique_ptr<OPvPCapturePointZM_Graveyard> m_Graveyard;
 
         uint32 m_AllianceTowersControlled;
         uint32 m_HordeTowersControlled;
