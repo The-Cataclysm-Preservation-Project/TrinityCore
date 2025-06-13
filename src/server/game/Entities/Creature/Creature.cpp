@@ -292,6 +292,8 @@ m_formation(nullptr), m_triggerJustAppeared(true), m_respawnCompatibilityMode(fa
     m_isTempWorldObject = false;
 }
 
+Creature::~Creature() = default;
+
 void Creature::AddToWorld()
 {
     ///- Register the creature for guid lookup
