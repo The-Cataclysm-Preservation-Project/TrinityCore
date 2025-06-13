@@ -38,6 +38,26 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
+Item::Item()
+{
+    m_objectType |= TYPEMASK_ITEM;
+    m_objectTypeId = TYPEID_ITEM;
+
+    m_valuesCount = ITEM_END;
+    m_slot = 0;
+    uState = ITEM_NEW;
+    uQueuePos = -1;
+    m_container = nullptr;
+    m_lootGenerated = false;
+    mb_in_trade = false;
+
+    m_refundRecipient = 0;
+    m_paidMoney = 0;
+    m_paidExtendedCost = 0;
+}
+
+Item::~Item() = default;
+
 void AddItemsSetItem(Player* player, Item* item)
 {
     ItemTemplate const* proto = item->GetTemplate();
@@ -246,24 +266,6 @@ bool ItemCanGoIntoBag(ItemTemplate const* pProto, ItemTemplate const* pBagProto)
             }
     }
     return false;
-}
-
-Item::Item()
-{
-    m_objectType |= TYPEMASK_ITEM;
-    m_objectTypeId = TYPEID_ITEM;
-
-    m_valuesCount = ITEM_END;
-    m_slot = 0;
-    uState = ITEM_NEW;
-    uQueuePos = -1;
-    m_container = nullptr;
-    m_lootGenerated = false;
-    mb_in_trade = false;
-
-    m_refundRecipient = 0;
-    m_paidMoney = 0;
-    m_paidExtendedCost = 0;
 }
 
 bool Item::Create(ObjectGuid::LowType guidlow, uint32 itemId, Player const* owner)

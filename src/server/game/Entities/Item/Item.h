@@ -64,10 +64,11 @@ class TC_GAME_API Item : public Object
     friend void RemoveItemFromUpdateQueueOf(Item* item, Player* player);
 
     public:
+        Item();
+        ~Item();
+
         static Item* CreateItem(uint32 itemEntry, uint32 count, Player const* player = nullptr);
         Item* CloneItem(uint32 count, Player const* player = nullptr) const;
-
-        Item();
 
         virtual bool Create(ObjectGuid::LowType guidlow, uint32 itemId, Player const* owner);
 
