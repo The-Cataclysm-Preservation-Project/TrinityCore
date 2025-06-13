@@ -2583,7 +2583,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         /// Updates weekly conquest point cap (dynamic cap)
         void UpdateConquestCurrencyCap(uint32 currency);
 
-        std::array<VoidStorageItem*, VOID_STORAGE_MAX_SLOT> _voidStorageItems;
+        std::array<std::unique_ptr<VoidStorageItem>, VOID_STORAGE_MAX_SLOT> _voidStorageItems;
 
         std::vector<Item*> m_itemUpdateQueue;
         bool m_itemUpdateQueueBlocked;

@@ -344,8 +344,6 @@ Player::Player(WorldSession* session): Unit(true)
 
     _maxPersonalArenaRate = 0;
 
-    _voidStorageItems.fill(nullptr);
-
     _cinematicMgr = std::make_unique<CinematicMgr>(this);
     m_achievementMgr = std::make_unique<AchievementMgr<Player>>(this);
     m_reputationMgr = std::make_unique<ReputationMgr>(this);
@@ -372,9 +370,6 @@ Player::~Player()
 
     for (size_t x = 0; x < ItemSetEff.size(); x++)
         delete ItemSetEff[x];
-
-    for (size_t i = 0; i < _voidStorageItems.size(); ++i)
-        delete _voidStorageItems[i];
 
     for (uint8 i = 0; i < PlayerPetDataStore.size(); i++)
         delete PlayerPetDataStore[i];
@@ -17552,7 +17547,7 @@ void Player::_LoadVoidStorage(PreparedQueryResult result)
             creatorGuid.Clear();
         }
 
-        _voidStorageItems[slot] = new VoidStorageItem(itemId, itemEntry, creatorGuid, randomProperty, suffixFactor);
+        _voidStorageItems[slot] = std::make_unique<VoidStorageItem>(itemId, itemEntry, creatorGuid, randomProperty, suffixFactor);
     }
     while (result->NextRow());
 }
@@ -27063,7 +27058,7 @@ uint8 Player::AddVoidStorageItem(VoidStorageItem const& item)
         return 255;
     }
 
-    _voidStorageItems[slot] = new VoidStorageItem(item.ItemId, item.ItemEntry,
+    _voidStorageItems[slot] = std::make_unique<VoidStorageItem>(item.ItemId, item.ItemEntry,
         item.CreatorGuid, item.ItemRandomPropertyId, item.ItemSuffixFactor);
     return slot;
 }
@@ -27083,7 +27078,7 @@ void Player::AddVoidStorageItemAtSlot(uint8 slot, const VoidStorageItem& item)
         return;
     }
 
-    _voidStorageItems[slot] = new VoidStorageItem(item.ItemId, item.ItemId,
+    _voidStorageItems[slot] = std::make_unique<VoidStorageItem>(item.ItemId, item.ItemId,
         item.CreatorGuid, item.ItemRandomPropertyId, item.ItemSuffixFactor);
 }
 
@@ -27095,7 +27090,6 @@ void Player::DeleteVoidStorageItem(uint8 slot)
         return;
     }
 
-    delete _voidStorageItems[slot];
     _voidStorageItems[slot] = nullptr;
 }
 
@@ -27116,7 +27110,7 @@ VoidStorageItem* Player::GetVoidStorageItem(uint8 slot) const
         return nullptr;
     }
 
-    return _voidStorageItems[slot];
+    return _voidStorageItems[slot].get();
 }
 
 VoidStorageItem* Player::GetVoidStorageItem(uint64 id, uint8& slot) const
@@ -27126,7 +27120,7 @@ VoidStorageItem* Player::GetVoidStorageItem(uint64 id, uint8& slot) const
         if (_voidStorageItems[i] && _voidStorageItems[i]->ItemId == id)
         {
             slot = i;
-            return _voidStorageItems[i];
+            return _voidStorageItems[i].get();
         }
     }
 
