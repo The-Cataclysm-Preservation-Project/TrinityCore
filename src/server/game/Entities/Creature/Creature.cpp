@@ -585,7 +585,7 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
 
     SetFaction(cInfo->faction);
 
-    uint32 npcflags, unitFlags, unitFlags2;
+    uint32 npcflags = 0, unitFlags = 0, unitFlags2 = 0;
     ObjectMgr::ChooseCreatureFlags(cInfo, &npcflags, &unitFlags, &unitFlags2, _staticFlags, data);
 
     if (cInfo->flags_extra & CREATURE_FLAG_EXTRA_WORLDEVENT)
@@ -1989,10 +1989,10 @@ void Creature::setDeathState(DeathState s)
         if (!IsPet())
         {
             CreatureData const* creatureData = GetCreatureData();
-            CreatureTemplate const* cinfo = GetCreatureTemplate();
+            CreatureTemplate const* cInfo = GetCreatureTemplate();
 
-            uint32 npcflag, unitFlags, unitFlags2;
-            ObjectMgr::ChooseCreatureFlags(cinfo, &npcflag, &unitFlags, &unitFlags2, _staticFlags, creatureData);
+            uint32 npcflag = 0, unitFlags = 0, unitFlags2 = 0;
+            ObjectMgr::ChooseCreatureFlags(cInfo, &npcflag, &unitFlags, &unitFlags2, _staticFlags, creatureData);
 
             SetUInt32Value(UNIT_NPC_FLAGS, npcflag);
             SetUInt32Value(UNIT_FIELD_FLAGS, unitFlags);
@@ -2001,7 +2001,7 @@ void Creature::setDeathState(DeathState s)
 
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 
-            SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
+            SetMeleeDamageSchool(SpellSchools(cInfo->dmgschool));
         }
 
         Motion_Initialize();

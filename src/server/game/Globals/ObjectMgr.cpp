@@ -1601,34 +1601,30 @@ void ObjectMgr::ChooseCreatureFlags(CreatureTemplate const* cInfo, uint32* npcFl
 {
 #define ChooseCreatureFlagSource(field) ((data && data->field.has_value()) ? *data->field : cInfo->field)
 
-    if (data)
+    if (npcFlags)
+        *npcFlags = ChooseCreatureFlagSource(npcflag);
+
+    if (unitFlags)
     {
-        if (npcFlags)
-            *npcFlags = ChooseCreatureFlagSource(npcflag);
+        *unitFlags = ChooseCreatureFlagSource(unit_flags);
 
-        if (unitFlags)
-        {
-            *unitFlags = ChooseCreatureFlagSource(unit_flags);
+        if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_CAN_SWIM))
+            *unitFlags |= UNIT_FLAG_CAN_SWIM;
 
-            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_CAN_SWIM))
-                *unitFlags |= UNIT_FLAG_CAN_SWIM;
-
-            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_SWIM))
-                *unitFlags |= UNIT_FLAG_CANT_SWIM;
-        }
-
-        if (unitFlags2)
-        {
-            *unitFlags2 = ChooseCreatureFlagSource(unit_flags2);
-
-            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_TURN))
-                *unitFlags2 |= UNIT_FLAG2_CANNOT_TURN;
-
-            if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_4_PREVENT_SWIM))
-                *unitFlags2 |= UNIT_FLAG2_AI_WILL_ONLY_SWIM_IF_TARGET_SWIMS;
-        }
+        if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_SWIM))
+            *unitFlags |= UNIT_FLAG_CANT_SWIM;
     }
 
+    if (unitFlags2)
+    {
+        *unitFlags2 = ChooseCreatureFlagSource(unit_flags2);
+
+        if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_3_CANNOT_TURN))
+            *unitFlags2 |= UNIT_FLAG2_CANNOT_TURN;
+
+        if (staticFlags.HasFlag(CREATURE_STATIC_FLAG_4_PREVENT_SWIM))
+            *unitFlags2 |= UNIT_FLAG2_AI_WILL_ONLY_SWIM_IF_TARGET_SWIMS;
+    }
 
 #undef ChooseCreatureFlagSource
 }
@@ -2094,7 +2090,7 @@ void ObjectMgr::LoadCreatures()
         CreatureData& data = _creatureDataStore[guid];
         data.spawnId        = guid;
         data.id             = entry;
-        data.mapId = fields[2].GetUInt16();
+        data.mapId          = fields[2].GetUInt16();
         data.spawnPoint.Relocate(fields[3].GetFloat(), fields[4].GetFloat(), fields[5].GetFloat(), fields[6].GetFloat());
         data.displayid      = fields[7].GetUInt32();
         data.equipmentId    = fields[8].GetInt8();
@@ -2108,7 +2104,7 @@ void ObjectMgr::LoadCreatures()
         int16 gameEvent     = fields[16].GetInt8();
         data.poolId         = fields[17].GetUInt32();
         if (!fields[18].IsNull())
-            data.npcflag = fields[18].GetUInt64();
+            data.npcflag = fields[18].GetUInt32();
         if (!fields[19].IsNull())
             data.unit_flags = fields[19].GetUInt32();
         if (!fields[20].IsNull())
