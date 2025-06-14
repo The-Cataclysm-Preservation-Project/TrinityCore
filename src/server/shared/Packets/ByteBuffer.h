@@ -158,28 +158,61 @@ class TC_SHARED_API ByteBuffer
 
         bool ReadBit()
         {
-            ++_bitpos;
-            if (_bitpos > 7)
+            if (_bitpos >= 8)
             {
+                read(&_curbitval, 1);
                 _bitpos = 0;
-                _curbitval = read<uint8>();
             }
 
-            return ((_curbitval >> (7-_bitpos)) & 1) != 0;
+            return ((_curbitval >> (8 - ++_bitpos)) & 1) != 0;
         }
 
-        template <typename T> void WriteBits(T value, size_t bits)
+        void WriteBits(uint64 value, int32 bits)
         {
-            for (int32 i = bits-1; i >= 0; --i)
-                WriteBit((value >> i) & 1);
+            // remove bits that don't fit
+            value &= (1 << bits) - 1;
+            value &= (UI64LIT(1) << bits) - 1;
+
+            if (bits > int32(_bitpos))
+            {
+                // first write to fill bit buffer
+                _curbitval |= value >> (bits - _bitpos);
+                bits -= _bitpos;
+                _bitpos = 8; // required "unneccessary" write to avoid double flushing
+                append(&_curbitval, sizeof(_curbitval));
+
+                // then append as many full bytes as possible
+                while (bits >= 8)
+                {
+                    bits -= 8;
+                    append<uint8>(value >> bits);
+                }
+
+                // store remaining bits in the bit buffer
+                _bitpos = 8 - bits;
+                _curbitval = (value & ((1 << bits) - 1)) << _bitpos;
+                _curbitval = (value & ((UI64LIT(1) << bits) - 1)) << _bitpos;
+            }
+            else
+            {
+                // entire value fits in the bit buffer
+                _bitpos -= bits;
+                _curbitval |= value << _bitpos;
+
+                if (_bitpos == 0)
+                {
+                    _bitpos = 8;
+                    append(&_curbitval, sizeof(_curbitval));
+                    _curbitval = 0;
+                }
+            }
         }
 
-        uint32 ReadBits(size_t bits)
+        uint32 ReadBits(int32 bits)
         {
             uint32 value = 0;
-            for (int32 i = bits-1; i >= 0; --i)
-                if (ReadBit())
-                    value |= (1 << (i));
+            for (int32 i = bits - 1; i >= 0; --i)
+                value |= uint32(ReadBit()) << i;
 
             return value;
         }
@@ -217,24 +250,7 @@ class TC_SHARED_API ByteBuffer
           * @param  value Data to write.
           * @param  bitCount Number of bits to store the value on.
         */
-        template <typename T> void PutBits(size_t pos, T value, uint32 bitCount)
-        {
-            if (!bitCount)
-                throw ByteBufferSourceException((pos + bitCount) / 8, size(), 0);
-
-            if (pos + bitCount > size() * 8)
-                throw ByteBufferPositionException(false, (pos + bitCount) / 8, size(), (bitCount - 1) / 8 + 1);
-
-            for (uint32 i = 0; i < bitCount; ++i)
-            {
-                size_t wp = (pos + i) / 8;
-                size_t bit = (pos + i) % 8;
-                if ((value >> (bitCount - i - 1)) & 1)
-                    _storage[wp] |= 1 << (7 - bit);
-                else
-                    _storage[wp] &= ~(1 << (7 - bit));
-            }
-        }
+        void PutBits(std::size_t pos, std::size_t value, uint32 bitCount);
 
         ByteBuffer& operator<<(bool value)
         {

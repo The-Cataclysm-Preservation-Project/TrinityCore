@@ -127,6 +127,22 @@ void ByteBuffer::put(size_t pos, uint8 const* src, size_t cnt)
     std::memcpy(&_storage[pos], src, cnt);
 }
 
+void ByteBuffer::PutBits(std::size_t pos, std::size_t value, uint32 bitCount)
+{
+    ASSERT(pos + bitCount <= size() * 8, "Attempted to put %u bits in ByteBuffer (bitpos: " SZFMTD " size: " SZFMTD ")", bitCount, pos, size());
+    ASSERT(bitCount, "Attempted to put a zero bits in ByteBuffer");
+
+    for (uint32 i = 0; i < bitCount; ++i)
+    {
+        std::size_t wp = (pos + i) / 8;
+        std::size_t bit = (pos + i) % 8;
+        if ((value >> (bitCount - i - 1)) & 1)
+            _storage[wp] |= 1 << (7 - bit);
+        else
+            _storage[wp] &= ~(1 << (7 - bit));
+    }
+}
+
 void ByteBuffer::print_storage() const
 {
     if (!sLog->ShouldLog("network", LOG_LEVEL_TRACE)) // optimize disabled trace output
