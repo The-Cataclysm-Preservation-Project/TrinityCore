@@ -70,8 +70,8 @@ StormLib (a pack of modules, written in C++, which are able to read and also to 
   Version: 8.04
 
 utf8-cpp (UTF-8 with C++ in a Portable Way)
-  http://utfcpp.sourceforge.net/
-  Version: 2.3.4
+  https://github.com/nemtrif/utfcpp
+  Version: 3.2.3
 
 zlib (A Massively Spiffy Yet Delicately Unobtrusive Compression Library)
   http://www.zlib.net/
