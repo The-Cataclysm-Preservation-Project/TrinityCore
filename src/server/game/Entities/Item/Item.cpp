@@ -76,45 +76,43 @@ void AddItemsSetItem(Player* player, Item* item)
 
     ItemSetEffect* eff = nullptr;
 
-    for (size_t x = 0; x < player->ItemSetEff.size(); ++x)
+    // Check for existing effects (equipping an additional set item)
+    for (std::unique_ptr<ItemSetEffect> const& itemSetEffect : player->ItemSetEff)
     {
-        if (player->ItemSetEff[x] && player->ItemSetEff[x]->setid == setid)
-        {
-            eff = player->ItemSetEff[x];
-            break;
-        }
-    }
-
-    if (!eff)
-    {
-        eff = new ItemSetEffect();
-        eff->setid = setid;
-
-        size_t x = 0;
-        for (; x < player->ItemSetEff.size(); ++x)
-            if (!player->ItemSetEff[x])
-                break;
-
-        if (x < player->ItemSetEff.size())
-            player->ItemSetEff[x]=eff;
-        else
-            player->ItemSetEff.push_back(eff);
-    }
-
-    ++eff->item_count;
-
-    for (uint32 x = 0; x < MAX_ITEM_SET_SPELLS; ++x)
-    {
-        if (!set->SetSpellID[x])
+        if (!itemSetEffect || itemSetEffect->setid != setid)
             continue;
 
-        //not enough for  spell
-        if (set->SetThreshold[x] > eff->item_count)
+        eff = itemSetEffect.get();
+        break;
+    }
+
+    // No effect found, create new one (first set item equipped)
+    if (!eff)
+    {
+        std::unique_ptr<ItemSetEffect> itemSetEffect = std::make_unique<ItemSetEffect>();
+        itemSetEffect->setid = setid;
+
+        eff = itemSetEffect.get();
+
+        player->ItemSetEff.push_back(std::move(itemSetEffect));
+    }
+
+    // increment the amount of set items
+    ++eff->item_count;
+
+    for (uint8 i = 0; i < MAX_ITEM_SET_SPELLS; ++i)
+    {
+        // Check for a set spell Id
+        if (!set->SetSpellID[i])
+            continue;
+
+        // Check if we are wearing enough set pieces to for the bonus
+        if (set->SetThreshold[i] > eff->item_count)
             continue;
 
         uint32 z = 0;
         for (; z < MAX_ITEM_SET_SPELLS; ++z)
-            if (eff->spells[z] && eff->spells[z]->Id == set->SetSpellID[x])
+            if (eff->spells[z] && eff->spells[z]->Id == set->SetSpellID[i])
                 break;
 
         if (z < MAX_ITEM_SET_SPELLS)
@@ -125,10 +123,10 @@ void AddItemsSetItem(Player* player, Item* item)
         {
             if (!eff->spells[y])                             // free slot
             {
-                SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(set->SetSpellID[x]);
+                SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(set->SetSpellID[i]);
                 if (!spellInfo)
                 {
-                    TC_LOG_ERROR("entities.player.items", "WORLD: unknown spell id %u in items set %u effects", set->SetSpellID[x], setid);
+                    TC_LOG_ERROR("entities.player.items", "WORLD: unknown spell id %u in items set %u effects", set->SetSpellID[i], setid);
                     break;
                 }
 
@@ -141,7 +139,7 @@ void AddItemsSetItem(Player* player, Item* item)
     }
 }
 
-void RemoveItemsSetItem(Player*player, ItemTemplate const* proto)
+void RemoveItemsSetItem(Player* player, ItemTemplate const* proto)
 {
     uint32 setid = proto->GetItemSet();
 
@@ -154,14 +152,17 @@ void RemoveItemsSetItem(Player*player, ItemTemplate const* proto)
     }
 
     ItemSetEffect* eff = nullptr;
-    size_t setindex = 0;
-    for (; setindex < player->ItemSetEff.size(); setindex++)
+    size_t setIndex = 0;
+    for (std::unique_ptr<ItemSetEffect> const& itemSetEffect :  player->ItemSetEff)
     {
-        if (player->ItemSetEff[setindex] && player->ItemSetEff[setindex]->setid == setid)
+        if (itemSetEffect->setid != setid)
         {
-            eff = player->ItemSetEff[setindex];
-            break;
+            ++setIndex;
+            continue;
         }
+
+        eff = itemSetEffect.get();
+        break;
     }
 
     // can be in case now enough skill requirement for set appling but set has been appliend when skill requirement not enough
@@ -191,11 +192,10 @@ void RemoveItemsSetItem(Player*player, ItemTemplate const* proto)
         }
     }
 
-    if (!eff->item_count)                                    //all items of a set were removed
+    if (!eff->item_count) // all items of a set were removed
     {
-        ASSERT(eff == player->ItemSetEff[setindex]);
-        delete eff;
-        player->ItemSetEff[setindex] = nullptr;
+        ASSERT(eff == player->ItemSetEff[setIndex].get());
+        player->ItemSetEff.erase(player->ItemSetEff.begin() + setIndex);
     }
 }
 

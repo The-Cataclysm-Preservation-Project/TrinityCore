@@ -2088,7 +2088,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SendAurasForTarget(Unit* target) const;
 
         std::unique_ptr<PlayerMenu> PlayerTalkClass;
-        std::vector<ItemSetEffect*> ItemSetEff;
+        std::vector<std::unique_ptr<ItemSetEffect>> ItemSetEff;
 
         void SendLoot(ObjectGuid guid, LootType loot_type);
         void SendLootError(ObjectGuid guid, LootError error) const;
@@ -2416,7 +2416,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         Optional<uint8> GetFirstUnusedActivePetSlot();
         Optional<uint8> GetFirstUnusedPetSlot();
         void DeleteFromPlayerPetDataStore(uint32 petNumber);
-        void AddToPlayerPetDataStore(PlayerPetData* playerPetData);
+        void AddToPlayerPetDataStore(std::unique_ptr<PlayerPetData> playerPetData);
 
     protected:
         // Gamemaster whisper whitelist
@@ -2784,7 +2784,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         std::unique_ptr<Archaeology> _archaeology;
 
-        std::vector<PlayerPetData*> PlayerPetDataStore;
+        std::vector<std::unique_ptr<PlayerPetData>> PlayerPetDataStore;
 
         TimeTrackerSmall m_petScalingSynchTimer;
 };

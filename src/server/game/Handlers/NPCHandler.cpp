@@ -325,7 +325,7 @@ void WorldSession::SendStablePet(ObjectGuid guid)
     data << uint8(_player->PlayerPetDataStore.size());
     data << uint8(PET_SLOT_LAST_STABLE_SLOT); // Stable Slots
 
-    for (PlayerPetData* p : _player->PlayerPetDataStore)
+    for (std::unique_ptr<PlayerPetData> const& p : _player->PlayerPetDataStore)
     {
         uint32 petSlot = p->Slot;
         uint8 flags = PET_STABLE_ACTIVE;

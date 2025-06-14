@@ -373,6 +373,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
     CharacterDatabase.CommitTransaction(trans);
 
     PlayerPetData* playerPetData = GetOwner()->GetPlayerPetDataById(m_charmInfo->GetPetNumber());
+    std::unique_ptr<PlayerPetData> newPlayerPetData; // used when creating a new pet
 
     // save as new if no data for Pet in PlayerPetDataStore
     if (mode < PET_SAVE_NEW_PET && !playerPetData)
@@ -385,7 +386,8 @@ void Pet::SavePetToDB(PetSaveMode mode)
         if (slot)
         {
             SetSlot(*slot);
-            playerPetData = new PlayerPetData();
+            newPlayerPetData = std::make_unique<PlayerPetData>();
+            playerPetData = newPlayerPetData.get();
         }
         else
             mode = PET_SAVE_AS_DELETED;
@@ -455,9 +457,8 @@ void Pet::SavePetToDB(PetSaveMode mode)
         playerPetData->SummonSpellId = GetUInt32Value(UNIT_CREATED_BY_SPELL);
         playerPetData->Type = getPetType();
 
-        if (mode == PET_SAVE_NEW_PET)
-            GetOwner()->AddToPlayerPetDataStore(playerPetData);
-
+        if (mode == PET_SAVE_NEW_PET && newPlayerPetData)
+            GetOwner()->AddToPlayerPetDataStore(std::move(newPlayerPetData));
     }
     // delete
     else

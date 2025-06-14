@@ -368,12 +368,6 @@ Player::~Player()
     for (ItemMap::iterator iter = mMitems.begin(); iter != mMitems.end(); ++iter)
         delete iter->second;                                //if item is duplicated... then server may crash ... but that item should be deallocated
 
-    for (size_t x = 0; x < ItemSetEff.size(); x++)
-        delete ItemSetEff[x];
-
-    for (uint8 i = 0; i < PlayerPetDataStore.size(); i++)
-        delete PlayerPetDataStore[i];
-
     ClearResurrectRequestData();
 
     sWorld->DecreasePlayerCount();
@@ -7794,20 +7788,18 @@ void Player::UpdateEquipSpellsAtFormChange()
     }
 
     // item set bonuses not dependent from item broken state
-    for (size_t setindex = 0; setindex < ItemSetEff.size(); ++setindex)
+    for (std::unique_ptr<ItemSetEffect> const& itemEffect : ItemSetEff)
     {
-        ItemSetEffect* eff = ItemSetEff[setindex];
-        if (!eff)
+        if (!itemEffect)
             continue;
 
-        for (uint32 y = 0; y < MAX_ITEM_SET_SPELLS; ++y)
+        for (uint8 i = 0; i < MAX_ITEM_SET_SPELLS; ++i)
         {
-            SpellInfo const* spellInfo = eff->spells[y];
-            if (!spellInfo)
-                continue;
-
-            ApplyEquipSpell(spellInfo, nullptr, false, true);       // remove spells that not fit to form
-            ApplyEquipSpell(spellInfo, nullptr, true, true);        // add spells that fit form but not active
+            if (SpellInfo const* spellInfo = itemEffect->spells[i])
+            {
+                ApplyEquipSpell(spellInfo, nullptr, false, true);       // remove spells that not fit to form
+                ApplyEquipSpell(spellInfo, nullptr, true, true);        // add spells that fit form but not active
+            }
         }
     }
 }
@@ -17804,7 +17796,7 @@ void Player::LoadPetsFromDB(PreparedQueryResult result)
     {
         Field* fields = result->Fetch();
 
-        PlayerPetData* playerPetData = new PlayerPetData();
+        std::unique_ptr<PlayerPetData> playerPetData = std::make_unique<PlayerPetData>();
 
         uint8 slot = fields[7].GetUInt8();
         uint32 petId = fields[0].GetUInt32();
@@ -17833,43 +17825,51 @@ void Player::LoadPetsFromDB(PreparedQueryResult result)
         playerPetData->SummonSpellId = fields[15].GetUInt32();
         playerPetData->Type          = PetType(fields[16].GetUInt8());
 
-        PlayerPetDataStore.push_back(playerPetData);
+        PlayerPetDataStore.push_back(std::move(playerPetData));
 
     } while (result->NextRow());
 }
 
 PlayerPetData* Player::GetPlayerPetDataById(uint32 petId)
 {
-    for (PlayerPetData* p : PlayerPetDataStore)
-        if (p->PetId == petId)
-            return p;
+    for (std::unique_ptr<PlayerPetData> const& petData : PlayerPetDataStore)
+    {
+        if (petData->PetId == petId)
+            return petData.get();
+    }
 
     return nullptr;
 }
 
 PlayerPetData* Player::GetPlayerPetDataBySlot(uint8 slot)
 {
-    for (PlayerPetData* p : PlayerPetDataStore)
-        if (p->Slot == slot)
-            return p;
+    for (std::unique_ptr<PlayerPetData> const& petData : PlayerPetDataStore)
+    {
+        if (petData->Slot == slot)
+            return petData.get();
+    }
 
     return nullptr;
 }
 
 PlayerPetData* Player::GetPlayerPetDataByCreatureId(uint32 creatureId)
 {
-    for (PlayerPetData* p : PlayerPetDataStore)
-        if (p->CreatureId == creatureId)
-            return p;
+    for (std::unique_ptr<PlayerPetData> const& petData : PlayerPetDataStore)
+    {
+        if (petData->CreatureId == creatureId)
+            return petData.get();
+    }
 
     return nullptr;
 }
 
 PlayerPetData* Player::GetPlayerPetDataCurrent()
 {
-    for (PlayerPetData* p : PlayerPetDataStore)
-        if (p->Active == true)
-            return p;
+    for (std::unique_ptr<PlayerPetData> const& petData : PlayerPetDataStore)
+    {
+        if (petData->Active)
+            return petData.get();
+    }
 
     return nullptr;
 }
@@ -17878,9 +17878,11 @@ Optional<uint8> Player::GetFirstUnusedActivePetSlot()
 {
     std::set<uint8> unusedActiveSlot = { 0, 1, 2, 3, 4 }; //unfiltered
 
-    for (PlayerPetData* p : PlayerPetDataStore)
-        if (unusedActiveSlot.find(p->Slot) != unusedActiveSlot.end())
-            unusedActiveSlot.erase(p->Slot);
+    for (std::unique_ptr<PlayerPetData> const& petData : PlayerPetDataStore)
+    {
+        if (unusedActiveSlot.find(petData->Slot) != unusedActiveSlot.end())
+            unusedActiveSlot.erase(petData->Slot);
+    }
 
     if (!unusedActiveSlot.empty())
         return *unusedActiveSlot.begin();
@@ -17895,9 +17897,11 @@ Optional<uint8> Player::GetFirstUnusedPetSlot()
     for (uint8 i = 0; i < PET_SLOT_LAST; i++) // 4 MAX StableSlots (256 theoretically)
         unusedSlot.insert(i);
 
-    for (PlayerPetData* p : PlayerPetDataStore)
-        if (unusedSlot.find(p->Slot) != unusedSlot.end())
-            unusedSlot.erase(p->Slot);
+    for (std::unique_ptr<PlayerPetData> const& petData : PlayerPetDataStore)
+    {
+        if (unusedSlot.find(petData->Slot) != unusedSlot.end())
+            unusedSlot.erase(petData->Slot);
+    }
 
     if (!unusedSlot.empty())
         return *unusedSlot.begin();
@@ -17910,16 +17914,13 @@ void Player::DeleteFromPlayerPetDataStore(uint32 petNumber)
     for (uint8 i = 0; i < PlayerPetDataStore.size(); ++i)
     {
         if (PlayerPetDataStore[i]->PetId == petNumber)
-        {
-            delete PlayerPetDataStore[i];
             PlayerPetDataStore.erase(PlayerPetDataStore.begin() + (i--));
-        }
     }
 }
 
-void Player::AddToPlayerPetDataStore(PlayerPetData* playerPetData)
+void Player::AddToPlayerPetDataStore(std::unique_ptr<PlayerPetData> playerPetData)
 {
-    PlayerPetDataStore.push_back(playerPetData);
+    PlayerPetDataStore.push_back(std::move(playerPetData));
 }
 
 void Player::_LoadQuestStatus(PreparedQueryResult result)
