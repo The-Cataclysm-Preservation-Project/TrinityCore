@@ -19,6 +19,7 @@
 #include "Creature.h"
 #include "DBCStores.h"
 #include "Item.h"
+#include "ObjectMgr.h"
 #include "Pet.h"
 #include "Player.h"
 #include "SharedDefines.h"

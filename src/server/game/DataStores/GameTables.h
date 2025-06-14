@@ -19,6 +19,8 @@
 #define __GAMETABLES_H
 
 #include "Define.h"
+#include "SharedDefines.h"
+#include <vector>
 
 enum UnitClass : uint8;
 

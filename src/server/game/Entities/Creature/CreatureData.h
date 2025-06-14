@@ -20,6 +20,7 @@
 
 #include "DBCEnums.h"
 #include "EnumFlag.h"
+#include "Optional.h"
 #include "SharedDefines.h"
 #include "SpawnData.h"
 #include "UnitDefines.h"
