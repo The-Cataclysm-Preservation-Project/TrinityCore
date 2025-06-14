@@ -16,6 +16,7 @@
  */
 
 #include "TemporarySummon.h"
+#include "CharmInfo.h"
 #include "CreatureAI.h"
 #include "DBCStructure.h"
 #include "Log.h"

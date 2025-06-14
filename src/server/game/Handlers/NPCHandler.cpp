@@ -18,6 +18,7 @@
 #include "WorldSession.h"
 #include "Battleground.h"
 #include "BattlegroundMgr.h"
+#include "CharmInfo.h"
 #include "Common.h"
 #include "Creature.h"
 #include "CreatureAI.h"

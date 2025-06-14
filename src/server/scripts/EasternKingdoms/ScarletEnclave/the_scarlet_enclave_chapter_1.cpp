@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "CharmInfo.h"
 #include "CombatAI.h"
 #include "CreatureAIImpl.h"
 #include "GameObject.h"

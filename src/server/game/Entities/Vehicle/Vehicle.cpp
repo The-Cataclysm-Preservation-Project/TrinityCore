@@ -17,6 +17,7 @@
 
 #include "Vehicle.h"
 #include "Battleground.h"
+#include "CharmInfo.h"
 #include "Common.h"
 #include "CreatureAI.h"
 #include "DBCStores.h"

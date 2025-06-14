@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "CharmInfo.h"
 #include "Chat.h"
 #include "Language.h"
 #include "Log.h"
