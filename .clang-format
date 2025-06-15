@@ -1,0 +1,7 @@
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120
+BreakBeforeBraces: Allman  # Puts braces on a new line
+IndentCaseLabels: true     # Indents case labels (switch-case)
