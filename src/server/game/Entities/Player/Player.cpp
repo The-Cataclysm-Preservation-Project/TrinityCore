@@ -1788,18 +1788,27 @@ void Player::RegenerateAll(uint32 diff)
         for (uint8 i = 0; i < MAX_RUNES; i += 2)
         {
             uint8 runeToRegen = i;
-            uint32 cd = GetRuneCooldown(i);
-            uint32 secondRuneCd = GetRuneCooldown(i + 1);
-            float cdmod = GetFloatValue(PLAYER_RUNE_REGEN_1) * 10.0f;
+            RuneType runeType = GetCurrentRune(runeToRegen);
+            float runeCooldown = GetRuneCooldown(i);
+            float secondRuneCd = GetRuneCooldown(i + 1);
+
             // Regenerate second rune of the same type only after first rune is off the cooldown
-            if (secondRuneCd && (cd > secondRuneCd || !cd))
+            if (G3D::fuzzyNe(secondRuneCd, 0.0f) && (runeCooldown > secondRuneCd || G3D::fuzzyEq(runeCooldown, 0.0f)))
             {
                 runeToRegen = i + 1;
-                cd = secondRuneCd;
+                runeType = GetCurrentRune(runeToRegen);
+                runeCooldown = secondRuneCd;
             }
 
-            if (cd)
-                SetRuneCooldown(runeToRegen, (cd > (diff * cdmod)) ? cd - (diff * cdmod) : 0);
+            // No cooldown, nothing to do
+            if (G3D::fuzzyEq(runeCooldown, 0.0f))
+                continue;
+
+            float cdDiff = GetFloatValue(PLAYER_RUNE_REGEN_1 + AsUnderlyingType(runeType)) * 0.001f * diff;
+            if (runeCooldown > cdDiff)
+                SetRuneCooldown(runeToRegen, runeCooldown - cdDiff);
+            else
+                SetRuneCooldown(runeToRegen, 0.0f);
         }
     }
 }
@@ -22807,9 +22816,6 @@ void Player::SendInitialPacketsBeforeAddToMap(bool firstLogin /*= false*/)
     {
         // Initialize rune cooldowns
         ResyncRunes();
-
-        // Send already converted runes
-        SendConvertedRunes();
     }
 
     // Spell modifiers
@@ -22883,6 +22889,10 @@ void Player::SendInitialPacketsAfterAddToMap()
     // manual send package (have code in HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true); that must not be re-applied.
     if (HasAuraType(SPELL_AURA_MOD_ROOT))
         SetRooted(true, true);
+
+    // only send the packet for converted runes instead of converting them again
+    if (HasAuraType(SPELL_AURA_CONVERT_RUNE))
+        SendConvertedRunes();
 
     SendAurasForTarget(this);
     SendEnchantmentDurations();                             // must be after add to map
@@ -24814,11 +24824,95 @@ bool Player::isTotalImmunity() const
     return false;
 }
 
+void Runes::SetRuneState(uint8 index, bool set /*= true*/)
+{
+    if (set)
+        RuneState |= (1 << index);                      // usable
+    else
+        RuneState &= ~(1 << index);                     // on cooldown
+}
+
+void Player::ResyncRunes() const
+{
+    WorldPackets::Spells::ResyncRunes packet;
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
+    {
+        WorldPackets::Spells::ResyncRune resyncRune;
+        resyncRune.RuneType = AsUnderlyingType(GetCurrentRune(i));
+        resyncRune.Cooldown = uint8((1.0f - GetRuneCooldown(i)) * uint32(255));
+        packet.Runes.emplace_back(resyncRune);
+    }
+
+    SendDirectMessage(packet.Write());
+}
+
+void Player::AddRunePower(uint8 mask) const
+{
+    WorldPackets::Spells::AddRunePower packet;
+    packet.AddedRunesMask = mask; // mask (0x00-0x3F probably)
+    SendDirectMessage(packet.Write());
+}
+
+static constexpr RuneType runeSlotTypes[MAX_RUNES] =
+{
+    /*0*/ RuneType::Blood,
+    /*1*/ RuneType::Blood,
+    /*2*/ RuneType::Unholy,
+    /*3*/ RuneType::Unholy,
+    /*4*/ RuneType::Frost,
+    /*5*/ RuneType::Frost
+};
+
+void Player::InitRunes()
+{
+    if (getClass() != CLASS_DEATH_KNIGHT)
+        return;
+
+    m_runes = std::make_unique<Runes>();
+    m_runes->RuneState = 0;
+    m_runes->LastUsedRune = RuneType::Blood;
+    m_runes->LastUsedRuneMask = 0;
+
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
+    {
+        SetBaseRune(i, runeSlotTypes[i]);                              // init base types
+        SetCurrentRune(i, runeSlotTypes[i]);                           // init current types
+        SetRuneCooldown(i, 0.0f);                                      // reset cooldowns
+        SetRuneConvertAura(i, nullptr, SPELL_AURA_NONE, nullptr);
+        m_runes->SetRuneState(i);
+    }
+
+    for (uint8 i = 0; i < AsUnderlyingType(RuneType::Max); ++i)
+        SetFloatValue(PLAYER_RUNE_REGEN_1 + i, 0.1f);                  // set a base regen timer equal to 10 sec
+}
+
+bool Player::IsRuneFullyDepleted(uint8 index) const
+{
+    return G3D::fuzzyEq(GetRuneCooldown(index), RUNE_BASE_COOLDOWN);
+}
+
+bool Player::HasFullyDepletedRune(RuneType runeType) const
+{
+    if (!m_runes)
+        return false;
+
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
+    {
+        if (GetBaseRune(i) != runeType)
+            continue;
+
+        if (IsRuneFullyDepleted(i))
+            return true;
+    }
+
+    return false;
+}
+
 void Player::SetRuneConvertAura(uint8 index, AuraEffect const* aura, AuraType auraType, SpellInfo const* spellInfo)
 {
-    m_runes->runes[index].ConvertAura = aura;
-    m_runes->runes[index].ConvertAuraType = auraType;
-    m_runes->runes[index].ConvertAuraInfo = spellInfo;
+    m_runes->_Runes[index].ConvertAura = aura;
+    m_runes->_Runes[index].ConvertAuraType = auraType;
+    m_runes->_Runes[index].ConvertAuraInfo = spellInfo;
 }
 
 void Player::AddRuneByAuraEffect(uint8 index, RuneType newType, AuraEffect const* aura, AuraType auraType, SpellInfo const* spellInfo)
@@ -24827,12 +24921,9 @@ void Player::AddRuneByAuraEffect(uint8 index, RuneType newType, AuraEffect const
     ConvertRune(index, newType);
 }
 
-void Player::SetRuneCooldown(uint8 index, uint32 cooldown)
+void Player::SetRuneCooldown(uint8 index, float cooldown)
 {
-    if (AuraEffect* aurEff = GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_GENERIC, 2636, EFFECT_2))
-        cooldown *= 1.0 - (aurEff->GetAmount() / 100);
-
-    m_runes->runes[index].Cooldown = cooldown;
+    m_runes->_Runes[index].Cooldown = cooldown;
     m_runes->SetRuneState(index, (cooldown == 0) ? true : false);
 }
 
@@ -24840,7 +24931,7 @@ void Player::RemoveRunesByAuraEffect(AuraEffect const* aura)
 {
     for (uint8 i = 0; i < MAX_RUNES; ++i)
     {
-        if (m_runes->runes[i].ConvertAura == aura)
+        if (m_runes->_Runes[i].ConvertAura == aura)
         {
             ConvertRune(i, GetBaseRune(i));
             SetRuneConvertAura(i, nullptr, SPELL_AURA_NONE, nullptr);
@@ -24850,17 +24941,17 @@ void Player::RemoveRunesByAuraEffect(AuraEffect const* aura)
 
 void Player::RestoreBaseRune(uint8 index)
 {
-    SpellInfo const* spellInfo = m_runes->runes[index].ConvertAuraInfo;
-    AuraType type = m_runes->runes[index].ConvertAuraType;
+    SpellInfo const* spellInfo = m_runes->_Runes[index].ConvertAuraInfo;
+    AuraType type = m_runes->_Runes[index].ConvertAuraType;
     // If rune was converted by a non-pasive aura that still active we should keep it converted
     if (spellInfo)
     {
-       if (!(spellInfo->Attributes & SPELL_ATTR0_PASSIVE))
-           return;
+        if (!(spellInfo->Attributes & SPELL_ATTR0_PASSIVE))
+            return;
 
-       // Don't even convert aura for passive convertion
-       if (spellInfo->IsPassive() && type == SPELL_AURA_CONVERT_RUNE)
-           return;
+        // Don't even convert aura for passive convertion
+        if (spellInfo->IsPassive() && type == SPELL_AURA_CONVERT_RUNE)
+            return;
     }
 
     ConvertRune(index, GetBaseRune(index));
@@ -24873,87 +24964,26 @@ void Player::ConvertRune(uint8 index, RuneType newType)
 
     WorldPackets::Spells::ConvertRune packet;
     packet.Index = index;
-    packet.Rune = newType;
-
-    SendDirectMessage(packet.Write());
-}
-
-void Player::ResyncRunes()
-{
-    WorldPackets::Spells::ResyncRunes packet;
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
-    {
-        WorldPackets::Spells::ResyncRune resyncRune;
-        resyncRune.RuneType = GetCurrentRune(i);
-        resyncRune.Cooldown = uint8(GetRuneCooldown(i) * uint32(255) / uint32(RUNE_BASE_COOLDOWN));
-        packet.Runes.emplace_back(resyncRune);
-    }
+    packet.Rune = AsUnderlyingType(newType);
 
     SendDirectMessage(packet.Write());
 }
 
 void Player::SendConvertedRunes()
 {
+    if (!m_runes)
+        return;
+
     for (uint8 i = 0; i < MAX_RUNES; ++i)
     {
         if (GetBaseRune(i) != GetCurrentRune(i))
         {
             WorldPackets::Spells::ConvertRune convertRune;
             convertRune.Index = i;
-            convertRune.Rune = GetCurrentRune(i);
+            convertRune.Rune = AsUnderlyingType(GetCurrentRune(i));
             SendDirectMessage(convertRune.Write());
         }
     }
-}
-
-void Player::AddRunePower(uint8 mask)
-{
-    WorldPackets::Spells::AddRunePower packet;
-    packet.AddedRunesMask = mask; // mask (0x00-0x3F probably)
-    SendDirectMessage(packet.Write());
-}
-
-static RuneType runeSlotTypes[MAX_RUNES] =
-{
-    /*0*/ RUNE_BLOOD,
-    /*1*/ RUNE_BLOOD,
-    /*2*/ RUNE_UNHOLY,
-    /*3*/ RUNE_UNHOLY,
-    /*4*/ RUNE_FROST,
-    /*5*/ RUNE_FROST
-};
-
-void Player::InitRunes()
-{
-    if (getClass() != CLASS_DEATH_KNIGHT)
-        return;
-
-    m_runes = std::make_unique<Runes>();
-
-    m_runes->runeState = 0;
-    m_runes->lastUsedRune = RUNE_BLOOD;
-    m_runes->lastUsedRuneMask = 0;
-
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
-    {
-        SetBaseRune(i, runeSlotTypes[i]);                              // init base types
-        SetCurrentRune(i, runeSlotTypes[i]);                           // init current types
-        SetRuneCooldown(i, 0);                                         // reset cooldowns
-        SetRuneConvertAura(i, nullptr, SPELL_AURA_NONE, nullptr);
-        m_runes->SetRuneState(i);
-    }
-
-    for (uint8 i = 0; i < NUM_RUNE_TYPES; ++i)
-        SetFloatValue(PLAYER_RUNE_REGEN_1 + i, 0.1f);                  // set a base regen timer equal to 10 sec
-}
-
-bool Player::IsBaseRuneSlotsOnCooldown(RuneType runeType) const
-{
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
-        if (GetBaseRune(i) == runeType && GetRuneCooldown(i) == 0)
-            return false;
-
-    return true;
 }
 
 void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore const& store, bool broadcast)

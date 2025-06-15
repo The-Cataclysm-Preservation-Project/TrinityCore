@@ -4569,11 +4569,7 @@ void Spell::SendSpellStart()
             castData.RemainingRunes->Start = m_runesState; // runes state before
             castData.RemainingRunes->Count = player->GetRunesState(); // runes state after
             for (uint8 i = 0; i < MAX_RUNES; ++i)
-            {
-                // float casts ensure the division is performed on floats as we need float result
-                float baseCd = float(uint32(RUNE_BASE_COOLDOWN));
-                castData.RemainingRunes->Cooldowns.push_back((baseCd - float(player->GetRuneCooldown(i))) / baseCd * 255); // rune cooldown passed
-            }
+                castData.RemainingRunes->Cooldowns.push_back((1.0f - player->GetRuneCooldown(i)) * uint32(255)); // rune cooldown passed
         }
         else
         {
@@ -4693,11 +4689,7 @@ void Spell::SendSpellGo()
             castData.RemainingRunes->Start = m_runesState; // runes state before
             castData.RemainingRunes->Count = player->GetRunesState(); // runes state after
             for (uint8 i = 0; i < MAX_RUNES; ++i)
-            {
-                // float casts ensure the division is performed on floats as we need float result
-                float baseCd = float(uint32(RUNE_BASE_COOLDOWN));
-                castData.RemainingRunes->Cooldowns.push_back((baseCd - float(player->GetRuneCooldown(i))) / baseCd * 255); // rune cooldown passed
-            }
+                castData.RemainingRunes->Cooldowns.push_back((1.0f - player->GetRuneCooldown(i)) * uint32(255)); // rune cooldown passed
         }
         else
         {
@@ -5347,29 +5339,29 @@ SpellCastResult Spell::CheckRuneCost(uint32 runeCostID) const
     if (src->NoRuneCost())
         return SPELL_CAST_OK;
 
-    int32 runeCost[NUM_RUNE_TYPES];                         // blood, frost, unholy, death
+    std::array<int32, AsUnderlyingType(RuneType::Max)> runeCost = { }; // blood, frost, unholy, death
 
-    for (uint32 i = 0; i < RUNE_DEATH; ++i)
+    for (uint8 i = 0; i < AsUnderlyingType(RuneType::Death); ++i)
     {
         runeCost[i] = src->RuneCost[i];
         if (Player* modOwner = m_caster->GetSpellModOwner())
             modOwner->ApplySpellMod(m_spellInfo, SpellModOp::PowerCost0, runeCost[i], const_cast<Spell*>(this));
     }
 
-    runeCost[RUNE_DEATH] = MAX_RUNES;                       // calculated later
+    runeCost[AsUnderlyingType(RuneType::Death)] = MAX_RUNES; // calculated later
 
-    for (uint32 i = 0; i < MAX_RUNES; ++i)
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
     {
         RuneType rune = player->GetCurrentRune(i);
-        if ((player->GetRuneCooldown(i) == 0) && (runeCost[rune] > 0))
-            runeCost[rune]--;
+        if (G3D::fuzzyEq(player->GetRuneCooldown(i), 0.0f) && (runeCost[AsUnderlyingType(rune)] > 0))
+            runeCost[AsUnderlyingType(rune)]--;
     }
 
-    for (uint32 i = 0; i < RUNE_DEATH; ++i)
+    for (uint8 i = 0; i < AsUnderlyingType(RuneType::Death); ++i)
         if (runeCost[i] > 0)
-            runeCost[RUNE_DEATH] += runeCost[i];
+            runeCost[AsUnderlyingType(RuneType::Death)] += runeCost[i];
 
-    if (runeCost[RUNE_DEATH] > MAX_RUNES)
+    if (runeCost[AsUnderlyingType(RuneType::Death)] > MAX_RUNES)
         return SPELL_FAILED_NO_POWER;                       // not sure if result code is correct
 
     return SPELL_CAST_OK;
@@ -5386,102 +5378,95 @@ void Spell::TakeRunePower(SpellMissInfo hitInfo)
 
     Player* player = m_caster->ToPlayer();
     m_runesState = player->GetRunesState();                 // store previous state
-    player->ClearLastUsedRuneMask();
 
-    std::array<int32, NUM_RUNE_TYPES> runeCost = { };        // blood, frost, unholy, death
+    std::array<int32, AsUnderlyingType(RuneType::Max)> runeCost = { };        // blood, frost, unholy, death
 
     // Apply rune cost modifiers
-    for (uint8 i = 0; i < RUNE_DEATH; ++i)
+    for (uint8 i = 0; i < AsUnderlyingType(RuneType::Death); ++i)
     {
         runeCost[i] = runeCostData->RuneCost[i];
         if (Player* modOwner = m_caster->GetSpellModOwner())
             modOwner->ApplySpellMod(m_spellInfo, SpellModOp::PowerCost0, runeCost[i], const_cast<Spell*>(this));
     }
 
-    bool consumeRunes = false;
-    for (uint8 i = 0; i < RUNE_DEATH; ++i)
+    bool hasRuneCost = false;
+    for (uint8 i = 0; i < AsUnderlyingType(RuneType::Death); ++i)
         if (runeCost[i] != 0)
-            consumeRunes = true;
+            hasRuneCost = true;
 
-    // If the spell does not require any rune because of power cost spell mods, the Death Knight wont gain any Runic Power (Freezing Fog for example)
-    if (!consumeRunes && !runeCostData->NoRuneCost())
+    // If the spell does not require any rune because of power cost spell mods, the Death Knight won't gain any Runic Power (Freezing Fog for example)
+    if (!hasRuneCost && !runeCostData->NoRuneCost())
         return;
 
-    consumeRunes = hitInfo == SPELL_MISS_NONE || hitInfo == SPELL_MISS_MISS;
-    // Death Strike is special - it consumes runes on dodge and parry as well, because the healing component still goes through.
-    // There is no flag to control this and it's probably tied to how Blizzard applies spell effects and auras, which we KNOW we do wrong.
-    if (m_spellInfo->Id == 49998)
-        consumeRunes |= hitInfo == SPELL_MISS_DODGE || hitInfo == SPELL_MISS_PARRY;
+    // The attack refunds its runes when missed
+    if (m_spellInfo->HasAttribute(SPELL_ATTR1_DISCOUNT_POWER_ON_MISS) && hitInfo == SPELL_MISS_MISS)
+        return;
+
+    player->ClearLastUsedRuneMask();
 
     // Let's say we use a skill that requires a Frost rune. This is the order:
     // - Frost rune
     // - Death rune, originally a Frost rune
     // - Death rune, any kind
-    runeCost[RUNE_DEATH] = 0;                               // calculated later
+    runeCost[AsUnderlyingType(RuneType::Death)] = 0;                               // calculated later
 
-    for (uint32 i = 0; i < MAX_RUNES; ++i)
+    for (uint8 i = 0; i < MAX_RUNES; ++i)
     {
         RuneType rune = player->GetCurrentRune(i);
-        if (!player->GetRuneCooldown(i) && runeCost[rune] > 0)
+        if (G3D::fuzzyEq(player->GetRuneCooldown(i), 0.0f) && runeCost[AsUnderlyingType(rune)] > 0)
         {
-            player->SetRuneCooldown(i, consumeRunes ? uint32(RUNE_BASE_COOLDOWN) : uint32(RUNE_MISS_COOLDOWN));
+            player->SetRuneCooldown(i, RUNE_BASE_COOLDOWN);
             player->SetLastUsedRune(rune);
             player->SetLastUsedRuneIndex(i);
-            --runeCost[rune];
+            --runeCost[AsUnderlyingType(rune)];
         }
     }
 
     // Find a Death rune where the base rune matches the one we need
-    runeCost[RUNE_DEATH] = runeCost[RUNE_BLOOD] + runeCost[RUNE_UNHOLY] + runeCost[RUNE_FROST];
+    runeCost[AsUnderlyingType(RuneType::Death)] = runeCost[AsUnderlyingType(RuneType::Blood)] + runeCost[AsUnderlyingType(RuneType::Unholy)] + runeCost[AsUnderlyingType(RuneType::Frost)];
 
-    if (runeCost[RUNE_DEATH] > 0)
+    if (runeCost[AsUnderlyingType(RuneType::Death)] > 0)
     {
         for (uint8 i = 0; i < MAX_RUNES; ++i)
         {
             RuneType rune = player->GetCurrentRune(i);
-            if (!player->GetRuneCooldown(i) && rune == RUNE_DEATH)
+            if (G3D::fuzzyEq(player->GetRuneCooldown(i), 0.0f) && rune == RuneType::Death)
             {
-                player->SetRuneCooldown(i, consumeRunes ? uint32(RUNE_BASE_COOLDOWN) : uint32(RUNE_MISS_COOLDOWN));
+                player->SetRuneCooldown(i, RUNE_BASE_COOLDOWN);
                 player->SetLastUsedRune(rune);
                 player->SetLastUsedRuneIndex(i);
-                runeCost[rune]--;
+                runeCost[AsUnderlyingType(rune)]--;
+                player->RestoreBaseRune(i);
 
-                // keep Death Rune type if missed
-                if (consumeRunes)
-                    player->RestoreBaseRune(i);
-
-                if (runeCost[RUNE_DEATH] == 0)
+                if (runeCost[AsUnderlyingType(RuneType::Death)] == 0)
                     break;
             }
         }
     }
 
-    // If the spell has consumed runes, runic power will be generated
-    if (consumeRunes)
+    // Generate Runic Power
+    if (int32 runicPowerGain = runeCostData->RunicPower * sWorld->getRate(RATE_POWER_RUNICPOWER_INCOME))
     {
-        if (int32 runicPowerGain = runeCostData->RunicPower * sWorld->getRate(RATE_POWER_RUNICPOWER_INCOME))
+        Unit::AuraEffectList const& bonusPct = player->GetAuraEffectsByType(SPELL_AURA_MOD_RUNE_REGEN_SPEED);
+        for (auto i = bonusPct.begin(); i != bonusPct.end(); ++i)
         {
-            Unit::AuraEffectList const& bonusPct = player->GetAuraEffectsByType(SPELL_AURA_MOD_RUNE_REGEN_SPEED);
-            for (auto i = bonusPct.begin(); i != bonusPct.end(); ++i)
+            // Improved Frost Presence
+            if ((*i)->GetId() == 63621)
             {
-                // Improved Frost Presence
-                if ((*i)->GetId() == 63621)
-                {
-                    // Apply bonus when in Unholy or Blood Presence
-                    if (player->HasAura(48265) || player->HasAura(48263))
-                        AddPct(runicPowerGain, (*i)->GetAmount());
-                    continue;
-                }
-                else
+                // Apply bonus when in Unholy or Blood Presence
+                if (player->HasAura(48265) || player->HasAura(48263))
                     AddPct(runicPowerGain, (*i)->GetAmount());
+                continue;
             }
-
-            // Apply runic power gain modifiers
-            if (Player* modOwner = m_caster->GetSpellModOwner())
-                modOwner->ApplySpellMod(m_spellInfo, SpellModOp::PowerCost0, runicPowerGain, const_cast<Spell*>(this));
-
-            player->ModifyPower(POWER_RUNIC_POWER, std::max(0, runicPowerGain));
+            else
+                AddPct(runicPowerGain, (*i)->GetAmount());
         }
+
+        // Apply runic power gain modifiers
+        if (Player* modOwner = m_caster->GetSpellModOwner())
+            modOwner->ApplySpellMod(m_spellInfo, SpellModOp::PowerCost0, runicPowerGain, const_cast<Spell*>(this));
+
+        player->ModifyPower(POWER_RUNIC_POWER, std::max(0, runicPowerGain));
     }
 }
 

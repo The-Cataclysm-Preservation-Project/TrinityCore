@@ -1136,17 +1136,26 @@ class spell_dk_dark_transformation_aura : public AuraScript
 // -51459 - Runic Corruption
 class spell_dk_runic_empowerment : public AuraScript
 {
-    bool Validate(SpellInfo const* /*spellInfo*/) override
+    bool Load() override
     {
-        return ValidateSpellInfo({ SPELL_DK_RUNIC_CORRUPTION_TRIGGERED });
+        if (!GetCaster()->IsPlayer() || GetCaster()->ToPlayer()->getClass() != CLASS_DEATH_KNIGHT)
+            return false;
+
+        return true;
     }
 
     void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
     {
-        PreventDefaultAction();
-
+        std::vector<uint8> fullyDepletedRuneIndexes;
         Player* player = GetTarget()->ToPlayer();
-        if (!player)
+
+        for (uint i = 0; i < MAX_RUNES; ++i)
+        {
+            if (player->IsRuneFullyDepleted(i))
+                fullyDepletedRuneIndexes.push_back(i);
+        }
+
+        if (fullyDepletedRuneIndexes.empty())
             return;
 
         // Runic corruption replaces the rune activation with a rune regeneration speed buff
@@ -1156,34 +1165,20 @@ class spell_dk_runic_empowerment : public AuraScript
             return;
         }
 
-        std::vector<uint8> fullyDepletedRuneIndexes;
-        for (uint8 i = 0; i < MAX_RUNES; ++i)
-        {
-            // Only activate fully depleted runes, which are being on hold until
-            if (player->GetRuneCooldown(i) != RUNE_BASE_COOLDOWN)
-                continue;
-
-            fullyDepletedRuneIndexes.push_back(i);
-        }
-
-        if (!fullyDepletedRuneIndexes.empty())
-        {
-            uint8 runeIndex = Trinity::Containers::SelectRandomContainerElement(fullyDepletedRuneIndexes);
-            ActivateRune(player, runeIndex);
-        }
+        uint8 runeIndex = Trinity::Containers::SelectRandomContainerElement(fullyDepletedRuneIndexes);
+        ActivateRune(player, runeIndex);
     }
 
     void Register() override
     {
         OnEffectProc.Register(&spell_dk_runic_empowerment::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
-
 private:
     // Sniffs do not show any spell cast to activate runes. We just copy the code part from Spell::EffectActivateRune in this case with some small tweaks
     void ActivateRune(Player* player, uint8 runeIndex)
     {
         uint8 currentRuneState = player->GetRunesState();
-        player->SetRuneCooldown(runeIndex, 0);
+        player->SetRuneCooldown(runeIndex, 0.0f);
         uint8 runesState = player->GetRunesState() & ~currentRuneState;
         player->AddRunePower(runesState);
     }
@@ -1301,8 +1296,8 @@ class spell_dk_reaping : public AuraScript
 
         for (uint8 i = 0; i < MAX_RUNES; i++)
         {
-            if (runeMask & (1 << i) && player->GetCurrentRune(i) == RUNE_BLOOD)
-                player->AddRuneByAuraEffect(i, RUNE_DEATH, aurEff, SPELL_AURA_PERIODIC_DUMMY, GetSpellInfo());
+            if (runeMask & (1 << i) && player->GetCurrentRune(i) == RuneType::Blood)
+                player->AddRuneByAuraEffect(i, RuneType::Death, aurEff, SPELL_AURA_PERIODIC_DUMMY, GetSpellInfo());
         }
 
         GetEffect(EFFECT_0)->ResetPeriodic(true);
@@ -1349,8 +1344,8 @@ class spell_dk_blood_rites : public AuraScript
 
         for (uint8 i = 0; i < MAX_RUNES; i++)
         {
-            if (runeMask & (1 << i) && player->GetCurrentRune(i) != RUNE_DEATH)
-                player->AddRuneByAuraEffect(i, RUNE_DEATH, aurEff, SPELL_AURA_PERIODIC_DUMMY, GetSpellInfo());
+            if (runeMask & (1 << i) && player->GetCurrentRune(i) != RuneType::Death)
+                player->AddRuneByAuraEffect(i, RuneType::Death, aurEff, SPELL_AURA_PERIODIC_DUMMY, GetSpellInfo());
         }
 
         GetEffect(EFFECT_0)->ResetPeriodic(true);
@@ -1502,7 +1497,7 @@ class spell_dk_deaths_advance : public AuraScript
         uint8 unholyRunesOnCooldownCount = 0;
         for (uint8 i = 0; i < MAX_RUNES; ++i)
         {
-            if (player->GetCurrentRune(i) == RUNE_UNHOLY && player->GetRuneCooldown(i))
+            if (player->GetCurrentRune(i) == RuneType::Unholy && player->GetRuneCooldown(i))
                 unholyRunesOnCooldownCount++;
         }
 
@@ -1530,7 +1525,7 @@ class spell_dk_deaths_advance_aura : public AuraScript
 
         for (uint8 i = 0; i < MAX_RUNES; ++i)
         {
-            if (player->GetCurrentRune(i) == RUNE_UNHOLY && player->GetRuneCooldown(i))
+            if (player->GetCurrentRune(i) == RuneType::Unholy && player->GetRuneCooldown(i))
                 unholyRunesOnCooldownCount++;
         }
 

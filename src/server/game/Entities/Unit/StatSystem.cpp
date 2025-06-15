@@ -180,7 +180,7 @@ void Unit::UpdatePowerRegeneration(Powers powerType)
             baseRegen += powerRegenMod;
 
             if (IsPlayer())
-                for (uint8 i = 0; i < NUM_RUNE_TYPES; ++i)
+                for (uint8 i = 0; i < AsUnderlyingType(RuneType::Max); ++i)
                     SetFloatValue(PLAYER_RUNE_REGEN_1 + i, baseRegen);
             break;
         }

@@ -5071,13 +5071,8 @@ void AuraEffect::HandleAuraConvertRune(AuraApplication const* aurApp, uint8 mode
     if (!(mode & AURA_EFFECT_HANDLE_REAL))
         return;
 
-    Unit* target = aurApp->GetTarget();
-
-    Player* player = target->ToPlayer();
-    if (!player)
-        return;
-
-    if (player->getClass() != CLASS_DEATH_KNIGHT)
+    Player* playerTarget = aurApp->GetTarget()->ToPlayer();
+    if (!playerTarget || playerTarget->getClass() != CLASS_DEATH_KNIGHT)
         return;
 
     /*
@@ -5087,24 +5082,20 @@ void AuraEffect::HandleAuraConvertRune(AuraApplication const* aurApp, uint8 mode
     * Amount is the number of runes that will be converted if available
     */
 
-    uint32 runes = GetAmount();
-
+    uint32 runesToConvert = GetAmount();
     if (apply)
     {
-        for (uint32 i = 0; i < MAX_RUNES && runes; ++i)
+        for (uint8 i = 0; i < MAX_RUNES && runesToConvert > 0; ++i)
         {
-            if (RuneType(GetMiscValue()) != player->GetCurrentRune(i))
+            if (static_cast<RuneType>(GetMiscValue()) != playerTarget->GetCurrentRune(i))
                 continue;
 
-            if (!player->GetRuneCooldown(i))
-            {
-                player->AddRuneByAuraEffect(i, RuneType(GetMiscValueB()), this, GetAuraType(), GetSpellInfo());
-                --runes;
-            }
+            playerTarget->AddRuneByAuraEffect(i, static_cast<RuneType>(GetMiscValueB()), this, GetAuraType(), GetSpellInfo());
+            --runesToConvert;
         }
     }
     else
-        player->RemoveRunesByAuraEffect(this);
+        playerTarget->RemoveRunesByAuraEffect(this);
 }
 
 void AuraEffect::HandleAuraLinked(AuraApplication const* aurApp, uint8 mode, bool apply) const

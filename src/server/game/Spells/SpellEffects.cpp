@@ -5235,17 +5235,26 @@ void Spell::EffectActivateRune(SpellEffIndex effIndex)
     m_runesState = player->GetRunesState();
 
     uint32 count = damage;
-    int32 miscValue = (1 << m_spellInfo->Effects[effIndex].MiscValue);
+    RuneType runeType = static_cast<RuneType>(m_spellInfo->Effects[effIndex].MiscValue);
+    Optional<RuneType> baseRuneType;
+    // Bloot Tap can activate both - Blood runes and Death runes which have been converted
+    if (runeType == RuneType::Death)
+        baseRuneType = RuneType::Blood;
 
-    // Death Runes may also activate Blood Runes (Blood Tap)
-    if (miscValue & (1 << RUNE_DEATH))
-        miscValue |= (1 << RUNE_BLOOD);
-
-    for (uint32 i = 0; i < MAX_RUNES && count > 0; ++i)
+    for (uint8 i = 0; i < MAX_RUNES && count > 0; ++i)
     {
-        if ((1 << player->GetCurrentRune(i)) & miscValue && player->GetRuneCooldown(i))
+        if (player->GetCurrentRune(i) != runeType)
         {
-            player->SetRuneCooldown(i, 0);
+            if (!baseRuneType.has_value())
+                continue;
+
+            if (player->GetBaseRune(i) != *baseRuneType)
+                continue;
+        }
+
+        if (G3D::fuzzyNe(player->GetRuneCooldown(i), 0.0f))
+        {
+            player->SetRuneCooldown(i, 0.0f);
             --count;
         }
     }
