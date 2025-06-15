@@ -1145,7 +1145,7 @@ class spell_dk_runic_empowerment : public AuraScript
         std::vector<uint8> fullyDepletedRuneIndexes;
         Player* player = GetTarget()->ToPlayer();
 
-        for (uint i = 0; i < MAX_RUNES; ++i)
+        for (uint8 i = 0; i < MAX_RUNES; ++i)
         {
             if (player->IsRuneFullyDepleted(i))
                 fullyDepletedRuneIndexes.push_back(i);
