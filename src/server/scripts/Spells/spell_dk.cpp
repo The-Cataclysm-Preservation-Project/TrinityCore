@@ -46,7 +46,6 @@ enum DeathKnightSpells
     SPELL_DK_BLOOD_SHIELD_ABSORB                = 77535,
     SPELL_DK_BLOOD_STRIKE                       = 45902,
     SPELL_DK_BLOOD_STRIKE_OFFHAND               = 66215,
-    SPELL_DK_BLOOD_TAP                          = 45529,
     SPELL_DK_BUTCHERY                           = 50163,
     SPELL_DK_CORPSE_EXPLOSION_TRIGGERED         = 43999,
     SPELL_DK_DANCING_RUNE_WEAPON_PARRY_BONUS    = 81256,
@@ -71,14 +70,11 @@ enum DeathKnightSpells
     SPELL_DK_FROST_PRESENCE                     = 48266,
     SPELL_DK_FROST_STRIKE                       = 49143,
     SPELL_DK_FROST_STRIKE_OFFHAND               = 66196,
-    SPELL_DK_GHOUL_EXPLODE                      = 47496,
-    SPELL_DK_GLYPH_OF_ICEBOUND_FORTITUDE        = 58625,
     SPELL_DK_IMPROVED_BLOOD_PRESENCE_R1         = 50365,
     SPELL_DK_IMPROVED_BLOOD_PRESENCE            = 63611,
     SPELL_DK_IMPROVED_DEATH_STRIKE              = 62905,
     SPELL_DK_IMPROVED_FROST_PRESENCE            = 63621,
     SPELL_DK_IMPROVED_UNHOLY_PRESENCE           = 63622,
-    SPELL_DK_ITEM_SIGIL_VENGEFUL_HEART          = 64962,
     SPELL_DK_ITEM_T8_MELEE_4P_BONUS             = 64736,
     SPELL_DK_ITEM_T11_DPS_4P_BONUS              = 90459,
     SPELL_DK_ITEM_T12_BLOOD_4P_BONUS            = 98966,
@@ -685,11 +681,11 @@ class spell_dk_pestilence : public SpellScript
                     }
                 }
 
-                if (Aura* aurOld = victim->GetAura(SPELL_DK_FROST_FEVER, caster->GetGUID())) // Check Frost Fever application on victim.
+                if (Aura* frostFeverAura = victim->GetAura(SPELL_DK_FROST_FEVER, caster->GetGUID())) // Check Frost Fever application on victim.
                 {
-                    float donePct = aurOld->GetDonePct();
+                    donePct = frostFeverAura->GetDonePct();
 
-                    if (aurOld->GetEffect(EFFECT_0))
+                    if (frostFeverAura->GetEffect(EFFECT_0))
                     {
                         caster->CastSpell(hitUnit, SPELL_DK_FROST_FEVER, true); // Spread the disease to hitUnit.
 
@@ -1303,8 +1299,8 @@ class spell_dk_reaping : public AuraScript
         GetEffect(EFFECT_0)->ResetPeriodic(true);
 
         // T11 set bonus effect
-        if (AuraEffect const* aurEff = player->GetAuraEffect(SPELL_DK_ITEM_T11_DPS_4P_BONUS, EFFECT_0))
-            player->CastSpell(player, SPELL_DK_DEATH_EATER, aurEff);
+        if (AuraEffect const* t11Bonus = player->GetAuraEffect(SPELL_DK_ITEM_T11_DPS_4P_BONUS, EFFECT_0))
+            player->CastSpell(player, SPELL_DK_DEATH_EATER, t11Bonus);
     }
 
     void Register() override
