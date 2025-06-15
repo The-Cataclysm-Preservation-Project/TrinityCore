@@ -1652,16 +1652,30 @@ class spell_dk_festering_strike : public SpellScript
     }
 };
 
+// -51123 - Killing Machine
+class spell_dk_killing_machine : public AuraScript
+{
+    bool HandleProcChance(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        // When dual wielding weapons, the procs per minute chance is halved as both weapons may trigger the proc
+        if (eventInfo.GetActor()->haveOffhandWeapon())
+            return roll_chance_f(50.0f);
+
+        return true;
+    }
+
+    void Register() override
+    {
+        DoCheckEffectProc.Register(&spell_dk_killing_machine::HandleProcChance, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
 // 51124 - Killing Machine
-class spell_dk_killing_machine : public SpellScript
+class spell_dk_killing_machine_triggered : public SpellScript
 {
     bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        return ValidateSpellInfo(
-            {
-                SPELL_DK_ITEM_T11_DPS_4P_BONUS,
-                SPELL_DK_DEATH_EATER
-            });
+        return ValidateSpellInfo({ SPELL_DK_ITEM_T11_DPS_4P_BONUS, SPELL_DK_DEATH_EATER });
     }
 
     void HandleT11Bonus(SpellEffIndex /*effIndex*/)
@@ -1673,7 +1687,7 @@ class spell_dk_killing_machine : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget.Register(&spell_dk_killing_machine::HandleT11Bonus, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+        OnEffectHitTarget.Register(&spell_dk_killing_machine_triggered::HandleT11Bonus, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
     }
 };
 
@@ -1952,6 +1966,7 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_icy_touch);
     RegisterSpellScript(spell_dk_improved_presence);
     RegisterSpellScript(spell_dk_killing_machine);
+    RegisterSpellScript(spell_dk_killing_machine_triggered);
     RegisterSpellScript(spell_dk_necrotic_strike);
     RegisterSpellScript(spell_dk_obliterate);
     RegisterSpellScript(spell_dk_pestilence);
