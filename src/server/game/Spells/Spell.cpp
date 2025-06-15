@@ -7903,7 +7903,7 @@ bool Spell::IsAutoActionResetSpell() const
     if (!m_casttime && m_spellInfo->HasAttribute(SPELL_ATTR6_DOESNT_RESET_SWING_TIMER_IF_INSTANT))
         return false;
 
-    return true;
+    return m_casttime || m_spellInfo->IsRangedWeaponSpell();
 }
 
 bool Spell::IsPositive() const
