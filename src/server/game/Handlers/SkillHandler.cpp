@@ -42,12 +42,6 @@ void WorldSession::HandleLearnPreviewTalents(WorldPackets::Talent::LearnPreviewT
         if (!_player->LearnPrimaryTalentSpecialization(packet.TalentTab))
             return;
 
-    // prevent cheating (selecting new tree with points already in another)
-    if (packet.TalentTab >= 0)   // -1 if player already has specialization
-        if (TalentTabEntry const* talentTabEntry = sTalentTabStore.LookupEntry(_player->GetPrimaryTalentTree(_player->GetActiveSpec())))
-            if (talentTabEntry->OrderIndex != static_cast<uint32>(packet.TalentTab))
-                return;
-
     for (WorldPackets::Talent::TalentInfo const& talent : packet.Talents)
         if (!_player->LearnTalent(talent.TalentID, talent.Rank))
             break;
