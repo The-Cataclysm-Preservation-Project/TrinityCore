@@ -84,6 +84,7 @@
 #include "PetPackets.h"
 #include "PetitionMgr.h"
 #include "PhasingHandler.h"
+#include "PlayerTalentInfo.h"
 #include "PoolMgr.h"
 #include "QueryCallback.h"
 #include "QueryHolder.h"
@@ -2661,9 +2662,9 @@ bool Player::AddTalent(uint32 spellId, uint8 spec, bool learning)
         return false;
     }
 
-    PlayerTalentMap::iterator itr = GetTalentMap(spec)->find(spellId);
-    if (itr != GetTalentMap(spec)->end())
-        itr->second->state = PLAYERSPELL_UNCHANGED;
+    PlayerTalentMap::iterator itr = GetTalentMap(spec).find(spellId);
+    if (itr != GetTalentMap(spec).end())
+        itr->second.State = PLAYERSPELL_UNCHANGED;
     else if (TalentSpellPos const* talentPos = sDBCManager.GetTalentSpellPos(spellId))
     {
         if (TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentPos->talent_id))
@@ -2675,18 +2676,16 @@ bool Player::AddTalent(uint32 spellId, uint8 spec, bool learning)
                 if (!rankSpellId || rankSpellId == spellId)
                     continue;
 
-                itr = GetTalentMap(spec)->find(rankSpellId);
-                if (itr != GetTalentMap(spec)->end())
-                    itr->second->state = PLAYERSPELL_REMOVED;
+                itr = GetTalentMap(spec).find(rankSpellId);
+                if (itr != GetTalentMap(spec).end())
+                    itr->second.State = PLAYERSPELL_REMOVED;
             }
         }
 
-        PlayerTalent* newtalent = new PlayerTalent();
 
-        newtalent->state = learning ? PLAYERSPELL_NEW : PLAYERSPELL_UNCHANGED;
-        newtalent->spec = spec;
-
-        (*GetTalentMap(spec))[spellId] = newtalent;
+        PlayerTalent& newtalent = GetTalentMap(spec)[spellId];
+        newtalent.State = learning ? PLAYERSPELL_NEW : PLAYERSPELL_UNCHANGED;
+        newtalent.Spec = spec;
         return true;
     }
     return false;
@@ -3420,18 +3419,22 @@ bool Player::ResetTalents(bool no_cost)
             // skip non-existing talent ranks
             if (talentInfo->SpellRank[rank] == 0)
                 continue;
+
             SpellInfo const* _spellEntry = sSpellMgr->GetSpellInfo(talentInfo->SpellRank[rank]);
             if (!_spellEntry)
                 continue;
+
             RemoveSpell(talentInfo->SpellRank[rank], true);
+
             // search for spells that the talent teaches and unlearn them
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 if (_spellEntry->Effects[i].TriggerSpell > 0 && _spellEntry->Effects[i].Effect == SPELL_EFFECT_LEARN_SPELL)
                     RemoveSpell(_spellEntry->Effects[i].TriggerSpell, true);
+
             // if this talent rank can be found in the PlayerTalentMap, mark the talent as removed so it gets deleted
-            PlayerTalentMap::iterator plrTalent = GetTalentMap(GetActiveSpec())->find(talentInfo->SpellRank[rank]);
-            if (plrTalent != GetTalentMap(GetActiveSpec())->end())
-                plrTalent->second->state = PLAYERSPELL_REMOVED;
+            PlayerTalentMap::iterator plrTalent = GetTalentMap(GetActiveSpec()).find(talentInfo->SpellRank[rank]);
+            if (plrTalent != GetTalentMap(GetActiveSpec()).end())
+                plrTalent->second.State = PLAYERSPELL_REMOVED;
         }
     }
 
@@ -3548,8 +3551,8 @@ bool Player::HasSpell(uint32 spell) const
 
 bool Player::HasTalent(uint32 spell, uint8 spec) const
 {
-    PlayerTalentMap::const_iterator itr = GetTalentMap(spec)->find(spell);
-    return (itr != GetTalentMap(spec)->end() && itr->second->state != PLAYERSPELL_REMOVED);
+    PlayerTalentMap::const_iterator itr = GetTalentMap(spec).find(spell);
+    return (itr != GetTalentMap(spec).end() && itr->second.State != PLAYERSPELL_REMOVED);
 }
 
 bool Player::HasActiveSpell(uint32 spell) const
@@ -24745,6 +24748,20 @@ void Player::SetGlyph(uint8 slot, uint32 glyph)
     SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, glyph);
 }
 
+uint32 Player::GetGlyph(uint8 spec, uint8 slot) const
+{
+    return _talentMgr->SpecInfo[spec].Glyphs[slot];
+}
+
+PlayerTalentMap const& Player::GetTalentMap(uint8 spec) const
+{
+    return _talentMgr->SpecInfo[spec].Talents;
+}
+PlayerTalentMap& Player::GetTalentMap(uint8 spec)
+{
+    return _talentMgr->SpecInfo[spec].Talents;
+}
+
 bool Player::isTotalImmune() const
 {
     AuraEffectList const& immune = GetAuraEffectsByType(SPELL_AURA_SCHOOL_IMMUNITY);
@@ -26247,34 +26264,33 @@ void Player::_SaveTalents(CharacterDatabaseTransaction& trans)
 
     for (uint8 i = 0; i < MAX_TALENT_SPECS; ++i)
     {
-        for (PlayerTalentMap::iterator itr = GetTalentMap(i)->begin(); itr != GetTalentMap(i)->end();)
+        for (PlayerTalentMap::iterator itr = GetTalentMap(i).begin(); itr != GetTalentMap(i).end();)
         {
-            if (itr->second->state == PLAYERSPELL_REMOVED || itr->second->state == PLAYERSPELL_CHANGED)
+            if (itr->second.State == PLAYERSPELL_REMOVED || itr->second.State == PLAYERSPELL_CHANGED)
             {
                 stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_TALENT_BY_SPELL_SPEC);
                 stmt->setUInt32(0, GetGUID().GetCounter());
                 stmt->setUInt32(1, itr->first);
-                stmt->setUInt8(2, itr->second->spec);
+                stmt->setUInt8(2, itr->second.Spec);
                 trans->Append(stmt);
             }
 
-            if (itr->second->state == PLAYERSPELL_NEW || itr->second->state == PLAYERSPELL_CHANGED)
+            if (itr->second.State == PLAYERSPELL_NEW || itr->second.State == PLAYERSPELL_CHANGED)
             {
                 stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHAR_TALENT);
                 stmt->setUInt32(0, GetGUID().GetCounter());
                 stmt->setUInt32(1, itr->first);
-                stmt->setUInt8(2, itr->second->spec);
+                stmt->setUInt8(2, itr->second.Spec);
                 trans->Append(stmt);
             }
 
-            if (itr->second->state == PLAYERSPELL_REMOVED)
+            if (itr->second.State == PLAYERSPELL_REMOVED)
             {
-                delete itr->second;
-                GetTalentMap(i)->erase(itr++);
+                GetTalentMap(i).erase(itr++);
             }
             else
             {
-                itr->second->state = PLAYERSPELL_UNCHANGED;
+                itr->second.State = PLAYERSPELL_UNCHANGED;
                 ++itr;
             }
         }
@@ -27721,11 +27737,85 @@ void Player::SendRaidGroupOnlyMessage(RaidGroupReason reason, int32 delay) const
     SendDirectMessage(raidGroupOnly.Write());
 }
 
+uint32 Player::GetFreeTalentPoints() const
+{
+    return _talentMgr->FreeTalentPoints;
+}
+
+void Player::SetFreeTalentPoints(uint32 points)
+{
+    _talentMgr->FreeTalentPoints = points;
+}
+
+uint32 Player::GetUsedTalentCount() const
+{
+    return _talentMgr->UsedTalentCount;
+}
+
+void Player::SetUsedTalentCount(uint32 talents)
+{
+    _talentMgr->UsedTalentCount = talents;
+}
+
+uint32 Player::GetQuestRewardedTalentCount() const
+{
+    return _talentMgr->QuestRewardedTalentCount;
+}
+
+void Player::AddQuestRewardedTalentCount(uint32 points)
+{
+    _talentMgr->QuestRewardedTalentCount += points;
+}
+
+uint32 Player::GetTalentResetCost() const
+{
+    return _talentMgr->ResetTalentsCost;
+}
+
+void Player::SetTalentResetCost(uint32 cost)
+{
+    _talentMgr->ResetTalentsCost = cost;
+}
+
+uint32 Player::GetTalentResetTime() const
+{
+    return _talentMgr->ResetTalentsTime;
+}
+
+void Player::SetTalentResetTime(time_t time_)
+{
+    _talentMgr->ResetTalentsTime = time_;
+}
+uint32 Player::GetPrimaryTalentTree(uint8 spec) const
+{
+    return _talentMgr->SpecInfo[spec].TalentTree;
+}
+
+void Player::SetPrimaryTalentTree(uint8 spec, uint32 tree)
+{
+    _talentMgr->SpecInfo[spec].TalentTree = tree; UpdateArmorSpecialization();
+}
+
+uint8 Player::GetActiveSpec() const
+{
+    return _talentMgr->ActiveSpec;
+}
+
 void Player::SetActiveSpec(uint8 spec)
 {
     _talentMgr->ActiveSpec = spec;
     UpdateArmorSpecialization();
     RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags2::ChangeSpec);
+}
+
+uint8 Player::GetSpecsCount() const
+{
+    return _talentMgr->SpecsCount;
+}
+
+void Player::SetSpecsCount(uint8 count)
+{
+    _talentMgr->SpecsCount = count;
 }
 
 void Player::SetRestFlag(RestFlag restFlag)

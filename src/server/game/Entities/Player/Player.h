@@ -48,6 +48,8 @@ struct ItemSetEffect;
 struct ItemTemplate;
 struct Loot;
 struct Mail;
+struct PlayerTalent;
+struct PlayerTalentInfo;
 struct ScalingStatDistributionEntry;
 struct ScalingStatValuesEntry;
 struct TrainerSpell;
@@ -120,7 +122,7 @@ enum BuyBankSlotResult
     ERR_BANKSLOT_OK                 = 3
 };
 
-enum PlayerSpellState
+enum PlayerSpellState : uint8
 {
     PLAYERSPELL_UNCHANGED = 0,
     PLAYERSPELL_CHANGED   = 1,
@@ -139,8 +141,8 @@ struct PlayerSpell
 
 struct PlayerTalent
 {
-    PlayerSpellState state : 8;
-    uint8 spec             : 8;
+    PlayerSpellState State;
+    uint8 Spec;
 };
 
 extern uint32 const MasterySpells[MAX_CLASSES];
@@ -239,7 +241,7 @@ struct PlayerCurrency
     uint8 Flags;
 };
 
-typedef std::unordered_map<uint32, PlayerTalent*> PlayerTalentMap;
+typedef std::unordered_map<uint32, PlayerTalent> PlayerTalentMap;
 typedef std::unordered_map<uint32, PlayerSpell> PlayerSpellMap;
 typedef Trinity::Containers::FlatSet<SpellModifier*, SpellModifierCompare> SpellModContainer;
 typedef std::unordered_map<uint32, PlayerCurrency> PlayerCurrenciesMap;
@@ -977,55 +979,6 @@ struct ResurrectionData
     uint32 Aura;
 };
 
-struct PlayerTalentInfo
-{
-    PlayerTalentInfo() :
-        FreeTalentPoints(0), UsedTalentCount(0), QuestRewardedTalentCount(0),
-        ResetTalentsCost(0), ResetTalentsTime(0),
-        ActiveSpec(0), SpecsCount(1)
-    {
-        for (uint8 i = 0; i < MAX_TALENT_SPECS; ++i)
-        {
-            SpecInfo[i].Talents = new PlayerTalentMap();
-            memset(SpecInfo[i].Glyphs, 0, MAX_GLYPH_SLOT_INDEX * sizeof(uint32));
-            SpecInfo[i].TalentTree = 0;
-        }
-    }
-
-    ~PlayerTalentInfo()
-    {
-        for (uint8 i = 0; i < MAX_TALENT_SPECS; ++i)
-        {
-            for (PlayerTalentMap::const_iterator itr = SpecInfo[i].Talents->begin(); itr != SpecInfo[i].Talents->end(); ++itr)
-                delete itr->second;
-            delete SpecInfo[i].Talents;
-        }
-    }
-
-    struct TalentSpecInfo
-    {
-        TalentSpecInfo() : Talents(nullptr), TalentTree(0)
-        {
-            memset(Glyphs, 0, MAX_GLYPH_SLOT_INDEX * sizeof(uint32));
-        }
-
-        PlayerTalentMap* Talents;
-        uint32 Glyphs[MAX_GLYPH_SLOT_INDEX];
-        uint32 TalentTree;
-    } SpecInfo[MAX_TALENT_SPECS];
-
-    uint32 FreeTalentPoints;
-    uint32 UsedTalentCount;
-    uint32 QuestRewardedTalentCount;
-    uint32 ResetTalentsCost;
-    time_t ResetTalentsTime;
-    uint8 ActiveSpec;
-    uint8 SpecsCount;
-
-private:
-    PlayerTalentInfo(PlayerTalentInfo const&);
-};
-
 class TC_GAME_API Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
@@ -1606,23 +1559,22 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SendRaidGroupOnlyMessage(RaidGroupReason reason, int32 delay) const;
 
         // Talents
-        uint32 GetFreeTalentPoints() const { return _talentMgr->FreeTalentPoints; }
-        void SetFreeTalentPoints(uint32 points) { _talentMgr->FreeTalentPoints = points; }
-        uint32 GetUsedTalentCount() const { return _talentMgr->UsedTalentCount; }
-        void SetUsedTalentCount(uint32 talents) { _talentMgr->UsedTalentCount = talents; }
-        uint32 GetQuestRewardedTalentCount() const { return _talentMgr->QuestRewardedTalentCount; }
-        void AddQuestRewardedTalentCount(uint32 points) { _talentMgr->QuestRewardedTalentCount += points; }
-        uint32 GetTalentResetCost() const { return _talentMgr->ResetTalentsCost; }
-        void SetTalentResetCost(uint32 cost)  { _talentMgr->ResetTalentsCost = cost; }
-        uint32 GetTalentResetTime() const { return _talentMgr->ResetTalentsTime; }
-        void SetTalentResetTime(time_t time_)  { _talentMgr->ResetTalentsTime = time_; }
-        uint32 GetPrimaryTalentTree(uint8 spec) const { return _talentMgr->SpecInfo[spec].TalentTree; }
-        void SetPrimaryTalentTree(uint8 spec, uint32 tree) { _talentMgr->SpecInfo[spec].TalentTree = tree; UpdateArmorSpecialization(); }
-        uint8 GetActiveSpec() const { return _talentMgr->ActiveSpec; }
+        uint32 GetFreeTalentPoints() const;
+        void SetFreeTalentPoints(uint32 points);
+        uint32 GetUsedTalentCount() const;
+        void SetUsedTalentCount(uint32 talents);
+        uint32 GetQuestRewardedTalentCount() const;
+        void AddQuestRewardedTalentCount(uint32 points);
+        uint32 GetTalentResetCost() const;
+        void SetTalentResetCost(uint32 cost);
+        uint32 GetTalentResetTime() const;
+        void SetTalentResetTime(time_t time_);
+        uint32 GetPrimaryTalentTree(uint8 spec) const;
+        void SetPrimaryTalentTree(uint8 spec, uint32 tree);
+        uint8 GetActiveSpec() const;
         void SetActiveSpec(uint8 spec);
-        uint8 GetSpecsCount() const { return _talentMgr->SpecsCount; }
-        void SetSpecsCount(uint8 count) { _talentMgr->SpecsCount = count; }
-
+        uint8 GetSpecsCount() const;
+        void SetSpecsCount(uint8 count);
         bool ResetTalents(bool no_cost = false);
         uint32 GetNextResetTalentsCost() const;
         void InitTalentForLevel();
@@ -1648,10 +1600,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         uint32 GetGlyphSlot(uint8 slot) const { return GetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot); }
         void SetGlyph(uint8 slot, uint32 glyph);
-        uint32 GetGlyph(uint8 spec, uint8 slot) const { return _talentMgr->SpecInfo[spec].Glyphs[slot]; }
+        uint32 GetGlyph(uint8 spec, uint8 slot) const;
 
-        PlayerTalentMap const* GetTalentMap(uint8 spec) const { return _talentMgr->SpecInfo[spec].Talents; }
-        PlayerTalentMap* GetTalentMap(uint8 spec) { return _talentMgr->SpecInfo[spec].Talents; }
+        PlayerTalentMap const& GetTalentMap(uint8 spec) const;
+        PlayerTalentMap& GetTalentMap(uint8 spec);
         ActionButtonList const& GetActionButtons() const { return m_actionButtons; }
 
         uint32 GetFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
