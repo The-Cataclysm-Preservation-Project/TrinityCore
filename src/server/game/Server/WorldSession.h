@@ -235,6 +235,10 @@ namespace WorldPackets
         class UpdateMissileTrajectory;
     }
 
+    namespace Talent
+    {
+        class LearnPreviewTalents;
+    }
     namespace Ticket
     {
         class Complaint;
@@ -988,7 +992,7 @@ class TC_GAME_API WorldSession
         void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recvPacket);
 
         void HandleLearnTalentOpcode(WorldPacket& recvPacket);
-        void HandleLearnPreviewTalents(WorldPacket& recvPacket);
+        void HandleLearnPreviewTalents(WorldPackets::Talent::LearnPreviewTalents& packet);
         void HandleTalentWipeConfirmOpcode(WorldPacket& recvPacket);
         void HandleUnlearnSkillOpcode(WorldPacket& recvPacket);
 

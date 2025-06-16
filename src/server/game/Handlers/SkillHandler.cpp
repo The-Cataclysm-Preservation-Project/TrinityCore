@@ -22,6 +22,7 @@
 #include "ObjectAccessor.h"
 #include "Pet.h"
 #include "Player.h"
+#include "TalentPackets.h"
 #include "WorldPacket.h"
 
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recvData)
@@ -33,48 +34,25 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recvData)
         _player->SendTalentsInfoData(false);
 }
 
-void WorldSession::HandleLearnPreviewTalents(WorldPacket& recvPacket)
+void WorldSession::HandleLearnPreviewTalents(WorldPackets::Talent::LearnPreviewTalents& packet)
 {
-    TC_LOG_DEBUG("network", "CMSG_LEARN_PREVIEW_TALENTS");
-
-    int32 tabPage;
-    uint32 talentsCount;
-    recvPacket >> tabPage;    // talent tree
+    // Player is attempting to set his primary specialization for his active spec.
+    // This field is doing the same as CMSG_SET_PRIMARY_TALENT_TREE
+    if (packet.TalentTab >= 0)
+        if (!_player->LearnPrimaryTalentSpecialization(packet.TalentTab))
+            return;
 
     // prevent cheating (selecting new tree with points already in another)
-    if (tabPage >= 0)   // -1 if player already has specialization
-    {
+    if (packet.TalentTab >= 0)   // -1 if player already has specialization
         if (TalentTabEntry const* talentTabEntry = sTalentTabStore.LookupEntry(_player->GetPrimaryTalentTree(_player->GetActiveSpec())))
-        {
-            if (talentTabEntry->OrderIndex != uint32(tabPage))
-            {
-                recvPacket.rfinish();
+            if (talentTabEntry->OrderIndex != static_cast<uint32>(packet.TalentTab))
                 return;
-            }
-        }
-    }
 
-    recvPacket >> talentsCount;
-
-    uint32 talentId, talentRank;
-
-    // Client has max 21 talents for tree for 3 trees, rounded up : 70
-    uint32 const MaxTalentsCount = 70;
-
-    for (uint32 i = 0; i < talentsCount && i < MaxTalentsCount; ++i)
-    {
-        recvPacket >> talentId >> talentRank;
-
-        if (!_player->LearnTalent(talentId, talentRank))
-        {
-            recvPacket.rfinish();
+    for (WorldPackets::Talent::TalentInfo const& talent : packet.Talents)
+        if (!_player->LearnTalent(talent.TalentID, talent.Rank))
             break;
-        }
-    }
 
     _player->SendTalentsInfoData(false);
-
-    recvPacket.rfinish();
 }
 
 void WorldSession::HandleTalentWipeConfirmOpcode(WorldPacket& recvData)

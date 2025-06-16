@@ -25474,21 +25474,18 @@ void Player::CompletedAchievement(AchievementEntry const* entry)
 
 bool Player::LearnTalent(uint32 talentId, uint32 talentRank)
 {
-    uint32 CurTalentPoints = GetFreeTalentPoints();
-
-    if (CurTalentPoints == 0)
+    if (talentId == 0 || talentRank >= MAX_TALENT_RANK)
         return false;
 
-    if (talentRank >= MAX_TALENT_RANK)
+    uint32 freeTalentPoints = GetFreeTalentPoints();
+    if (freeTalentPoints == 0)
         return false;
 
     TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentId);
-
     if (!talentInfo)
         return false;
 
     TalentTabEntry const* talentTabInfo = sTalentTabStore.LookupEntry(talentInfo->TabID);
-
     if (!talentTabInfo)
         return false;
 
@@ -25512,7 +25509,7 @@ bool Player::LearnTalent(uint32 talentId, uint32 talentRank)
         return false;
 
     // check if we have enough talent points
-    if (CurTalentPoints < (talentRank - curtalent_maxrank + 1))
+    if (freeTalentPoints < (talentRank - curtalent_maxrank + 1))
         return false;
 
     // Check if it requires another talent
@@ -25587,24 +25584,8 @@ bool Player::LearnTalent(uint32 talentId, uint32 talentRank)
 
     TC_LOG_DEBUG("entities.player", "TalentID: %u Rank: %u Spell: %u Spec: %u\n", talentId, talentRank, spellid, GetActiveSpec());
 
-    // set talent tree for player
-    if (!GetPrimaryTalentTree(GetActiveSpec()))
-    {
-        SetPrimaryTalentTree(GetActiveSpec(), talentInfo->TabID);
-        std::vector<uint32> const* specSpells = sDBCManager.GetTalentTreePrimarySpells(talentInfo->TabID);
-        if (specSpells)
-            for (size_t i = 0; i < specSpells->size(); ++i)
-                LearnSpell(specSpells->at(i), false);
-
-        if (CanUseMastery())
-            for (uint32 i = 0; i < MAX_MASTERY_SPELLS; ++i)
-                if (SpellInfo const* masterySpell = sSpellMgr->GetSpellInfo(talentTabInfo->MasterySpellID[i]))
-                    if (masterySpell->IsPassive() && HandlePassiveSpellLearn(masterySpell))
-                        CastSpell(this, masterySpell->Id, true);
-    }
-
     // update free talent points
-    SetFreeTalentPoints(CurTalentPoints - (talentRank - curtalent_maxrank + 1));
+    SetFreeTalentPoints(freeTalentPoints - (talentRank - curtalent_maxrank + 1));
     return true;
 }
 
@@ -25741,6 +25722,38 @@ void Player::LearnPetTalent(ObjectGuid petGuid, uint32 talentId, uint32 talentRa
 
     // update free talent points
     pet->SetFreeTalentPoints(CurTalentPoints - (talentRank - curtalent_maxrank + 1));
+}
+
+bool Player::LearnPrimaryTalentSpecialization(uint8 talentTabIndex)
+{
+    if (talentTabIndex >= MAX_TALENT_TABS)
+        return false;
+
+    if (GetPrimaryTalentTree(GetActiveSpec()) != 0)
+        return false;
+
+    uint32 const* talentTabs = sDBCManager.GetTalentTabPages(getClass());
+    if (!talentTabs)
+        return false;
+
+    TalentTabEntry const* talentTabInfo = sTalentTabStore.LookupEntry(talentTabs[talentTabIndex]);
+    if (!talentTabInfo)
+        return false;
+
+    SetPrimaryTalentTree(GetActiveSpec(), talentTabInfo->ID);
+
+    // Learn specialization spells and mastery
+    if (std::vector<uint32> const* specSpells = sDBCManager.GetTalentTreePrimarySpells(talentTabInfo->ID))
+        for (uint32 spellId : *specSpells)
+            LearnSpell(spellId, false);
+
+    if (CanUseMastery())
+        for (uint8 i = 0; i < MAX_MASTERY_SPELLS; ++i)
+            if (SpellInfo const* masterySpell = sSpellMgr->GetSpellInfo(talentTabInfo->MasterySpellID[i]))
+                if (masterySpell->IsPassive() && HandlePassiveSpellLearn(masterySpell))
+                    CastSpell(this, masterySpell->Id, true);
+
+    return true;
 }
 
 void Player::AddKnownCurrency(uint32 itemId)
@@ -27793,7 +27806,8 @@ uint32 Player::GetPrimaryTalentTree(uint8 spec) const
 
 void Player::SetPrimaryTalentTree(uint8 spec, uint32 tree)
 {
-    _talentMgr->SpecInfo[spec].TalentTree = tree; UpdateArmorSpecialization();
+    _talentMgr->SpecInfo[spec].TalentTree = tree;
+    UpdateArmorSpecialization();
 }
 
 uint8 Player::GetActiveSpec() const
