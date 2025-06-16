@@ -186,33 +186,53 @@ class TC_GAME_API Object
         // FG: some hacky helpers
         void ForceValuesUpdateAtIndex(uint32);
 
+        inline bool IsItem() const { return isType(TYPEMASK_ITEM); }
+        static Item* ToItem(Object* o) { return o ? o->ToItem() : nullptr; }
+        static Item const* ToItem(Object const* o) { return o ? o->ToItem() : nullptr; }
+        Item* ToItem() { if (IsItem()) return reinterpret_cast<Item*>(this); else return nullptr; }
+        Item const* ToItem() const { if (IsItem()) return reinterpret_cast<Item const*>(this); else return nullptr; }
+
         inline bool IsPlayer() const { return GetTypeId() == TYPEID_PLAYER; }
-        Player* ToPlayer() { if (GetTypeId() == TYPEID_PLAYER) return reinterpret_cast<Player*>(this); else return nullptr; }
-        Player const* ToPlayer() const { if (GetTypeId() == TYPEID_PLAYER) return reinterpret_cast<Player const*>(this); else return nullptr; }
+        static Player* ToPlayer(Object* o) { return o ? o->ToPlayer() : nullptr; }
+        static Player const* ToPlayer(Object const* o) { return o ? o->ToPlayer() : nullptr; }
+        Player* ToPlayer() { if (IsPlayer()) return reinterpret_cast<Player*>(this); else return nullptr; }
+        Player const* ToPlayer() const { if (IsPlayer()) return reinterpret_cast<Player const*>(this); else return nullptr; }
 
         inline bool IsCreature() const { return GetTypeId() == TYPEID_UNIT; }
-        Creature* ToCreature() { if (GetTypeId() == TYPEID_UNIT) return reinterpret_cast<Creature*>(this); else return nullptr; }
-        Creature const* ToCreature() const { if (GetTypeId() == TYPEID_UNIT) return reinterpret_cast<Creature const*>(this); else return nullptr; }
+        static Creature* ToCreature(Object* o) { return o ? o->ToCreature() : nullptr; }
+        static Creature const* ToCreature(Object const* o) { return o ? o->ToCreature() : nullptr; }
+        Creature* ToCreature() { if (IsCreature()) return reinterpret_cast<Creature*>(this); else return nullptr; }
+        Creature const* ToCreature() const { if (IsCreature()) return reinterpret_cast<Creature const*>(this); else return nullptr; }
 
         inline bool IsUnit() const { return isType(TYPEMASK_UNIT); }
-        Unit* ToUnit() { if (isType(TYPEMASK_UNIT)) return reinterpret_cast<Unit*>(this); else return nullptr; }
-        Unit const* ToUnit() const { if (isType(TYPEMASK_UNIT)) return reinterpret_cast<Unit const*>(this); else return nullptr; }
+        static Unit* ToUnit(Object* o) { return o ? o->ToUnit() : nullptr; }
+        static Unit const* ToUnit(Object const* o) { return o ? o->ToUnit() : nullptr; }
+        Unit* ToUnit() { if (IsUnit()) return reinterpret_cast<Unit*>(this); else return nullptr; }
+        Unit const* ToUnit() const { if (IsUnit()) return reinterpret_cast<Unit const*>(this); else return nullptr; }
 
         inline bool IsGameObject() const { return GetTypeId() == TYPEID_GAMEOBJECT; }
-        GameObject* ToGameObject() { if (GetTypeId() == TYPEID_GAMEOBJECT) return reinterpret_cast<GameObject*>(this); else return nullptr; }
-        GameObject const* ToGameObject() const { if (GetTypeId() == TYPEID_GAMEOBJECT) return reinterpret_cast<GameObject const*>(this); else return nullptr; }
+        static GameObject* ToGameObject(Object* o) { return o ? o->ToGameObject() : nullptr; }
+        static GameObject const* ToGameObject(Object const* o) { return o ? o->ToGameObject() : nullptr; }
+        GameObject* ToGameObject() { if (IsGameObject()) return reinterpret_cast<GameObject*>(this); else return nullptr; }
+        GameObject const* ToGameObject() const { if (IsGameObject()) return reinterpret_cast<GameObject const*>(this); else return nullptr; }
 
         inline bool IsCorpse() const { return GetTypeId() == TYPEID_CORPSE; }
-        Corpse* ToCorpse() { if (GetTypeId() == TYPEID_CORPSE) return reinterpret_cast<Corpse*>(this); else return nullptr; }
-        Corpse const* ToCorpse() const { if (GetTypeId() == TYPEID_CORPSE) return reinterpret_cast<Corpse const*>(this); else return nullptr; }
+        static Corpse* ToCorpse(Object* o) { return o ? o->ToCorpse() : nullptr; }
+        static Corpse const* ToCorpse(Object const* o) { return o ? o->ToCorpse() : nullptr; }
+        Corpse* ToCorpse() { if (IsCorpse()) return reinterpret_cast<Corpse*>(this); else return nullptr; }
+        Corpse const* ToCorpse() const { if (IsCorpse()) return reinterpret_cast<Corpse const*>(this); else return nullptr; }
 
         inline bool IsDynObject() const { return GetTypeId() == TYPEID_DYNAMICOBJECT; }
-        DynamicObject* ToDynObject() { if (GetTypeId() == TYPEID_DYNAMICOBJECT) return reinterpret_cast<DynamicObject*>(this); else return nullptr; }
-        DynamicObject const* ToDynObject() const { if (GetTypeId() == TYPEID_DYNAMICOBJECT) return reinterpret_cast<DynamicObject const*>(this); else return nullptr; }
+        static DynamicObject* ToDynObject(Object* o) { return o ? o->ToDynObject() : nullptr; }
+        static DynamicObject const* ToDynObject(Object const* o) { return o ? o->ToDynObject() : nullptr; }
+        DynamicObject* ToDynObject() { if (IsDynObject()) return reinterpret_cast<DynamicObject*>(this); else return nullptr; }
+        DynamicObject const* ToDynObject() const { if (IsDynObject()) return reinterpret_cast<DynamicObject const*>(this); else return nullptr; }
 
         inline bool IsAreaTrigger() const { return GetTypeId() == TYPEID_AREATRIGGER; }
-        AreaTrigger* ToAreaTrigger() { if (GetTypeId() == TYPEID_AREATRIGGER) return reinterpret_cast<AreaTrigger*>(this); else return nullptr; }
-        AreaTrigger const* ToAreaTrigger() const { if (GetTypeId() == TYPEID_AREATRIGGER) return reinterpret_cast<AreaTrigger const*>(this); else return nullptr; }
+        static AreaTrigger* ToAreaTrigger(Object* o) { return o ? o->ToAreaTrigger() : nullptr; }
+        static AreaTrigger const* ToAreaTrigger(Object const* o) { return o ? o->ToAreaTrigger() : nullptr; }
+        AreaTrigger* ToAreaTrigger() { if (IsAreaTrigger()) return reinterpret_cast<AreaTrigger*>(this); else return nullptr; }
+        AreaTrigger const* ToAreaTrigger() const { if (IsAreaTrigger()) return reinterpret_cast<AreaTrigger const*>(this); else return nullptr; }
 
     protected:
         Object();
