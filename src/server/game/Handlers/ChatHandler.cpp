@@ -212,13 +212,16 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                     lang = ModLangAuras.front()->GetMiscValue();
             }
 
-            if (!sender->CanSpeak())
+            if (!CanSpeak())
             {
                 std::string timeStr = secsToTimeString(m_muteTime - GameTime::GetGameTime());
                 SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), timeStr.c_str());
                 recvData.rfinish(); // Prevent warnings
                 return;
             }
+
+            if (type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
+                sender->UpdateSpeakTime(Player::ChatFloodThrottle::REGULAR);
         }
     }
     else
@@ -651,6 +654,14 @@ void WorldSession::HandleAddonMessagechatOpcode(WorldPacket& recvData)
         return;
     }
 
+    if (!CanSpeak())
+    {
+        recvData.rfinish();
+        return;
+    }
+
+    sender->UpdateSpeakTime(Player::ChatFloodThrottle::ADDON);
+
     switch (type)
     {
         case CHAT_MSG_BATTLEGROUND:
@@ -727,7 +738,7 @@ void WorldSession::HandleSendTextEmoteOpcode(WorldPackets::Chat::SendTextEmote& 
     if (!GetPlayer()->IsAlive())
         return;
 
-    if (!GetPlayer()->CanSpeak())
+    if (!CanSpeak())
     {
         std::string timeStr = secsToTimeString(m_muteTime - GameTime::GetGameTime());
         SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), timeStr.c_str());
