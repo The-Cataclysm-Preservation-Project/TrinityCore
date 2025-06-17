@@ -41,7 +41,7 @@ struct PlayerTalentInfo
     uint32 ResetTalentsCost = 0;
     time_t ResetTalentsTime = 0;
     uint8 ActiveSpec = 0;
-    uint8 SpecsCount = 0;
+    uint8 SpecsCount = 1;
 };
 
 #endif // __PlayerTalentInfo_h_
