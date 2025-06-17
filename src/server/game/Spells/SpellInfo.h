@@ -292,7 +292,7 @@ public:
     bool IsTargetingArea() const;
     bool IsAreaAuraEffect() const;
     bool IsUnitOwnedAuraEffect() const;
-    bool CanScaleWithCreatureLevel() const;
+    bool ScalesWithCreatureLevel() const;
 
     int32 CalcValue(WorldObject const* caster = nullptr, int32 const* basePoints = nullptr, Unit const* target = nullptr) const;
     int32 CalcBaseValue(WorldObject const* caster, Unit const* target) const;

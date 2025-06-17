@@ -436,7 +436,7 @@ bool SpellEffectInfo::IsUnitOwnedAuraEffect() const
     return IsAreaAuraEffect() || Effect == SPELL_EFFECT_APPLY_AURA || Effect == SPELL_EFFECT_APPLY_AURA_2;
 }
 
-bool SpellEffectInfo::CanScaleWithCreatureLevel() const
+bool SpellEffectInfo::ScalesWithCreatureLevel() const
 {
     if (!_spellInfo->HasAttribute(SPELL_ATTR0_SCALES_WITH_CREATURE_LEVEL))
         return false;
@@ -536,25 +536,7 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 
             value += playerCaster->GetFloatValue(PLAYER_MASTERY) * BonusMultiplier;
 
     if (casterUnit)
-    {
-        // Some spells use the internal game table to calculate scaling coefficients for creatures
-        if (Creature const* creatureCaster = Object::ToCreature(casterUnit))
-        {
-            if (CanScaleWithCreatureLevel())
-            {
-                uint8 casterClass = creatureCaster->getClass();
-                uint8 expansion = creatureCaster->GetCreatureTemplate()->expansion;
-
-                float spellDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(_spellInfo->SpellLevel), casterClass);
-                float creatureDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(casterUnit->getLevel()), casterClass);
-
-                if (spellDamage != 0.0f)
-                    value *= creatureDamage / spellDamage;
-            }
-        }
-
         value = casterUnit->ApplyEffectModifiers(_spellInfo, _effIndex, value);
-    }
 
     return int32(round(value));
 }
@@ -592,6 +574,23 @@ int32 SpellEffectInfo::CalcBaseValue(WorldObject const* caster, Unit const* targ
     else
     {
         float value = BasePoints;
+
+        if (ScalesWithCreatureLevel())
+        {
+            // Some spells use the internal game table to calculate scaling coefficients for creatures
+            if (Creature const* creatureCaster = Object::ToCreature(caster))
+            {
+                uint8 casterClass = creatureCaster->getClass();
+                uint8 expansion = creatureCaster->GetCreatureTemplate()->expansion;
+
+                float spellDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(_spellInfo->SpellLevel), casterClass);
+                float creatureDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(creatureCaster->getLevel()), casterClass);
+
+                if (spellDamage != 0.0f)
+                    value *= creatureDamage / spellDamage;
+            }
+        }
+
         return int32(round(value));
     }
 }
