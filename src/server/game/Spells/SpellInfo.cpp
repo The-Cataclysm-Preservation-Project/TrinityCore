@@ -436,6 +436,49 @@ bool SpellEffectInfo::IsUnitOwnedAuraEffect() const
     return IsAreaAuraEffect() || Effect == SPELL_EFFECT_APPLY_AURA || Effect == SPELL_EFFECT_APPLY_AURA_2;
 }
 
+bool SpellEffectInfo::CanScaleWithCreatureLevel() const
+{
+    if (!_spellInfo->HasAttribute(SPELL_ATTR0_SCALES_WITH_CREATURE_LEVEL))
+        return false;
+
+    switch (Effect)
+    {
+        case SPELL_EFFECT_SCHOOL_DAMAGE:
+        case SPELL_EFFECT_DUMMY:
+        case SPELL_EFFECT_POWER_DRAIN:
+        case SPELL_EFFECT_HEALTH_LEECH:
+        case SPELL_EFFECT_HEAL:
+        case SPELL_EFFECT_WEAPON_DAMAGE:
+        case SPELL_EFFECT_POWER_BURN:
+        case SPELL_EFFECT_SCRIPT_EFFECT:
+        case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
+        case SPELL_EFFECT_FORCE_CAST_WITH_VALUE:
+        case SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE:
+        case SPELL_EFFECT_TRIGGER_MISSILE_SPELL_WITH_VALUE:
+            return true;
+        default:
+            break;
+    }
+
+    switch (ApplyAuraName)
+    {
+        case SPELL_AURA_PERIODIC_DAMAGE:
+        case SPELL_AURA_DUMMY:
+        case SPELL_AURA_PERIODIC_HEAL:
+        case SPELL_AURA_DAMAGE_SHIELD:
+        case SPELL_AURA_PROC_TRIGGER_DAMAGE:
+        case SPELL_AURA_PERIODIC_LEECH:
+        case SPELL_AURA_PERIODIC_MANA_LEECH:
+        case SPELL_AURA_SCHOOL_ABSORB:
+        case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
+            return true;
+        default:
+            break;
+    }
+
+    return false;
+}
+
 int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 const* bp /*= nullptr*/, Unit const* target /*= nullptr*/) const
 {
     float basePointsPerLevel = RealPointsPerLevel;
@@ -493,7 +536,25 @@ int32 SpellEffectInfo::CalcValue(WorldObject const* caster /*= nullptr*/, int32 
             value += playerCaster->GetFloatValue(PLAYER_MASTERY) * BonusMultiplier;
 
     if (casterUnit)
+    {
+        // Some spells use the internal game table to calculate scaling coefficients for creatures
+        if (Creature const* creatureCaster = Object::ToCreature(casterUnit))
+        {
+            if (CanScaleWithCreatureLevel())
+            {
+                uint8 casterClass = creatureCaster->getClass();
+                uint8 expansion = creatureCaster->GetCreatureTemplate()->expansion;
+
+                float spellDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(_spellInfo->SpellLevel), casterClass);
+                float creatureDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(casterUnit->getLevel()), casterClass);
+
+                if (spellDamage != 0.0f)
+                    value *= creatureDamage / spellDamage;
+            }
+        }
+
         value = casterUnit->ApplyEffectModifiers(_spellInfo, _effIndex, value);
+    }
 
     return int32(round(value));
 }
