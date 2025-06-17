@@ -91,9 +91,9 @@ enum ZLiquidStatus : uint32;
 
 typedef std::deque<Mail*> PlayerMails;
 
-#define PLAYER_MAX_SKILLS           128
-#define PLAYER_MAX_DAILY_QUESTS     25
-#define PLAYER_EXPLORED_ZONES_SIZE  156
+constexpr uint8 PLAYER_MAX_SKILLS           = 128;
+constexpr uint8 PLAYER_MAX_DAILY_QUESTS     = 25;
+constexpr uint8 PLAYER_EXPLORED_ZONES_SIZE  = 156;
 
 enum SpellModType : uint8
 {
@@ -145,7 +145,7 @@ struct PlayerTalent
     uint8 Spec;
 };
 
-extern uint32 const MasterySpells[MAX_CLASSES];
+extern std::array<uint32, MAX_CLASSES> const MasterySpells;
 
 enum TalentTree // talent tabs
 {
@@ -181,8 +181,8 @@ enum TalentTree // talent tabs
     TALENT_TREE_DRUID_RESTORATION    = 748
 };
 
-#define MAX_ARMOR_SPECIALIZATION_IDS 7
-uint32 const ArmorSpecializationIds[MAX_ARMOR_SPECIALIZATION_IDS] = { 86530, 86531, 86529, 86528, 86525, 86524, 86526 };
+constexpr uint8 MAX_ARMOR_SPECIALIZATION_IDS = 7;
+constexpr std::array<uint32, MAX_ARMOR_SPECIALIZATION_IDS> ArmorSpecializationIds= { 86530, 86531, 86529, 86528, 86525, 86524, 86526 };
 
 // Spell modifier (used for modify other spells)
 struct SpellModifier
@@ -278,9 +278,9 @@ enum ReputationSource
     REPUTATION_SOURCE_SPELL
 };
 
-#define ACTION_BUTTON_ACTION(X) (uint32(X) & 0x00FFFFFF)
-#define ACTION_BUTTON_TYPE(X)   ((uint32(X) & 0xFF000000) >> 24)
-#define MAX_ACTION_BUTTON_ACTION_VALUE (0x00FFFFFF+1)
+constexpr uint32 ACTION_BUTTON_ACTION(uint32 x) { return x & 0x00FFFFFF; }
+constexpr uint32 ACTION_BUTTON_TYPE(uint32 x) { return (x & 0xFF000000) >> 24; }
+constexpr uint32 MAX_ACTION_BUTTON_ACTION_VALUE = 0x00FFFFFF + 1;
 
 struct ActionButton
 {
@@ -304,7 +304,7 @@ struct ActionButton
     }
 };
 
-#define  MAX_ACTION_BUTTONS 144                             //checked in 3.2.0
+constexpr uint8 MAX_ACTION_BUTTONS = 144; //checked in 3.2.0
 
 typedef std::map<uint8, ActionButton> ActionButtonList;
 
@@ -397,7 +397,7 @@ enum DrunkenState
     DRUNKEN_SMASHED = 3
 };
 
-#define MAX_DRUNKEN   4
+constexpr uint8 MAX_DRUNKEN = 4;
 
 enum PlayerFlags
 {
@@ -476,10 +476,10 @@ enum PlayerFieldBytes2Offsets
 
 static_assert((PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID & 1) == 0, "PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID must be aligned to 2 byte boundary");
 
-#define PLAYER_BYTES_2_OVERRIDE_SPELLS_UINT16_OFFSET (PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID / 2)
+constexpr uint8 PLAYER_BYTES_2_OVERRIDE_SPELLS_UINT16_OFFSET = PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID / 2;
 
-#define KNOWN_TITLES_SIZE   4
-#define MAX_TITLE_INDEX     (KNOWN_TITLES_SIZE * 64)        // 4 uint64 fields
+constexpr uint8 KNOWN_TITLES_SIZE = 4;
+constexpr uint32 MAX_TITLE_INDEX = KNOWN_TITLES_SIZE * sizeof(uint64); // 4 uint64 fields
 
 // used in PLAYER_FIELD_BYTES values
 enum PlayerFieldByteFlags
@@ -503,8 +503,9 @@ enum MirrorTimerType
     BREATH_TIMER       = 1,
     FIRE_TIMER         = 2 // feign death
 };
-#define MAX_TIMERS      3
-#define DISABLED_MIRROR_TIMER   -1
+
+constexpr uint8 MAX_TIMERS = 3;
+constexpr int32 DISABLED_MIRROR_TIMER = -1;
 
 // 2^n values
 enum PlayerExtraFlags
@@ -557,7 +558,7 @@ enum QuestSlotOffsets
     QUEST_TIME_OFFSET   = 4
 };
 
-#define MAX_QUEST_OFFSET 5
+constexpr uint8 MAX_QUEST_OFFSET = 5;
 
 enum QuestSlotStateMask
 {
@@ -599,7 +600,7 @@ enum PlayerSlots
     PLAYER_SLOTS_COUNT          = (PLAYER_SLOT_END - PLAYER_SLOT_START)
 };
 
-#define INVENTORY_SLOT_BAG_0    255
+constexpr uint8 INVENTORY_SLOT_BAG_0 = 255;
 
 enum EquipmentSlots : uint8                                 // 19 slots
 {
@@ -666,7 +667,7 @@ struct ItemPosCount
 };
 typedef std::vector<ItemPosCount> ItemPosCountVec;
 
-#define JUSTICE_POINTS_CONVERSION_MONEY 4750
+constexpr uint32 JUSTICE_POINTS_CONVERSION_MONEY = 4750;
 
 enum TransferAbortReason
 {
@@ -771,7 +772,7 @@ enum PlayedTimeIndex
     PLAYED_TIME_LEVEL = 1
 };
 
-#define MAX_PLAYED_TIME_INDEX 2
+constexpr uint8 MAX_PLAYED_TIME_INDEX = 2;
 
 // used at player loading query list preparing, and later result selection
 enum PlayerLoginQueryIndex
@@ -830,7 +831,7 @@ enum PlayerDelayedOperations
 };
 
 // Player summoning auto-decline time (in secs)
-#define MAX_PLAYER_SUMMON_DELAY                   (2*MINUTE)
+constexpr uint32 MAX_PLAYER_SUMMON_DELAY= 2 * MINUTE;
 // Maximum money amount : 2^31 - 1
 TC_GAME_API extern uint64 const MAX_MONEY_AMOUNT;
 

@@ -122,14 +122,13 @@
 #include <G3D/g3dmath.h>
 
 // corpse reclaim times
-#define DEATH_EXPIRE_STEP (5*MINUTE)
-#define MAX_DEATH_COUNT 3
+static constexpr uint32 DEATH_EXPIRE_STEP = 5 * MINUTE;
+static constexpr uint8 MAX_DEATH_COUNT = 3;
+static constexpr std::array<uint32, MAX_DEATH_COUNT> CorpseReclaimDelay = { 30, 60, 120 };
 
-static uint32 copseReclaimDelay[MAX_DEATH_COUNT] = { 30, 60, 120 };
-
-uint32 const MasterySpells[MAX_CLASSES] =
+std::array<uint32, MAX_CLASSES> const MasterySpells =
 {
-        0,
+    0,
     87500,  // Warrior
     87494,  // Paladin
     87493,  // Hunter
@@ -139,7 +138,7 @@ uint32 const MasterySpells[MAX_CLASSES] =
     87497,  // Shaman
     86467,  // Mage
     87498,  // Warlock
-        0,
+    0,
     87491,  // Druid
 };
 
@@ -24303,7 +24302,7 @@ uint32 Player::GetCorpseReclaimDelay(bool pvp) const
     if (pvp)
     {
         if (!sWorld->getBoolConfig(CONFIG_DEATH_CORPSE_RECLAIM_DELAY_PVP))
-            return copseReclaimDelay[0];
+            return CorpseReclaimDelay[0];
     }
     else if (!sWorld->getBoolConfig(CONFIG_DEATH_CORPSE_RECLAIM_DELAY_PVE))
         return 0;
@@ -24312,7 +24311,7 @@ uint32 Player::GetCorpseReclaimDelay(bool pvp) const
     // 0..2 full period
     // should be ceil(x)-1 but not floor(x)
     uint64 count = (now < m_deathExpireTime - 1) ? (m_deathExpireTime - 1 - now) / DEATH_EXPIRE_STEP : 0;
-    return copseReclaimDelay[count];
+    return CorpseReclaimDelay[count];
 }
 
 void Player::UpdateCorpseReclaimDelay()
@@ -24366,7 +24365,7 @@ int32 Player::CalculateCorpseReclaimDelay(bool load) const
                 count = MAX_DEATH_COUNT - 1;
         }
 
-        time_t expected_time = corpse->GetGhostTime() + copseReclaimDelay[count];
+        time_t expected_time = corpse->GetGhostTime() + CorpseReclaimDelay[count];
         time_t now = GameTime::GetGameTime();
 
         if (now >= expected_time)
