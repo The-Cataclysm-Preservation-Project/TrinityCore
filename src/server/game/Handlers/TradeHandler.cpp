@@ -43,10 +43,12 @@ void WorldSession::SendTradeStatus(WorldPackets::Trade::TradeStatus& info)
 
 void WorldSession::HandleIgnoreTradeOpcode(WorldPackets::Trade::IgnoreTrade& /*ignoreTrade*/)
 {
+    _player->TradeCancel(true, TRADE_STATUS_IGNORE_YOU);
 }
 
 void WorldSession::HandleBusyTradeOpcode(WorldPackets::Trade::BusyTrade& /*busyTRade*/)
 {
+    _player->TradeCancel(true, TRADE_STATUS_BUSY);
 }
 
 void WorldSession::SendUpdateTrade(bool trader_data /*= true*/)
@@ -549,13 +551,13 @@ void WorldSession::HandleBeginTradeOpcode(WorldPackets::Trade::BeginTrade& /*beg
     SendTradeStatus(info);
 }
 
-void WorldSession::SendCancelTrade()
+void WorldSession::SendCancelTrade(TradeStatus status)
 {
     if (PlayerRecentlyLoggedOut() || PlayerLogout())
         return;
 
     WorldPackets::Trade::TradeStatus info;
-    info.Status = TRADE_STATUS_TRADE_CANCELED;
+    info.Status = status;
     SendTradeStatus(info);
 }
 
@@ -646,13 +648,6 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPackets::Trade::InitiateTrade&
     if (pOther->GetSession()->isLogingOut())
     {
         info.Status = TRADE_STATUS_TARGET_LOGOUT;
-        SendTradeStatus(info);
-        return;
-    }
-
-    if (pOther->GetSocial()->HasIgnore(GetPlayer()->GetGUID()))
-    {
-        info.Status = TRADE_STATUS_IGNORE_YOU;
         SendTradeStatus(info);
         return;
     }

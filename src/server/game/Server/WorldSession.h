@@ -567,7 +567,7 @@ class TC_GAME_API WorldSession
 
         void SendTradeStatus(WorldPackets::Trade::TradeStatus& info);
         void SendUpdateTrade(bool trader_data = true);
-        void SendCancelTrade();
+        void SendCancelTrade(TradeStatus status);
 
         void SendPetitionQueryOpcode(ObjectGuid petitionguid);
 
