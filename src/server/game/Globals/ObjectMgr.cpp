@@ -838,10 +838,12 @@ void ObjectMgr::CheckCreatureTemplate(CreatureTemplate const* cInfo)
         if (!ok2)
             continue;
 
-        if (cInfo->HealthScalingExpansion >= 0 && cInfo->HealthScalingExpansion  > difficultyInfo->HealthScalingExpansion)
+        if (cInfo->HealthScalingExpansion  > difficultyInfo->HealthScalingExpansion)
         {
-            TC_LOG_ERROR("sql.sql", "Creature (Entry: %u, exp: %u) has different `HealthScalingExpansion` in difficulty %u mode (Entry: %u, exp: %u).",
+            TC_LOG_ERROR("sql.sql", "Creature (Entry: %u, HealthScalingExpansion: %u) has different `HealthScalingExpansion` in difficulty %u mode (Entry: %u, HealthScalingExpansion: %u).",
                 cInfo->Entry, cInfo->HealthScalingExpansion, diff + 1, cInfo->DifficultyEntry[diff], difficultyInfo->HealthScalingExpansion);
+            TC_LOG_ERROR("sql.sql", "Possible FIX: UPDATE `creature_template` SET `HealthScalingExpansion`= %u WHERE `entry`= %u;",
+                cInfo->HealthScalingExpansion, cInfo->DifficultyEntry[diff]);
         }
 
         if (cInfo->minlevel > difficultyInfo->minlevel)
@@ -870,7 +872,6 @@ void ObjectMgr::CheckCreatureTemplate(CreatureTemplate const* cInfo)
                 cInfo->Entry, cInfo->unit_class, diff + 1, cInfo->DifficultyEntry[diff], difficultyInfo->unit_class);
             TC_LOG_ERROR("sql.sql", "Possible FIX: UPDATE `creature_template` SET `unit_class`=%u WHERE `entry`=%u;",
                 cInfo->unit_class, cInfo->DifficultyEntry[diff]);
-            continue;
         }
 
         uint32 differenceMask = cInfo->npcflag ^ difficultyInfo->npcflag;
