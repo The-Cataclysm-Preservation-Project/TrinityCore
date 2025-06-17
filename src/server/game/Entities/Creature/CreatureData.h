@@ -366,7 +366,7 @@ struct TC_GAME_API CreatureTemplate
     uint32  GossipMenuId;
     uint8   minlevel;
     uint8   maxlevel;
-    uint32  expansion;
+    int32  HealthScalingExpansion;
     uint32  expansionUnknown;                               // either 0 or 3, sent to the client / wdb
     uint32  faction;
     uint32  npcflag;
@@ -450,6 +450,12 @@ struct TC_GAME_API CreatureTemplate
         return canTameExotic || !IsExotic();
     }
 
+    // Helpers
+    int32 GetHealthScalingExpansion() const
+    {
+        return HealthScalingExpansion == EXPANSION_LEVEL_CURRENT ? CURRENT_EXPANSION : HealthScalingExpansion;
+    }
+
     void InitializeQueryData();
     WorldPacket BuildQueryData(LocaleConstant loc) const;
 };
@@ -467,10 +473,9 @@ struct TC_GAME_API CreatureBaseStats
     float BaseDamage[MAX_EXPANSIONS];
 
     // Helpers
-
     uint32 GenerateHealth(CreatureTemplate const* info) const
     {
-        return uint32(ceil(BaseHealth[info->expansion] * info->ModHealth * info->ModHealthExtra));
+        return uint32(ceil(BaseHealth[info->GetHealthScalingExpansion()] * info->ModHealth * info->ModHealthExtra));
     }
 
     uint32 GenerateArmor(CreatureTemplate const* info) const
@@ -480,7 +485,7 @@ struct TC_GAME_API CreatureBaseStats
 
     float GenerateBaseDamage(CreatureTemplate const* info) const
     {
-        return BaseDamage[info->expansion];
+        return BaseDamage[info->GetHealthScalingExpansion()];
     }
 
     static CreatureBaseStats const* GetBaseStats(uint8 level, uint8 unitClass);

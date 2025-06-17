@@ -54,12 +54,15 @@ enum LootModes
 
 enum Expansions
 {
+    EXPANSION_LEVEL_CURRENT            = -1,
     EXPANSION_CLASSIC                  = 0,
     EXPANSION_THE_BURNING_CRUSADE      = 1,
     EXPANSION_WRATH_OF_THE_LICH_KING   = 2,
     EXPANSION_CATACLYSM                = 3,
     MAX_EXPANSIONS                     = 4
 };
+
+constexpr uint8 CURRENT_EXPANSION = EXPANSION_CATACLYSM;
 
 enum Gender
 {

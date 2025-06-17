@@ -426,8 +426,8 @@ void ObjectMgr::LoadCreatureTemplates()
 
     //                                               0      1                   2                   3                   4            5            6         7         8
     QueryResult result = WorldDatabase.Query("SELECT entry, difficulty_entry_1, difficulty_entry_2, difficulty_entry_3, KillCredit1, KillCredit2, modelid1, modelid2, modelid3, "
-    //                                        9         10    11          12       13        14              15        16        17   18       19       20       21          22
-                                             "modelid4, name, femaleName, subname, IconName, gossip_menu_id, minlevel, maxlevel, exp, exp_unk, faction, npcflag, speed_walk, speed_run, "
+    //                                        9         10    11          12       13        14              15        16        17                      18       19       20       21          22
+                                             "modelid4, name, femaleName, subname, IconName, gossip_menu_id, minlevel, maxlevel, HealthScalingExpansion, exp_unk, faction, npcflag, speed_walk, speed_run, "
     //                                        23      24     25         26              27               28            29             30          31          32
                                              "scale, `rank`, dmgschool, BaseAttackTime, RangeAttackTime, BaseVariance, RangeVariance, unit_class, unit_flags, unit_flags2, "
     //                                        33      34             35     36         37           38      39              40        41           42           43           44           45           46
@@ -490,7 +490,7 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields)
     creatureTemplate.GossipMenuId      = fields[14].GetUInt32();
     creatureTemplate.minlevel          = fields[15].GetUInt8();
     creatureTemplate.maxlevel          = fields[16].GetUInt8();
-    creatureTemplate.expansion         = uint32(fields[17].GetInt16());
+    creatureTemplate.HealthScalingExpansion = fields[17].GetInt32();
     creatureTemplate.expansionUnknown  = uint32(fields[18].GetUInt16());
     creatureTemplate.faction           = uint32(fields[19].GetUInt16());
     creatureTemplate.npcflag           = fields[20].GetUInt32();
@@ -838,10 +838,10 @@ void ObjectMgr::CheckCreatureTemplate(CreatureTemplate const* cInfo)
         if (!ok2)
             continue;
 
-        if (cInfo->expansion > difficultyInfo->expansion)
+        if (cInfo->HealthScalingExpansion >= 0 && cInfo->HealthScalingExpansion  > difficultyInfo->HealthScalingExpansion)
         {
-            TC_LOG_ERROR("sql.sql", "Creature (Entry: %u, exp: %u) has different `exp` in difficulty %u mode (Entry: %u, exp: %u).",
-                cInfo->Entry, cInfo->expansion, diff + 1, cInfo->DifficultyEntry[diff], difficultyInfo->expansion);
+            TC_LOG_ERROR("sql.sql", "Creature (Entry: %u, exp: %u) has different `HealthScalingExpansion` in difficulty %u mode (Entry: %u, exp: %u).",
+                cInfo->Entry, cInfo->HealthScalingExpansion, diff + 1, cInfo->DifficultyEntry[diff], difficultyInfo->HealthScalingExpansion);
         }
 
         if (cInfo->minlevel > difficultyInfo->minlevel)
@@ -1097,10 +1097,10 @@ void ObjectMgr::CheckCreatureTemplate(CreatureTemplate const* cInfo)
         const_cast<CreatureTemplate*>(cInfo)->MovementType = IDLE_MOTION_TYPE;
     }
 
-    if (cInfo->expansion > (MAX_EXPANSIONS - 1))
+    if (cInfo->HealthScalingExpansion > (MAX_EXPANSIONS - 1))
     {
-        TC_LOG_ERROR("sql.sql", "Table `creature_template` lists creature (Entry: %u) with expansion %u. Ignored and set to 0.", cInfo->Entry, cInfo->expansion);
-        const_cast<CreatureTemplate*>(cInfo)->expansion = 0;
+        TC_LOG_ERROR("sql.sql", "Table `creature_template` lists creature (Entry: %u) with `HealthScalingExpansion` %u. Ignored and set to 0.", cInfo->Entry, cInfo->HealthScalingExpansion);
+        const_cast<CreatureTemplate*>(cInfo)->HealthScalingExpansion = 0;
     }
 
     if (cInfo->expansionUnknown > MAX_EXPANSIONS)

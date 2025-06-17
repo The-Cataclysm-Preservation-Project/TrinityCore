@@ -581,7 +581,7 @@ int32 SpellEffectInfo::CalcBaseValue(WorldObject const* caster, Unit const* targ
             if (Creature const* creatureCaster = Object::ToCreature(caster))
             {
                 uint8 casterClass = creatureCaster->getClass();
-                uint8 expansion = creatureCaster->GetCreatureTemplate()->expansion;
+                uint8 expansion = creatureCaster->GetCreatureTemplate()->GetHealthScalingExpansion();
 
                 float spellDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(_spellInfo->SpellLevel), casterClass);
                 float creatureDamage = GetGameTableColumnForClass(sNpcDamageByClassGameTable[expansion].GetRow(creatureCaster->getLevel()), casterClass);
