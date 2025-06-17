@@ -737,7 +737,6 @@ class TC_GAME_API WorldSession
         // repair
         void HandleRepairItemOpcode(WorldPacket& recvPacket);
 
-        void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleRepopRequestOpcode(WorldPacket& recvPacket);
         void HandleAutostoreLootItemOpcode(WorldPacket& recvPacket);
         void HandleLootMoneyOpcode(WorldPacket& recvPacket);
@@ -788,7 +787,6 @@ class TC_GAME_API WorldSession
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
 
         void HandleGameObjectUseOpcode(WorldPacket& recPacket);
-        void HandleMeetingStoneInfo(WorldPacket& recPacket);
         void HandleGameobjectReportUse(WorldPacket& recvPacket);
 
         void HandleNameQueryOpcode(WorldPacket& recvPacket);
@@ -815,7 +813,6 @@ class TC_GAME_API WorldSession
         void HandleRequestRaidInfoOpcode(WorldPacket& recvData);
 
         void HandleBattlefieldStatusOpcode(WorldPacket& recvData);
-        void HandleBattleMasterHelloOpcode(WorldPacket& recvData);
 
         void HandlePartyInviteOpcode(WorldPackets::Party::PartyInviteClient& packet);
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
@@ -886,10 +883,8 @@ class TC_GAME_API WorldSession
         void HandleGuildAchievementMembers(WorldPacket& recvPacket);
         void HandleGuildSwitchRank(WorldPacket& recvPacket);
         void HandleGuildRenameRequest(WorldPacket& recvPacket);
-        void SendGuildCancelInvite(std::string unkString, uint8 unkByte);
         void HandleGuildRenameCallback(std::string newName, PreparedQueryResult result);
         void HandleAutoDeclineGuildInvites(WorldPacket& recvPacket);
-        void HandleGuildSwitchRankOpcode(WorldPacket& recvPacket);
         void HandleGuildRequestChallengeUpdate(WorldPackets::Guild::GuildChallengeUpdateRequest& packet);
         void HandleGuildXPQueryOpcode(WorldPackets::Guild::GuildXPQuery& packet);
 
@@ -960,7 +955,6 @@ class TC_GAME_API WorldSession
         void HandleQueryNextMailTime(WorldPacket& recvData);
         void HandleCancelChanneling(WorldPacket& recvData);
 
-        void SendItemPageInfo(ItemTemplate* itemProto);
         void HandleSplitItemOpcode(WorldPacket& recvPacket);
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
         void HandleDestroyItemOpcode(WorldPackets::Item::DestroyItem& packet);
@@ -1047,7 +1041,6 @@ class TC_GAME_API WorldSession
         void HandleChannelBan(WorldPacket& recvPacket);
         void HandleChannelUnban(WorldPacket& recvPacket);
         void HandleChannelAnnouncements(WorldPacket& recvPacket);
-        void HandleChannelModerate(WorldPacket& recvPacket);
         void HandleChannelDeclineInvite(WorldPacket& recvPacket);
         void HandleChannelDisplayListQuery(WorldPacket& recvPacket);
         void HandleGetChannelMemberCount(WorldPacket& recvPacket);
@@ -1125,10 +1118,6 @@ class TC_GAME_API WorldSession
         void HandleResetInstancesOpcode(WorldPacket& recvData);
         void HandleHearthAndResurrect(WorldPacket& recvData);
         void HandleInstanceLockResponse(WorldPacket& recvPacket);
-
-        // Cemetery
-        void HandleSetPreferedCemetery(WorldPacket& recvData);
-        void HandleCemeteryListRequest(WorldPacket& recvData);
 
         // Currency
         void HandleSetCurrencyFlags(WorldPackets::Misc::SetCurrencyFlags& packet);
