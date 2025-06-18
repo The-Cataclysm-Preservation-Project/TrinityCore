@@ -20,13 +20,14 @@
 
 #include "Common.h"
 #include "DatabaseEnvFwd.h"
-#include "DBCEnums.h"
 #include "SharedDefines.h"
 #include "WorldPacket.h"
 #include <vector>
 
 class Player;
 class WorldPacket;
+
+enum Difficulty : uint8;
 
 namespace WorldPackets
 {

@@ -1966,6 +1966,9 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Loading Quest POI");
     sObjectMgr->LoadQuestPOI();
 
+    TC_LOG_INFO("server.loading", "Loading Quest Money Rewards");
+    sObjectMgr->LoadQuestMoneyRewards();
+
     TC_LOG_INFO("server.loading", "Loading Quests Starters and Enders...");
     sObjectMgr->LoadQuestStartersAndEnders();                    // must be after quest load
 

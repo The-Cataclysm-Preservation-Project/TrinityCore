@@ -1375,13 +1375,13 @@ struct QuestSortEntry
 struct QuestXPEntry
 {
     uint32  ID;                                             // 0
-    uint32  Difficulty[10];                                 // 1 - 10
+    uint32  Difficulty[MAX_QUEST_DIFFICULTY];               // 1 - 10
 };
 
 struct QuestFactionRewEntry
 {
     uint32  ID;                                             // 0
-    int32   Difficulty[10];                                 // 1 - 11
+    int32   Difficulty[MAX_QUEST_DIFFICULTY];               // 1 - 11
 };
 
 struct QuestPOIBlobEntry

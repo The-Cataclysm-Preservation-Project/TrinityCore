@@ -7837,12 +7837,14 @@ void ObjectMgr::LoadQuestPOI()
 {
     uint32 oldMSTime = getMSTime();
 
-    _questPOIStore.clear();                              // need for reload case
+    _questPOIStore.clear();  // need for reload case
 
     uint32 count = 0;
 
-    //                                               0        1          2          3           4          5       6        7
-    QueryResult result = WorldDatabase.Query("SELECT QuestID, id, ObjectiveIndex, MapID, WorldMapAreaId, Floor, Priority, Flags FROM quest_poi order by QuestID");
+    //                                               0        1          2          3           4          5       6 7
+    QueryResult result = WorldDatabase.Query(
+        "SELECT QuestID, id, ObjectiveIndex, MapID, WorldMapAreaId, Floor, Priority, Flags FROM quest_poi order by "
+        "QuestID");
     if (!result)
     {
         TC_LOG_ERROR("server.loading", ">> Loaded 0 quest POI definitions. DB table `quest_poi` is empty.");
@@ -7850,7 +7852,8 @@ void ObjectMgr::LoadQuestPOI()
     }
 
     //                                                  0       1   2  3
-    QueryResult points = WorldDatabase.Query("SELECT QuestID, Idx1, X, Y FROM quest_poi_points ORDER BY QuestID DESC, Idx2");
+    QueryResult points =
+        WorldDatabase.Query("SELECT QuestID, Idx1, X, Y FROM quest_poi_points ORDER BY QuestID DESC, Idx2");
 
     std::vector<std::vector<std::vector<QuestPOIBlobPoint>>> POIs;
 
@@ -7865,13 +7868,12 @@ void ObjectMgr::LoadQuestPOI()
         {
             fields = points->Fetch();
 
-            uint32 questId            = fields[0].GetUInt32();
-            uint32 id                 = fields[1].GetUInt32();
-            int32  x                  = fields[2].GetInt32();
-            int32  y                  = fields[3].GetInt32();
+            uint32 questId = fields[0].GetUInt32();
+            uint32 id = fields[1].GetUInt32();
+            int32 x = fields[2].GetInt32();
+            int32 y = fields[3].GetInt32();
 
-            if (POIs[questId].size() <= id + 1)
-                POIs[questId].resize(id + 10);
+            if (POIs[questId].size() <= id + 1) POIs[questId].resize(id + 10);
 
             QuestPOIBlobPoint point;
             point.X = x;
@@ -7885,14 +7887,14 @@ void ObjectMgr::LoadQuestPOI()
     {
         Field* fields = result->Fetch();
 
-        uint32 questId            = fields[0].GetUInt32();
-        uint32 id                 = fields[1].GetUInt32();
-        int32 objIndex            = fields[2].GetInt32();
-        uint32 mapId              = fields[3].GetUInt32();
-        uint32 WorldMapAreaId     = fields[4].GetUInt32();
-        uint32 FloorId            = fields[5].GetUInt32();
-        uint32 Priority           = fields[6].GetUInt32();
-        uint32 Flags              = fields[7].GetUInt32();
+        uint32 questId = fields[0].GetUInt32();
+        uint32 id = fields[1].GetUInt32();
+        int32 objIndex = fields[2].GetInt32();
+        uint32 mapId = fields[3].GetUInt32();
+        uint32 WorldMapAreaId = fields[4].GetUInt32();
+        uint32 FloorId = fields[5].GetUInt32();
+        uint32 Priority = fields[6].GetUInt32();
+        uint32 Flags = fields[7].GetUInt32();
 
         QuestPOIBlobData POI;
         POI.BlobIndex = id;
@@ -7920,12 +7922,42 @@ void ObjectMgr::LoadQuestPOI()
             _questPOIStore.at(questId).POIData.QuestPOIBlobDataStats.push_back(POI);
         }
         else
-            TC_LOG_ERROR("sql.sql", "Table quest_poi references unknown quest points for quest %u POI id %u", questId, id);
+            TC_LOG_ERROR("sql.sql", "Table quest_poi references unknown quest points for quest %u POI id %u", questId,
+                         id);
 
         ++count;
     } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded %u quest POI definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+}
+
+void ObjectMgr::LoadQuestMoneyRewards()
+{
+    uint32 oldMSTime = getMSTime();
+
+    _questMoneyRewards.clear(); // for reloading
+
+    //                                               0   1            2            3            4            5            6
+    QueryResult result = WorldDatabase.Query("SELECT Id, Difficulty0, Difficulty1, Difficulty2, Difficulty3, Difficulty4, Difficulty5, "
+    //                                        7            8            9            10
+                                             "Difficulty6, Difficulty7, Difficulty8, Difficulty9 FROM quest_money_reward");
+
+    uint32 count = 0;
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+
+            std::array<uint32, MAX_QUEST_DIFFICULTY>& moneyReward = _questMoneyRewards[fields[0].GetUInt32()];
+            for (uint8 i = 0; i < MAX_QUEST_DIFFICULTY; ++i)
+                moneyReward[i] = fields[1 + i].GetUInt32();
+
+            ++count;
+        } while (result->NextRow());
+    }
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u quest money reward entries in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::LoadNPCSpellClickSpells()

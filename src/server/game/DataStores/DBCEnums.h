@@ -890,4 +890,6 @@ enum class CurrencyTypeFlags : uint32
 
 DEFINE_ENUM_FLAG(CurrencyTypeFlags);
 
+constexpr uint8 MAX_QUEST_DIFFICULTY = 10;
+
 #endif

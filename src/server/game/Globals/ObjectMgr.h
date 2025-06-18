@@ -18,12 +18,17 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
+#include <iterator>
+#include <map>
+#include <unordered_map>
+
 #include "Common.h"
 #include "ConditionMgr.h"
+#include "Containers.h"
 #include "Corpse.h"
 #include "CreatureData.h"
-#include "DatabaseEnvFwd.h"
 #include "DB2Stores.h"
+#include "DatabaseEnvFwd.h"
 #include "Errors.h"
 #include "GameObjectData.h"
 #include "ItemTemplate.h"
@@ -36,9 +41,6 @@
 #include "SharedDefines.h"
 #include "Trainer.h"
 #include "VehicleDefines.h"
-#include <iterator>
-#include <map>
-#include <unordered_map>
 
 class Item;
 class Unit;
@@ -656,6 +658,7 @@ struct QuestRelationResult
 
 typedef std::multimap<int32, uint32> ExclusiveQuestGroups; // exclusiveGroupId -> quest
 typedef std::pair<ExclusiveQuestGroups::const_iterator, ExclusiveQuestGroups::const_iterator> ExclusiveQuestGroupsBounds;
+typedef std::unordered_map<uint32, std::array<uint32, MAX_QUEST_DIFFICULTY>> QuestMoneyRewards;
 
 struct PlayerCreateInfoItem
 {
@@ -1249,6 +1252,7 @@ class TC_GAME_API ObjectMgr
 
         void LoadPointsOfInterest();
         void LoadQuestPOI();
+        void LoadQuestMoneyRewards();
 
         void LoadNPCSpellClickSpells();
 
@@ -1615,6 +1619,11 @@ class TC_GAME_API ObjectMgr
         void LoadNpcTotalHpGameTables();
         void LoadNpcDamageByClassGameTables();
 
+        std::array<uint32, MAX_QUEST_DIFFICULTY> const* GetQuestMoneyRewards(uint32 id) const
+        {
+            return Trinity::Containers::MapGetValuePtr(_questMoneyRewards, id);
+        }
+
     private:
         // first free id for selected id type
         uint32 _auctionId;
@@ -1671,6 +1680,7 @@ class TC_GAME_API ObjectMgr
         QuestRelations _creatureQuestRelations;
         QuestRelations _creatureQuestInvolvedRelations;
         QuestRelationsReverse _creatureQuestInvolvedRelationsReverse;
+        QuestMoneyRewards _questMoneyRewards;
 
         ExclusiveQuestGroups _exclusiveQuestGroups;
 
