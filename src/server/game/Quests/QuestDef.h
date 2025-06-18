@@ -237,8 +237,11 @@ class TC_GAME_API Quest
         void LoadQuestTemplateAddon(Field* fields);
         void LoadQuestMailSender(Field* fields);
 
-        uint32 GetXPReward(Player const* player) const;
-        static uint32 CalcXPReward(uint8 playerLevel, int32 targetLevel, uint8 xpDifficulty);
+        uint32 XPValue(Player const* player) const;
+        static uint32 XPValue(uint8 playerLevel, uint32 questLevel, int32 unscaledQuestLevel, uint32 xpDifficulty, float xpMultiplier = 1.0f);
+        int32 GetMoneyReward(Player const* player) const;
+        uint32 GetRewMoneyMaxLevel(Player const* player = nullptr) const;
+        uint32 GetQuestLevelForPlayer(Player const* player) const;
 
         bool HasFlag(uint32 flag) const { return (_flags & flag) != 0; }
         void SetFlag(uint32 flag) { _flags |= flag; }
@@ -298,10 +301,8 @@ class TC_GAME_API Quest
         std::string const& GetQuestGiverTargetName() const { return _questGiverTargetName; }
         std::string const& GetQuestTurnTextWindow() const { return _questTurnTextWindow; }
         std::string const& GetQuestTurnTargetName() const { return _questTurnTargetName; }
-        int32  GetRewOrReqMoney(Player const* player = nullptr) const;
         uint32 GetRewHonorAddition() const { return _rewardHonor; }
         float GetRewHonorMultiplier() const { return _rewardKillHonor; }
-        uint32 GetRewMoneyMaxLevel() const; // use in XP calculation at client
         uint32 GetRewSpell() const { return _rewardDisplaySpell; }
         int32  GetRewSpellCast() const { return _rewardSpell; }
         uint32 GetRewMailTemplateId() const { return _rewardMailTemplateId; }
@@ -373,6 +374,9 @@ class TC_GAME_API Quest
         uint32 GetRewCurrencyCount() const { return _rewCurrencyCount; }
         uint32 GetReqCurrencyCount() const { return _reqCurrencyCount; }
         uint32 GetQuestAbandonSpell() const { return _questAbandonSpell; }
+        uint32 GetQuestMaxScalingLevel() const { return _maxScalingLevel; }
+        uint32 GetRewMoneyDifficulty() const { return _rewardMoneyDifficulty; }
+        float GetRewMoneyMultiplier() const { return _rewardMoneyMultiplier; }
 
         void SetEventIdForQuest(uint16 eventId) { _eventIdForQuest = eventId; }
         uint16 GetEventIdForQuest() const { return _eventIdForQuest; }
@@ -383,7 +387,7 @@ class TC_GAME_API Quest
 
         static void AddQuestLevelToTitle(std::string& title, int32 level);
         void InitializeQueryData();
-        WorldPacket BuildQueryData(LocaleConstant loc) const;
+        WorldPacket BuildQueryData(LocaleConstant loc, Player const* player) const;
 
         std::vector<uint32> DependentPreviousQuests;
         std::vector<uint32> DependentBreadcrumbQuests;
@@ -428,8 +432,6 @@ class TC_GAME_API Quest
         std::string _completedText;
         uint32 _rewardHonor = 0;
         float _rewardKillHonor = 0.f;
-        int32  _rewardMoney = 0;
-        uint32 _rewardBonusMoney = 0;
         uint32 _rewardDisplaySpell = 0;
         int32  _rewardSpell = 0;
         uint32 _poiContinent = 0;
@@ -478,6 +480,10 @@ class TC_GAME_API Quest
         uint32 _allowableRaces          = 0;
         uint32 _timeAllowed             = 0;
         uint32 _questAbandonSpell       = 0;
+        uint32 _maxScalingLevel         = 0;
+        uint32 _rewardMoneyDifficulty   = 0;
+        float _rewardMoneyMultiplier    = 0.0f;
+        int32 _requiredMoney            = 0; // Static value which is not calculated during runtime
 };
 
 struct QuestStatusData

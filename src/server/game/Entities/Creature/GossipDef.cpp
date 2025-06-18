@@ -455,7 +455,7 @@ void PlayerMenu::SendQuestQueryResponse(Quest const* quest) const
         _session->SendPacket(&quest->QueryData[static_cast<uint32>(_session->GetSessionDbLocaleIndex())]);
     else
     {
-        WorldPacket queryPacket = quest->BuildQueryData(_session->GetSessionDbLocaleIndex());
+        WorldPacket queryPacket = quest->BuildQueryData(_session->GetSessionDbLocaleIndex(), _session->GetPlayer());
         _session->SendPacket(&queryPacket);
     }
 
@@ -546,7 +546,10 @@ void PlayerMenu::SendQuestGiverRequestItems(Quest const* quest, ObjectGuid npcGU
     packet.AutoLaunched = autoLaunched;
     packet.QuestFlags = quest->GetFlags();
     packet.SuggestPartyMembers = quest->GetSuggestedPlayers();
-    packet.MoneyToGet = quest->GetRewOrReqMoney() < 0 ? -quest->GetRewOrReqMoney() : 0;
+
+    int32 moneyReward = quest->GetMoneyReward(_session->GetPlayer());
+    if (moneyReward < 0)
+        packet.MoneyToGet = std::abs(moneyReward);
 
     QuestStatusData data;
     QuestStatusMap statusMap = _session->GetPlayer()->getQuestStatusMap();

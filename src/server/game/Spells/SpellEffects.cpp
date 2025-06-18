@@ -1773,7 +1773,7 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
                 if (uint8 xpDifficulty = goInfo->chest.xpDifficulty)
                 {
                     int32 xpLevel = goInfo->chest.xpMinLevel;
-                    player->GiveXP(Quest::CalcXPReward(player->getLevel(), xpLevel, xpDifficulty), nullptr);
+                    player->GiveXP(Quest::XPValue(player->getLevel(), xpLevel, xpLevel, xpDifficulty), nullptr);
                 }
             }
         }

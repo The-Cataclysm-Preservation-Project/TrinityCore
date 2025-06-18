@@ -13876,11 +13876,10 @@ bool Player::CanCompleteQuest(uint32 quest_id)
             if (qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_TIMED) && q_status.Timer == 0)
                 return false;
 
-            if (qInfo->GetRewOrReqMoney() < 0)
-            {
-                if (!HasEnoughMoney(-int64(qInfo->GetRewOrReqMoney())))
+            int32 rewardMoney = qInfo->GetMoneyReward(this);
+            if (rewardMoney < 0)
+                if (!HasEnoughMoney(-int64(rewardMoney)))
                     return false;
-            }
 
             uint32 repFacId = qInfo->GetRepObjectiveFaction();
             if (repFacId && GetReputationMgr().GetReputation(repFacId) < qInfo->GetRepObjectiveValue())
@@ -13945,8 +13944,10 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
             return false;
 
     // prevent receive reward with low money and GetRewOrReqMoney() < 0
-    if (quest->GetRewOrReqMoney() < 0 && !HasEnoughMoney(-int64(quest->GetRewOrReqMoney())))
-        return false;
+    int32 rewardMoney = quest->GetMoneyReward(this);
+    if (rewardMoney < 0)
+        if (!HasEnoughMoney(-int64(rewardMoney)))
+            return false;
 
     // dungeon finder quests cannot be rewarded when hit weekly currency limit
     if (quest->IsDFQuest())
@@ -14189,9 +14190,34 @@ void Player::IncompleteQuest(uint32 quest_id)
         SetQuestStatus(quest_id, QUEST_STATUS_INCOMPLETE);
 
         uint16 log_slot = FindQuestSlot(quest_id);
-        if (log_slot < MAX_QUEST_LOG_SIZE)
-            RemoveQuestSlotState(log_slot, QUEST_STATE_COMPLETE);
+        if (log_slot < MAX_QUEST_LOG_SIZE) RemoveQuestSlotState(log_slot, QUEST_STATE_COMPLETE);
     }
+}
+uint32 Player::GetQuestMoneyReward(Quest const* quest) const
+{
+    uint32 moneyReward = quest->GetMoneyReward(this) * sWorld->getRate(RATE_MONEY_QUEST);
+    if (IsMaxLevel())
+        moneyReward += quest->GetRewMoneyMaxLevel(this) * sWorld->getRate(RATE_MONEY_MAX_LEVEL_QUEST);
+
+    return moneyReward;
+}
+
+uint32 Player::GetQuestXPReward(Quest const* quest)
+{
+    bool rewarded = IsQuestRewarded(quest->GetQuestId()) && !quest->IsDFQuest();
+
+    // Not give XP in case already completed once repeatable quest
+    if (rewarded)
+        return 0;
+
+    uint32 XP = quest->XPValue(this) * sWorld->getRate(RATE_XP_QUEST);
+
+    // handle SPELL_AURA_MOD_XP_QUEST_PCT auras
+    Unit::AuraEffectList const& ModXPPctAuras = GetAuraEffectsByType(SPELL_AURA_MOD_XP_QUEST_PCT);
+    for (Unit::AuraEffectList::const_iterator i = ModXPPctAuras.begin(); i != ModXPPctAuras.end(); ++i)
+        AddPct(XP, (*i)->GetAmount());
+
+    return XP;
 }
 
 void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce)
@@ -14283,30 +14309,22 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     if (log_slot < MAX_QUEST_LOG_SIZE)
         SetQuestSlot(log_slot, 0);
 
-    bool rewarded = IsQuestRewarded(quest_id) && !quest->IsDFQuest();
-
-    // Not give XP in case already completed once repeatable quest
-    uint32 XP = rewarded ? 0 : uint32(quest->GetXPReward(this) * sWorld->getRate(RATE_XP_QUEST));
-
-    // handle SPELL_AURA_MOD_XP_QUEST_PCT auras
-    Unit::AuraEffectList const& ModXPPctAuras = GetAuraEffectsByType(SPELL_AURA_MOD_XP_QUEST_PCT);
-    for (Unit::AuraEffectList::const_iterator i = ModXPPctAuras.begin(); i != ModXPPctAuras.end(); ++i)
-        AddPct(XP, (*i)->GetAmount());
+    uint32 XP = GetQuestXPReward(quest);
 
     if (!IsMaxLevel())
         GiveXP(XP, nullptr);
 
     if (Guild* guild = GetGuild())
     {
-        uint32 _xp = quest->GetXPReward(this);
+        uint32 _xp = XP;
         uint32 guildRep = std::max(uint32(1), uint32(_xp / 450));
         guild->GiveXP(uint32(_xp * sWorld->getRate(RATE_XP_QUEST) * sWorld->getRate(RATE_XP_QUEST_GUILD_MODIFIER)), this);
         guild->GiveReputation(guildRep, this);
         guild->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_GUILD, 0, 0, 0, nullptr, this);
     }
 
-    // Give player extra money if GetRewOrReqMoney > 0 and get ReqMoney if negative
-    if (int32 moneyRew = quest->GetRewOrReqMoney(this))
+    int32 moneyRew = GetQuestMoneyReward(quest);
+    if (moneyRew)
     {
         ModifyMoney(moneyRew);
 
@@ -15840,13 +15858,14 @@ void Player::MoneyChanged(uint64 value)
             continue;
 
         Quest const* qInfo = sObjectMgr->GetQuestTemplate(questid);
-        if (qInfo && qInfo->GetRewOrReqMoney() < 0)
+        int32 requiredMoney = qInfo ? qInfo->GetMoneyReward(this) : 0;
+        if (qInfo && requiredMoney < 0)
         {
             QuestStatusData& q_status = m_QuestStatus[questid];
 
             if (q_status.Status == QUEST_STATUS_INCOMPLETE)
             {
-                if (int64(value) >= -int64(qInfo->GetRewOrReqMoney()))
+                if (int64(value) >= -int64(requiredMoney))
                 {
                     if (CanCompleteQuest(questid))
                         CompleteQuest(questid);
@@ -15854,7 +15873,7 @@ void Player::MoneyChanged(uint64 value)
             }
             else if (q_status.Status == QUEST_STATUS_COMPLETE)
             {
-                if (int64(value) < -int64(qInfo->GetRewOrReqMoney()))
+                if (int64(value) < -int64(requiredMoney))
                     IncompleteQuest(questid);
             }
         }
@@ -15991,14 +16010,10 @@ void Player::SendQuestReward(Quest const* quest, Creature const* questGiver, uin
     uint32 questId = quest->GetQuestId();
     sGameEventMgr->HandleQuestComplete(questId);
 
-    uint32 XP = 0;
-    if (!IsMaxLevel())
-        XP = xp;
-
     WorldPackets::Quest::QuestGiverQuestComplete packet;
     packet.QuestID = questId;
-    packet.XPReward = XP;
-    packet.MoneyReward = quest->GetRewOrReqMoney(this);
+    packet.MoneyReward = GetQuestMoneyReward(quest);
+    packet.XPReward = IsMaxLevel() ? 0 : xp;
     packet.NumSkillUpsReward = quest->GetRewardSkillPoints();
     packet.TalentReward = quest->GetBonusTalents();
     packet.SkillLineIDReward = quest->GetRewardSkillId();

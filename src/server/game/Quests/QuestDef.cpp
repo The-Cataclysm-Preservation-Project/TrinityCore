@@ -16,6 +16,7 @@
  */
 
 #include "QuestDef.h"
+#include "DBCEnums.h"
 #include "DBCStores.h"
 #include "Field.h"
 #include "Log.h"
@@ -40,29 +41,27 @@ Quest::Quest(Field* questRecord)
     _requiredFactionValue2 = questRecord[10].GetInt32();
     _rewardNextQuest = questRecord[11].GetUInt32();
     _rewardXPDifficulty = questRecord[12].GetUInt8();
-    _rewardMoney = questRecord[13].GetInt32();
-    _rewardBonusMoney = questRecord[14].GetUInt32();
-    _rewardDisplaySpell = questRecord[15].GetUInt32();
-    _rewardSpell = questRecord[16].GetInt32();
-    _rewardHonor = questRecord[17].GetUInt32();
-    _rewardKillHonor = questRecord[18].GetFloat();
-    _startItem = questRecord[19].GetUInt32();
-    _flags = questRecord[20].GetUInt32();
-    _minimapTargetMark = questRecord[21].GetUInt8();
-    _rewardTitleId = questRecord[22].GetUInt8();
-    _requiredPlayerKills = questRecord[23].GetUInt8();
-    _rewardTalents = questRecord[24].GetUInt8();
-    _rewardArenaPoints = questRecord[25].GetUInt16();
-    _rewardSkillId = questRecord[26].GetUInt16();
-    _rewardSkillPoints = questRecord[27].GetUInt8();
-    _rewardReputationMask = questRecord[28].GetUInt8();
-    _questGiverPortrait = questRecord[29].GetUInt32();
-    _questTurnInPortrait = questRecord[30].GetUInt32();
+    _rewardDisplaySpell = questRecord[13].GetUInt32();
+    _rewardSpell = questRecord[14].GetInt32();
+    _rewardHonor = questRecord[15].GetUInt32();
+    _rewardKillHonor = questRecord[16].GetFloat();
+    _startItem = questRecord[17].GetUInt32();
+    _flags = questRecord[18].GetUInt32();
+    _minimapTargetMark = questRecord[19].GetUInt8();
+    _rewardTitleId = questRecord[20].GetUInt8();
+    _requiredPlayerKills = questRecord[21].GetUInt8();
+    _rewardTalents = questRecord[22].GetUInt8();
+    _rewardArenaPoints = questRecord[23].GetUInt16();
+    _rewardSkillId = questRecord[24].GetUInt16();
+    _rewardSkillPoints = questRecord[25].GetUInt8();
+    _rewardReputationMask = questRecord[26].GetUInt8();
+    _questGiverPortrait = questRecord[27].GetUInt32();
+    _questTurnInPortrait = questRecord[28].GetUInt32();
 
     for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
     {
-        RewardItemId[i] = questRecord[31 + i * 2].GetUInt32();
-        RewardItemIdCount[i] = questRecord[32 + i * 2].GetUInt16();
+        RewardItemId[i] = questRecord[29 + i * 2].GetUInt32();
+        RewardItemIdCount[i] = questRecord[30 + i * 2].GetUInt16();
 
         if (RewardItemId[i])
             ++_rewItemsCount;
@@ -70,8 +69,8 @@ Quest::Quest(Field* questRecord)
 
     for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
     {
-        RewardChoiceItemId[i] = questRecord[39 + i * 2].GetUInt32();
-        RewardChoiceItemCount[i] = questRecord[40 + i * 2].GetUInt16();
+        RewardChoiceItemId[i] = questRecord[37 + i * 2].GetUInt32();
+        RewardChoiceItemCount[i] = questRecord[38 + i * 2].GetUInt16();
 
         if (RewardChoiceItemId[i])
             ++_rewChoiceItemsCount;
@@ -79,26 +78,26 @@ Quest::Quest(Field* questRecord)
 
     for (uint32 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
     {
-        RewardFactionId[i] = questRecord[51 + i * 3].GetUInt16();
-        RewardFactionValueId[i] = questRecord[52 + i * 3].GetInt32();
-        RewardFactionValueIdOverride[i] = questRecord[53 + i * 3].GetInt32();
+        RewardFactionId[i] = questRecord[49 + i * 3].GetUInt16();
+        RewardFactionValueId[i] = questRecord[50 + i * 3].GetInt32();
+        RewardFactionValueIdOverride[i] = questRecord[51 + i * 3].GetInt32();
     }
 
-    _poiContinent = questRecord[66].GetUInt16();
-    _poiX = questRecord[67].GetFloat();
-    _poiY = questRecord[68].GetFloat();
-    _poiPriority = questRecord[69].GetUInt32();
-    _title = questRecord[70].GetString();
-    _objectives = questRecord[71].GetString();
-    _details = questRecord[72].GetString();
-    _areaDescription = questRecord[73].GetString();
-    _completedText = questRecord[74].GetString();
+    _poiContinent = questRecord[64].GetUInt16();
+    _poiX = questRecord[65].GetFloat();
+    _poiY = questRecord[66].GetFloat();
+    _poiPriority = questRecord[67].GetUInt32();
+    _title = questRecord[68].GetString();
+    _objectives = questRecord[69].GetString();
+    _details = questRecord[70].GetString();
+    _areaDescription = questRecord[71].GetString();
+    _completedText = questRecord[72].GetString();
 
     for (uint32 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
     {
-        RequiredNpcOrGo[i] = questRecord[75 + i].GetInt32();
-        RequiredNpcOrGoCount[i] = questRecord[79 + i].GetUInt16();
-        ObjectiveText[i] = questRecord[104 + i].GetString();
+        RequiredNpcOrGo[i] = questRecord[73 + i].GetInt32();
+        RequiredNpcOrGoCount[i] = questRecord[77 + i].GetUInt16();
+        ObjectiveText[i] = questRecord[102 + i].GetString();
 
         if (RequiredNpcOrGo[i])
             ++_reqNpcOrGoCount;
@@ -106,14 +105,14 @@ Quest::Quest(Field* questRecord)
 
     for (uint32 i = 0; i < QUEST_SOURCE_ITEM_IDS_COUNT; ++i)
     {
-        ItemDrop[i] = questRecord[83 + i].GetUInt32();
-        ItemDropQuantity[i] = questRecord[87 + i].GetUInt16();
+        ItemDrop[i] = questRecord[81 + i].GetUInt32();
+        ItemDropQuantity[i] = questRecord[85 + i].GetUInt16();
     }
 
     for (uint32 i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
     {
-        RequiredItemId[i] = questRecord[91 + i].GetUInt32();
-        RequiredItemCount[i] = questRecord[97 + i].GetUInt16();
+        RequiredItemId[i] = questRecord[89 + i].GetUInt32();
+        RequiredItemCount[i] = questRecord[95 + i].GetUInt16();
 
         if (RequiredItemId[i])
             ++_reqItemsCount;
@@ -129,12 +128,12 @@ Quest::Quest(Field* questRecord)
         OfferRewardEmoteDelay[i] = 0;
     }
 
-    _requiredSpell = questRecord[103].GetUInt32();
+    _requiredSpell = questRecord[101].GetUInt32();
 
     for (uint32 i = 0; i < QUEST_REWARD_CURRENCY_COUNT; ++i)
     {
-        RewardCurrencyId[i] = questRecord[108 + i].GetUInt16();
-        RewardCurrencyCount[i] = questRecord[112 + i].GetUInt32();
+        RewardCurrencyId[i] = questRecord[106 + i].GetUInt16();
+        RewardCurrencyCount[i] = questRecord[110 + i].GetUInt32();
 
         if (RewardCurrencyId[i])
             ++_rewCurrencyCount;
@@ -142,19 +141,19 @@ Quest::Quest(Field* questRecord)
 
     for (uint32 i = 0; i < QUEST_REQUIRED_CURRENCY_COUNT; ++i)
     {
-        RequiredCurrencyId[i] = questRecord[116 + i].GetUInt16();
-        RequiredCurrencyCount[i] = questRecord[120 + i].GetUInt32();
+        RequiredCurrencyId[i] = questRecord[114 + i].GetUInt16();
+        RequiredCurrencyCount[i] = questRecord[118 + i].GetUInt32();
 
         if (RequiredCurrencyId[i])
             ++_reqCurrencyCount;
     }
 
-    _questGiverTextWindow = questRecord[124].GetString();
-    _questGiverTargetName = questRecord[125].GetString();
-    _questTurnTextWindow = questRecord[126].GetString();
-    _questTurnTargetName = questRecord[127].GetString();
-    _soundAccept = questRecord[128].GetUInt16();
-    _soundTurnIn = questRecord[129].GetUInt16();
+    _questGiverTextWindow = questRecord[122].GetString();
+    _questGiverTargetName = questRecord[123].GetString();
+    _questTurnTextWindow = questRecord[124].GetString();
+    _questTurnTargetName = questRecord[125].GetString();
+    _soundAccept = questRecord[126].GetUInt16();
+    _soundTurnIn = questRecord[127].GetUInt16();
 }
 
 void Quest::LoadQuestDetails(Field* fields)
@@ -233,6 +232,10 @@ void Quest::LoadQuestTemplateAddon(Field* fields)
     _allowableRaces = fields[18].GetUInt32();
     _timeAllowed = fields[19].GetInt32();
     _questAbandonSpell = fields[20].GetUInt32();
+    _maxScalingLevel = fields[21].GetUInt32();
+    _rewardMoneyDifficulty = fields[22].GetUInt32();
+    _rewardMoneyMultiplier = fields[23].GetFloat();
+    _requiredMoney = fields[24].GetInt32();
 }
 
 void Quest::LoadQuestMailSender(Field* fields)
@@ -240,35 +243,40 @@ void Quest::LoadQuestMailSender(Field* fields)
     _rewardMailSenderEntry = fields[1].GetUInt32();
 }
 
-uint32 Quest::GetXPReward(Player const* player) const
+uint32 Quest::XPValue(Player const* player) const
 {
-    if (!player)
-        return 0;
-
-    return Quest::CalcXPReward(player->getLevel(), _level, _rewardXPDifficulty);
+    return XPValue(player ? player->getLevel() : 0, GetQuestLevelForPlayer(player), _level, _rewardXPDifficulty);
 }
 
-/*static*/ uint32 Quest::CalcXPReward(uint8 playerLevel, int32 targetLevel, uint8 xpDifficulty)
+/*static*/ uint32 Quest::XPValue(uint8 playerLevel, uint32 questLevel, int32 unscaledQuestLevel, uint32 xpDifficulty, float xpMultiplier /*= 1.0f*/)
 {
-    int32 effectiveLevel = (targetLevel == -1 ? playerLevel : targetLevel);
-    const QuestXPEntry* xpentry = sQuestXPStore.LookupEntry(effectiveLevel);
-    if (!xpentry)
+    QuestXPEntry const* questXp = sQuestXPStore.LookupEntry(questLevel);
+    if (!questXp || xpDifficulty >= MAX_QUEST_DIFFICULTY)
         return 0;
 
-    int32 diffFactor = 2 * (effectiveLevel - playerLevel) + 20;
+    int32 diffFactor = 2 * (questLevel - (unscaledQuestLevel == -1 ? 0 : -5) - playerLevel) + 10;
     if (diffFactor < 1)
         diffFactor = 1;
     else if (diffFactor > 10)
         diffFactor = 10;
 
-    uint32 xp = RoundXPValue(diffFactor * xpentry->Difficulty[xpDifficulty] / 10);
+    uint32 xp = RoundXPValue(diffFactor * questXp->Difficulty[xpDifficulty] * xpMultiplier / 10);
+
     if (sWorld->getIntConfig(CONFIG_MIN_QUEST_SCALED_XP_RATIO))
     {
-        uint32 minScaledXP = RoundXPValue(xpentry->Difficulty[xpDifficulty]) * sWorld->getIntConfig(CONFIG_MIN_QUEST_SCALED_XP_RATIO) / 100;
+        uint32 minScaledXP = RoundXPValue(questXp->Difficulty[xpDifficulty] * xpMultiplier) * sWorld->getIntConfig(CONFIG_MIN_QUEST_SCALED_XP_RATIO) / 100;
         xp = std::max(minScaledXP, xp);
     }
 
     return xp;
+}
+
+uint32 Quest::GetQuestLevelForPlayer(Player const* player) const
+{
+    if (_level != -1)
+        return static_cast<uint32>(_level);
+
+    return std::clamp<int32>(player->getLevel(), _minLevel, _maxScalingLevel);
 }
 
 /*static*/ bool Quest::IsTakingQuestEnabled(uint32 questId)
@@ -279,25 +287,39 @@ uint32 Quest::GetXPReward(Player const* player) const
     return true;
 }
 
-int32 Quest::GetRewOrReqMoney(Player const* player) const
+int32 Quest::GetMoneyReward(Player const* player) const
 {
-    // RequiredMoney: the amount is the negative copper sum.
-    if (_rewardMoney < 0)
-        return _rewardMoney;
+    // Some quests cost money instead of rewarding it
+    if (_requiredMoney < 0)
+        return _requiredMoney;
 
-    // RewardMoney: the positive amount
-    if (!player || !player->IsMaxLevel())
-        return int32(_rewardMoney * sWorld->getRate(RATE_MONEY_QUEST));
-    else // At level cap, the money reward is the maximum amount between normal and bonus money reward
-        return std::max(int32(GetRewMoneyMaxLevel()), int32(_rewardMoney * sWorld->getRate(RATE_MONEY_QUEST)));
+    if (std::array<uint32, MAX_QUEST_DIFFICULTY> const* money = sObjectMgr->GetQuestMoneyRewards(player ? GetQuestLevelForPlayer(player) : _level))
+        return money->at(GetRewMoneyDifficulty()) * GetRewMoneyMultiplier();
+
+    return 0;
+}
+
+uint32 Quest::GetRewMoneyMaxLevel(Player const* player /*= nullptr*/) const
+{
+    // If Quest has flag to not give money on max level, it's 0
+    if (HasFlag(QUEST_FLAGS_NO_MONEY_FOR_XP))
+        return 0;
+
+    uint32 maxQuestLevel = _level == -1 ? _maxScalingLevel : _level;
+
+    // Query initialization during startup does not provide a valid player so we just go for the expansion's max level
+    uint8 playerLevel = player ? player->getLevel() : DBCManager::GetMaxLevelForExpansion(CURRENT_EXPANSION);
+
+    // The conversion rate is XP * 6 copper
+    return XPValue(playerLevel, maxQuestLevel, _level, _rewardXPDifficulty) * 6;
 }
 
 void Quest::BuildQuestRewards(WorldPackets::Quest::QuestRewards& rewards, Player* player) const
 {
     rewards.ChoiceItemCount = GetRewChoiceItemsCount();
     rewards.ItemCount = GetReqItemsCount();
-    rewards.Money = GetRewOrReqMoney(player);
-    rewards.XP = GetXPReward(player) * sWorld->getRate(RATE_XP_QUEST);
+    rewards.Money = player->GetQuestMoneyReward(this);
+    rewards.XP = player->GetQuestXPReward(this);
     rewards.Title = GetCharTitleId();
     rewards.FactionFlags = GetRewardReputationMask();
     rewards.SpellCompletionDisplayID = GetRewSpell();
@@ -334,16 +356,6 @@ void Quest::BuildQuestRewards(WorldPackets::Quest::QuestRewards& rewards, Player
         rewards.CurrencyID[i] = RewardCurrencyId[i];
         rewards.CurrencyQty[i] = RewardCurrencyCount[i];
     }
-}
-
-uint32 Quest::GetRewMoneyMaxLevel() const
-{
-    // If Quest has flag to not give money on max level, it's 0
-    if (HasFlag(QUEST_FLAGS_NO_MONEY_FOR_XP))
-        return 0;
-
-    // Else, return the rewarded copper sum modified by the rate
-    return uint32(_rewardBonusMoney * sWorld->getRate(RATE_MONEY_MAX_LEVEL_QUEST));
 }
 
 bool Quest::IsAutoAccept() const
@@ -429,12 +441,12 @@ void Quest::InitializeQueryData()
     WorldPacket queryTemp;
     for (uint8 loc = LOCALE_enUS; loc < TOTAL_LOCALES; ++loc)
     {
-        queryTemp = BuildQueryData(static_cast<LocaleConstant>(loc));
+        queryTemp = BuildQueryData(static_cast<LocaleConstant>(loc), nullptr);
         QueryData[loc] = queryTemp;
     }
 }
 
-WorldPacket Quest::BuildQueryData(LocaleConstant loc) const
+WorldPacket Quest::BuildQueryData(LocaleConstant loc, Player const* player) const
 {
     WorldPackets::Quest::QueryQuestInfoResponse response;
 
@@ -487,8 +499,8 @@ WorldPacket Quest::BuildQueryData(LocaleConstant loc) const
     response.Info.RewardNextQuest = GetNextQuestInChain();
     response.Info.RewardXPDifficulty = GetXPId();
 
-    response.Info.RewardMoney = GetRewOrReqMoney();
-    response.Info.RewardBonusMoney = GetRewMoneyMaxLevel();
+    response.Info.RewardMoney = GetMoneyReward(player);
+    response.Info.RewardBonusMoney = GetRewMoneyMaxLevel(player);
     response.Info.RewardDisplaySpell = GetRewSpell();
     response.Info.RewardSpell = GetRewSpellCast();
 
