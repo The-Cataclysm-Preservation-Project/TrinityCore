@@ -14193,9 +14193,12 @@ void Player::IncompleteQuest(uint32 quest_id)
         if (log_slot < MAX_QUEST_LOG_SIZE) RemoveQuestSlotState(log_slot, QUEST_STATE_COMPLETE);
     }
 }
-uint32 Player::GetQuestMoneyReward(Quest const* quest) const
+int32 Player::GetQuestMoneyReward(Quest const* quest) const
 {
-    uint32 moneyReward = quest->GetMoneyReward(this) * sWorld->getRate(RATE_MONEY_QUEST);
+    int32 moneyReward = quest->GetMoneyReward(this) * sWorld->getRate(RATE_MONEY_QUEST);
+    if (moneyReward < 0)
+        return moneyReward;
+
     if (IsMaxLevel())
         moneyReward += quest->GetRewMoneyMaxLevel(this) * sWorld->getRate(RATE_MONEY_MAX_LEVEL_QUEST);
 
