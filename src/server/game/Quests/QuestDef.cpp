@@ -500,7 +500,7 @@ WorldPacket Quest::BuildQueryData(LocaleConstant loc, Player const* player) cons
     response.Info.RewardXPDifficulty = GetXPId();
 
     response.Info.RewardMoney = GetMoneyReward(player);
-    response.Info.RewardBonusMoney = GetRewMoneyMaxLevel(player);
+    response.Info.RewardBonusMoney = response.Info.RewardMoney + GetRewMoneyMaxLevel(player);
     response.Info.RewardDisplaySpell = GetRewSpell();
     response.Info.RewardSpell = GetRewSpellCast();
 
