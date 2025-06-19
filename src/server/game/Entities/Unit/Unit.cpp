@@ -1163,7 +1163,11 @@ void Unit::DealSpellDamage(SpellNonMeleeDamage* damageInfo, bool durabilityLoss)
     if (attacker->IsPlayer() && attacker->getLevel() < 10)
         rage -= (rage / 2.f) * (1.0f - (attacker->getLevel() / 10.f));
 
-    return uint32(rage * 10);
+    rage *= 10;
+
+    AddPct(rage, attacker->GetTotalAuraModifier(SPELL_AURA_MOD_RAGE_FROM_DAMAGE_DEALT));
+
+    return rage;
 }
 
 // The minimum amount a damaging hit should award
@@ -10347,7 +10351,7 @@ void Unit::UpdateAttackTimeField(WeaponAttackType att)
     {
         case BASE_ATTACK:
         case OFF_ATTACK:
-            SetFloatValue(UNIT_FIELD_BASEATTACKTIME + att, uint32(m_baseAttackSpeed[att] * m_modAttackSpeedPct[att]));
+            SetFloatValue(UNIT_FIELD_BASEATTACKTIME + AsUnderlyingType(att), uint32(m_baseAttackSpeed[att] * m_modAttackSpeedPct[att]));
             break;
         case RANGED_ATTACK:
             SetFloatValue(UNIT_FIELD_RANGEDATTACKTIME, uint32(m_baseAttackSpeed[RANGED_ATTACK] * m_modAttackSpeedPct[RANGED_ATTACK]));
@@ -13193,28 +13197,12 @@ PlayerMovementPendingChange::PlayerMovementPendingChange()
 }
 
 // baseRage means damage taken when attacker = false
-int32 Unit::RewardRage(uint32 baseRage, bool attacker)
+int32 Unit::RewardRage(uint32 baseRage, bool asAttacker)
 {
-    float addRage;
-
-    if (attacker)
-    {
-        addRage = baseRage;
-        // Additional rage from attacks (e.g. Anger Management)
-        AddPct(addRage, GetTotalAuraModifier(SPELL_AURA_MOD_RAGE_FROM_DAMAGE_DEALT));
-    }
-    else
-    {
-        // Calculate rage from health and damage taken (formular taken from SimulationCraft)
-        addRage = baseRage * 18.92f / GetMaxHealth();
-
-        // Berserker Rage
-        if (HasAura(18499))
-            addRage *= 2.0f;
-    }
+    float addRage = baseRage;
 
     addRage *= sWorld->getRate(RATE_POWER_RAGE_INCOME);
-    return ModifyPower(POWER_RAGE, static_cast<uint32>(std::ceil(addRage) * 10), false);
+    return ModifyPower(POWER_RAGE, static_cast<uint32>(addRage), !asAttacker);
 }
 
 void Unit::StopAttackFaction(uint32 faction_id)
