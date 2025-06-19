@@ -821,8 +821,9 @@ class TC_GAME_API Unit : public WorldObject
 
         virtual void RegenerateHealth() { }
 
-        uint32 GetAttackTime(WeaponAttackType att) const;
-        void SetAttackTime(WeaponAttackType att, uint32 val) { SetFloatValue(UNIT_FIELD_BASEATTACKTIME + AsUnderlyingType(att), val * m_modAttackSpeedPct[att]); }
+        uint32 GetBaseAttackTime(WeaponAttackType att) const;
+        void SetBaseAttackTime(WeaponAttackType att, uint32 val);
+        void UpdateAttackTimeField(WeaponAttackType att);
         void ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply);
         void ApplyHasteRegenMod(float val, bool apply);
         void ApplyCastTimePercentMod(float val, bool apply, bool withCastHaste = true, bool withCastSpeed = true);
@@ -1328,7 +1329,9 @@ class TC_GAME_API Unit : public WorldObject
         float m_modSpellHitChance;
         int32 m_baseSpellCritChance;
 
+        std::array<uint32, MAX_ATTACK> m_baseAttackSpeed;
         std::array<float, MAX_ATTACK> m_modAttackSpeedPct;
+        std::array<uint32, MAX_ATTACK> m_attackTimer;
 
         // stat system
         void HandleStatFlatModifier(UnitMods unitMod, UnitModifierFlatType modifierType, float amount, bool apply);
@@ -1654,8 +1657,6 @@ class TC_GAME_API Unit : public WorldObject
         void _DeleteRemovedAuras();
 
         void _UpdateAutoRepeatSpell();
-
-        std::array<uint32, MAX_ATTACK> m_attackTimer;
 
         std::array<float, MAX_STATS>  m_createStats;
 

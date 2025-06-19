@@ -888,7 +888,7 @@ class spell_pal_seal_of_righteousness : public AuraScript
 
         float ap = target->GetTotalAttackPowerValue(BASE_ATTACK);
         int32 holy = target->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_HOLY);
-        int32 bp = int32((ap * 0.011f + 0.022f * holy) * target->GetAttackTime(BASE_ATTACK) / 1000);
+        int32 bp = int32((ap * 0.011f + 0.022f * holy) * target->GetBaseAttackTime(BASE_ATTACK) / 1000);
 
         if (target->GetDummyAuraEffect(SPELLFAMILY_PALADIN, PALADIN_ICON_ID_SEALS_OF_COMMAND, EFFECT_1))
             target->CastSpell(target, SPELL_PALADIN_SEAL_OF_RIGHTEOUSNESS_DAMAGE_AOE, CastSpellExtraArgs(aurEff).AddSpellBP0(bp));

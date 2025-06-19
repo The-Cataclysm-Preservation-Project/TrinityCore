@@ -605,9 +605,9 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
 
     SetCanDualWield(cInfo->flags_extra & CREATURE_FLAG_EXTRA_USE_OFFHAND_ATTACK);
 
-    SetAttackTime(BASE_ATTACK,   cInfo->BaseAttackTime);
-    SetAttackTime(OFF_ATTACK,    cInfo->BaseAttackTime);
-    SetAttackTime(RANGED_ATTACK, cInfo->RangeAttackTime);
+    SetBaseAttackTime(BASE_ATTACK,   cInfo->BaseAttackTime);
+    SetBaseAttackTime(OFF_ATTACK,    cInfo->BaseAttackTime);
+    SetBaseAttackTime(RANGED_ATTACK, cInfo->RangeAttackTime);
 
     if (updateLevel)
         SelectLevel();

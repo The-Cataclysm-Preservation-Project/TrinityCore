@@ -313,6 +313,7 @@ Unit::Unit(bool isWorldObject) :
 
     m_updateFlag.MovementUpdate = true;
 
+    m_baseAttackSpeed = { };
     m_attackTimer = { };
     m_modAttackSpeedPct.fill(1.0f);
 
@@ -612,7 +613,7 @@ void Unit::DisableSpline()
 
 void Unit::resetAttackTimer(WeaponAttackType type)
 {
-    m_attackTimer[type] = uint32(GetAttackTime(type) * m_modAttackSpeedPct[type]);
+    m_attackTimer[type] = uint32(GetBaseAttackTime(type) * m_modAttackSpeedPct[type]);
 }
 
 bool Unit::IsWithinCombatRange(Unit const* obj, float dist2compare) const
@@ -1362,7 +1363,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
         // Reduce attack time
         if (victim->haveOffhandWeapon() && offtime < basetime)
         {
-            float percent20 = victim->GetAttackTime(OFF_ATTACK) * 0.20f;
+            float percent20 = victim->GetBaseAttackTime(OFF_ATTACK) * 0.20f;
             float percent60 = 3.0f * percent20;
             if (offtime > percent20 && offtime <= percent60)
                 victim->setAttackTimer(OFF_ATTACK, uint32(percent20));
@@ -1374,7 +1375,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
         }
         else
         {
-            float percent20 = victim->GetAttackTime(BASE_ATTACK) * 0.20f;
+            float percent20 = victim->GetBaseAttackTime(BASE_ATTACK) * 0.20f;
             float percent60 = 3.0f * percent20;
             if (basetime > percent20 && basetime <= percent60)
                 victim->setAttackTimer(BASE_ATTACK, uint32(percent20));
@@ -7829,9 +7830,9 @@ float Unit::GetWeaponProcChance() const
     // normalized proc chance for weapon attack speed
     // (odd formula...)
     if (isAttackReady(BASE_ATTACK))
-        return (GetAttackTime(BASE_ATTACK) * 1.8f / 1000.0f);
+        return (GetBaseAttackTime(BASE_ATTACK) * 1.8f / 1000.0f);
     else if (haveOffhandWeapon() && isAttackReady(OFF_ATTACK))
-        return (GetAttackTime(OFF_ATTACK) * 1.6f / 1000.0f);
+        return (GetBaseAttackTime(OFF_ATTACK) * 1.6f / 1000.0f);
     return 0;
 }
 
@@ -8248,12 +8249,6 @@ float Unit::GetPowerRegen(Powers powerType, bool isInCombat) const
     }
 
     return result;
-}
-
-uint32 Unit::GetAttackTime(WeaponAttackType att) const
-{
-    float f_BaseAttackTime = GetFloatValue(UNIT_FIELD_BASEATTACKTIME + AsUnderlyingType(att)) / m_modAttackSpeedPct[att];
-    return (uint32)f_BaseAttackTime;
 }
 
 bool Unit::IsAlwaysVisibleFor(WorldObject const* seer) const
@@ -10340,13 +10335,40 @@ void ApplyPercentModFloatVar(float& var, float val, bool apply)
     var *= (apply ? (100.0f + val) / 100.0f : 100.0f / (100.0f + val));
 }
 
+uint32 Unit::GetBaseAttackTime(WeaponAttackType att) const
+{
+    return m_baseAttackSpeed[att];
+}
+
+void Unit::SetBaseAttackTime(WeaponAttackType att, uint32 val)
+{
+    m_baseAttackSpeed[att] = val;
+    UpdateAttackTimeField(att);
+}
+
+void Unit::UpdateAttackTimeField(WeaponAttackType att)
+{
+    switch (att)
+    {
+        case BASE_ATTACK:
+        case OFF_ATTACK:
+            SetFloatValue(UNIT_FIELD_BASEATTACKTIME + att, uint32(m_baseAttackSpeed[att] * m_modAttackSpeedPct[att]));
+            break;
+        case RANGED_ATTACK:
+            SetFloatValue(UNIT_FIELD_RANGEDATTACKTIME, uint32(m_baseAttackSpeed[RANGED_ATTACK] * m_modAttackSpeedPct[RANGED_ATTACK]));
+            break;
+        default:
+            break;
+    }
+}
+
 void Unit::ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply)
 {
     float amount = GetFloatValue(UNIT_FIELD_BASEATTACKTIME + AsUnderlyingType(att));
     float hasteAmount = GetTypeId() == TYPEID_PLAYER ? GetFloatValue(PLAYER_FIELD_MOD_HASTE) : 0.f;
     float rangedHasteAmount = GetTypeId() == TYPEID_PLAYER ? GetFloatValue(PLAYER_FIELD_MOD_RANGED_HASTE) : 0.f;
 
-    float remainingTimePct = (float)m_attackTimer[att] / (GetAttackTime(att) * m_modAttackSpeedPct[att]);
+    float remainingTimePct = float(m_attackTimer[att]) / (m_baseAttackSpeed[att] * m_modAttackSpeedPct[att]);
     if (val > 0.f)
     {
         ApplyPercentModFloatVar(m_modAttackSpeedPct[att], val, !apply);
@@ -10382,7 +10404,8 @@ void Unit::ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply
         SetFloatValue(PLAYER_FIELD_MOD_RANGED_HASTE, rangedHasteAmount);
     }
 
-    m_attackTimer[att] = uint32(GetAttackTime(att) * m_modAttackSpeedPct[att] * remainingTimePct);
+    UpdateAttackTimeField(att);
+    m_attackTimer[att] = uint32(m_baseAttackSpeed[att] * m_modAttackSpeedPct[att] * remainingTimePct);
 }
 
 void Unit::ApplyHasteRegenMod(float val, bool apply)
@@ -10592,11 +10615,11 @@ float Unit::CalculateDefaultCoefficient(SpellInfo const* spellInfo, DamageEffect
 float Unit::GetAPMultiplier(WeaponAttackType attType, bool normalized) const
 {
     if (GetTypeId() != TYPEID_PLAYER || (IsInFeralForm() && !normalized))
-        return GetAttackTime(attType) / 1000.0f;
+        return GetBaseAttackTime(attType) / 1000.0f;
 
     Item* weapon = ToPlayer()->GetWeaponForAttack(attType, true);
     if (!weapon)
-        return BASE_ATTACK_TIME / 1000.0f;
+        return 2.0f;
 
     if (!normalized)
         return weapon->GetTemplate()->GetDelay() / 1000.0f;

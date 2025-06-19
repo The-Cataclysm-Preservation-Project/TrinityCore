@@ -1423,7 +1423,7 @@ class spell_sha_flametongue_weapon : public AuraScript
             return;
 
         float basePoints = spell->Effects[EFFECT_1].CalcValue(player);
-        float attackSpeed = player->GetAttackTime(attType) / 1000.f;
+        float attackSpeed = player->GetBaseAttackTime(attType) / 1000.f;
         float fireDamage = basePoints / 100.0f;
         fireDamage *= attackSpeed;
 
@@ -1497,7 +1497,7 @@ class spell_sha_windfury_weapon : public AuraScript
             return;
 
         int32 attackPower = spell->Effects[EFFECT_1].CalcValue(player);
-        int32 amount = static_cast<int32>(attackPower / 14.f * player->GetAttackTime(attType) / 1000.f);
+        int32 amount = static_cast<int32>(attackPower / 14.f * player->GetBaseAttackTime(attType) / 1000.f);
         uint32 spellId = attType == BASE_ATTACK ? SPELL_SHAMAN_WINDFURY_ATTACK_MAINHAND : SPELL_SHAMAN_WINDFURY_ATTACK_OFFHAND;
 
         for (uint8 i = 0; i < 3; i++)

@@ -743,9 +743,9 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
 
     SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
 
-    SetAttackTime(BASE_ATTACK, BASE_ATTACK_TIME);
-    SetAttackTime(OFF_ATTACK, BASE_ATTACK_TIME);
-    SetAttackTime(RANGED_ATTACK, BASE_ATTACK_TIME);
+    SetBaseAttackTime(BASE_ATTACK, BASE_ATTACK_TIME);
+    SetBaseAttackTime(OFF_ATTACK, BASE_ATTACK_TIME);
+    SetBaseAttackTime(RANGED_ATTACK, BASE_ATTACK_TIME);
 
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
     SetFloatValue(UNIT_MOD_CAST_HASTE, 1.0f);
@@ -887,7 +887,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                     SetBonusDamage(int32(m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * dmg_multiplier));
 
                     // wolf attack speed is 1.5s
-                    SetAttackTime(BASE_ATTACK, cinfo->BaseAttackTime);
+                    SetBaseAttackTime(BASE_ATTACK, cinfo->BaseAttackTime);
 
                     SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float((petlevel * 4 - petlevel)));
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float((petlevel * 4 + petlevel)));
@@ -923,7 +923,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                 case ENTRY_BLOODWORM:
                 {
                     SetCreateHealth(m_owner->CountPctFromMaxHealth(18));
-                    SetAttackTime(BASE_ATTACK, 1400);
+                    SetBaseAttackTime(BASE_ATTACK, 1400);
                     SetBonusDamage(int32(m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.006f));
                     float minDamage = m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.05f;
                     float maxDamage = m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.05f;

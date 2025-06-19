@@ -3741,7 +3741,7 @@ int32 SpellInfo::CalcPowerCost(WorldObject const* caster, SpellSchoolMask school
             if (!HasAttribute(SPELL_ATTR3_REQUIRES_MAIN_HAND_WEAPON) && HasAttribute(SPELL_ATTR3_REQUIRES_OFF_HAND_WEAPON))
                 slot = OFF_ATTACK;
 
-            speed = unitCaster->GetAttackTime(slot);
+            speed = unitCaster->GetBaseAttackTime(slot);
         }
 
         powerCost += speed / 100;

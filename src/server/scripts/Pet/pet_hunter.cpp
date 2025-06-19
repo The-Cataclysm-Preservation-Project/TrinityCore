@@ -69,7 +69,7 @@ class npc_pet_hunter_snake_trap : public CreatureScript
 
                 me->SetMaxHealth(uint32(107 * (me->getLevel() - 40) * 0.025f));
                 // Add delta to make them not all hit the same time
-                me->SetAttackTime(BASE_ATTACK, me->GetAttackTime(BASE_ATTACK) + urandms(0,6));
+                me->SetBaseAttackTime(BASE_ATTACK, me->GetBaseAttackTime(BASE_ATTACK) + urandms(0,6));
 
                 if (!_isViper && !me->HasAura(SPELL_HUNTER_DEADLY_POISON_PASSIVE))
                     DoCast(me, SPELL_HUNTER_DEADLY_POISON_PASSIVE, true);
