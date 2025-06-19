@@ -888,6 +888,8 @@ class TC_GAME_API Unit : public WorldObject
         void HandleEmoteCommand(uint32 emoteId);
         void AttackerStateUpdate(Unit* victim, WeaponAttackType attType = BASE_ATTACK, bool extra = false);
 
+        static uint32 CalcMeleeAttackRageGain(Unit const* attacker, Unit const* victim, WeaponAttackType attType);
+        static uint32 CalcDamageTakenRageGain(Unit const* victim, uint32 damage);
         void CalculateMeleeDamage(Unit* victim, CalcDamageInfo* damageInfo, WeaponAttackType attackType = BASE_ATTACK);
         void DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss);
         void HandleProcExtraAttackFor(Unit* victim);

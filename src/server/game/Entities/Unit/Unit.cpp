@@ -929,7 +929,7 @@ bool Unit::HasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel) cons
         // Rage from damage received
         if (attacker != victim && victim->GetPowerType() == POWER_RAGE)
         {
-            uint32 rageBaseReward = std::max(damage, unmitigatedDamage);
+            uint32 rageBaseReward = CalcDamageTakenRageGain(victim, std::max(damage, unmitigatedDamage));
             victim->RewardRage(rageBaseReward, false);
         }
 
@@ -1148,6 +1148,37 @@ void Unit::DealSpellDamage(SpellNonMeleeDamage* damageInfo, bool durabilityLoss)
 
     // Call default DealDamage
     Unit::DealDamage(this, victim, damageInfo->damage, damageInfo->unmitigatedDamage, SPELL_DIRECT_DAMAGE, SpellSchoolMask(damageInfo->schoolMask), spellProto, durabilityLoss);
+}
+
+/*static*/ uint32 Unit::CalcMeleeAttackRageGain(Unit const* attacker, Unit const* victim, WeaponAttackType attType)
+{
+    if (!attacker || !victim || (attType != BASE_ATTACK && attType != OFF_ATTACK))
+        return 0;
+
+    uint32 rage = uint32(attacker->GetBaseAttackTime(attType) / 1000.f * 6.5f);
+    if (attType == OFF_ATTACK)
+        rage /= 2;
+
+    // Players below level 10 start with a 50% rage gain reduction that slowly diminishes
+    if (attacker->IsPlayer() && attacker->getLevel() < 10)
+        rage -= (rage / 2.f) * (1.0f - (attacker->getLevel() / 10.f));
+
+    return uint32(rage * 10);
+}
+
+// The minimum amount a damaging hit should award
+constexpr uint32 MIN_RAGE_AMOUNT = 10;
+
+/*static*/ uint32 Unit::CalcDamageTakenRageGain(Unit const* victim, uint32 damage)
+{
+    if (!victim || damage == 0)
+        return 0;
+
+    double multiplier = static_cast<double>(damage) / victim->GetMaxHealth();
+
+    // This formula is based on sampling multiple sniff data at multiple level ranges
+    // There has never been any leak and the only info we have is that the amount is based on max HP and damage taken and that there is a hidden constant
+    return std::max<uint32>(MIN_RAGE_AMOUNT, std::ceil(400 * multiplier));
 }
 
 /// @todo for melee need create structure as in
@@ -1920,42 +1951,6 @@ static float GetArmorReduction(float armor, uint8 attackerLevel)
 
     if (absorbAmount > 0)
         healInfo.AbsorbHeal(absorbAmount);
-}
-
-// Calculates the normalized rage amount per weapon swing
-inline static uint32 CalcMeleeAttackRageGain(Unit const* attacker, Unit const* victim, WeaponAttackType attType)
-{
-    float attackDelay = [&]()
-    {
-        if (Player const* playerAttacker = attacker->ToPlayer())
-        {
-            if (!playerAttacker->IsInFeralForm())
-            {
-                Item const* weapon = playerAttacker->GetWeaponForAttack(attType);
-                if (weapon)
-                    return static_cast<float>(weapon->GetTemplate()->GetDelay());
-            }
-            else if (SpellShapeshiftFormEntry const* shapeShiftFormEntry = sSpellShapeshiftFormStore.LookupEntry(playerAttacker->GetShapeshiftForm()))
-                return static_cast<float>(shapeShiftFormEntry->CombatRoundTime);
-        }
-        else if (Creature const* creature = attacker->ToCreature())
-            return static_cast<float>(creature->GetCreatureTemplate()->BaseAttackTime);
-
-        return 0.f;
-
-    }();
-
-    uint32 rageAmount = attackDelay / 1000 * 6.5f;
-
-    // Sentinel
-    if (victim->GetVictim() && victim->GetVictim() != attacker)
-        if (AuraEffect* aurEff = attacker->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_GENERIC, 1916, EFFECT_1))
-            rageAmount += CalculatePct(rageAmount, aurEff->GetAmount());
-
-    if (attType == OFF_ATTACK)
-        rageAmount *= 0.5f;
-
-    return rageAmount;
 }
 
 void Unit::AttackerStateUpdate(Unit* victim, WeaponAttackType attType, bool extra)
