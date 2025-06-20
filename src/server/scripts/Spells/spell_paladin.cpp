@@ -72,6 +72,7 @@ enum PaladinSpells
     SPELL_PALADIN_HAND_OF_LIGHT                         = 96172,
     SPELL_PALADIN_HAND_OF_SACRIFICE                     = 6940,
     SPELL_PALADIN_HOLY_LIGHT                            = 635,
+    SPELL_PALADON_HOLY_POWER_TALENT_MARKER_DND          = 32733, // serverside spell
     SPELL_PALADIN_HOLY_RADIANCE_TRIGGERED               = 86452,
     SPELL_PALADIN_HOLY_SHOCK_DAMAGE                     = 25912,
     SPELL_PALADIN_HOLY_SHOCK_HEALING                    = 25914,
@@ -1860,6 +1861,25 @@ class spell_pal_guarded_by_the_light : public AuraScript
             OnEffectProc.Register(&spell_pal_guarded_by_the_light::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
+
+// -31828 - Blessed Life
+class spell_pal_blessed_life : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_PALADON_HOLY_POWER_TALENT_MARKER_DND });
+    }
+
+    bool CheckProcCooldown(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        return !GetTarget()->HasAura(SPELL_PALADON_HOLY_POWER_TALENT_MARKER_DND, GetCasterGUID());
+    }
+
+    void Register() override
+    {
+        DoCheckEffectProc.Register(&spell_pal_blessed_life::CheckProcCooldown, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
 }
 
 void AddSC_paladin_spell_scripts()
@@ -1872,6 +1892,7 @@ void AddSC_paladin_spell_scripts()
     RegisterSpellScript(spell_pal_aura_mastery);
     RegisterSpellScript(spell_pal_aura_mastery_immune);
     RegisterSpellScript(spell_pal_avenging_wrath);
+    RegisterSpellScript(spell_pal_blessed_life);
     RegisterSpellScript(spell_pal_blessing_of_faith);
     RegisterSpellScript(spell_pal_communion);
     RegisterSpellScript(spell_pal_consecration);
