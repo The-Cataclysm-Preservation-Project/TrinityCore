@@ -247,9 +247,6 @@ ObjectMgr::ObjectMgr():
     _gameObjectSpawnId(1),
     DBCLocaleIndex(LOCALE_enUS)
 {
-    for (uint8 i = 0; i < MAX_CLASSES; ++i)
-        for (uint8 j = 0; j < MAX_RACES; ++j)
-            _playerInfo[j][i] = nullptr;
 }
 
 ObjectMgr* ObjectMgr::instance()
@@ -262,16 +259,6 @@ ObjectMgr::~ObjectMgr()
 {
     for (PetLevelInfoContainer::iterator i = _petInfoStore.begin(); i != _petInfoStore.end(); ++i)
         delete[] i->second;
-
-    for (int race = 0; race < MAX_RACES; ++race)
-    {
-        for (int class_ = 0; class_ < MAX_CLASSES; ++class_)
-        {
-            if (_playerInfo[race][class_])
-                delete[] _playerInfo[race][class_]->levelInfo;
-            delete _playerInfo[race][class_];
-        }
-    }
 
     for (CacheVendorItemContainer::iterator itr = _cacheVendorItemStore.begin(); itr != _cacheVendorItemStore.end(); ++itr)
         itr->second.Clear();
@@ -3321,11 +3308,12 @@ PetLevelInfo const* ObjectMgr::GetPetLevelInfo(uint32 creature_id, uint8 level) 
 
 void ObjectMgr::PlayerCreateInfoAddItemHelper(uint32 race_, uint32 class_, uint32 itemId, int32 count)
 {
-    if (!_playerInfo[race_][class_])
+    PlayerInfo* playerInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(race_), Classes(class_) });
+    if (!playerInfo)
         return;
 
     if (count > 0)
-        _playerInfo[race_][class_]->item.push_back(PlayerCreateInfoItem(itemId, count));
+        playerInfo->item.emplace_back(itemId, count);
     else
     {
         if (count < -1)
@@ -3421,7 +3409,7 @@ void ObjectMgr::LoadPlayerInfo()
                     continue;
                 }
 
-                PlayerInfo* info = new PlayerInfo();
+                std::unique_ptr<PlayerInfo> info = std::make_unique<PlayerInfo>();
                 info->mapId = mapId;
                 info->areaId = areaId;
                 info->positionX = positionX;
@@ -3430,7 +3418,7 @@ void ObjectMgr::LoadPlayerInfo()
                 info->orientation = orientation;
                 info->displayId_m = rEntry->MaleDisplayID;
                 info->displayId_f = rEntry->FemaleDisplayID;
-                _playerInfo[current_race][current_class] = info;
+                _playerInfo[{ Races(current_race), Classes(current_class) }] = std::move(info);
 
                 ++count;
             }
@@ -3516,77 +3504,19 @@ void ObjectMgr::LoadPlayerInfo()
     {
         uint32 oldMSTime = getMSTime();
 
-        QueryResult result = WorldDatabase.PQuery("SELECT raceMask, classMask, skill, `rank` FROM playercreateinfo_skills");
-
-        if (!result)
-        {
-            TC_LOG_ERROR("server.loading", ">> Loaded 0 player create skills. DB table `playercreateinfo_skills` is empty.");
-        }
-        else
-        {
-            uint32 count = 0;
-
-            do
-            {
-                Field* fields = result->Fetch();
-                uint32 raceMask = fields[0].GetUInt32();
-                uint32 classMask = fields[1].GetUInt32();
-                PlayerCreateInfoSkill skill;
-                skill.SkillId = fields[2].GetUInt16();
-                skill.Rank = fields[3].GetUInt16();
-
-                if (skill.Rank >= MAX_SKILL_STEP)
-                {
-                    TC_LOG_ERROR("sql.sql", "Skill rank value %hu set for skill %hu raceMask %u classMask %u is too high, max allowed value is %d", skill.Rank, skill.SkillId, raceMask, classMask, MAX_SKILL_STEP);
-                    continue;
-                }
-
-                if (raceMask != 0 && !(raceMask & RACEMASK_ALL_PLAYABLE))
-                {
-                    TC_LOG_ERROR("sql.sql", "Wrong race mask %u in `playercreateinfo_skills` table, ignoring.", raceMask);
-                    continue;
-                }
-
-                if (classMask != 0 && !(classMask & CLASSMASK_ALL_PLAYABLE))
-                {
-                    TC_LOG_ERROR("sql.sql", "Wrong class mask %u in `playercreateinfo_skills` table, ignoring.", classMask);
-                    continue;
-                }
-
-                if (!sSkillLineStore.LookupEntry(skill.SkillId))
-                {
-                    TC_LOG_ERROR("sql.sql", "Wrong skill id %u in `playercreateinfo_skills` table, ignoring.", skill.SkillId);
-                    continue;
-                }
-
+        for (SkillRaceClassInfoEntry const* rcInfo : sSkillRaceClassInfoStore)
+            if (rcInfo->Availability == 1)
                 for (uint32 raceIndex = RACE_HUMAN; raceIndex < MAX_RACES; ++raceIndex)
-                {
-                    if (raceMask == 0 || ((1 << (raceIndex - 1)) & raceMask))
-                    {
+                    if (rcInfo->RaceMask == 0 || (rcInfo->RaceMask & (1 << (raceIndex - 1)) != 0))
                         for (uint32 classIndex = CLASS_WARRIOR; classIndex < MAX_CLASSES; ++classIndex)
-                        {
-                            if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
-                            {
-                                if (!sDBCManager.GetSkillRaceClassInfo(skill.SkillId, raceIndex, classIndex))
-                                    continue;
+                            if (rcInfo->ClassMask == -1 || rcInfo->ClassMask == 0 || ((1 << (classIndex - 1)) & rcInfo->ClassMask))
+                                if (auto const& playerInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(raceIndex), Classes(classIndex) }))
+                                    playerInfo->skills.push_back(rcInfo);
 
-                                if (PlayerInfo* info = _playerInfo[raceIndex][classIndex])
-                                {
-                                    info->skills.push_back(skill);
-                                    ++count;
-                                }
-                            }
-                        }
-                    }
-                }
-            } while (result->NextRow());
-
-            TC_LOG_INFO("server.loading", ">> Loaded %u player create skills in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-        }
+        TC_LOG_INFO("server.loading", ">> Loaded player create skills in %u ms", GetMSTimeDiffToNow(oldMSTime));
     }
-
     // Load playercreate spells
-    TC_LOG_INFO("server.loading", "Loading Player Create Spell Data...");
+    TC_LOG_INFO("server.loading", "Loading Player Create Custom Spell Data...");
     {
         uint32 oldMSTime = getMSTime();
 
@@ -3627,9 +3557,9 @@ void ObjectMgr::LoadPlayerInfo()
                         {
                             if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
                             {
-                                if (PlayerInfo* info = _playerInfo[raceIndex][classIndex])
+                                if (auto const& playerInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(raceIndex), Classes(classIndex) }))
                                 {
-                                    info->customSpells.push_back(spellId);
+                                    playerInfo->customSpells.push_back(spellId);
                                     ++count;
                                 }
                                 // We need something better here, the check is not accounting for spells used by multiple races/classes but not all of them.
@@ -3687,9 +3617,9 @@ void ObjectMgr::LoadPlayerInfo()
                         {
                             if (classMask == 0 || ((1 << (classIndex - 1)) & classMask))
                             {
-                                if (PlayerInfo* info = _playerInfo[raceIndex][classIndex])
+                                if (auto const& playerInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(raceIndex), Classes(classIndex) }))
                                 {
-                                    info->castSpells.push_back(spellId);
+                                    playerInfo->castSpells.push_back(spellId);
                                     ++count;
                                 }
                             }
@@ -3736,8 +3666,8 @@ void ObjectMgr::LoadPlayerInfo()
                     continue;
                 }
 
-                if (PlayerInfo* info = _playerInfo[current_race][current_class])
-                    info->action.push_back(PlayerCreateInfoAction(fields[2].GetUInt16(), fields[3].GetUInt32(), fields[4].GetUInt16()));
+                if (auto const& playerInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(current_race), Classes(current_class) }))
+                    playerInfo->action.push_back(PlayerCreateInfoAction(fields[2].GetUInt16(), fields[3].GetUInt32(), fields[4].GetUInt16()));
 
                 ++count;
             }
@@ -3822,12 +3752,12 @@ void ObjectMgr::LoadPlayerInfo()
 
             for (std::size_t race = 0; race < raceStatModifiers.size(); ++race)
             {
-                if (PlayerInfo* info = _playerInfo[race][current_class])
+                if (auto const& playerInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(race), Classes(current_class) }))
                 {
-                    if (!info->levelInfo)
-                        info->levelInfo = new PlayerLevelInfo[sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL)];
+                    if (!playerInfo->levelInfo)
+                        playerInfo->levelInfo = std::make_unique<PlayerLevelInfo[]>(sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
 
-                    PlayerLevelInfo& levelInfo = info->levelInfo[current_level - 1];
+                    PlayerLevelInfo& levelInfo = playerInfo->levelInfo[current_level - 1];
                     for (uint8 i = 0; i < MAX_STATS; i++)
                         levelInfo.stats[i] = fields[i + 2].GetUInt16() + raceStatModifiers[race].StatModifier[i];
                 }
@@ -3850,8 +3780,8 @@ void ObjectMgr::LoadPlayerInfo()
                 if (!sChrClassesStore.LookupEntry(class_))
                     continue;
 
-                PlayerInfo* info = _playerInfo[race][class_];
-                if (!info)
+                auto const& playerInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(race), Classes(class_) });
+                if (!playerInfo)
                     continue;
 
                 // skip expansion races if not playing with expansion
@@ -3867,7 +3797,7 @@ void ObjectMgr::LoadPlayerInfo()
                     continue;
 
                 // fatal error if no level 1 data
-                if (!info->levelInfo || info->levelInfo[0].stats[0] == 0)
+                if (!playerInfo->levelInfo || playerInfo->levelInfo[0].stats[0] == 0)
                 {
                     TC_LOG_ERROR("sql.sql", "Race %i Class %i Level 1 does not have stats data!", race, class_);
                     exit(1);
@@ -3876,10 +3806,10 @@ void ObjectMgr::LoadPlayerInfo()
                 // fill level gaps
                 for (uint8 level = 1; level < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL); ++level)
                 {
-                    if (info->levelInfo[level].stats[0] == 0)
+                    if (playerInfo->levelInfo[level].stats[0] == 0)
                     {
                         TC_LOG_ERROR("sql.sql", "Race %i Class %i Level %i does not have stats data. Using stats data of level %i.", race, class_, level + 1, level);
-                        info->levelInfo[level] = info->levelInfo[level - 1];
+                        playerInfo->levelInfo[level] = playerInfo->levelInfo[level - 1];
                     }
                 }
             }
@@ -3972,7 +3902,7 @@ void ObjectMgr::GetPlayerLevelInfo(uint32 race, uint32 class_, uint8 level, Play
     if (level < 1 || race >= MAX_RACES || class_ >= MAX_CLASSES)
         return;
 
-    PlayerInfo const* pInfo = _playerInfo[race][class_];
+    PlayerInfo const* pInfo = Trinity::Containers::MapGetValuePtr(_playerInfo, {Races(race), Classes(class_)});
     if (!pInfo)
         return;
 
@@ -3985,7 +3915,7 @@ void ObjectMgr::GetPlayerLevelInfo(uint32 race, uint32 class_, uint8 level, Play
 void ObjectMgr::BuildPlayerLevelInfo(uint8 race, uint8 _class, uint8 level, PlayerLevelInfo* info) const
 {
     // base data (last known level)
-    *info = _playerInfo[race][_class]->levelInfo[sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL)-1];
+    *info = ASSERT_NOTNULL(Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(race), Classes(_class) }))->levelInfo[sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) - 1];
 
     // if conversion from uint32 to uint8 causes unexpected behaviour, change lvl to uint32
     for (uint8 lvl = sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL)-1; lvl < level; ++lvl)
@@ -10111,10 +10041,7 @@ PlayerInfo const* ObjectMgr::GetPlayerInfo(uint32 race, uint32 class_) const
         return nullptr;
     if (class_ >= MAX_CLASSES)
         return nullptr;
-    PlayerInfo const* info = _playerInfo[race][class_];
-    if (!info)
-        return nullptr;
-    return info;
+    return Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(race), Classes(class_) });
 }
 
 CreatureStaticFlagsOverride const* ObjectMgr::GetCreatureStaticFlagsOverride(ObjectGuid::LowType spawnId, Difficulty difficultyId) const

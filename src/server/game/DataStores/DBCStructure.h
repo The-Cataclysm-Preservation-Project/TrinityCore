@@ -1521,6 +1521,8 @@ struct SkillLineAbilityEntry
     uint32 TrivialSkillLineRankLow;                         // 11
     uint32 NumSkillUps;                                     // 12
     uint32 UniqueBit;                                       // 13
+
+    SkillLineAbilityAcquireMethod GetAcquireMethod() const { return static_cast<SkillLineAbilityAcquireMethod>(AcquireMethod); }
 };
 
 struct SkillRaceClassInfoEntry
@@ -1531,7 +1533,7 @@ struct SkillRaceClassInfoEntry
     uint32 ClassMask;                                       // 3
     uint32 Flags;                                           // 4
     uint32 Availability;                                    // 5
-    //uint32 MinLevel;                                      // 6
+    uint32 MinLevel;                                        // 6
     uint32 SkillTierID;                                     // 7
     //uint32 SkillCostIndex;                                // 8
 };
@@ -1543,6 +1545,17 @@ struct SkillTiersEntry
     uint32 ID;                                              // 0
     //uint32 Cost[MAX_SKILL_STEP];                          // 1-16
     uint32 Value[MAX_SKILL_STEP];                           // 17-32
+
+    uint32 GetValueForTierIndex(uint32 tierIndex) const
+    {
+        if (tierIndex >= MAX_SKILL_STEP)
+            tierIndex = MAX_SKILL_STEP - 1;
+
+        while (Value[tierIndex] == 0 && tierIndex > 0)
+            --tierIndex;
+
+        return Value[tierIndex];
+    }
 };
 
 struct SoundEntriesEntry

@@ -70,6 +70,13 @@ namespace Trinity
 
     namespace Containers
     {
+        template <typename M>
+        concept Map = requires (M)
+        {
+            typename M::key_type;
+            typename M::mapped_type;
+        };
+
         // replace with std::size in C++17
         template<class C>
         constexpr inline std::size_t Size(C const& container)
@@ -253,15 +260,28 @@ namespace Trinity
         /**
          * Returns a pointer to mapped value (or the value itself if map stores pointers)
          */
-        template<class M>
-        inline auto MapGetValuePtr(M& map, typename M::key_type const& key) -> decltype(AddressOrSelf(map.find(key)->second))
+        template <Map M>
+        inline auto MapGetValuePtr(M& map, typename M::key_type const& key)
         {
+            using mapped_type = typename M::mapped_type;
+
             auto itr = map.find(key);
-            return itr != map.end() ? AddressOrSelf(itr->second) : nullptr;
+            if constexpr (std::is_pointer_v<mapped_type>)
+                return itr != map.end() ? itr->second : nullptr;                        // raw pointer
+            else if constexpr (requires(mapped_type const& p) { p.operator->(); })
+            {
+                // smart pointers
+                if constexpr (std::is_copy_constructible_v<mapped_type>)
+                    return itr != map.end() ? itr->second : nullptr;                    // copyable (like shared_ptr)
+                else
+                    return itr != map.end() ? std::to_address(itr->second) : nullptr;   // non-copyable unique_ptr like, unwrap it to raw pointer
+            }
+            else
+                return itr != map.end() ? std::addressof(itr->second) : nullptr;        // value
         }
 
-        template<class K, class V, template<class, class, class...> class M, class... Rest>
-        inline void MultimapErasePair(M<K, V, Rest...>& multimap, K const& key, V const& value)
+        template <Map M>
+        inline void MultimapErasePair(M& multimap, typename M::key_type const& key, typename M::mapped_type const& value)
         {
             auto range = multimap.equal_range(key);
             for (auto itr = range.first; itr != range.second; )

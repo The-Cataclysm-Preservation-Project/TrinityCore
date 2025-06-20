@@ -2952,13 +2952,44 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
         // add dependent skills if this spell is not learned from adding skill already
         if (spellLearnSkill->skill != fromSkill)
         {
-            uint32 skill_value = GetPureSkillValue(spellLearnSkill->skill);
-            uint32 skill_max_value = GetPureMaxSkillValue(spellLearnSkill->skill);
+            uint16 skill_value = GetPureSkillValue(spellLearnSkill->skill);
+            uint16 skill_max_value = GetPureMaxSkillValue(spellLearnSkill->skill);
 
             if (skill_value < spellLearnSkill->value)
                 skill_value = spellLearnSkill->value;
 
-            uint32 new_skill_max_value = spellLearnSkill->maxvalue == 0 ? GetMaxSkillValueForLevel() : spellLearnSkill->maxvalue;
+            uint16 new_skill_max_value = spellLearnSkill->maxvalue;
+
+            if (new_skill_max_value == 0)
+            {
+                if (SkillRaceClassInfoEntry const* rcInfo = sDBCManager.GetSkillRaceClassInfo(spellLearnSkill->skill, getRace(), getClass()))
+                {
+                    switch (GetSkillRangeType(rcInfo))
+                    {
+                        case SKILL_RANGE_LANGUAGE:
+                            skill_value = 300;
+                            new_skill_max_value = 300;
+                            break;
+                        case SKILL_RANGE_LEVEL:
+                            new_skill_max_value = GetMaxSkillValueForLevel();
+                            break;
+                        case SKILL_RANGE_MONO:
+                            new_skill_max_value = 1;
+                            break;
+                        case SKILL_RANGE_RANK:
+                        {
+                            SkillTiersEntry const* tier = sSkillTiersStore.AssertEntry(rcInfo->SkillTierID);
+                            new_skill_max_value = tier->GetValueForTierIndex(spellLearnSkill->step - 1);
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+
+                    if (rcInfo->Flags & SKILL_FLAG_ALWAYS_MAX_VALUE)
+                        skill_value = new_skill_max_value;
+                }
+            }
 
             if (skill_max_value < new_skill_max_value)
                 skill_max_value = new_skill_max_value;
@@ -2978,10 +3009,10 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
             if (pSkill->ID == fromSkill)
                 continue;
 
-            ///@todo: confirm if rogues start with lockpicking skill at level 1 but only receive the spell to use it at level 16
-            // Also added for runeforging. It's already confirmed this happens upon learning for Death Knights, not from character creation.
-            if ((_spell_idx->second->AcquireMethod == SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN && !HasSkill(pSkill->ID)) || ((pSkill->ID == SKILL_LOCKPICKING || pSkill->ID == SKILL_RUNEFORGING) && _spell_idx->second->TrivialSkillLineRankHigh == 0))
-                LearnDefaultSkill(pSkill->ID, 0);
+            // Runeforging special case
+            if ((_spell_idx->second->GetAcquireMethod() == SkillLineAbilityAcquireMethod::AutomaticCharLevel && !HasSkill(_spell_idx->second->SkillLine)) || ((_spell_idx->second->SkillLine == SKILL_RUNEFORGING) && _spell_idx->second->TrivialSkillLineRankHigh == 0))
+                if (SkillRaceClassInfoEntry const* rcInfo = sDBCManager.GetSkillRaceClassInfo(_spell_idx->second->SkillLine, getRace(), getClass()))
+                    LearnDefaultSkill(rcInfo);
         }
     }
 
@@ -3213,16 +3244,49 @@ void Player::RemoveSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
                 SetSkill(spellLearnSkill->skill, 0, 0, 0);
             else                                            // set to prev. skill setting values
             {
-                uint32 skill_value = GetPureSkillValue(prevSkill->skill);
-                uint32 skill_max_value = GetPureMaxSkillValue(prevSkill->skill);
+                uint16 skill_value = GetPureSkillValue(prevSkill->skill);
+                uint16 skill_max_value = GetPureMaxSkillValue(prevSkill->skill);
 
-                if (skill_value > prevSkill->value)
+                uint16 new_skill_max_value = prevSkill->maxvalue;
+
+                if (new_skill_max_value == 0)
+                {
+                    if (SkillRaceClassInfoEntry const* rcInfo = sDBCManager.GetSkillRaceClassInfo(prevSkill->skill, getRace(), getClass()))
+                    {
+                        switch (GetSkillRangeType(rcInfo))
+                        {
+                            case SKILL_RANGE_LANGUAGE:
+                                skill_value = 300;
+                                new_skill_max_value = 300;
+                                break;
+                            case SKILL_RANGE_LEVEL:
+                                new_skill_max_value = GetMaxSkillValueForLevel();
+                                break;
+                            case SKILL_RANGE_MONO:
+                                new_skill_max_value = 1;
+                                break;
+                            case SKILL_RANGE_RANK:
+                            {
+                                SkillTiersEntry const* tier = sSkillTiersStore.AssertEntry(rcInfo->SkillTierID);
+                                new_skill_max_value = tier->GetValueForTierIndex(prevSkill->step - 1);
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+
+                        if (rcInfo->Flags & SKILL_FLAG_ALWAYS_MAX_VALUE)
+                            skill_value = new_skill_max_value;
+                    }
+                }
+                else if (skill_value > prevSkill->value)
                     skill_value = prevSkill->value;
-
-                uint32 new_skill_max_value = prevSkill->maxvalue == 0 ? GetMaxSkillValueForLevel() : prevSkill->maxvalue;
 
                 if (skill_max_value > new_skill_max_value)
                     skill_max_value = new_skill_max_value;
+
+                if (skill_value > new_skill_max_value)
+                    skill_value = new_skill_max_value;
 
                 SetSkill(prevSkill->skill, prevSkill->step, skill_value, skill_max_value);
             }
@@ -5401,11 +5465,29 @@ void Player::InitializeSkillFields()
 // To "remove" a skill line, set it's values to zero
 void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
 {
-    if (!id)
+    SkillLineEntry const* skillEntry = sSkillLineStore.LookupEntry(id);
+    if (!skillEntry)
+    {
+        TC_LOG_ERROR("misc", "Player::SetSkill: Skill (SkillID: %u) not found in SkillLineStore for player '%s' (%s)",
+            id, GetName().c_str(), GetGUID().ToString().c_str());
         return;
+    }
 
     uint16 currVal;
     SkillStatusMap::iterator itr = mSkillStatus.find(id);
+
+    auto refreshSkillBonusAuras = [&]
+    {
+        // Temporary bonuses
+        for (AuraEffect* effect : GetAuraEffectsByType(SPELL_AURA_MOD_SKILL))
+            if (effect->GetMiscValue() == int32(id))
+                effect->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
+
+        // Permanent bonuses
+        for (AuraEffect* effect : GetAuraEffectsByType(SPELL_AURA_MOD_SKILL_TALENT))
+            if (effect->GetMiscValue() == int32(id))
+                effect->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
+    };
 
     // Handle already stored skills
     if (itr != mSkillStatus.end())
@@ -5441,7 +5523,21 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
             if (itr->second.uState == SKILL_UNCHANGED)
             {
                 if (currVal == 0)   // activated skill, mark as new to save into database
-                    itr->second.uState = SKILL_NEW;
+                {
+                    itr->second.uState = itr->second.uState != SKILL_DELETED
+                        ? SKILL_NEW
+                        : SKILL_CHANGED; // skills marked as SKILL_DELETED already exist in database, mark as changed instead of new
+
+                    if (skillEntry->CategoryID == SKILL_CATEGORY_PROFESSION)
+                    {
+                        if (!GetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1))
+                            SetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1, id);
+                        else if (!GetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1 + 1))
+                            SetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1 + 1, id);
+                    }
+
+                    refreshSkillBonusAuras();
+                }
                 else                // updated skill, mark as changed to save into database
                     itr->second.uState = SKILL_CHANGED;
             }
@@ -5467,10 +5563,9 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
             SetSkillPermBonus(itr->second.pos, 0);
 
             // mark as deleted so the next save will delete the data from the database
-            if (itr->second.uState != SKILL_NEW)
-                itr->second.uState = SKILL_DELETED;
-            else
-                itr->second.uState = SKILL_UNCHANGED;
+            itr->second.uState = itr->second.uState != SKILL_NEW
+                ? SKILL_DELETED
+                : SKILL_UNCHANGED; // skills marked as SKILL_NEW don't exist in database (this distinction is not neccessary for deletion but for re-learning the same skill before save to db happens)
 
             // remove all spells that related to this skill
             if (std::vector<SkillLineAbilityEntry const*> const* skillLineAbilities = sDBCManager.GetSkillLineAbilitiesBySkill(id))
@@ -5509,13 +5604,6 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
             return;
         }
 
-        SkillLineEntry const* skillEntry = sSkillLineStore.LookupEntry(id);
-        if (!skillEntry)
-        {
-            TC_LOG_ERROR("misc", "Skill not found in SkillLineStore: skill #%u", id);
-            return;
-        }
-
         if (skillEntry->CategoryID == SKILL_CATEGORY_PROFESSION)
         {
             if (!GetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1))
@@ -5544,15 +5632,7 @@ void Player::SetSkill(uint16 id, uint16 step, uint16 newVal, uint16 maxVal)
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, id);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, id);
 
-            // temporary bonuses
-            for (AuraEffect* effect : GetAuraEffectsByType(SPELL_AURA_MOD_SKILL))
-                if (effect->GetMiscValue() == int32(id))
-                    effect->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
-
-            // permanent bonuses
-            for (AuraEffect* effect : GetAuraEffectsByType(SPELL_AURA_MOD_SKILL_TALENT))
-                if (effect->GetMiscValue() == int32(id))
-                    effect->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
+            refreshSkillBonusAuras();
 
             // archaeology skill learned
             if (id == SKILL_ARCHAEOLOGY)
@@ -23128,21 +23208,20 @@ void Player::LearnDefaultSkills()
     ASSERT(info);
     for (PlayerCreateInfoSkills::const_iterator itr = info->skills.begin(); itr != info->skills.end(); ++itr)
     {
-        uint32 skillId = itr->SkillId;
-        if (HasSkill(skillId))
+        SkillRaceClassInfoEntry const* rcInfo = *itr;
+        if (HasSkill(rcInfo->SkillID))
             continue;
 
-        LearnDefaultSkill(skillId, itr->Rank);
+        if (rcInfo->MinLevel > getLevel())
+            continue;
+
+        LearnDefaultSkill(rcInfo);
     }
 }
 
-void Player::LearnDefaultSkill(uint32 skillId, uint16 rank)
+void Player::LearnDefaultSkill(SkillRaceClassInfoEntry const* rcInfo)
 {
-    SkillRaceClassInfoEntry const* rcInfo = sDBCManager.GetSkillRaceClassInfo(skillId, getRace(), getClass());
-    if (!rcInfo)
-        return;
-
-    TC_LOG_DEBUG("entities.player.loading", "PLAYER (Class: %u Race: %u): Adding initial skill, id = %u", uint32(getClass()), uint32(getRace()), skillId);
+    uint16 skillId = rcInfo->SkillID;
     switch (GetSkillRangeType(rcInfo))
     {
         case SKILL_RANGE_LANGUAGE:
@@ -23169,16 +23248,13 @@ void Player::LearnDefaultSkill(uint32 skillId, uint16 rank)
             break;
         case SKILL_RANGE_RANK:
         {
-            if (!rank)
-                break;
-
             SkillTiersEntry const* tier = sSkillTiersStore.LookupEntry(rcInfo->SkillTierID);
-            uint16 maxValue = tier->Value[std::max<int32>(rank - 1, 0)];
+            uint16 maxValue = tier->GetValueForTierIndex(0);
             uint16 skillValue = 1;
             if (rcInfo->Flags & SKILL_FLAG_ALWAYS_MAX_VALUE)
                 skillValue = maxValue;
             else if (getClass() == CLASS_DEATH_KNIGHT)
-                skillValue = std::min(std::max<uint16>({ uint16(1), uint16((getLevel() - 1) * 5) }), maxValue);
+                skillValue = std::min(std::max(uint16(1), uint16((getLevel() - 1) * 5)), maxValue);
 
             SetSkill(skillId, 1, skillValue, maxValue);
             break;
@@ -23226,13 +23302,19 @@ void Player::LearnQuestRewardedSpells(Quest const* quest)
     uint32 learned_0 = spellInfo->Effects[0].TriggerSpell;
     if (!HasSpell(learned_0))
     {
-        SpellInfo const* learnedInfo = sSpellMgr->GetSpellInfo(learned_0);
-        if (!learnedInfo)
-            return;
+        found = false;
+        SkillLineAbilityMapBounds skills = sSpellMgr->GetSkillLineAbilityMapBounds(learned_0);
+        for (auto skillItr = skills.first; skillItr != skills.second; ++skillItr)
+        {
+            if (skillItr->second->GetAcquireMethod() == SkillLineAbilityAcquireMethod::LearnedOrAutomaticCharLevel)
+            {
+                found = true;
+                break;
+            }
+        }
 
-       // profession specialization can be re-learned from npc
-       if (learnedInfo->Effects[0].Effect == SPELL_EFFECT_TRADE_SKILL && learnedInfo->Effects[1].Effect == 0 && !learnedInfo->SpellLevel)
-           return;
+        if (!found)
+            return;
     }
 
     CastSpell(this, spell_id, true);
@@ -23265,18 +23347,14 @@ void Player::LearnSkillRewardedSpells(uint32 skillId, uint32 skillValue)
         if (!spellInfo)
             continue;
 
-        switch (ability->AcquireMethod)
+        switch (ability->GetAcquireMethod())
         {
-            case SKILL_LINE_ABILITY_LEARNED_ON_SKILL_VALUE:
-            case SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN:
+            case SkillLineAbilityAcquireMethod::AutomaticSkillRank:
+            case SkillLineAbilityAcquireMethod::AutomaticCharLevel:
                 break;
             default:
                 continue;
         }
-
-        // AcquireMethod == 2 && NumSkillUps == 1 --> automatically learn riding skill spell, else we skip it (client shows riding in spellbook as trainable).
-        if (skillId == SKILL_RIDING && (ability->AcquireMethod != SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN || ability->NumSkillUps != 1))
-            continue;
 
         // Check race if set
         if (ability->RaceMask && !(ability->RaceMask & raceMask))
@@ -23286,12 +23364,13 @@ void Player::LearnSkillRewardedSpells(uint32 skillId, uint32 skillValue)
         if (ability->ClassMask && !(ability->ClassMask & classMask))
             continue;
 
-        // check level, skip class spells if not high enough
-        if (getLevel() < spellInfo->SpellLevel)
+        // Check level, skip class spells if not high enough
+        uint32 requiredLevel = std::max(spellInfo->SpellLevel, spellInfo->BaseLevel);
+        if (requiredLevel > getLevel())
             continue;
 
         // need unlearn spell
-        if (skillValue < ability->MinSkillLineRank && ability->AcquireMethod == SKILL_LINE_ABILITY_LEARNED_ON_SKILL_VALUE)
+        if (int32(skillValue) < ability->MinSkillLineRank && ability->GetAcquireMethod() == SkillLineAbilityAcquireMethod::AutomaticSkillRank)
             RemoveSpell(ability->Spell);
 
         // need learn

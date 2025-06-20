@@ -648,7 +648,7 @@ void DBCManager::LoadStores(const std::string& dataPath, uint32 defaultLocale)
                 if (skillLine->SkillLine != cFamily->SkillLine[0] && skillLine->SkillLine != cFamily->SkillLine[1])
                     continue;
 
-                if (skillLine->AcquireMethod != SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN)
+                if (skillLine->GetAcquireMethod() != SkillLineAbilityAcquireMethod::AutomaticCharLevel)
                     continue;
 
                 sPetFamilySpellsStore[cFamily->ID].insert(spellInfo->ID);

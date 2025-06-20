@@ -532,10 +532,13 @@ enum class MapFlags : uint32
 
 DEFINE_ENUM_FLAG(MapFlags);
 
-enum AbilytyLearnType
+enum class SkillLineAbilityAcquireMethod : int32
 {
-    SKILL_LINE_ABILITY_LEARNED_ON_SKILL_VALUE  = 1, // Spell state will update depending on skill value
-    SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN  = 2  // Spell will be learned/removed together with entire skill
+    Learned                     = 0,
+    AutomaticSkillRank          = 1, // Spell state will update depending on skill value
+    AutomaticCharLevel          = 2, // Spell will be learned/removed together with entire skill
+    NeverLearned                = 3,
+    LearnedOrAutomaticCharLevel = 4,
 };
 
 enum ItemEnchantmentType

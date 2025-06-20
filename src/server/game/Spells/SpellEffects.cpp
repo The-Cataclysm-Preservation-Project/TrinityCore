@@ -1401,7 +1401,8 @@ void Spell::DoCreateItem(uint32 /*i*/, uint32 itemtype)
 
         // we succeeded in creating at least one item, so a levelup is possible
         if (bgType == 0)
-            player->UpdateCraftSkill(m_spellInfo);
+            if (!m_CastItem)
+                player->UpdateCraftSkill(m_spellInfo);
     }
 
 /*
@@ -1437,7 +1438,8 @@ void Spell::EffectCreateItem2(SpellEffIndex effIndex)
     if (m_spellInfo->IsLootCrafting())
     {
         player->AutoStoreLoot(m_spellInfo->Id, LootTemplates_Spell, false);
-        player->UpdateCraftSkill(m_spellInfo);
+        if (!m_CastItem)
+            player->UpdateCraftSkill(m_spellInfo);
     }
     else // If there's no random loot entries for this spell, pick the item associated with this spell
     {
@@ -2274,14 +2276,15 @@ void Spell::EffectLearnSkill(SpellEffIndex effIndex)
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
         return;
 
-    if (unitTarget->GetTypeId() != TYPEID_PLAYER)
+    Player* playerTarget = Object::ToPlayer(unitTarget);
+    if (!playerTarget)
         return;
 
     if (damage < 0)
         return;
 
     uint32 skillid = m_spellInfo->Effects[effIndex].MiscValue;
-    SkillRaceClassInfoEntry const* rcEntry = sDBCManager.GetSkillRaceClassInfo(skillid, unitTarget->getRace(), unitTarget->getClass());
+    SkillRaceClassInfoEntry const* rcEntry = sDBCManager.GetSkillRaceClassInfo(skillid, playerTarget->getRace(), playerTarget->getClass());
     if (!rcEntry)
         return;
 
@@ -2289,8 +2292,13 @@ void Spell::EffectLearnSkill(SpellEffIndex effIndex)
     if (!tier)
         return;
 
-    uint16 skillval = unitTarget->ToPlayer()->GetPureSkillValue(skillid);
-    unitTarget->ToPlayer()->SetSkill(skillid, m_spellInfo->Effects[effIndex].CalcValue(), std::max<uint16>(skillval, 1), tier->Value[damage - 1]);
+    uint16 skillval = std::max<uint16>(1, playerTarget->GetPureSkillValue(skillid));
+    uint16 maxSkillVal = tier->Value[damage - 1];
+
+    if (rcEntry->Flags & SKILL_FLAG_ALWAYS_MAX_VALUE)
+        skillval = maxSkillVal;
+
+    playerTarget->SetSkill(skillid, damage, skillval, maxSkillVal);
 }
 
 void Spell::EffectPlayMovie(SpellEffIndex effIndex)
@@ -2347,7 +2355,7 @@ void Spell::EffectEnchantItemPerm(SpellEffIndex effIndex)
     else
     {
         // do not increase skill if vellum used
-        if (!(m_CastItem && m_CastItem->GetTemplate()->GetFlags() & ITEM_FLAG_NO_REAGENT_COST))
+        if (!m_CastItem)
             player->UpdateCraftSkill(m_spellInfo);
 
         uint32 enchant_id = m_spellInfo->Effects[effIndex].MiscValue;
@@ -3932,7 +3940,9 @@ void Spell::EffectDisEnchant(SpellEffIndex /*effIndex*/)
 
     if (Player* caster = m_caster->ToPlayer())
     {
-        caster->UpdateCraftSkill(m_spellInfo);
+        if (!m_CastItem)
+            caster->UpdateCraftSkill(m_spellInfo);
+
         caster->SendLoot(itemTarget->GetGUID(), LOOT_DISENCHANTING);
     }
 
@@ -4988,12 +4998,37 @@ void Spell::EffectMilling(SpellEffIndex /*effIndex*/)
     player->SendLoot(itemTarget->GetGUID(), LOOT_MILLING);
 }
 
-void Spell::EffectSkill(SpellEffIndex /*effIndex*/)
+void Spell::EffectSkill(SpellEffIndex effIndex)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
         return;
 
-    TC_LOG_DEBUG("spells", "WORLD: SkillEFFECT");
+    Player* playerTarget = Object::ToPlayer(GetCaster());
+    if (!playerTarget)
+        return;
+
+    if (damage < 1)
+        return;
+
+    uint32 skillid = m_spellInfo->Effects[effIndex].MiscValue;
+    if (playerTarget->GetSkillStep(skillid) >= damage)
+        return;
+
+    SkillRaceClassInfoEntry const* rcEntry = sDBCManager.GetSkillRaceClassInfo(skillid, playerTarget->getRace(), playerTarget->getClass());
+    if (!rcEntry)
+        return;
+
+    SkillTiersEntry const* tier =sSkillTiersStore.AssertEntry(rcEntry->SkillTierID);
+    if (!tier)
+        return;
+
+    uint16 skillval = std::max<uint16>(1, playerTarget->GetPureSkillValue(skillid));
+    uint16 maxSkillVal = tier->Value[damage - 1];
+
+    if (rcEntry->Flags & SKILL_FLAG_ALWAYS_MAX_VALUE)
+        skillval = maxSkillVal;
+
+    playerTarget->SetSkill(skillid, damage, skillval, maxSkillVal);
 }
 
 /* There is currently no need for this effect. We handle it in Battleground.cpp

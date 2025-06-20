@@ -152,6 +152,7 @@ TC_GAME_API extern DBCStorage <ResearchProjectEntry>         sResearchProjectSto
 TC_GAME_API extern DBCStorage <ResearchSiteEntry>            sResearchSiteStore;
 TC_GAME_API extern DBCStorage <ScalingStatDistributionEntry> sScalingStatDistributionStore;
 TC_GAME_API extern DBCStorage <ScalingStatValuesEntry>       sScalingStatValuesStore;
+TC_GAME_API extern DBCStorage <SkillRaceClassInfoEntry>      sSkillRaceClassInfoStore;
 TC_GAME_API extern DBCStorage <SkillLineEntry>               sSkillLineStore;
 TC_GAME_API extern DBCStorage <SkillLineAbilityEntry>        sSkillLineAbilityStore;
 TC_GAME_API extern DBCStorage <SkillTiersEntry>              sSkillTiersStore;

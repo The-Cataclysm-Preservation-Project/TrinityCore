@@ -1024,11 +1024,8 @@ void SpellMgr::LoadSpellLearnSkills()
                 case SPELL_EFFECT_SKILL:
                     dbc_node.skill = entry->Effects[i].MiscValue;
                     dbc_node.step = entry->Effects[i].CalcValue();
-                    if (dbc_node.skill != SKILL_RIDING)
-                        dbc_node.value = 1;
-                    else
-                        dbc_node.value = dbc_node.step * 75;
-                    dbc_node.maxvalue = dbc_node.step * 75;
+                    dbc_node.value = 0;
+                    dbc_node.maxvalue = 0;
                     break;
                 case SPELL_EFFECT_DUAL_WIELD:
                     dbc_node.skill = SKILL_DUAL_WIELD;
@@ -2164,7 +2161,7 @@ void SpellMgr::LoadPetLevelupSpellMap()
                 if (skillLine->SkillLine != creatureFamily->SkillLine[j])
                     continue;
 
-                if (skillLine->AcquireMethod != SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN)
+                if (skillLine->GetAcquireMethod() != SkillLineAbilityAcquireMethod::AutomaticCharLevel)
                     continue;
 
                 SpellInfo const* spell = GetSpellInfo(skillLine->Spell);

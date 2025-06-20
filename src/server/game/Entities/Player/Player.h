@@ -52,6 +52,7 @@ struct PlayerTalent;
 struct PlayerTalentInfo;
 struct ScalingStatDistributionEntry;
 struct ScalingStatValuesEntry;
+struct SkillRaceClassInfoEntry;
 struct TrainerSpell;
 struct VendorItem;
 struct GuildMemberProfessionData;
@@ -1549,7 +1550,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void ResetSpells(bool myClassOnly = false);
         void LearnCustomSpells();
         void LearnDefaultSkills();
-        void LearnDefaultSkill(uint32 skillId, uint16 rank);
+        void LearnDefaultSkill(SkillRaceClassInfoEntry const* rcInfo);
         void LearnQuestRewardedSpells();
         void LearnQuestRewardedSpells(Quest const* quest);
         void LearnSpellHighestRank(uint32 spellid);

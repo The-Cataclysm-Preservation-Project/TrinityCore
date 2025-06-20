@@ -693,7 +693,7 @@ enum SpellAttr9
     SPELL_ATTR9_UNK3                             = 0x00000008, //  3
     SPELL_ATTR9_SPECIAL_DELAY_CALCULATION        = 0x00000010, //  4
     SPELL_ATTR9_SUMMON_PLAYER_TOTEM              = 0x00000020, //  5
-    SPELL_ATTR9_UNK6                             = 0x00000040, //  6
+    SPELL_ATTR9_ITEM_CAST_GRANTS_SKILL_GAIN      = 0x00000040, //  6 Item Cast Grants Skill Gain
     SPELL_ATTR9_UNK7                             = 0x00000080, //  7
     SPELL_ATTR9_AIMED_SHOT                       = 0x00000100, //  8
     SPELL_ATTR9_NOT_USABLE_IN_ARENA              = 0x00000200, //  9 Cannot be used in arenas

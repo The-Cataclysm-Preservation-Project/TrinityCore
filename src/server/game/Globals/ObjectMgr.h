@@ -688,15 +688,7 @@ struct PlayerCreateInfoAction
 
 typedef std::vector<PlayerCreateInfoAction> PlayerCreateInfoActions;
 
-struct PlayerCreateInfoSkill
-{
-    PlayerCreateInfoSkill() : SkillId(0), Rank(0) { }
-
-    uint16 SkillId;
-    uint16 Rank;
-};
-
-typedef std::vector<PlayerCreateInfoSkill> PlayerCreateInfoSkills;
+typedef std::vector<SkillRaceClassInfoEntry const*> PlayerCreateInfoSkills;
 
 // existence checked by displayId != 0
 struct PlayerInfo
@@ -716,7 +708,7 @@ struct PlayerInfo
     PlayerCreateInfoSkills skills;
 
     //[level-1] 0..MaxPlayerLevel-1
-    PlayerLevelInfo* levelInfo = nullptr;
+    std::unique_ptr<PlayerLevelInfo[]> levelInfo;
 };
 
 
@@ -1734,7 +1726,7 @@ class TC_GAME_API ObjectMgr
 
         void BuildPlayerLevelInfo(uint8 race, uint8 class_, uint8 level, PlayerLevelInfo* plinfo) const;
 
-        PlayerInfo* _playerInfo[MAX_RACES][MAX_CLASSES];
+        std::unordered_map<std::pair<Races, Classes>, std::unique_ptr<PlayerInfo>> _playerInfo;
 
         typedef std::vector<uint32> PlayerXPperLevel;       // [level]
         PlayerXPperLevel _playerXPperLevel;
