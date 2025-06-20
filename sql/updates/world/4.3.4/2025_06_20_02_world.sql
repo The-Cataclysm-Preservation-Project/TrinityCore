@@ -1,0 +1,16 @@
+UPDATE `spell_proc` SET `Cooldown` = 2000 WHERE `SpellId` = -9799;
+UPDATE `spell_proc` SET `Cooldown` = 60000 WHERE `SpellId` = -12289;
+UPDATE `spell_proc` SET `Cooldown` = 1500 WHERE `SpellId` = -12298;
+UPDATE `spell_proc` SET `Cooldown` = 500 WHERE `SpellId` = -14186;
+UPDATE `spell_proc` SET `Cooldown` = 0 WHERE `SpellId` = -16880;
+UPDATE `spell_proc` SET `Cooldown` = 6000 WHERE `SpellId` = -18094;
+UPDATE `spell_proc` SET `Cooldown` = 500 WHERE `SpellId` = -30160;
+UPDATE `spell_proc` SET `Cooldown` = 0 WHERE `SpellId` = -31828;
+UPDATE `spell_proc` SET `Cooldown` = 6000 WHERE `SpellId` = -33881;
+UPDATE `spell_proc` SET `Cooldown` = 500 WHERE `SpellId` = -51525;
+UPDATE `spell_proc` SET `Cooldown` = 200 WHERE `SpellId` = -51562;
+UPDATE `spell_proc` SET `Cooldown` = 4000 WHERE `SpellId` = -51698;
+UPDATE `spell_proc` SET `Cooldown` = 1000 WHERE `SpellId` = -53671;
+UPDATE `spell_proc` SET `Cooldown` = 15000 WHERE `SpellId` = -57470;
+UPDATE `spell_proc` SET `Cooldown` = 100 WHERE `SpellId` = -63730;
+UPDATE `spell_proc` SET `Cooldown` = 6000 WHERE `SpellId` = -93398;
