@@ -96,6 +96,7 @@ enum DruidSpells
     SPELL_DRUID_MOONFIRE                    = 8921,
     SPELL_DRUID_NATURES_BOUNTY              = 96206,
     SPELL_DRUID_NATURES_GRACE               = 16880,
+    SPELL_DRUID_NATURES_TORMENT_COOLDOWN    = 93432,
     SPELL_DRUID_PULVERIZE_TRIGGERED         = 80951,
     SPELL_DRUID_REVITALIZE_R1               = 48539,
     SPELL_DRUID_RIP                         = 1079,
@@ -2046,6 +2047,25 @@ private:
     bool _bountyActive = false;
 };
 
+// -16880 - Nature's Grace
+class spell_dru_natures_grace : public AuraScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DRUID_NATURES_TORMENT_COOLDOWN });
+    }
+
+    bool CheckCooldown(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        return !GetTarget()->HasAura(SPELL_DRUID_NATURES_TORMENT_COOLDOWN, GetCasterGUID());
+    }
+
+    void Register() override
+    {
+        DoCheckEffectProc.Register(&spell_dru_natures_grace::CheckCooldown, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE);
+    }
+};
+
 // 339 - Entangling Roots
 class spell_dru_entangling_roots : public AuraScript
 {
@@ -2228,6 +2248,7 @@ void AddSC_druid_spell_scripts()
     RegisterSpellScript(spell_dru_maul);
     RegisterSpellScript(spell_dru_moonfire);
     RegisterSpellScript(spell_dru_natures_bounty);
+    RegisterSpellScript(spell_dru_natures_grace);
     RegisterSpellScript(spell_dru_nourish);
     RegisterSpellScript(spell_dru_pulverize);
     RegisterSpellScript(spell_dru_regrowth);
