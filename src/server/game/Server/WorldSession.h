@@ -1420,6 +1420,7 @@ class TC_GAME_API WorldSession
         ConnectToKey _instanceConnectKey;
 
         GameClient* _gameClient;
+        bool _legacyConnectionModeEnabled;
 
         WorldSession(WorldSession const& right) = delete;
         WorldSession& operator=(WorldSession const& right) = delete;

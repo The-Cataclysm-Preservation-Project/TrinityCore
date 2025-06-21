@@ -16,13 +16,16 @@
  */
 
 #include "Opcodes.h"
-#include "Log.h"
-#include "WorldSession.h"
-#include "Packets/AllPackets.h"
+
 #include <iomanip>
 #include <sstream>
 
-template<class PacketClass, void(WorldSession::*HandlerFunction)(PacketClass&)>
+#include "Log.h"
+#include "Packets/AllPackets.h"
+#include "World.h"
+#include "WorldSession.h"
+
+template <class PacketClass, void(WorldSession::*HandlerFunction)(PacketClass&)>
 class PacketHandler : public ClientOpcodeHandler
 {
 public:
@@ -127,6 +130,10 @@ void OpcodeTable::ValidateAndSetServerOpcode(OpcodeServer opcode, char const* na
         TC_LOG_ERROR("network", "Tried to set invalid connection type %u for instance only opcode %s", conIdx, name);
         return;
     }
+
+    // If the legacy connection mode has been enabled, all packets will get sent on one connection
+    if (sWorld->getBoolConfig(CONFIG_LEGACY_CONNECTION_MODE))
+        conIdx = CONNECTION_TYPE_REALM;
 
     if (_internalTableServer[opcode] != nullptr)
     {

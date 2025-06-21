@@ -752,7 +752,10 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin&
         return;
     }
 
-    SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt1);
+    if (_legacyConnectionModeEnabled)
+        HandleContinuePlayerLogin();
+    else
+        SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt1);
 }
 
 void WorldSession::HandleContinuePlayerLogin()
@@ -770,7 +773,8 @@ void WorldSession::HandleContinuePlayerLogin()
         return;
     }
 
-    SendPacket(WorldPackets::Auth::ResumeComms(CONNECTION_TYPE_INSTANCE).Write());
+    if (!_legacyConnectionModeEnabled)
+        SendPacket(WorldPackets::Auth::ResumeComms(CONNECTION_TYPE_INSTANCE).Write());
 
     AddQueryHolderCallback(CharacterDatabase.DelayQueryHolder(holder)).AfterComplete([this](SQLQueryHolderBase const& holder)
     {

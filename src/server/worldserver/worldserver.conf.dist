@@ -267,6 +267,15 @@ ProcessPriority = 0
 Compression = 1
 
 #
+#    LegacyConnectionModeEnabled
+#        Description: Enables/Disables the legacy connection handling in which only one connection socket
+#                     is being used to send and receive packets. This allows older pre-patched clients to connect.
+#        Default:     0   - (Disabled, Both sockets are used and required)
+#                     1   - (Enabled, One the first socket is being used)
+
+LegacyConnectionModeEnabled = 0
+
+#
 #    PlayerLimit
 #        Description: Maximum number of players in the world. Excluding Mods, GMs and Admins.
 #          Important: If you want to block players and only allow Mods, GMs or Admins to join the

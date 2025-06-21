@@ -140,7 +140,8 @@ WorldSession::WorldSession(uint32 id, std::string&& name, uint32 battlenetAccoun
     _timeSyncClockDeltaQueue(std::make_unique<boost::circular_buffer<std::pair<int64, uint32>>>(6)),
     _timeSyncClockDelta(0),
     _pendingTimeSyncRequests(),
-    _gameClient(new GameClient(this))
+    _gameClient(new GameClient(this)),
+    _legacyConnectionModeEnabled(sWorld->getBoolConfig(CONFIG_LEGACY_CONNECTION_MODE))
 {
     memset(m_Tutorials, 0, sizeof(m_Tutorials));
 
