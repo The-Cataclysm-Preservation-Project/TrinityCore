@@ -32,15 +32,15 @@
 #include <memory>
 #include <stack>
 
-#define WORLD_TRIGGER   12999
+constexpr uint32 WORLD_TRIGGER = 12999;
 
-#define MAX_SPELL_CHARM         4
-#define MAX_SPELL_VEHICLE       6
-#define MAX_SPELL_POSSESS       8
-#define MAX_SPELL_CONTROL_BAR   10
+constexpr uint8 MAX_SPELL_CHARM         = 4;
+constexpr uint8 MAX_SPELL_VEHICLE       = 6;
+constexpr uint8 MAX_SPELL_POSSESS       = 8;
+constexpr uint8 MAX_SPELL_CONTROL_BAR   = 10;
 
-#define MAX_AGGRO_RESET_TIME 10 // in seconds
-#define MAX_AGGRO_RADIUS 45.0f  // yards
+constexpr uint8 MAX_AGGRO_RESET_TIME = 10; // in seconds
+constexpr float MAX_AGGRO_RADIUS = 45.0f;  // yards
 
 enum VictimState
 {
@@ -352,7 +352,7 @@ enum CombatRating
     CR_MASTERY                          = 25,
 };
 
-#define MAX_COMBAT_RATING         26
+constexpr uint8 MAX_COMBAT_RATING = 26;
 
 enum DamageEffectType : uint8
 {
@@ -597,13 +597,13 @@ enum CurrentSpellTypes : uint8
     CURRENT_AUTOREPEAT_SPELL        = 3
 };
 
-#define CURRENT_FIRST_NON_MELEE_SPELL 1
-#define CURRENT_MAX_SPELL             4
+constexpr uint8 CURRENT_FIRST_NON_MELEE_SPELL   = 1;
+constexpr uint8 CURRENT_MAX_SPELL               = 4;
 
 typedef std::list<Player*> SharedVisionList;
 
 // for clearing special attacks
-#define REACTIVE_TIMER_START 4000
+constexpr uint32 REACTIVE_TIMER_START = 4000;
 
 enum ReactiveType
 {
@@ -635,8 +635,8 @@ struct PositionUpdateInfo
 };
 
 // delay time next attack to prevent client attack animation problems
-#define ATTACK_DISPLAY_DELAY 200
-#define MAX_PLAYER_STEALTH_DETECT_RANGE 30.0f               // max distance for detection targets by player
+constexpr uint32 ATTACK_DISPLAY_DELAY = 200;
+constexpr float MAX_PLAYER_STEALTH_DETECT_RANGE = 30.0f; // max distance for detection targets by player
 
 class TC_GAME_API Unit : public WorldObject
 {

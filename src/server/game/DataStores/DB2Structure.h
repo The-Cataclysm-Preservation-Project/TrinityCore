@@ -22,9 +22,9 @@
 
 #pragma pack(push, 1)
 
-#define MAX_ITEM_PROTO_SOCKETS 3
-#define MAX_ITEM_PROTO_SPELLS  5
-#define MAX_ITEM_PROTO_STATS  10
+constexpr uint8 MAX_ITEM_PROTO_SOCKETS = 3;
+constexpr uint8 MAX_ITEM_PROTO_SPELLS = 5;
+constexpr uint8 MAX_ITEM_PROTO_STATS = 10;
 
 struct ItemEntry
 {
@@ -117,8 +117,8 @@ struct ItemSparseEntry
     int32      CurrencySubstitutionCount;                           // 130
 };
 
-#define MAX_ITEM_EXT_COST_ITEMS         5
-#define MAX_ITEM_EXT_COST_CURRENCIES    5
+constexpr uint8 MAX_ITEM_EXT_COST_ITEMS         = 5;
+constexpr uint8 MAX_ITEM_EXT_COST_CURRENCIES    = 5;
 
 struct ItemExtendedCostEntry
 {
@@ -139,7 +139,7 @@ struct ItemExtendedCostEntry
     uint32      RequiredAchievement;
 };
 
-#define KEYCHAIN_SIZE   32
+constexpr uint8 KEYCHAIN_SIZE = 32;
 
 struct KeyChainEntry
 {

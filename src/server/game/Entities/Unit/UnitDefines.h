@@ -21,11 +21,11 @@
 #include "Define.h"
 #include <string>
 
-#define BASE_MINDAMAGE 1.0f
-#define BASE_MAXDAMAGE 2.0f
-#define BASE_ATTACK_TIME 2000
+constexpr float BASE_MINDAMAGE = 1.0f;
+constexpr float BASE_MAXDAMAGE = 2.0f;
+constexpr uint32 BASE_ATTACK_TIME = 2000;
 
-#define MAX_EQUIPMENT_ITEMS 3
+constexpr uint8 MAX_EQUIPMENT_ITEMS = 3;
 
 // byte value (UNIT_FIELD_BYTES_1, 0)
 enum UnitStandStateType : uint8
@@ -349,7 +349,7 @@ enum UnitMoveType
     MOVE_PITCH_RATE     = 8
 };
 
-#define MAX_MOVE_TYPE     9
+constexpr uint8 MAX_MOVE_TYPE = 9;
 
 enum HitInfo
 {
@@ -381,7 +381,7 @@ enum HitInfo
     HITINFO_FAKE_DAMAGE         = 0x01000000                // enables damage animation even if no damage done, set only if no damage
 };
 
-#define MAX_DECLINED_NAME_CASES 5
+constexpr uint8 MAX_DECLINED_NAME_CASES = 5;
 
 struct DeclinedName
 {

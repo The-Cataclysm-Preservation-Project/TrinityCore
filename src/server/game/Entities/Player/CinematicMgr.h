@@ -21,8 +21,8 @@
 #include "Define.h"
 #include "Object.h"
 
-#define CINEMATIC_LOOKAHEAD (2 * IN_MILLISECONDS)
-#define CINEMATIC_UPDATEDIFF 500
+constexpr uint32 CINEMATIC_LOOKAHEAD = 2 * IN_MILLISECONDS;
+constexpr uint32 CINEMATIC_UPDATEDIFF = 500;
 
 class Player;
 struct FlyByCamera;

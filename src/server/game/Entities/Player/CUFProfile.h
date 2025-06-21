@@ -23,7 +23,7 @@
 #include <string>
 
 /// Maximum number of CompactUnitFrames profiles
-#define MAX_CUF_PROFILES 5
+constexpr uint8 MAX_CUF_PROFILES = 5;
 
 /// Bit index used in the many bool options of CompactUnitFrames
 enum CUFBoolOptions

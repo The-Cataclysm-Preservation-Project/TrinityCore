@@ -34,7 +34,7 @@
 #include "Opcodes.h"
 #include "WorldSession.h"
 
-#define PET_XP_FACTOR 0.05f
+constexpr float PET_XP_FACTOR = 0.05f;
 
 Pet::Pet(Player* owner, PetType type) :
     Guardian(nullptr, owner, true), m_usedTalentCount(0), m_removed(false),

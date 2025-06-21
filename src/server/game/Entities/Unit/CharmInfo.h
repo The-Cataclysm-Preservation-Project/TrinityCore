@@ -20,14 +20,15 @@
 
 #include "Define.h"
 #include "UnitDefines.h"
+#include <array>
 
 class SpellInfo;
 class Unit;
 class WorldPacket;
 
-#define UNIT_ACTION_BUTTON_ACTION(X) (uint32(X) & 0x00FFFFFF)
-#define UNIT_ACTION_BUTTON_TYPE(X)   ((uint32(X) & 0xFF000000) >> 24)
-#define MAKE_UNIT_ACTION_BUTTON(A, T) (uint32(A) | (uint32(T) << 24))
+constexpr uint32 UNIT_ACTION_BUTTON_ACTION(uint32 x) { return x & 0x00FFFFFF; }
+constexpr uint32 UNIT_ACTION_BUTTON_TYPE(uint32 x) { return (x & 0xFF000000) >> 24; }
+constexpr uint32 MAKE_UNIT_ACTION_BUTTON(uint32 a, uint32 t) { return a | (t << 24); }
 
 struct UnitActionBarEntry
 {
@@ -84,7 +85,7 @@ enum ActionBarIndex
     ACTION_BAR_INDEX_END                = 10
 };
 
-#define MAX_UNIT_ACTION_BAR_INDEX (ACTION_BAR_INDEX_END-ACTION_BAR_INDEX_START)
+constexpr uint8 MAX_UNIT_ACTION_BAR_INDEX = ACTION_BAR_INDEX_END - ACTION_BAR_INDEX_START;
 
 struct TC_GAME_API CharmInfo
 {
@@ -136,8 +137,8 @@ struct TC_GAME_API CharmInfo
     private:
 
         Unit* _unit;
-        UnitActionBarEntry PetActionBar[MAX_UNIT_ACTION_BAR_INDEX];
-        CharmSpellInfo _charmspells[4];
+        std::array<UnitActionBarEntry, MAX_UNIT_ACTION_BAR_INDEX> PetActionBar;
+        std::array<CharmSpellInfo, 4> _charmspells;
         CommandStates _CommandState;
         uint32 _petnumber;
 

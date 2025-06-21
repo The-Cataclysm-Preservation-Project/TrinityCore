@@ -45,7 +45,7 @@ enum BattlegroundBracketId                                  // bracketId for lev
 };
 
 // must be max value in PvPDificulty slot+1
-#define MAX_BATTLEGROUND_BRACKETS  16
+constexpr uint8 MAX_BATTLEGROUND_BRACKETS = 16;
 
 #pragma pack(push, 1)
 struct DBCPosition2D
@@ -373,7 +373,7 @@ enum AchievementCriteriaTypes : uint8
     // ACHIEVEMENT_CRITERIA_TYPE_ABANDONED_LFR_DUNGEON                    = 150, // NYI (1 criteria:18773 in DBC) name state TBC Classic - internal statistics only?
 };
 
-#define ACHIEVEMENT_CRITERIA_TYPE_TOTAL 151
+constexpr uint8 ACHIEVEMENT_CRITERIA_TYPE_TOTAL = 151;
 
 enum class AreaFlags : uint32
 {
@@ -439,11 +439,11 @@ enum Difficulty : uint8
     RAID_DIFFICULTY_25MAN_HEROIC = 3
 };
 
-#define RAID_DIFFICULTY_MASK_25MAN 1    // since 25man difficulties are 1 and 3, we can check them like that
+constexpr uint8 RAID_DIFFICULTY_MASK_25MAN = 1;    // since 25man difficulties are 1 and 3, we can check them like that
 
-#define MAX_DUNGEON_DIFFICULTY     3
-#define MAX_RAID_DIFFICULTY        4
-#define MAX_DIFFICULTY             4
+constexpr uint8 MAX_DUNGEON_DIFFICULTY = 3;
+constexpr uint8 MAX_RAID_DIFFICULTY = 4;
+constexpr uint8 MAX_DIFFICULTY = 4;
 
 enum SpawnMask
 {
@@ -621,9 +621,9 @@ enum class SpellCategoryFlags : uint8
 
 DEFINE_ENUM_FLAG(SpellCategoryFlags);
 
-#define MAX_SPELL_EFFECTS 3
-#define MAX_EFFECT_MASK 7
-#define MAX_SPELL_REAGENTS 8
+constexpr uint8 MAX_SPELL_EFFECTS = 3;
+constexpr uint8 MAX_EFFECT_MASK = 7;
+constexpr uint8 MAX_SPELL_REAGENTS = 8;
 
 enum class SpellItemEnchantmentFlags : uint32
 {
@@ -635,9 +635,9 @@ enum class SpellItemEnchantmentFlags : uint32
 
 DEFINE_ENUM_FLAG(SpellItemEnchantmentFlags);
 
-#define MAX_TALENT_RANK 5
-#define MAX_PET_TALENT_RANK 3                               // use in calculations, expected <= MAX_TALENT_RANK
-#define MAX_TALENT_TABS 3
+constexpr uint8 MAX_TALENT_RANK = 5;
+constexpr uint8 MAX_PET_TALENT_RANK = 3;                               // use in calculations, expected <= MAX_TALENT_RANK
+constexpr uint8 MAX_TALENT_TABS = 3;
 
 enum class SpellShapeshiftFormFlags : int32
 {
@@ -662,7 +662,7 @@ enum class SpellShapeshiftFormFlags : int32
 
 DEFINE_ENUM_FLAG(SpellShapeshiftFormFlags);
 
-#define TaxiMaskSize 114
+constexpr uint8 TaxiMaskSize = 114;
 typedef std::array<uint8, TaxiMaskSize> TaxiMask;
 
 enum TaxiNodeFlags
