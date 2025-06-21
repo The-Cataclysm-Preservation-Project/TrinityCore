@@ -16,14 +16,13 @@
  */
 
 #include "Opcodes.h"
-
-#include <iomanip>
-#include <sstream>
-
 #include "Log.h"
 #include "Packets/AllPackets.h"
 #include "World.h"
 #include "WorldSession.h"
+
+#include <iomanip>
+#include <sstream>
 
 template <class PacketClass, void(WorldSession::*HandlerFunction)(PacketClass&)>
 class PacketHandler : public ClientOpcodeHandler
