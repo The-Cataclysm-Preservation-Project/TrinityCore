@@ -96,7 +96,7 @@ enum SpellFamilyFlag
 };
 
 
-#define SPELL_LINKED_MAX_SPELLS  200000
+constexpr uint32 SPELL_LINKED_MAX_SPELLS = 200000;
 
 enum SpellLinkedType
 {
@@ -194,14 +194,14 @@ enum ProcFlags
     REQ_SPELL_PHASE_PROC_FLAG_MASK             = SPELL_PROC_FLAG_MASK & DONE_HIT_PROC_FLAG_MASK
 };
 
-#define MELEE_BASED_TRIGGER_MASK (PROC_FLAG_DEAL_MELEE_SWING    | \
-                                  PROC_FLAG_TAKE_MELEE_SWING    | \
-                                  PROC_FLAG_DEAL_MELEE_ABILITY  | \
-                                  PROC_FLAG_TAKE_MELEE_ABILITY  | \
-                                  PROC_FLAG_DEAL_RANGED_ATTACK  | \
-                                  PROC_FLAG_TAKE_RANGED_ATTACK  | \
-                                  PROC_FLAG_DEAL_RANGED_ABILITY | \
-                                  PROC_FLAG_TAKE_RANGED_ABILITY)
+constexpr uint32 MELEE_BASED_TRIGGER_MASK = PROC_FLAG_DEAL_MELEE_SWING |
+                                  PROC_FLAG_TAKE_MELEE_SWING    |
+                                  PROC_FLAG_DEAL_MELEE_ABILITY  |
+                                  PROC_FLAG_TAKE_MELEE_ABILITY  |
+                                  PROC_FLAG_DEAL_RANGED_ATTACK  |
+                                  PROC_FLAG_TAKE_RANGED_ATTACK  |
+                                  PROC_FLAG_DEAL_RANGED_ABILITY |
+                                  PROC_FLAG_TAKE_RANGED_ABILITY;
 
 enum ProcFlagsSpellType
 {
@@ -312,7 +312,7 @@ namespace std
     };
 }
 
-#define SPELL_GROUP_DB_RANGE_MIN 1000
+constexpr uint32 SPELL_GROUP_DB_RANGE_MIN = 1000;
 
 //                  spell_id, group_id
 typedef std::unordered_multimap<uint32, SpellGroup> SpellSpellGroupMap;

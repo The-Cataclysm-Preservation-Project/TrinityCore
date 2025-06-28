@@ -329,12 +329,12 @@ struct TC_GAME_API CreatureMovementData
     std::string ToString() const;
 };
 
-static uint32 const CREATURE_NOPATH_EVADE_TIME = 5 * IN_MILLISECONDS;
+constexpr uint32 const CREATURE_NOPATH_EVADE_TIME = 5 * IN_MILLISECONDS;
 
-static uint8 const MAX_KILL_CREDIT = 2;
-static uint32 const MAX_CREATURE_MODELS = 4;
-static uint32 const MAX_CREATURE_QUEST_ITEMS = 6;
-static uint32 const MAX_CREATURE_SPELLS = 8;
+constexpr uint8 const MAX_KILL_CREDIT = 2;
+constexpr uint32 const MAX_CREATURE_MODELS = 4;
+constexpr uint32 const MAX_CREATURE_QUEST_ITEMS = 6;
+constexpr uint32 const MAX_CREATURE_SPELLS = 8;
 
 struct CreatureModel
 {

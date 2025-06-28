@@ -139,7 +139,7 @@ enum class SpellModOp : uint8
     PowerCostOnMiss             = 30
 };
 
-#define MAX_SPELLMOD 32
+constexpr uint8 MAX_SPELLMOD = 32;
 
 enum SpellValueMod : uint8
 {

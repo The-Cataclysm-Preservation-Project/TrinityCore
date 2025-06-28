@@ -73,9 +73,8 @@ enum SpellValueMod : uint8;
 enum TriggerCastFlags : uint32;
 enum WeaponAttackType : uint8;
 
-#define SPELL_CHANNEL_UPDATE_INTERVAL (1 * IN_MILLISECONDS)
-#define MAX_SPELL_RANGE_TOLERANCE 3.0f
-#define TRAJECTORY_MISSILE_SIZE 3.0f
+constexpr float MAX_SPELL_RANGE_TOLERANCE = 3.0f;
+constexpr float TRAJECTORY_MISSILE_SIZE = 3.0f;
 
 enum SpellCastFlags
 {
@@ -277,7 +276,7 @@ enum SpellEffectHandleMode
 
 typedef std::vector<std::pair<uint32, ObjectGuid>> DispelList;
 
-static const uint32 SPELL_INTERRUPT_NONPLAYER = 32747;
+constexpr uint32 SPELL_INTERRUPT_NONPLAYER = 32747;
 
 class TC_GAME_API Spell
 {
