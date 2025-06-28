@@ -530,15 +530,6 @@ struct CreatureModelInfo
     bool is_trigger;
 };
 
-enum InhabitTypeValues
-{
-    INHABIT_GROUND = 1,
-    INHABIT_WATER  = 2,
-    INHABIT_AIR    = 4,
-    INHABIT_ROOT   = 8,
-    INHABIT_ANYWHERE = INHABIT_GROUND | INHABIT_WATER | INHABIT_AIR | INHABIT_ROOT
-};
-
 #pragma pack(pop)
 
 // `creature_addon` table
