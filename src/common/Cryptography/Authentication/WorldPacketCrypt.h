@@ -19,16 +19,16 @@
 #define _WORLDPACKETCRYPT_H
 
 #include "PacketCrypt.h"
-
-class BigNumber;
+#include "AuthDefines.h"
+#include <array>
 
 class TC_COMMON_API WorldPacketCrypt : public PacketCrypt
 {
     public:
         WorldPacketCrypt();
 
-        void Init(BigNumber* K) override;
-        void Init(BigNumber* k, uint8 const* serverKey, uint8 const* clientKey);
+        void Init(SessionKey const& K) override;
+        void Init(SessionKey const& K, std::array<uint8, SEED_KEY_SIZE> const& serverKey, std::array<uint8, SEED_KEY_SIZE> const& clientKey);
 };
 
 #endif // _WORLDPACKETCRYPT_H

@@ -17,8 +17,8 @@
 
 #include "PacketCrypt.h"
 
-PacketCrypt::PacketCrypt(uint32 rc4InitSize)
-    : _clientDecrypt(rc4InitSize), _serverEncrypt(rc4InitSize), _initialized(false)
+PacketCrypt::PacketCrypt() :
+    _initialized(false)
 {
 }
 
@@ -27,7 +27,7 @@ void PacketCrypt::DecryptRecv(uint8* data, size_t len)
     if (!_initialized)
         return;
 
-    _clientDecrypt.UpdateData(len, data);
+    _clientDecrypt.UpdateData(data, len);
 }
 
 void PacketCrypt::EncryptSend(uint8* data, size_t len)
@@ -35,5 +35,5 @@ void PacketCrypt::EncryptSend(uint8* data, size_t len)
     if (!_initialized)
         return;
 
-    _serverEncrypt.UpdateData(len, data);
+    _serverEncrypt.UpdateData(data, len);
 }

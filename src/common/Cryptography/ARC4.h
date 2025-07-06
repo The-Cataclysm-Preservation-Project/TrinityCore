@@ -1,5 +1,5 @@
 /*
- * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
+* This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,19 +22,27 @@
 #include <array>
 #include <openssl/evp.h>
 
-class TC_COMMON_API ARC4
+namespace Trinity::Crypto
 {
+    class TC_COMMON_API ARC4
+    {
     public:
-        ARC4(uint32 len);
-        ARC4(uint8* seed, uint32 len);
+        ARC4();
         ~ARC4();
-        void Init(uint8* seed);
-        void UpdateData(int len, uint8* data);
+
+        void Init(uint8 const* seed, size_t len);
+        template <typename Container>
+        void Init(Container const& c) { Init(std::data(c), std::size(c)); }
+
+        void UpdateData(uint8* data, size_t len);
+        template <typename Container>
+        void UpdateData(Container& c) { UpdateData(std::data(c), std::size(c)); }
     private:
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-        EVP_CIPHER *_cipher;
+        EVP_CIPHER* _cipher;
 #endif
         EVP_CIPHER_CTX* _ctx;
-};
+    };
+}
 
 #endif

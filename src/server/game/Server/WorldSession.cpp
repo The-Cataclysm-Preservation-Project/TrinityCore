@@ -24,7 +24,6 @@
 #include "AddonMgr.h"
 #include "AuthenticationPackets.h"
 #include "BattlegroundMgr.h"
-#include "BattlenetServerManager.h"
 #include "Common.h"
 #include "Config.h"
 #include "DatabaseEnv.h"
@@ -46,6 +45,7 @@
 #include "Player.h"
 #include "QueryCallback.h"
 #include "QueryHolder.h"
+#include "Realm.h"
 #include "ScriptMgr.h"
 #include "SocialMgr.h"
 #include "Transport.h"
@@ -117,7 +117,6 @@ WorldSession::WorldSession(uint32 id, std::string&& name, uint32 battlenetAccoun
     _security(sec),
     _accountId(id),
     _accountName(std::move(name)),
-    _battlenetAccountId(battlenetAccountId),
     m_accountExpansion(expansion),
     m_expansion(std::min<uint8>(expansion, sWorld->getIntConfig(CONFIG_EXPANSION))),
     _warden(nullptr),
@@ -664,8 +663,6 @@ void WorldSession::LogoutPlayer(bool save)
         TC_LOG_INFO("entities.player.character", "Account: %d (IP: %s) Logout Character:[%s] (GUID: %u) Level: %d",
             GetAccountId(), GetRemoteAddress().c_str(), _player->GetName().c_str(), _player->GetGUID().GetCounter(), _player->getLevel());
 
-        sBattlenetServer.SendChangeToonOnlineState(GetBattlenetAccountId(), GetAccountId(), _player->GetGUID(), _player->GetName(), false);
-
         if (Map* _map = _player->FindMap())
             _map->RemovePlayerFromMap(_player, true);
 
@@ -1165,7 +1162,7 @@ SQLQueryHolderCallback& WorldSession::AddQueryHolderCallback(SQLQueryHolderCallb
     return _queryHolderProcessor.AddCallback(std::move(callback));
 }
 
-void WorldSession::InitWarden(BigNumber* k, std::string const& os)
+void WorldSession::InitWarden(SessionKey const& k, std::string const& os)
 {
     if (os == "Win")
     {
@@ -1214,7 +1211,7 @@ public:
 
     AccountInfoQueryHolderPerRealm() { SetSize(MAX_QUERIES); }
 
-    bool Initialize(uint32 accountId, uint32 /*battlenetAccountId*/)
+    bool Initialize(uint32 accountId)
     {
         bool ok = true;
 
@@ -1233,7 +1230,7 @@ public:
 void WorldSession::InitializeSession()
 {
     std::shared_ptr<AccountInfoQueryHolderPerRealm> realmHolder = std::make_shared<AccountInfoQueryHolderPerRealm>();
-    if (!realmHolder->Initialize(GetAccountId(), GetBattlenetAccountId()))
+    if (!realmHolder->Initialize(GetAccountId()))
     {
         SendAuthResponse(AUTH_SYSTEM_ERROR, false);
         return;

@@ -15,8 +15,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Cryptography/HmacHash.h"
-#include "Cryptography/WardenKeyGeneration.h"
 #include "Common.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
@@ -31,33 +29,34 @@
 #include "WardenModuleWin.h"
 #include "WardenCheckMgr.h"
 #include "Random.h"
+#include "SessionKeyGenerator.h"
 
 WardenWin::WardenWin() : Warden(), _serverTicks(0) {}
 
 WardenWin::~WardenWin() { }
 
-void WardenWin::Init(WorldSession* session, BigNumber* k)
+void WardenWin::Init(WorldSession* session, SessionKey const& K)
 {
     _session = session;
     // Generate Warden Key
-    SHA1Randx WK(k->AsByteArray().get(), k->GetNumBytes());
-    WK.Generate(_inputKey, 16);
-    WK.Generate(_outputKey, 16);
+    SessionKeyGenerator<Trinity::Crypto::SHA1> WK(K);
+    WK.Generate(_inputKey.data(), _inputKey.size());
+    WK.Generate(_outputKey.data(), _outputKey.size());
 
-    memcpy(_seed, Module.Seed, 16);
+    _seed = Module.Seed;
 
     _inputCrypto.Init(_inputKey);
     _outputCrypto.Init(_outputKey);
     TC_LOG_DEBUG("warden", "Server side warden for client %u initializing...", session->GetAccountId());
-    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey, 16).c_str());
-    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey, 16).c_str());
-    TC_LOG_DEBUG("warden", "  Seed: %s", ByteArrayToHexStr(_seed, 16).c_str());
+    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey).c_str());
+    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey).c_str());
+    TC_LOG_DEBUG("warden", "  Seed: %s", ByteArrayToHexStr(_seed).c_str());
     TC_LOG_DEBUG("warden", "Loading Module...");
 
     _module = GetModuleForClient();
 
-    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key, 16).c_str());
-    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id, 16).c_str());
+    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key).c_str());
+    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id).c_str());
     RequestModule();
 }
 
@@ -70,8 +69,8 @@ ClientWardenModule* WardenWin::GetModuleForClient()
     // data assign
     mod->CompressedSize = length;
     mod->CompressedData = new uint8[length];
-    memcpy(mod->CompressedData, Module.Module, length);
-    memcpy(mod->Key, Module.ModuleKey, 16);
+    memcpy(mod->CompressedData, Module.Module.data(), length);
+    memcpy(mod->Key, Module.ModuleKey.data(), 16);
 
     // md5 hash
     EVP_MD_CTX *md5 = EVP_MD_CTX_new();
@@ -134,7 +133,7 @@ void WardenWin::RequestHash()
     // Create packet structure
     WardenHashRequest Request;
     Request.Command = WARDEN_SMSG_HASH_REQUEST;
-    memcpy(Request.Seed, _seed, 16);
+    memcpy(Request.Seed, _seed.data(), 16);
 
     // Encrypt with warden RC4 key.
     EncryptData((uint8*)&Request, sizeof(WardenHashRequest));
@@ -149,7 +148,7 @@ void WardenWin::HandleHashResult(ByteBuffer &buff)
     buff.rpos(buff.wpos());
 
     // Verify key
-    if (memcmp(buff.contents() + 1, Module.ClientKeySeedHash, 20) != 0)
+    if (memcmp(buff.contents() + 1, Module.ClientKeySeedHash.data(), 20) != 0)
     {
         TC_LOG_WARN("warden", "%s failed hash reply. Action: %s", _session->GetPlayerInfo().c_str(), Penalty().c_str());
         return;
@@ -158,8 +157,8 @@ void WardenWin::HandleHashResult(ByteBuffer &buff)
     TC_LOG_DEBUG("warden", "Request hash reply: succeed");
 
     // Change keys here
-    memcpy(_inputKey, Module.ClientKeySeed, 16);
-    memcpy(_outputKey, Module.ServerKeySeed, 16);
+    _inputKey = Module.ClientKeySeed;
+    _outputKey = Module.ServerKeySeed;
 
     _inputCrypto.Init(_inputKey);
     _outputCrypto.Init(_outputKey);
@@ -261,7 +260,7 @@ void WardenWin::RequestData()
             case PAGE_CHECK_A:
             case PAGE_CHECK_B:
             {
-                buff.append(wd->Data.AsByteArray(0, false).get(), wd->Data.GetNumBytes());
+                buff.append(wd->Data.ToByteArray<0>(false).data(), wd->Data.GetNumBytes());
                 buff << uint32(wd->Address);
                 buff << uint8(wd->Length);
                 break;
@@ -274,10 +273,11 @@ void WardenWin::RequestData()
             }
             case DRIVER_CHECK:
             {
-                buff.append(wd->Data.AsByteArray(0, false).get(), wd->Data.GetNumBytes());
+                buff.append(wd->Data.ToByteArray<0>(false).data(), wd->Data.GetNumBytes());
                 buff << uint8(index++);
                 break;
             }
+            /*
             case MODULE_CHECK:
             {
                 uint32 seed = rand32();
@@ -288,6 +288,7 @@ void WardenWin::RequestData()
                 buff.append(hmac.GetDigest(), hmac.GetLength());
                 break;
             }
+            */
             /*case PROC_CHECK:
             {
                 buff.append(wd->i.AsByteArray(0, false).get(), wd->i.GetNumBytes());
@@ -390,7 +391,7 @@ void WardenWin::HandleData(ByteBuffer &buff)
                     continue;
                 }
 
-                if (memcmp(buff.contents() + buff.rpos(), rs->Result.AsByteArray(0, false).get(), rd->Length) != 0)
+                if (memcmp(buff.contents() + buff.rpos(), rs->Result.ToByteArray<0>(false).data(), rd->Length) != 0)
                 {
                     TC_LOG_DEBUG("warden", "RESULT MEM_CHECK fail CheckId %u account Id %u", *itr, _session->GetAccountId());
                     checkFailed = *itr;
@@ -469,7 +470,7 @@ void WardenWin::HandleData(ByteBuffer &buff)
                     continue;
                 }
 
-                if (memcmp(buff.contents() + buff.rpos(), rs->Result.AsByteArray(0, false).get(), 20) != 0) // SHA1
+                if (memcmp(buff.contents() + buff.rpos(), rs->Result.ToByteArray<0>(false).data(), 20) != 0) // SHA1
                 {
                     TC_LOG_DEBUG("warden", "RESULT MPQ_CHECK fail, CheckId %u account Id %u", *itr, _session->GetAccountId());
                     checkFailed = *itr;

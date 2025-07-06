@@ -136,7 +136,7 @@ private:
 
     ConnectionType _type;
 
-    uint32 _authSeed;
+    std::array<uint8, 4> _authSeed;
     WorldPacketCrypt _authCrypt;
     BigNumber _encryptSeed;
     BigNumber _decryptSeed;

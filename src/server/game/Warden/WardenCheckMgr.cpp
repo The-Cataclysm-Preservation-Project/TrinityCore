@@ -92,7 +92,7 @@ void WardenCheckMgr::LoadWardenChecks()
             {
                 uint8 temp[24];
                 memset(temp, 0, len);
-                memcpy(temp, wardenCheck->Data.AsByteArray().get(), wardenCheck->Data.GetNumBytes());
+                memcpy(temp, wardenCheck->Data.ToByteVector().data(), wardenCheck->Data.GetNumBytes());
                 std::reverse(temp, temp + len);
                 wardenCheck->Data.SetBinary((uint8*)temp, len);
             }
@@ -124,7 +124,7 @@ void WardenCheckMgr::LoadWardenChecks()
             {
                 uint8 *temp = new uint8[len];
                 memset(temp, 0, len);
-                memcpy(temp, wr->Result.AsByteArray().get(), wr->Result.GetNumBytes());
+                memcpy(temp, wr->Result.ToByteVector().data(), wr->Result.GetNumBytes());
                 std::reverse(temp, temp + len);
                 wr->Result.SetBinary((uint8*)temp, len);
                 delete [] temp;

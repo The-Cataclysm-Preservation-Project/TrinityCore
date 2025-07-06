@@ -18,25 +18,27 @@
 #ifndef _PACKETCRYPT_H
 #define _PACKETCRYPT_H
 
-#include "Cryptography/ARC4.h"
+#include "ARC4.h"
+#include "AuthDefines.h"
+#include <array>
 
-class BigNumber;
+constexpr uint8 SEED_KEY_SIZE = 16;
 
 class TC_COMMON_API PacketCrypt
 {
     public:
-        PacketCrypt(uint32 rc4InitSize);
+        PacketCrypt();
         virtual ~PacketCrypt() { }
 
-        virtual void Init(BigNumber* K) = 0;
+        virtual void Init(SessionKey const& K) = 0;
         void DecryptRecv(uint8* data, size_t length);
         void EncryptSend(uint8* data, size_t length);
 
         bool IsInitialized() const { return _initialized; }
 
     protected:
-        ARC4 _clientDecrypt;
-        ARC4 _serverEncrypt;
+        Trinity::Crypto::ARC4 _clientDecrypt;
+        Trinity::Crypto::ARC4 _serverEncrypt;
         bool _initialized;
 };
 

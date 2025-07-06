@@ -49,10 +49,7 @@ target_link_libraries(worldserver
   PUBLIC
     scripts
     game
-    ipc
     gsoap
-    libzmq
-    zmqpp
     ${READLINE_LIBRARY})
 
 CollectIncludeDirectories(
@@ -64,7 +61,6 @@ CollectIncludeDirectories(
 target_include_directories(worldserver
   PUBLIC
     ${PUBLIC_INCLUDES}
-    libzmq
   PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR})
 

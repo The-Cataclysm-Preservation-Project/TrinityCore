@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+* This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,6 +16,7 @@
  */
 
 #include "GruntRealmList.h"
+#include "ClientBuildInfo.h"
 #include "DatabaseEnv.h"
 #include "DeadlineTimer.h"
 #include "IoContext.h"
@@ -46,6 +46,7 @@ void GruntRealmList::Initialize(Trinity::Asio::IoContext& ioContext, uint32 upda
     _updateTimer = Trinity::make_unique<Trinity::Asio::DeadlineTimer>(ioContext);
     _resolver = Trinity::make_unique<Trinity::Asio::Resolver>(ioContext);
 
+    ClientBuild::LoadBuildInfo();
     // Get the content of the realmlist table in the database
     UpdateRealms(boost::system::error_code());
 }

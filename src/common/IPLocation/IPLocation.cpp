@@ -21,6 +21,7 @@
 #include "Errors.h"
 #include "IpAddress.h"
 #include "Log.h"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 
@@ -115,4 +116,3 @@ IpLocationStore* IpLocationStore::Instance()
     static IpLocationStore instance;
     return &instance;
 }
-

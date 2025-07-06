@@ -1,0 +1,1 @@
+DELETE FROM `command` WHERE `permission` IN (207,208,216,214,830,209,210,211,212,213,215);

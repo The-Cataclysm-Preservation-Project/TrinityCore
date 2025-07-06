@@ -103,7 +103,15 @@ class TC_DATABASE_API Field
         double GetDouble() const;
         char const* GetCString() const;
         std::string GetString() const;
+        std::string_view GetStringView() const;
         std::vector<uint8> GetBinary() const;
+        template <size_t S>
+        std::array<uint8, S> GetBinary() const
+        {
+            std::array<uint8, S> buf;
+            GetBinarySizeChecked(buf.data(), S);
+            return buf;
+        }
 
         bool IsNull() const
         {
@@ -129,6 +137,8 @@ class TC_DATABASE_API Field
         QueryResultFieldMetadata const* meta;
         void LogWrongType(char const* getter) const;
         void SetMetadata(QueryResultFieldMetadata const* fieldMeta);
+
+        void GetBinarySizeChecked(uint8* buf, size_t size) const;
 };
 
 #endif

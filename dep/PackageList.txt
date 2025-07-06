@@ -40,10 +40,6 @@ libMPQ (a library for reading MPQ files)
   https://github.com/mbroemme/libmpq/
   Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74
 
-libzmq (ZeroMQ core engine in C++, implements ZMTP/3.1)
-  https://github.com/zeromq/libzmq
-  Version: 4.2.3 stable
-
 MariaDB:
   https://mariadb.org/
   Version: external
@@ -77,10 +73,10 @@ zlib (A Massively Spiffy Yet Delicately Unobtrusive Compression Library)
   http://www.zlib.net/
   Version: 1.2.12
 
-zmqpp (C++ binding for 0mq/zmq is a 'high-level' library that hides most of the c-style interface core 0mq provides.)
-  https://github.com/zeromq/zmqpp
-  Version: 3.2.0 17e9f6afa98f56ecac1e3f3eecbfc112357a6732
-
 MinHook (The Minimalistic x86/x64 API Hooking Library for Windows)
   https://github.com/TsudaKageyu/minhook
   Version: 0f25a2449b3cf878bcbdbf91b693c38149ecf029
+
+argon2
+  https://github.com/P-H-C/phc-winner-argon2
+  Version: 62358ba

@@ -19,10 +19,11 @@
 #define AuthenticationPacketsWorld_h__
 
 #include "Packet.h"
+#include "BigNumber.h"
+#include "CryptoConstants.h"
+#include "CryptoHash.h"
 #include "ObjectMgr.h"
 #include "Util.h"
-#include "BigNumber.h"
-#include "SHA1.h"
 #include <array>
 #include <boost/asio/ip/tcp.hpp>
 
@@ -70,7 +71,7 @@ namespace WorldPackets
             WorldPacket const* Write() override;
 
             std::array<uint32, 8> DosChallenge = { };
-            uint32 Challenge = 0;
+            std::array<uint8, 4> Challenge = { };
             uint8 DosZeroBits = 0;
         };
 
@@ -79,7 +80,6 @@ namespace WorldPackets
         public:
             AuthSession(WorldPacket&& packet) : EarlyProcessClientPacket(CMSG_AUTH_SESSION, std::move(packet))
             {
-                Digest.fill(0);
             }
 
             uint32 BattlegroupID = 0;
@@ -87,11 +87,11 @@ namespace WorldPackets
             int8 BuildType = 0;
             uint32 RealmID = 0;
             uint16 Build = 0;
-            uint32 LocalChallenge = 0;
+            std::array<uint8, 4> LocalChallenge = { };
             int32 LoginServerID = 0;
             uint32 RegionID = 0;
             uint64 DosResponse = 0;
-            std::array<uint8, SHA_DIGEST_LENGTH> Digest;
+            Trinity::Crypto::SHA1::Digest Digest = { };
             std::string Account;
             bool UseIPv6 = false;
             ByteBuffer AddonInfo;
@@ -149,14 +149,11 @@ namespace WorldPackets
         class AuthContinuedSession final : public EarlyProcessClientPacket
         {
         public:
-            AuthContinuedSession(WorldPacket&& packet) : EarlyProcessClientPacket(CMSG_AUTH_CONTINUED_SESSION, std::move(packet))
-            {
-                Digest.fill(0);
-            }
+            AuthContinuedSession(WorldPacket&& packet) : EarlyProcessClientPacket(CMSG_AUTH_CONTINUED_SESSION, std::move(packet)) { }
 
             uint64 DosResponse = 0;
             uint64 Key = 0;
-            std::array<uint8, SHA_DIGEST_LENGTH> Digest;
+            Trinity::Crypto::SHA1::Digest Digest = { };
 
         private:
             void Read() override;

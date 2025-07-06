@@ -16,10 +16,13 @@
  */
 
 #include "WorldSocket.h"
+#include "AuthDefines.h"
 #include "AuthenticationPackets.h"
-#include "BattlenetAccountMgr.h"
 #include "BigNumber.h"
 #include "CharacterPackets.h"
+#include "ClientBuildInfo.h"
+#include "CryptoGenerics.h"
+#include "CryptoHash.h"
 #include "DatabaseEnv.h"
 #include "GameTime.h"
 #include "IPLocation.h"
@@ -30,7 +33,6 @@
 #include "RBAC.h"
 #include "Realm.h"
 #include "ScriptMgr.h"
-#include "SHA1.h"
 #include "Util.h"
 #include "World.h"
 #include <zlib.h>
@@ -42,9 +44,10 @@ std::string const WorldSocket::ServerConnectionInitialize("WORLD OF WARCRAFT CON
 std::string const WorldSocket::ClientConnectionInitialize("WORLD OF WARCRAFT CONNECTION - CLIENT TO SERVER");
 
 WorldSocket::WorldSocket(tcp::socket&& socket) : Socket(std::move(socket)),
-    _type(CONNECTION_TYPE_REALM), _authSeed(rand32()), _OverSpeedPings(0), _worldSession(nullptr),
+    _type(CONNECTION_TYPE_REALM), _OverSpeedPings(0), _worldSession(nullptr),
     _authed(false), _compressionStream(nullptr), _sendBufferSize(4096)
 {
+    Trinity::Crypto::GetRandomBytes(_authSeed);
     _headerBuffer.Resize(2);
 }
 
@@ -243,8 +246,8 @@ void WorldSocket::HandleSendAuthSession()
 
     WorldPackets::Auth::AuthChallenge challenge;
     challenge.Challenge = _authSeed;
-    memcpy(&challenge.DosChallenge[0], _encryptSeed.AsByteArray(16).get(), 16);
-    memcpy(&challenge.DosChallenge[4], _decryptSeed.AsByteArray(16).get(), 16);
+    memcpy(&challenge.DosChallenge[0], _encryptSeed.ToByteArray<16>().data(), 16);
+    memcpy(&challenge.DosChallenge[4], _decryptSeed.ToByteArray<16>().data(), 16);
     challenge.DosZeroBits = 1;
 
     SendPacketAndLogOpcode(*challenge.Write());
@@ -354,62 +357,54 @@ bool WorldSocket::ReadHeaderHandler(bool initialized)
 
 struct AccountInfo
 {
-    struct
-    {
-        uint32 Id;
-        bool IsLockedToIP;
-        std::string LastIP;
-        std::string LockCountry;
-        LocaleConstant Locale;
-        std::string OS;
-        bool IsBanned;
-    } BattleNet;
 
-    struct
-    {
-        uint32 Id;
-        BigNumber SessionKey;
-        uint8 Expansion;
-        int64 MuteTime;
-        uint32 Recruiter;
-        bool IsRecruiter;
-        AccountTypes Security;
-        bool IsBanned;
-    } Game;
-
-    bool IsBanned() const { return BattleNet.IsBanned || Game.IsBanned; }
+    uint32 Id;
+    ::SessionKey SessionKey;
+    std::string LastIP;
+    bool IsLockedToIP;
+    std::string LockCountry;
+    uint8 Expansion;
+    int64 MuteTime;
+    LocaleConstant Locale;
+    uint32 Recruiter;
+    std::string OS;
+    Minutes TimezoneOffset;
+    bool IsRecruiter;
+    AccountTypes Security;
+    bool IsBanned;
 
     explicit AccountInfo(Field* fields)
     {
-        //           0             1           2          3                4            5           6          7            8      9     10          11
-        // SELECT a.id, a.sessionkey, ba.last_ip, ba.locked, ba.lock_country, a.expansion, a.mutetime, ba.locale, a.recruiter, ba.os, ba.id, aa.gmLevel,
-        //                                                              12                                                            13    14
-        // bab.unbandate > UNIX_TIMESTAMP() OR bab.unbandate = bab.bandate, ab.unbandate > UNIX_TIMESTAMP() OR ab.unbandate = ab.bandate, r.id
-        // FROM account a LEFT JOIN battlenet_accounts ba ON a.battlenet_account = ba.id LEFT JOIN account_access aa ON a.id = aa.id AND aa.RealmID IN (-1, ?)
-        // LEFT JOIN battlenet_account_bans bab ON ba.id = bab.id LEFT JOIN account_banned ab ON a.id = ab.id LEFT JOIN account r ON a.id = r.recruiter
+        //           0             1          2         3               4            5           6         7            8     9                 10                11
+        // SELECT a.id, a.sessionkey, a.last_ip, a.locked, a.lock_country, a.expansion, a.mutetime, a.locale, a.recruiter, a.os, a.timezone_offset, aa.SecurityLevel,
+        //                                                           12    13
+        // ab.unbandate > UNIX_TIMESTAMP() OR ab.unbandate = ab.bandate, r.id
+        // FROM account a
+        // LEFT JOIN account_access aa ON a.id = aa.AccountID AND aa.RealmID IN (-1, ?)
+        // LEFT JOIN account_banned ab ON a.id = ab.id
+        // LEFT JOIN account r ON a.id = r.recruiter
         // WHERE a.username = ? ORDER BY aa.RealmID DESC LIMIT 1
-        Game.Id = fields[0].GetUInt32();
-        Game.SessionKey.SetHexStr(fields[1].GetCString());
-        BattleNet.LastIP = fields[2].GetString();
-        BattleNet.IsLockedToIP = fields[3].GetBool();
-        BattleNet.LockCountry = fields[4].GetString();
-        Game.Expansion = fields[5].GetUInt8();
-        Game.MuteTime = fields[6].GetInt64();
-        BattleNet.Locale = LocaleConstant(fields[7].GetUInt8());
-        Game.Recruiter = fields[8].GetUInt32();
-        BattleNet.OS = fields[9].GetString();
-        BattleNet.Id = fields[10].GetUInt32();
-        Game.Security = AccountTypes(fields[11].GetUInt8());
-        BattleNet.IsBanned = fields[12].GetUInt64() != 0;
-        Game.IsBanned = fields[13].GetUInt64() != 0;
-        Game.IsRecruiter = fields[14].GetUInt32() != 0;
+        Id = fields[0].GetUInt32();
+        SessionKey = fields[1].GetBinary<SESSION_KEY_LENGTH>();
+        LastIP = fields[2].GetString();
+        IsLockedToIP = fields[3].GetBool();
+        LockCountry = fields[4].GetString();
+        Expansion = fields[5].GetUInt8();
+        MuteTime = fields[6].GetInt64();
+        Locale = LocaleConstant(fields[7].GetUInt8());
+        Recruiter = fields[8].GetUInt32();
+        OS = fields[9].GetString();
+        TimezoneOffset = Minutes(fields[10].GetInt16());
+        Security = AccountTypes(fields[11].GetUInt8());
+        IsBanned = fields[12].GetUInt64() != 0;
+        IsRecruiter = fields[13].GetUInt32() != 0;
 
         uint32 world_expansion = sWorld->getIntConfig(CONFIG_EXPANSION);
-        if (Game.Expansion > world_expansion)
-            Game.Expansion = world_expansion;
+        if (Expansion > world_expansion)
+            Expansion = world_expansion;
 
-        if (BattleNet.Locale >= TOTAL_LOCALES)
-            BattleNet.Locale = LOCALE_enUS;
+        if (Locale >= TOTAL_LOCALES)
+            Locale = LOCALE_enUS;
     }
 };
 
@@ -611,7 +606,7 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
     // This also allows to check for possible "hack" attempts on account
 
     // even if auth credentials are bad, try using the session key we have - client cannot read auth response error without it
-    _authCrypt.Init(&account.Game.SessionKey);
+    _authCrypt.Init(account.SessionKey);
 
     // First reject the connection if packet contains invalid data or realm state doesn't allow logging in
     if (sWorld->IsClosed())
@@ -633,29 +628,29 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
 
     // Must be done before WorldSession is created
     bool wardenActive = sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED);
-    if (wardenActive && account.BattleNet.OS != "Win" && account.BattleNet.OS != "OSX")
+    if (wardenActive && !ClientBuild::Platform::IsValid(account.OS))
     {
         SendAuthResponseError(AUTH_REJECT);
-        TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Client %s attempted to log in using invalid client OS (%s).", address.c_str(), account.BattleNet.OS.c_str());
+        TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Client %s attempted to log in using invalid client OS (%s).", address.c_str(), account.OS.c_str());
         DelayedCloseSocket();
         return;
     }
 
     // Check that Key and account name are the same on client and server
-    uint32 t = 0;
+    uint8 t[4] = { 0x00,0x00,0x00,0x00 };
 
-    SHA1Hash sha;
+    Trinity::Crypto::SHA1 sha;
     sha.UpdateData(authSession->Account);
-    sha.UpdateData((uint8*)&t, 4);
-    sha.UpdateData((uint8*)&authSession->LocalChallenge, 4);
-    sha.UpdateData((uint8*)&_authSeed, 4);
-    sha.UpdateBigNumbers(&account.Game.SessionKey, nullptr);
+    sha.UpdateData(t);
+    sha.UpdateData(authSession->LocalChallenge);
+    sha.UpdateData(_authSeed);
+    sha.UpdateData(account.SessionKey);
     sha.Finalize();
 
-    if (memcmp(sha.GetDigest(), authSession->Digest.data(), SHA_DIGEST_LENGTH) != 0)
+    if (sha.GetDigest() != authSession->Digest)
     {
         SendAuthResponseError(AUTH_FAILED);
-        TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Authentication failed for account: %u ('%s') address: %s", account.Game.Id, authSession->Account.c_str(), address.c_str());
+        TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Authentication failed for account: %u ('%s') address: %s", account.Id, authSession->Account.c_str(), address.c_str());
         DelayedCloseSocket();
         return;
     }
@@ -664,32 +659,32 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
         _ipCountry = location->CountryCode;
 
     ///- Re-check ip locking (same check as in auth).
-    if (account.BattleNet.IsLockedToIP) // if ip is locked
+    if (account.IsLockedToIP)
     {
-        if (account.BattleNet.LastIP != address)
+        if (account.LastIP != address)
         {
             SendAuthResponseError(AUTH_FAILED);
-            TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: Sent Auth Response (Account IP differs. Original IP: %s, new IP: %s).", account.BattleNet.LastIP.c_str(), address.c_str());
+            TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: Sent Auth Response (Account IP differs. Original IP: %s, new IP: %s).", account.LastIP.c_str(), address.c_str());
             // We could log on hook only instead of an additional db log, however action logger is config based. Better keep DB logging as well
-            sScriptMgr->OnFailedAccountLogin(account.Game.Id);
+            sScriptMgr->OnFailedAccountLogin(account.Id);
             DelayedCloseSocket();
             return;
         }
     }
-    else if (!account.BattleNet.LockCountry.empty() && account.BattleNet.LockCountry != "00" && !_ipCountry.empty())
+    else if (!account.LockCountry.empty() && account.LockCountry != "00" && !_ipCountry.empty())
     {
-        if (account.BattleNet.LockCountry != _ipCountry)
+        if (account.LockCountry != _ipCountry)
         {
             SendAuthResponseError(AUTH_FAILED);
-            TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: Sent Auth Response (Account country differs. Original country: %s, new country: %s).", account.BattleNet.LockCountry.c_str(), _ipCountry.c_str());
+            TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: Sent Auth Response (Account country differs. Original country: %s, new country: %s).", account.LockCountry.c_str(), _ipCountry.c_str());
             // We could log on hook only instead of an additional db log, however action logger is config based. Better keep DB logging as well
-            sScriptMgr->OnFailedAccountLogin(account.Game.Id);
+            sScriptMgr->OnFailedAccountLogin(account.Id);
             DelayedCloseSocket();
             return;
         }
     }
 
-    int64 mutetime = account.Game.MuteTime;
+    int64 mutetime = account.MuteTime;
     //! Negative mutetime indicates amount of seconds to be muted effective on next login - which is now.
     if (mutetime < 0)
     {
@@ -697,27 +692,27 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
 
         stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_MUTE_TIME_LOGIN);
         stmt->setInt64(0, mutetime);
-        stmt->setUInt32(1, account.Game.Id);
+        stmt->setUInt32(1, account.Id);
         LoginDatabase.Execute(stmt);
     }
 
-    if (account.IsBanned())
+    if (account.IsBanned)
     {
         SendAuthResponseError(AUTH_BANNED);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Sent Auth Response (Account banned).");
-        sScriptMgr->OnFailedAccountLogin(account.Game.Id);
+        sScriptMgr->OnFailedAccountLogin(account.Id);
         DelayedCloseSocket();
         return;
     }
 
     // Check locked state for server
     AccountTypes allowedAccountType = sWorld->GetPlayerSecurityLimit();
-    TC_LOG_DEBUG("network", "Allowed Level: %u Player Level %u", allowedAccountType, account.Game.Security);
-    if (allowedAccountType > SEC_PLAYER && account.Game.Security < allowedAccountType)
+    TC_LOG_DEBUG("network", "Allowed Level: %u Player Level %u", allowedAccountType, account.Security);
+    if (allowedAccountType > SEC_PLAYER && account.Security < allowedAccountType)
     {
         SendAuthResponseError(AUTH_UNAVAILABLE);
         TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: User tries to login but his security level is not enough");
-        sScriptMgr->OnFailedAccountLogin(account.Game.Id);
+        sScriptMgr->OnFailedAccountLogin(account.Id);
         DelayedCloseSocket();
         return;
     }
@@ -731,16 +726,16 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
     LoginDatabase.Execute(stmt);
 
     // At this point, we can safely hook a successful login
-    sScriptMgr->OnAccountLogin(account.Game.Id);
+    sScriptMgr->OnAccountLogin(account.Id);
 
     _authed = true;
-    _worldSession = new WorldSession(account.Game.Id, std::move(authSession->Account), account.BattleNet.Id, shared_from_this(), account.Game.Security,
-        account.Game.Expansion, mutetime, account.BattleNet.Locale, account.Game.Recruiter, account.Game.IsRecruiter);
+    _worldSession = new WorldSession(account.Id, std::move(authSession->Account), account.Id, shared_from_this(), account.Security,
+        account.Expansion, mutetime, account.Locale, account.Recruiter, account.IsRecruiter);
     _worldSession->ReadAddonsInfo(authSession->AddonInfo);
 
     // Initialize Warden system only if it is enabled by config
     if (wardenActive)
-        _worldSession->InitWarden(&account.Game.SessionKey, account.BattleNet.OS);
+        _worldSession->InitWarden(account.SessionKey, account.OS);
 
     _queryProcessor.AddCallback(_worldSession->LoadPermissionsAsync().WithPreparedCallback(std::bind(&WorldSocket::LoadSessionPermissionsCallback, this, std::placeholders::_1)));
     AsyncRead();
@@ -793,18 +788,17 @@ void WorldSocket::HandleAuthContinuedSessionCallback(std::shared_ptr<WorldPacket
     Field* fields = result->Fetch();
     std::string login = fields[0].GetString();
     Utf8ToUpperOnlyLatin(login);
-    BigNumber k;
-    k.SetHexStr(fields[1].GetCString());
+    ::SessionKey k = fields[1].GetBinary<SESSION_KEY_LENGTH>();
 
-    _authCrypt.Init(&k, _encryptSeed.AsByteArray().get(), _decryptSeed.AsByteArray().get());
+    _authCrypt.Init(k, _encryptSeed.ToByteArray<16>(), _decryptSeed.ToByteArray<16>());
 
-    SHA1Hash sha;
+    Trinity::Crypto::SHA1 sha;
     sha.UpdateData(login);
-    sha.UpdateBigNumbers(&k, nullptr);
-    sha.UpdateData((uint8*)&_authSeed, 4);
+    sha.UpdateData(k);
+    sha.UpdateData(_authSeed);
     sha.Finalize();
 
-    if (memcmp(sha.GetDigest(), authSession->Digest.data(), sha.GetLength()))
+    if (sha.GetDigest() != authSession->Digest)
     {
         SendAuthResponseError(AUTH_UNKNOWN_ACCOUNT);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthContinuedSession: Authentication failed for account: %u ('%s') address: %s", accountId, login.c_str(), GetRemoteIpAddress().to_string().c_str());

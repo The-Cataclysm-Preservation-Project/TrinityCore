@@ -22,16 +22,18 @@
 #ifndef __WORLDSESSION_H
 #define __WORLDSESSION_H
 
-#include "Common.h"
+#include <boost/circular_buffer_fwd.hpp>
+#include <map>
+#include <unordered_map>
+
 #include "AsyncCallbackProcessor.h"
+#include "AuthDefines.h"
+#include "Common.h"
 #include "DatabaseEnvFwd.h"
 #include "LockedQueue.h"
 #include "ObjectGuid.h"
 #include "Packet.h"
 #include "SharedDefines.h"
-#include <map>
-#include <unordered_map>
-#include <boost/circular_buffer_fwd.hpp>
 
 class BigNumber;
 class Creature;
@@ -511,7 +513,6 @@ class TC_GAME_API WorldSession
 
         AccountTypes GetSecurity() const { return _security; }
         uint32 GetAccountId() const { return _accountId; }
-        uint32 GetBattlenetAccountId() const { return _battlenetAccountId; }
         Player* GetPlayer() const { return _player; }
         std::string const& GetPlayerName() const;
         std::string GetPlayerInfo() const;
@@ -523,7 +524,7 @@ class TC_GAME_API WorldSession
         uint8 GetAccountExpansion() const { return m_accountExpansion; }
         uint8 GetExpansion() const { return m_expansion; }
 
-        void InitWarden(BigNumber* k, std::string const& os);
+        void InitWarden(SessionKey const& k, std::string const& os);
 
         /// Session in auth.queue currently
         void SetInQueue(bool state) { m_inQueue = state; }
@@ -1359,7 +1360,6 @@ class TC_GAME_API WorldSession
         AccountTypes _security;
         uint32 _accountId;
         std::string _accountName;
-        uint32 _battlenetAccountId;
         uint8 m_accountExpansion;
         uint8 m_expansion;
 

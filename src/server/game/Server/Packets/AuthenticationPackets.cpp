@@ -16,7 +16,8 @@
  */
 
 #include "AuthenticationPackets.h"
-#include "HmacHash.h"
+
+#include "HMAC.h"
 
 bool WorldPackets::Auth::EarlyProcessClientPacket::ReadNoThrow()
 {
@@ -47,7 +48,7 @@ WorldPacket const* WorldPackets::Auth::Pong::Write()
 WorldPacket const* WorldPackets::Auth::AuthChallenge::Write()
 {
     _worldPacket.append(DosChallenge.data(), DosChallenge.size());
-    _worldPacket << uint32(Challenge);
+    _worldPacket.append(Challenge.data(), Challenge.size());
     _worldPacket << uint8(DosZeroBits);
     return &_worldPacket;
 }
@@ -87,7 +88,7 @@ void WorldPackets::Auth::AuthSession::Read()
     _worldPacket >> Digest[1];
     _worldPacket >> Digest[11];
 
-    _worldPacket >> LocalChallenge;
+    _worldPacket.read(LocalChallenge);
 
     _worldPacket >> Digest[2];
 
@@ -335,16 +336,16 @@ WorldPacket const* WorldPackets::Auth::ConnectTo::Write()
         addressType = 2;
     }
 
-    HmacSha1 hmacHash(64, WherePacketHmac);
-    hmacHash.UpdateData(address, 16);
+    Trinity::Crypto::HMAC_SHA1 hmacHash(WherePacketHmac, 64);
+    hmacHash.UpdateData(address);
     hmacHash.UpdateData(reinterpret_cast<uint8 const*>(&addressType), 4);
     hmacHash.UpdateData(reinterpret_cast<uint8 const*>(&port), 2);
     hmacHash.UpdateData(reinterpret_cast<uint8 const*>(Haiku.c_str()), 73);
-    hmacHash.UpdateData(PiDigits, 142);
+    hmacHash.UpdateData(PiDigits);
     hmacHash.UpdateData(&Payload.XorMagic, 1);
     hmacHash.Finalize();
 
-    uint8* hmac = hmacHash.GetDigest();
+    Trinity::Crypto::HMAC_SHA1::Digest const& hmac = hmacHash.GetDigest();
 
     payload << uint8(PiDigits[30]);
     payload << uint8(Haiku[31]);
@@ -616,7 +617,7 @@ WorldPacket const* WorldPackets::Auth::ConnectTo::Write()
 
     _worldPacket << uint64(Key);
     _worldPacket << uint32(Serial);
-    _worldPacket.append(m.AsByteArray(256).get(), 256);
+    _worldPacket.append(m.ToByteArray<256>().data(), 256);
     _worldPacket << uint8(Con);
     return &_worldPacket;
 }

@@ -16,6 +16,7 @@
  */
 
 #include "Field.h"
+#include "Errors.h"
 #include "Log.h"
 #include "MySQLHacks.h"
 #include <cstring>
@@ -237,6 +238,18 @@ std::string Field::GetString() const
     return std::string(string, data.length);
 }
 
+std::string_view Field::GetStringView() const
+{
+    if (!data.value)
+        return {};
+
+    char const* const string = GetCString();
+    if (!string)
+        return {};
+
+    return { string, data.length };
+}
+
 std::vector<uint8> Field::GetBinary() const
 {
     std::vector<uint8> result;
@@ -288,4 +301,10 @@ void Field::LogWrongType(char const* getter) const
 void Field::SetMetadata(QueryResultFieldMetadata const* fieldMeta)
 {
     meta = fieldMeta;
+}
+
+void Field::GetBinarySizeChecked(uint8* buf, size_t length) const
+{
+    ASSERT(data.value && (data.length == length), "Expected %zu-byte binary blob, got %sdata (%u bytes) instead", length, data.value ? "" : "no ", data.length);
+    memcpy(buf, data.value, length);
 }

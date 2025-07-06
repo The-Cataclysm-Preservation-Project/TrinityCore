@@ -58,7 +58,7 @@ class TC_GAME_API AccountMgr
     public:
         static AccountMgr* instance();
 
-        AccountOpResult CreateAccount(std::string username, std::string password, std::string email = "", uint32 bnetAccountId = 0, uint8 bnetIndex = 0);
+        AccountOpResult CreateAccount(std::string username, std::string password, std::string email = "");
         static AccountOpResult DeleteAccount(uint32 accountId);
         static AccountOpResult ChangeUsername(uint32 accountId, std::string newUsername, std::string newPassword);
         static AccountOpResult ChangePassword(uint32 accountId, std::string newPassword);
@@ -74,7 +74,6 @@ class TC_GAME_API AccountMgr
         static bool GetEmail(uint32 accountId, std::string& email);
         static uint32 GetCharactersCount(uint32 accountId);
 
-        static std::string CalculateShaPassHash(std::string const& name, std::string const& password);
         static bool IsBannedAccount(std::string const& name);
         static bool IsPlayerAccount(uint32 gmlevel);
         static bool IsAdminAccount(uint32 gmlevel);

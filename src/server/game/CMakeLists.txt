@@ -53,7 +53,6 @@ target_link_libraries(game
     trinity-core-interface
     efsw
   PUBLIC
-    ipc
     game-interface)
 
 set_target_properties(game

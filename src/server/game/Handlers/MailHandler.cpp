@@ -17,7 +17,6 @@
 
 #include "WorldSession.h"
 #include "AccountMgr.h"
-#include "BattlenetAccountMgr.h"
 #include "CharacterCache.h"
 #include "DatabaseEnv.h"
 #include "DBCStores.h"
@@ -205,7 +204,6 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     uint8 mailsCount = 0;                                  //do not allow to send to one player more than 100 mails
     uint8 receiverLevel = 0;
     uint32 receiverAccountId = 0;
-    uint32 receiverBnetAccountId = 0;
 
     if (receiver)
     {
@@ -213,7 +211,6 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
         mailsCount = receiver->GetMailSize();
         receiverLevel = receiver->getLevel();
         receiverAccountId = receiver->GetSession()->GetAccountId();
-        receiverBnetAccountId = receiver->GetSession()->GetBattlenetAccountId();
     }
     else
     {
@@ -233,8 +230,6 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
             Field* fields = result->Fetch();
             mailsCount = fields[0].GetUInt64();
         }
-
-        receiverBnetAccountId = Battlenet::AccountMgr::GetIdByGameAccount(receiverAccountId);
     }
 
     // do not allow to have more than 100 mails in mailbox.. mails count is in opcode uint8!!! - so max can be 255..
@@ -296,6 +291,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
             return;
         }
 
+        /*
         if (item->IsBoundAccountWide() && item->IsSoulBound() && player->GetSession()->GetAccountId() != receiverAccountId)
         {
             if (!item->IsBattlenetAccountBound() || !player->GetSession()->GetBattlenetAccountId() || player->GetSession()->GetBattlenetAccountId() != receiverBnetAccountId)
@@ -304,6 +300,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
                 return;
             }
         }
+        */
 
         if (item->GetTemplate()->GetFlags() & ITEM_FLAG_CONJURED || item->GetUInt32Value(ITEM_FIELD_DURATION))
         {

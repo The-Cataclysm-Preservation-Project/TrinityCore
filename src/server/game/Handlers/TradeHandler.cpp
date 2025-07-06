@@ -36,8 +36,7 @@
 void WorldSession::SendTradeStatus(WorldPackets::Trade::TradeStatus& info)
 {
     info.Clear();   // reuse packet
-    Player* trader = _player->GetTrader();
-    info.PartnerIsSameBnetAccount = trader && trader->GetSession()->GetBattlenetAccountId() == GetBattlenetAccountId();
+    info.PartnerIsSameBnetAccount = false; //trader && trader->GetSession()->GetBattlenetAccountId() == GetBattlenetAccountId();
     SendPacket(info.Write());
 }
 

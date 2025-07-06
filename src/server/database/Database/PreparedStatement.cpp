@@ -174,6 +174,14 @@ void PreparedStatementBase::setString(const uint8 index, const std::string& valu
     statement_data[index].type = TYPE_STRING;
 }
 
+void PreparedStatementBase::setStringView(uint8 index, std::string_view value)
+{
+    ASSERT(index < statement_data.size());
+    statement_data[index].binary.resize(value.length() + 1);
+    memcpy(statement_data[index].binary.data(), value.data(), value.length() + 1);
+    statement_data[index].type = TYPE_STRING;
+}
+
 void PreparedStatementBase::setBinary(const uint8 index, const std::vector<uint8>& value)
 {
     ASSERT(index < statement_data.size());

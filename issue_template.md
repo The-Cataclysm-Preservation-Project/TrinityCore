@@ -23,8 +23,8 @@ CHANGEME Tell us what should happen instead.
 
 **TC rev. hash/commit:** 
 
-CHANGEME Copy the first line of the `worldserver` or `bnetserver` startup.
-For example: TrinityCore rev. 0000000000 2000-01-09 11:31:41 +0100 (my branch) (Win64, RelWithDebInfo, Static) (bnetserver)
+CHANGEME Copy the first line of the `worldserver` or `authserver` startup.
+For example: TrinityCore rev. 0000000000 2000-01-09 11:31:41 +0100 (my branch) (Win64, RelWithDebInfo, Static) (authserver)
 
 **TDB version:**  CHANGEME Version of the TrinityCore database
 
