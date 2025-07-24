@@ -92,8 +92,7 @@ class TC_COMMON_API Log
         template <class AppenderImpl>
         void RegisterAppender()
         {
-            using Index = typename AppenderImpl::TypeIndex;
-            RegisterAppender(Index::value, &CreateAppender<AppenderImpl>);
+            RegisterAppender(AppenderImpl::type, &CreateAppender<AppenderImpl>);
         }
 
         std::string const& GetLogsDir() const { return m_logsDir; }
