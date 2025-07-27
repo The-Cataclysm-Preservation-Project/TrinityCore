@@ -16,8 +16,36 @@
  */
 
 #include "CharacterCache.h"
+#include "ObjectMgr.h"
 #include "Player.h"
 #include "QueryPackets.h"
+#include "World.h"
+
+ByteBuffer& operator<<(ByteBuffer& data, QuestPOIData const& questPOIData)
+{
+    data << int32(questPOIData.QuestID);
+    data << int32(questPOIData.Blobs.size());
+
+    for (QuestPOIBlobData const& questPOIBlobData : questPOIData.Blobs)
+    {
+        data << int32(questPOIBlobData.BlobIndex);
+        data << int32(questPOIBlobData.ObjectiveIndex);
+        data << int32(questPOIBlobData.MapID);
+        data << int32(questPOIBlobData.WorldMapAreaID);
+        data << int32(questPOIBlobData.Floor);
+        data << int32(questPOIBlobData.Priority);
+        data << int32(questPOIBlobData.Flags);
+        data << int32(questPOIBlobData.Points.size());
+
+        for (QuestPOIBlobPoint const& questPOIBlobPoint : questPOIBlobData.Points)
+        {
+            data << int32(questPOIBlobPoint.X);
+            data << int32(questPOIBlobPoint.Y);
+        }
+    }
+
+    return data;
+}
 
 void WorldPackets::Query::QueryCreature::Read()
 {
@@ -99,6 +127,23 @@ void WorldPackets::Query::QuestPOIQuery::Read()
     }
     else
         _worldPacket.rfinish();
+}
+
+WorldPacket const* WorldPackets::Query::QuestPOIQueryResponse::Write()
+{
+    _worldPacket << int32(QuestPOIDataStats.size());
+
+    bool useCache = sWorld->getBoolConfig(CONFIG_CACHE_DATA_QUERIES);
+
+    for (QuestPOIData const* questPOIData : QuestPOIDataStats)
+    {
+        if (useCache)
+            _worldPacket.append(questPOIData->QueryDataBuffer);
+        else
+            _worldPacket << *questPOIData;
+    }
+
+    return &_worldPacket;
 }
 
 void WorldPackets::Query::DBQueryBulk::Read()

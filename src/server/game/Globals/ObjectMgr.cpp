@@ -7770,96 +7770,69 @@ void ObjectMgr::LoadQuestPOI()
 
     _questPOIStore.clear();  // need for reload case
 
-    uint32 count = 0;
-
-    //                                               0        1          2          3           4          5       6 7
-    QueryResult result = WorldDatabase.Query(
-        "SELECT QuestID, id, ObjectiveIndex, MapID, WorldMapAreaId, Floor, Priority, Flags FROM quest_poi order by "
-        "QuestID");
+    //                                               0        1          2    3               4       5               6      7         8
+    QueryResult result = WorldDatabase.Query("SELECT QuestID, BlobIndex, Idx1, ObjectiveIndex, MapID, WorldMapAreaID, Floor, Priority, Flags FROM quest_poi ORDER BY QuestID, Idx1");
     if (!result)
     {
         TC_LOG_ERROR("server.loading", ">> Loaded 0 quest POI definitions. DB table `quest_poi` is empty.");
         return;
     }
 
-    //                                                  0       1   2  3
-    QueryResult points =
-        WorldDatabase.Query("SELECT QuestID, Idx1, X, Y FROM quest_poi_points ORDER BY QuestID DESC, Idx2");
+    //                                                     0        1     2  3
+    QueryResult pointsResult = WorldDatabase.Query("SELECT QuestID, Idx1, X, Y FROM quest_poi_points ORDER BY QuestID DESC, Idx1, Idx2");
 
-    std::vector<std::vector<std::vector<QuestPOIBlobPoint>>> POIs;
+    std::unordered_map<int32, std::map<int32, std::vector<QuestPOIBlobPoint>>> allPoints;
 
-    if (points)
+
+    if (pointsResult)
     {
-        // The first result should have the highest questId
-        Field* fields = points->Fetch();
-        uint32 questIdMax = fields[0].GetUInt32();
-        POIs.resize(questIdMax + 1);
-
         do
         {
-            fields = points->Fetch();
+            Field* fields = pointsResult->Fetch();
 
-            uint32 questId = fields[0].GetUInt32();
-            uint32 id = fields[1].GetUInt32();
-            int32 x = fields[2].GetInt32();
-            int32 y = fields[3].GetInt32();
+            int32 QuestID             = fields[0].GetInt32();
+            int32 Idx1                = fields[1].GetInt32();
+            int32 x                   = fields[2].GetInt32();
+            int32 y                   = fields[3].GetInt32();
 
-            if (POIs[questId].size() <= id + 1) POIs[questId].resize(id + 10);
-
-            QuestPOIBlobPoint point;
-            point.X = x;
-            point.Y = y;
-
-            POIs[questId][id].push_back(point);
-        } while (points->NextRow());
+            allPoints[QuestID][Idx1].emplace_back(x, y);
+        } while (pointsResult->NextRow());
     }
 
     do
     {
         Field* fields = result->Fetch();
 
-        uint32 questId = fields[0].GetUInt32();
-        uint32 id = fields[1].GetUInt32();
-        int32 objIndex = fields[2].GetInt32();
-        uint32 mapId = fields[3].GetUInt32();
-        uint32 WorldMapAreaId = fields[4].GetUInt32();
-        uint32 FloorId = fields[5].GetUInt32();
-        uint32 Priority = fields[6].GetUInt32();
-        uint32 Flags = fields[7].GetUInt32();
+        int32 questID               = fields[0].GetInt32();
+        int32 blobIndex             = fields[1].GetInt32();
+        int32 idx1                  = fields[2].GetInt32();
+        int32 objectiveIndex        = fields[3].GetInt32();
+        int32 mapID                 = fields[4].GetInt32();
+        int32 worldMapAreaID        = fields[5].GetInt32();
+        int32 floor                 = fields[6].GetInt32();
+        int32 priority              = fields[7].GetInt32();
+        int32 flags                 = fields[8].GetInt32();
 
-        QuestPOIBlobData POI;
-        POI.BlobIndex = id;
-        POI.ObjectiveIndex = objIndex;
-        POI.MapID = mapId;
-        POI.WorldMapAreaID = WorldMapAreaId;
-        POI.Floor = FloorId;
-        POI.Priority = Priority;
-        POI.Flags = Flags;
+        if (!GetQuestTemplate(questID))
+            TC_LOG_ERROR("sql.sql", "`quest_poi` quest id (%i) Idx1 (%i) does not exist in `quest_template`", questID, idx1);
 
-        if (questId < POIs.size() && id < POIs[questId].size())
+        if (std::map<int32, std::vector<QuestPOIBlobPoint>>* blobs = Trinity::Containers::MapGetValuePtr(allPoints, questID))
         {
-            POI.QuestPOIBlobPointStats = POIs[questId][id];
-            auto itr = _questPOIStore.find(questId);
-            if (itr == _questPOIStore.end())
+            QuestPOIData& poiData = _questPOIStore[questID];
+            poiData.QuestID = questID;
+
+            if (std::vector<QuestPOIBlobPoint>* points = Trinity::Containers::MapGetValuePtr(*blobs, idx1))
+                poiData.Blobs.emplace_back(blobIndex, objectiveIndex, mapID, worldMapAreaID, floor, priority, flags, std::move(*points));
+            else
             {
-                QuestPOIWrapper wrapper;
-                QuestPOIData data;
-                data.QuestID = questId;
-                wrapper.POIData = data;
-
-                _questPOIStore.emplace(questId, std::move(wrapper));
+                // Some POIs can reference empty blobs according to sniff data
+                poiData.Blobs.emplace_back(blobIndex, objectiveIndex, mapID, worldMapAreaID, floor, priority, flags, std::move(std::vector<QuestPOIBlobPoint>()));
             }
-
-            _questPOIStore.at(questId).POIData.QuestPOIBlobDataStats.push_back(POI);
         }
-        else
-            TC_LOG_ERROR("sql.sql", "Table quest_poi references unknown quest points for quest %u POI id %u", questId,
-                         id);
 
-        ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO("server.loading", ">> Loaded %u quest POI definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u quest POI definitions in %u ms", uint32(_questPOIStore.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::LoadQuestMoneyRewards()
@@ -10013,6 +9986,11 @@ CreatureTemplate const* ObjectMgr::GetCreatureTemplate(uint32 entry) const
     return nullptr;
 }
 
+QuestPOIData const* ObjectMgr::GetQuestPOIData(int32 questId)
+{
+    return Trinity::Containers::MapGetValuePtr(_questPOIStore, questId);
+}
+
 VehicleAccessoryList const* ObjectMgr::GetVehicleAccessoryList(Vehicle* veh) const
 {
     if (Creature* cre = veh->GetBase()->ToCreature())
@@ -10416,36 +10394,10 @@ void ObjectMgr::InitializeQueriesData(QueryDataGroup mask)
     TC_LOG_INFO("server.loading", ">> Initialized query cache data in %u ms", GetMSTimeDiffToNow(oldMSTime));
 }
 
-void QuestPOIWrapper::InitializeQueryData()
+void QuestPOIData::InitializeQueryData()
 {
-    QueryDataBuffer = BuildQueryData();
-}
-
-ByteBuffer QuestPOIWrapper::BuildQueryData() const
-{
-    ByteBuffer tempBuffer;
-    tempBuffer << uint32(POIData.QuestID);                                      // quest ID
-    tempBuffer << uint32(POIData.QuestPOIBlobDataStats.size());                 // POI count
-
-    for (QuestPOIBlobData const& questPOIBlobData : POIData.QuestPOIBlobDataStats)
-    {
-        tempBuffer << uint32(questPOIBlobData.BlobIndex);                       // POI index
-        tempBuffer << int32(questPOIBlobData.ObjectiveIndex);                   // objective index
-        tempBuffer << uint32(questPOIBlobData.MapID);                           // mapid
-        tempBuffer << uint32(questPOIBlobData.WorldMapAreaID);                  // areaid
-        tempBuffer << uint32(questPOIBlobData.Floor);                           // floorid
-        tempBuffer << uint32(questPOIBlobData.Priority);                        // priority
-        tempBuffer << uint32(questPOIBlobData.Flags);                           // flags
-        tempBuffer << uint32(questPOIBlobData.QuestPOIBlobPointStats.size());   // POI points count
-
-        for (QuestPOIBlobPoint const& questPOIBlobPoint : questPOIBlobData.QuestPOIBlobPointStats)
-        {
-            tempBuffer << int32(questPOIBlobPoint.X); // POI point x
-            tempBuffer << int32(questPOIBlobPoint.Y); // POI point y
-        }
-    }
-
-    return tempBuffer;
+    QueryDataBuffer << *this;
+    QueryDataBuffer.shrink_to_fit();
 }
 
 void ObjectMgr::LoadSummonPropertiesParameters()

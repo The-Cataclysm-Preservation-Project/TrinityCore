@@ -363,37 +363,13 @@ void WorldSession::HandleQuestPOIQuery(WorldPackets::Query::QuestPOIQuery& query
     for (uint32 i = 0; i < query.MissingQuestCount; ++i)
         questIds.insert(query.MissingQuestPOIs[i]); // quest id
 
-    WorldPacket data(SMSG_QUEST_POI_QUERY_RESPONSE, 4 + (4 + 4 + 40) * questIds.size());
-    data << uint32(questIds.size()); // count
+    WorldPackets::Query::QuestPOIQueryResponse response;
     for (uint32 questId : questIds)
-    {
-        uint16 const questSlot = _player->FindQuestSlot(questId);
-        if (questSlot != MAX_QUEST_LOG_SIZE && _player->GetQuestSlotQuestId(questSlot) == questId)
-        {
-            if (QuestPOIWrapper const* poiWrapper = sObjectMgr->GetQuestPOIWrapper(questId))
-            {
-                if (sWorld->getBoolConfig(CONFIG_CACHE_DATA_QUERIES))
-                    data.append(poiWrapper->QueryDataBuffer);
-                else
-                {
-                    ByteBuffer POIByteBuffer = poiWrapper->BuildQueryData();
-                    data.append(POIByteBuffer);
-                }
-            }
-            else
-            {
-                data << uint32(questId); // quest ID
-                data << uint32(0); // POI count
-            }
-        }
-        else
-        {
-            data << uint32(questId); // quest ID
-            data << uint32(0); // POI count
-        }
-    }
+        if (_player->FindQuestSlot(questId) != MAX_QUEST_LOG_SIZE)
+            if (QuestPOIData const* poiData = sObjectMgr->GetQuestPOIData(questId))
+                response.QuestPOIDataStats.push_back(poiData);
 
-    SendPacket(&data);
+    SendPacket(response.Write());
 }
 
 void WorldSession::HandleDBQueryBulk(WorldPackets::Query::DBQueryBulk& packet)

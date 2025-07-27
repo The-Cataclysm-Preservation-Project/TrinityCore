@@ -816,40 +816,40 @@ typedef std::pair<GossipMenuItemsContainer::iterator, GossipMenuItemsContainer::
 
 struct QuestPOIBlobPoint
 {
-    int32 X = 0;
-    int32 Y = 0;
+    int32 X;
+    int32 Y;
+
+    QuestPOIBlobPoint() : X(0), Y(0) { }
+    QuestPOIBlobPoint(int32 x, int32 y) : X(x), Y(y) { }
 };
 
 struct QuestPOIBlobData
 {
-    uint32 BlobIndex = 0;
-    int32 ObjectiveIndex = 0;
-    uint32 MapID = 0;
-    uint32 WorldMapAreaID = 0;
-    uint32 Floor = 0;
-    uint32 Priority = 0;
-    uint32 Flags = 0;
-    std::vector<QuestPOIBlobPoint> QuestPOIBlobPointStats;
+    int32 BlobIndex;
+    int32 ObjectiveIndex;
+    int32 MapID;
+    int32 WorldMapAreaID;
+    int32 Floor;
+    int32 Priority;
+    int32 Flags;
+    std::vector<QuestPOIBlobPoint> Points;
+
+    QuestPOIBlobData():
+        BlobIndex(0), ObjectiveIndex(0), MapID(0), WorldMapAreaID(0), Floor(0), Priority(0), Flags(0) { }
+    QuestPOIBlobData(int32 blobIndex, int32 objectiveIndex, int32 mapId, int32 worldMapAreaId, int32 floor, int32 priority, int32 flags, std::vector<QuestPOIBlobPoint> points) :
+        BlobIndex(blobIndex), ObjectiveIndex(objectiveIndex), MapID(mapId), WorldMapAreaID(worldMapAreaId), Floor(floor), Priority(priority), Flags(flags), Points(std::move(points)) { }
 };
 
 struct QuestPOIData
 {
     uint32 QuestID = 0;
-    std::vector<QuestPOIBlobData> QuestPOIBlobDataStats;
-};
-
-struct QuestPOIWrapper
-{
-    QuestPOIData POIData;
-    ByteBuffer QueryDataBuffer;
+    std::vector<QuestPOIBlobData> Blobs;
 
     void InitializeQueryData();
-    ByteBuffer BuildQueryData() const;
-
-    QuestPOIWrapper() : QueryDataBuffer(0) { }
+    ByteBuffer QueryDataBuffer;
 };
 
-typedef std::unordered_map<uint32, QuestPOIWrapper> QuestPOIContainer;
+typedef std::unordered_map<uint32, QuestPOIData> QuestPOIContainer;
 
 struct QuestGreeting
 {
@@ -1130,13 +1130,7 @@ class TC_GAME_API ObjectMgr
             return nullptr;
         }
 
-        QuestPOIWrapper const* GetQuestPOIWrapper(uint32 questId)
-        {
-            QuestPOIContainer::const_iterator itr = _questPOIStore.find(questId);
-            if (itr != _questPOIStore.end())
-                return &itr->second;
-            return nullptr;
-        }
+        QuestPOIData const* GetQuestPOIData(int32 questId);
 
         VehicleAccessoryList const* GetVehicleAccessoryList(Vehicle* veh) const;
 

@@ -28,6 +28,7 @@
 #include "SharedDefines.h"
 
 class Player;
+struct QuestPOIData;
 
 namespace WorldPackets
 {
@@ -124,6 +125,16 @@ namespace WorldPackets
             std::array<uint32, MAX_QUEST_LOG_SIZE> MissingQuestPOIs = {};
         };
 
+        class QuestPOIQueryResponse final : public ServerPacket
+        {
+        public:
+            explicit QuestPOIQueryResponse() : ServerPacket(SMSG_QUEST_POI_QUERY_RESPONSE, 4 + 4) { }
+
+            WorldPacket const* Write() override;
+
+            std::vector<QuestPOIData const*> QuestPOIDataStats;
+        };
+
         struct DBQueryRecord
         {
             ObjectGuid GUID;
@@ -190,5 +201,7 @@ namespace WorldPackets
         };
     }
 }
+
+ByteBuffer& operator<<(ByteBuffer& data, QuestPOIData const& questPOIData);
 
 #endif // QueryPackets_h__
