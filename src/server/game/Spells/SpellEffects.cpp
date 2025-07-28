@@ -571,7 +571,7 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
     }
 
     // original caster guid only for GO cast
-    CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
+    CastSpellExtraArgs args(TRIGGERED_FULL_MASK & ~(TRIGGERED_IGNORE_POWER_COST | TRIGGERED_IGNORE_REAGENT_COST));
     args.SetOriginalCaster(m_originalCasterGUID);
 
     if (!m_castItemGUID.IsEmpty() && sSpellMgr->AssertSpellInfo(m_spellInfo->Effects[effIndex].TriggerSpell)->HasAttribute(SPELL_ATTR2_RETAIN_ITEM_CAST))
@@ -624,7 +624,11 @@ void Spell::EffectTriggerMissileSpell(SpellEffIndex effIndex)
             targets.SetGOTarget(go);
     }
 
-    CastSpellExtraArgs args(m_originalCasterGUID);
+    CastSpellExtraArgs args(TRIGGERED_FULL_MASK & ~(TRIGGERED_IGNORE_POWER_COST | TRIGGERED_IGNORE_REAGENT_COST));
+    args.SetOriginalCaster(m_originalCasterGUID);
+    args.SetTriggeringSpell(this);
+    args.SetCustomArg(m_customArg);
+
     // set basepoints for trigger with value effect
     if (m_spellInfo->Effects[effIndex].Effect == SPELL_EFFECT_TRIGGER_MISSILE_SPELL_WITH_VALUE)
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -679,7 +683,7 @@ void Spell::EffectForceCast(SpellEffIndex effIndex)
             return;
     }
 
-    CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
+    CastSpellExtraArgs args(TRIGGERED_FULL_MASK & ~(TRIGGERED_IGNORE_POWER_COST | TRIGGERED_IGNORE_REAGENT_COST));
     if (m_spellInfo->Effects[effIndex].Effect == SPELL_EFFECT_FORCE_CAST_WITH_VALUE)
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             args.AddSpellMod(SpellValueMod(SPELLVALUE_BASE_POINT0 + i), damage);

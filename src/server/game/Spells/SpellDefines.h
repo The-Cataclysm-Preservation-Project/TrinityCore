@@ -192,16 +192,51 @@ enum TriggerCastFlags : uint32
 
 DEFINE_ENUM_FLAG(TriggerCastFlags);
 
-struct TC_GAME_API CastSpellExtraArgs
+struct CastSpellExtraArgsInit
 {
-    CastSpellExtraArgs() {}
-    CastSpellExtraArgs(bool triggered) : TriggerFlags(triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE) {}
-    CastSpellExtraArgs(TriggerCastFlags trigger) : TriggerFlags(trigger) {}
-    CastSpellExtraArgs(Item* item) : TriggerFlags(TRIGGERED_FULL_MASK), CastItem(item) {}
-    CastSpellExtraArgs(AuraEffect const* eff) : TriggerFlags(TRIGGERED_FULL_MASK), TriggeringAura(eff) {}
-    CastSpellExtraArgs(ObjectGuid const& origCaster) : TriggerFlags(TRIGGERED_FULL_MASK), OriginalCaster(origCaster) {}
-    CastSpellExtraArgs(AuraEffect const* eff, ObjectGuid const& origCaster) : TriggerFlags(TRIGGERED_FULL_MASK), TriggeringAura(eff), OriginalCaster(origCaster) {}
+    TriggerCastFlags TriggerFlags = TRIGGERED_NONE;
+    Item* CastItem = nullptr;
+    Spell const* TriggeringSpell = nullptr;
+    AuraEffect const* TriggeringAura = nullptr;
+    ObjectGuid OriginalCaster = ObjectGuid::Empty;
+
+    struct
+    {
+        friend struct CastSpellExtraArgs;
+        friend class WorldObject;
+
+    private:
+        void AddMod(SpellValueMod mod, int32 val) { data.push_back({ mod, val }); }
+
+        auto begin() const { return data.cbegin(); }
+        auto end() const { return data.cend(); }
+
+        std::vector<std::pair<SpellValueMod, int32>> data;
+    } SpellValueOverrides;
+
+    std::any CustomArg;
+};
+
+struct TC_GAME_API CastSpellExtraArgs : public CastSpellExtraArgsInit
+{
+    CastSpellExtraArgs();
+    CastSpellExtraArgs(bool triggered) { TriggerFlags = triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE; }
+    CastSpellExtraArgs(TriggerCastFlags trigger) { TriggerFlags = trigger; }
+    CastSpellExtraArgs(Item* item) { TriggerFlags = TRIGGERED_FULL_MASK; CastItem = item; }
+    CastSpellExtraArgs(Spell const* triggeringSpell) { TriggerFlags = TRIGGERED_FULL_MASK; SetTriggeringSpell(triggeringSpell); }
+    CastSpellExtraArgs(AuraEffect const* eff) { TriggerFlags = TRIGGERED_FULL_MASK; SetTriggeringAura(eff); }
+    CastSpellExtraArgs(ObjectGuid const& origCaster) { TriggerFlags = TRIGGERED_FULL_MASK; SetOriginalCaster(origCaster); }
+    CastSpellExtraArgs(AuraEffect const* eff, ObjectGuid const& origCaster) { TriggerFlags = TRIGGERED_FULL_MASK; SetTriggeringAura(eff); SetOriginalCaster(origCaster); }
     CastSpellExtraArgs(SpellValueMod mod, int32 val) { SpellValueOverrides.AddMod(mod, val); }
+    CastSpellExtraArgs(CastSpellExtraArgsInit&& init) : CastSpellExtraArgsInit(std::move(init)) { SetTriggeringSpell(TriggeringSpell); }
+
+    CastSpellExtraArgs(CastSpellExtraArgs const& other);
+    CastSpellExtraArgs(CastSpellExtraArgs&& other) noexcept;
+
+    CastSpellExtraArgs& operator=(CastSpellExtraArgs const& other);
+    CastSpellExtraArgs& operator=(CastSpellExtraArgs&& other) noexcept;
+
+    ~CastSpellExtraArgs();
 
     CastSpellExtraArgs& SetTriggerFlags(TriggerCastFlags flag) { TriggerFlags = flag; return *this; }
     CastSpellExtraArgs& SetCastItem(Item* item) { CastItem = item; return *this; }
@@ -211,32 +246,6 @@ struct TC_GAME_API CastSpellExtraArgs
     CastSpellExtraArgs& AddSpellMod(SpellValueMod mod, int32 val) { SpellValueOverrides.AddMod(mod, val); return *this; }
     CastSpellExtraArgs& AddSpellBP0(int32 val) { return AddSpellMod(SPELLVALUE_BASE_POINT0, val); } // because i don't want to type SPELLVALUE_BASE_POINT0 300 times
     CastSpellExtraArgs& SetCustomArg(std::any customArg) { CustomArg = std::move(customArg); return *this; }
-
-    TriggerCastFlags TriggerFlags = TRIGGERED_NONE;
-    Item* CastItem = nullptr;
-    Spell const* TriggeringSpell = nullptr;
-    AuraEffect const* TriggeringAura = nullptr;
-    ObjectGuid OriginalCaster = ObjectGuid::Empty;
-    struct
-    {
-        friend struct CastSpellExtraArgs;
-        friend class WorldObject;
-
-        private:
-            void AddMod(SpellValueMod mod, int32 val) { data.push_back({ mod, val }); }
-
-            auto begin() const { return data.cbegin(); }
-            auto end() const { return data.cend(); }
-
-            std::vector<std::pair<SpellValueMod, int32>> data;
-    } SpellValueOverrides;
-    std::any CustomArg;
-
-    CastSpellExtraArgs(CastSpellExtraArgs const&) = delete;
-    CastSpellExtraArgs(CastSpellExtraArgs&&) = delete;
-
-    CastSpellExtraArgs& operator=(CastSpellExtraArgs const&) = delete;
-    CastSpellExtraArgs& operator=(CastSpellExtraArgs&&) = delete;
 };
 
 enum class SummonPropertiesParamType : uint8
