@@ -127,9 +127,9 @@ void SecretMgr::AttemptLoad(Secrets i, LogLevel errorLevel, std::unique_lock<std
         if (info.owner != THIS_SERVER_PROCESS)
         {
             if (currentValue)
-                TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "Invalid value for '{}' specified - this is not actually the secret being used in your auth DB.", info.configKey);
+                TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "Invalid value for '%s' specified - this is not actually the secret being used in your auth DB.", info.configKey);
             else
-                TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "No value for '{}' specified - please specify the secret currently being used in your auth DB.", info.configKey);
+                TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "No value for '%s' specified - please specify the secret currently being used in your auth DB.", info.configKey);
             _secrets[i].state = Secret::LOAD_FAILED;
             return;
         }
@@ -140,7 +140,7 @@ void SecretMgr::AttemptLoad(Secrets i, LogLevel errorLevel, std::unique_lock<std
             oldSecret = GetHexFromConfig(info.oldKey, info.bits);
             if (oldSecret && !Trinity::Crypto::Argon2::Verify(oldSecret->AsHexStr(), *oldDigest))
             {
-                TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "Invalid value for '{}' specified - this is not actually the secret previously used in your auth DB.", info.oldKey);
+                TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "Invalid value for '%s' specified - this is not actually the secret previously used in your auth DB.", info.oldKey);
                 _secrets[i].state = Secret::LOAD_FAILED;
                 return;
             }
@@ -150,12 +150,12 @@ void SecretMgr::AttemptLoad(Secrets i, LogLevel errorLevel, std::unique_lock<std
         Optional<std::string> error = AttemptTransition(Secrets(i), currentValue, oldSecret, !!oldDigest);
         if (error)
         {
-            TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "Your value of '{}' changed, but we cannot transition your database to the new value:\n{}", info.configKey, error->c_str());
+            TC_LOG_MESSAGE_BODY("server.loading", errorLevel, "Your value of '%s' changed, but we cannot transition your database to the new value:\n{}", info.configKey, error->c_str());
             _secrets[i].state = Secret::LOAD_FAILED;
             return;
         }
 
-        TC_LOG_INFO("server.loading", "Successfully transitioned database to new '{}' value.", info.configKey);
+        TC_LOG_INFO("server.loading", "Successfully transitioned database to new '%s' value.", info.configKey);
     }
 
     if (currentValue)
@@ -188,11 +188,11 @@ Optional<std::string> SecretMgr::AttemptTransition(Secrets i, Optional<BigNumber
                 if (hadOldSecret)
                 {
                     if (!oldSecret)
-                        return Trinity::StringFormat("Cannot decrypt old TOTP tokens - add config key '{}' to authserver.conf!", secret_info[i].oldKey);
+                        return Trinity::StringFormat("Cannot decrypt old TOTP tokens - add config key '%s' to authserver.conf!", secret_info[i].oldKey);
 
                     bool success = Trinity::Crypto::AEDecrypt<Trinity::Crypto::AES>(totpSecret, oldSecret->ToByteArray<Trinity::Crypto::AES::KEY_SIZE_BYTES>());
                     if (!success)
-                        return Trinity::StringFormat("Cannot decrypt old TOTP tokens - value of '{}' is incorrect for some users!", secret_info[i].oldKey);
+                        return Trinity::StringFormat("Cannot decrypt old TOTP tokens - value of '%s' is incorrect for some users!", secret_info[i].oldKey);
                 }
 
                 if (newSecret)
