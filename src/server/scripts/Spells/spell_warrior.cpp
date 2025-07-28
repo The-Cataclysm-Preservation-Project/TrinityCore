@@ -1098,6 +1098,21 @@ class spell_warr_enraged_regeneration_AuraScript: public AuraScript
         AfterEffectRemove.Register(&spell_warr_enraged_regeneration_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH, AURA_EFFECT_HANDLE_REAL);
     }
 };
+
+// 78 - Heroic Strike
+class spell_warr_heroic_strike : public SpellScript
+{
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
+    {
+        // Tooltip value:
+        damage = 8 + GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 60 / 100;
+    }
+
+    void Register() override
+    {
+        CalcDamage.Register(&spell_warr_heroic_strike::CalculateDamage);
+    }
+};
 }
 
 void AddSC_warrior_spell_scripts()
@@ -1116,6 +1131,7 @@ void AddSC_warrior_spell_scripts()
     RegisterSpellScript(spell_warr_glyph_of_sunder_armor);
     RegisterSpellScript(spell_warr_heroic_fury);
     RegisterSpellScript(spell_warr_heroic_leap);
+    RegisterSpellScript(spell_warr_heroic_strike);
     RegisterSpellScript(spell_warr_intimidating_shout);
     RegisterSpellScript(spell_warr_lambs_to_the_slaughter);
     RegisterSpellScript(spell_warr_last_stand);
