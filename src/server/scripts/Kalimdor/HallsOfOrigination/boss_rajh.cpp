@@ -208,7 +208,7 @@ struct boss_rajh : public BossAI
                     break;
                 case EVENT_SUN_STRIKE:
                     if (Unit* target = me->GetVictim())
-                        me->CastSpell(target, SPELL_SUN_STRIKE, TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_POWER_AND_REAGENT_COST));
+                        me->CastSpell(target, SPELL_SUN_STRIKE, TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_POWER_COST));
                     events.Repeat(_randomTimerCase == 0 ? 35s : 27s);
                     break;
                 case EVENT_MOVE_TO_MIDDLE:
@@ -390,7 +390,7 @@ class spell_rajh_summon_sun_orb_power_cost : public AuraScript
     void HandlePeriodicTick(AuraEffect const* /*aurEff*/)
     {
         PreventDefaultAction();
-        GetTarget()->CastSpell(GetTarget(), GetSpellInfo()->Effects[EFFECT_0].TriggerSpell, TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_POWER_AND_REAGENT_COST));
+        GetTarget()->CastSpell(GetTarget(), GetSpellInfo()->Effects[EFFECT_0].TriggerSpell, TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_IGNORE_POWER_COST));
     }
 
     void Register() override

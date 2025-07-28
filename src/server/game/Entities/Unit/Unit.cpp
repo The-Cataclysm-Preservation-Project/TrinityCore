@@ -14030,7 +14030,9 @@ SpellInfo const* Unit::GetCastSpellInfo(SpellInfo const* spellInfo, TriggerCastF
             if (SpellInfo const* newInfo = sSpellMgr->GetSpellInfo(auraEffect->GetAmount()))
             {
                 if (auraEffect->GetSpellInfo()->HasAttribute(SPELL_ATTR8_IGNORE_SPELLCAST_OVERRIDE_COST))
-                    triggerFlag |= TRIGGERED_IGNORE_POWER_AND_REAGENT_COST;
+                    triggerFlag |= TRIGGERED_IGNORE_POWER_COST;
+                else
+                    triggerFlag &= ~TRIGGERED_IGNORE_POWER_COST;
 
                 return newInfo;
             }
@@ -14044,7 +14046,9 @@ SpellInfo const* Unit::GetCastSpellInfo(SpellInfo const* spellInfo, TriggerCastF
             if (SpellInfo const* newInfo = sSpellMgr->GetSpellInfo(auraEffect->GetAmount()))
             {
                 if (auraEffect->GetSpellInfo()->HasAttribute(SPELL_ATTR8_IGNORE_SPELLCAST_OVERRIDE_COST))
-                    triggerFlag |= TRIGGERED_IGNORE_POWER_AND_REAGENT_COST;
+                    triggerFlag |= TRIGGERED_IGNORE_POWER_COST;
+                else
+                    triggerFlag &= ~TRIGGERED_IGNORE_POWER_COST;
 
                 return newInfo;
             }
