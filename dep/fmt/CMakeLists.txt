@@ -8,8 +8,6 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-include(CheckSymbolExists)
-
 set(strtod_l_headers stdlib.h)
 
 if (APPLE)
