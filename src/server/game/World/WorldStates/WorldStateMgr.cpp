@@ -23,6 +23,7 @@
 #include "Map.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
+#include "StringConvert.h"
 #include "World.h"
 #include "WorldStatePackets.h"
 
@@ -52,78 +53,76 @@ void WorldStateMgr::LoadFromDB()
         worldState.Id = id;
         worldState.DefaultValue = fields[1].GetInt32();
 
-        Tokenizer tokens(fields[2].GetString(), ' ');
-        uint8 i = 0;
-        for (Tokenizer::const_iterator itr = tokens.begin(); itr != tokens.end(); ++itr, ++i)
+        std::string_view mapIds = fields[2].GetStringView();
+        for (std::string_view mapIdToken : Trinity::Tokenize(mapIds, ',', false))
         {
-            int32 mapId = atoi(*itr);
+            Optional<int32> mapId = Trinity::StringTo<int32>(mapIdToken);
             if (!mapId)
             {
                 TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %d with non-integer MapID (%s), map ignored",
-                    id, *itr);
+                    id, mapIdToken.data());
                 continue;
             }
 
-            if (!sMapStore.LookupEntry(mapId) && mapId != WORLDSTATE_ANY_MAP)
+            if (!sMapStore.LookupEntry(*mapId) && mapId != WORLDSTATE_ANY_MAP)
             {
                 TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %d with invalid MapID (%u), map ignored",
-                    id, mapId);
+                    id, *mapId);
                 continue;
             }
 
-            worldState.MapIds.insert(mapId);
+            worldState.MapIds.insert(*mapId);
         }
 
-        if (i > 0 && worldState.MapIds.empty())
+        if (!mapIds.empty() && worldState.MapIds.empty())
         {
-            TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %d with nonempty MapIDs but no valid map id was found, ignored",
-                id);
+            TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %i with nonempty MapIDs (%s) but no valid map id was found, ignored",
+                id, mapIds.data());
             continue;
         }
 
-        Tokenizer tokens2(fields[3].GetString(), ' ');
-        i = 0;
+        std::string_view areaIds = fields[3].GetStringView();
         if (!worldState.MapIds.empty())
         {
-            for (Tokenizer::const_iterator itr = tokens2.begin(); itr != tokens2.end(); ++itr, ++i)
+            for (std::string_view areaIdToken : Trinity::Tokenize(areaIds, ',', false))
             {
-                uint32 areaId = atoul(*itr);
+                Optional<uint32> areaId = Trinity::StringTo<uint32>(areaIdToken);
                 if (!areaId)
                 {
-                    TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %d with non-integer AreaID, area ignored",
-                        id);
+                    TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %i with non-integer AreaID (%s), area ignored",
+                        id, areaIdToken.data());
                     continue;
                 }
 
-                AreaTableEntry const* areaTableEntry = sAreaTableStore.LookupEntry(areaId);
+                AreaTableEntry const* areaTableEntry = sAreaTableStore.LookupEntry(*areaId);
                 if (!areaTableEntry)
                 {
                     TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %d with invalid AreaID (%u), area ignored",
-                        id, areaId);
+                        id, *areaId);
                     continue;
                 }
 
                 if (worldState.MapIds.find(areaTableEntry->ContinentID) == worldState.MapIds.end())
                 {
                     TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %d with AreaID (%u) not on any of required maps, area ignored",
-                        id, areaId);
+                        id, *areaId);
                     continue;
                 }
 
-                worldState.AreaIds.insert(areaId);
+                worldState.AreaIds.insert(*areaId);
             }
 
-            if (i > 0 && worldState.AreaIds.empty())
+            if (!areaIds.empty() && worldState.AreaIds.empty())
             {
-                TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %d with nonempty AreaIDs but no valid area id was found, ignored",
-                    id);
+                TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %i with nonempty AreaIDs (%s) but no valid area id was found, ignored",
+                    id, areaIds.data());
                 continue;
             }
         }
-        else if (tokens2.size() > 0)
+        else if (!areaIds.empty())
         {
-            TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %u with nonempty AreaIDs but is a realm wide world state, area requirement ignored",
-                id);
+            TC_LOG_ERROR("sql.sql", "Table `world_state` contains a world state %i with nonempty AreaIDs (%s) but is a realm wide world state, area requirement ignored",
+                id, areaIds.data());
         }
 
         worldState.ScriptId = sObjectMgr->GetScriptId(fields[4].GetString());

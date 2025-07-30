@@ -662,7 +662,7 @@ enum class SpellShapeshiftFormFlags : int32
 
 DEFINE_ENUM_FLAG(SpellShapeshiftFormFlags);
 
-constexpr uint8 TaxiMaskSize = 114;
+static constexpr uint8 TaxiMaskSize = 114;
 typedef std::array<uint8, TaxiMaskSize> TaxiMask;
 
 enum TaxiNodeFlags

@@ -28,6 +28,7 @@
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "SocialMgr.h"
+#include "StringConvert.h"
 #include "World.h"
 
 Channel::Channel(uint32 channelId, uint32 team /*= 0*/, AreaTableEntry const* zoneEntry /*= nullptr*/) :
@@ -86,14 +87,13 @@ Channel::Channel(std::string const& name, uint32 team /*= 0*/) :
 
             if (!db_BannedList.empty())
             {
-                Tokenizer tokens(db_BannedList, ' ');
-                for (auto const& token : tokens)
+                for (std::string_view guid : Trinity::Tokenize(db_BannedList, ' ', false))
                 {
-                    ObjectGuid banned_guid(uint64(atoull(token)));
-                    if (banned_guid)
+                    ObjectGuid banned(Trinity::StringTo<uint64>(guid).value_or(0));
+                    if (banned)
                     {
-                        TC_LOG_DEBUG("chat.system", "Channel(%s) loaded player %s into bannedStore", name.c_str(), banned_guid.ToString().c_str());
-                        _bannedStore.insert(banned_guid);
+                        TC_LOG_DEBUG("chat.system", "Channel(%s) loaded player %s into bannedStore", name.c_str(), banned.ToString().c_str());
+                        _bannedStore.insert(banned);
                     }
                 }
             }

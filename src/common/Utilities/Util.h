@@ -20,7 +20,7 @@
 
 #include "Define.h"
 #include "Errors.h"
-
+#include "Optional.h"
 #include <string>
 #include <sstream>
 #include <vector>
@@ -30,37 +30,21 @@ namespace Trinity
     TC_COMMON_API void VerifyOsVersion();
 }
 
-class TC_COMMON_API Tokenizer
+namespace Trinity
 {
-public:
-    typedef std::vector<char const*> StorageType;
+    TC_COMMON_API std::vector<std::string_view> Tokenize(std::string_view str, char sep, bool keepEmpty);
 
-    typedef StorageType::size_type size_type;
+    /* this would return string_view into temporary otherwise */
+    std::vector<std::string_view> Tokenize(std::string&&, char, bool) = delete;
+    std::vector<std::string_view> Tokenize(std::string const&&, char, bool) = delete;
 
-    typedef StorageType::const_iterator const_iterator;
-    typedef StorageType::reference reference;
-    typedef StorageType::const_reference const_reference;
-
-public:
-    Tokenizer(const std::string &src, char const sep, uint32 vectorReserve = 0, bool keepEmptyStrings = true);
-    ~Tokenizer() { delete[] m_str; }
-
-    const_iterator begin() const { return m_storage.begin(); }
-    const_iterator end() const { return m_storage.end(); }
-
-    size_type size() const { return m_storage.size(); }
-
-    reference operator [] (size_type i) { return m_storage[i]; }
-    const_reference operator [] (size_type i) const { return m_storage[i]; }
-
-private:
-    char* m_str;
-    StorageType m_storage;
-};
+    /* the delete overload means we need to make this explicit */
+    inline std::vector<std::string_view> Tokenize(char const* str, char sep, bool keepEmpty) { return Tokenize(std::string_view(str ? str : ""), sep, keepEmpty); }
+}
 
 TC_COMMON_API void stripLineInvisibleChars(std::string &src);
 
-TC_COMMON_API int64 MoneyStringToMoney(std::string const& moneyString);
+TC_COMMON_API Optional<int64> MoneyStringToMoney(std::string const& moneyString);
 
 TC_COMMON_API struct tm* localtime_r(time_t const* time, struct tm *result);
 TC_COMMON_API time_t LocalTimeToUTCTime(time_t time);

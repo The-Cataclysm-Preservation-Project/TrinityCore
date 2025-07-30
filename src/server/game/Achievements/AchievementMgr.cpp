@@ -43,6 +43,7 @@
 #include "ReputationMgr.h"
 #include "ScriptMgr.h"
 #include "SpellMgr.h"
+#include "StringConvert.h"
 #include "World.h"
 #include "WorldSession.h"
 #include "WorldStateMgr.h"
@@ -733,9 +734,9 @@ void AchievementMgr<Guild>::LoadFromDB(PreparedQueryResult achievementResult, Pr
 
             CompletedAchievementData& ca = m_completedAchievements[achievementid];
             ca.date = time_t(fields[1].GetUInt32());
-            Tokenizer guids(fields[2].GetString(), ' ');
-            for (uint32 i = 0; i < guids.size(); ++i)
-                ca.guids.insert(ObjectGuid(HighGuid::Player, uint32(atol(guids[i]))));
+            for (std::string_view guid : Trinity::Tokenize(fields[2].GetStringView(), ' ', false))
+                if (Optional<ObjectGuid::LowType> parsedGuid = Trinity::StringTo<ObjectGuid::LowType>(guid))
+                    ca.guids.insert(ObjectGuid(HighGuid::Player, *parsedGuid));
 
             ca.changed = false;
 
