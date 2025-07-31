@@ -1043,7 +1043,7 @@ class TC_GAME_API Unit : public WorldObject
 
         void MonsterMoveWithSpeed(float x, float y, float z, float speed, bool generatePath = false, bool forceDestination = false);
 
-        bool IsPlayingHoverAnim() const { return _playHoverAnim; }
+        bool IsPlayingHoverAnim() const { return m_updateFlag.PlayerHoverAnim; }
         void SetPlayHoverAnim(bool enable, bool sendUpdate = true);
 
         bool IsGravityDisabled() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY); }
@@ -1791,8 +1791,6 @@ class TC_GAME_API Unit : public WorldObject
 
         uint32 _oldFactionId;           ///< faction before charm
         bool _isWalkingBeforeCharm;     ///< Are we walking before we were charmed?
-
-        bool _playHoverAnim;
 
         std::unique_ptr<SpellHistory> m_spellHistory;
 

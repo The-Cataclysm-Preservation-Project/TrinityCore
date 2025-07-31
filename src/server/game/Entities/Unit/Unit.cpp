@@ -378,7 +378,6 @@ Unit::Unit(bool isWorldObject) :
 
     _oldFactionId = 0;
     _isWalkingBeforeCharm = false;
-    _playHoverAnim = false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -13636,7 +13635,7 @@ void Unit::SetPlayHoverAnim(bool enable, bool sendUpdate /*= true*/)
     if (IsPlayingHoverAnim() == enable)
         return;
 
-    _playHoverAnim = enable;
+    m_updateFlag.PlayerHoverAnim = enable;
 
     if (!sendUpdate)
         return;
