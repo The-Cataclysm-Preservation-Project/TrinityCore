@@ -492,7 +492,7 @@ class spell_pri_leap_of_faith_effect_trigger : public SpellScript
         SpellCastTargets targets;
         targets.SetDst(destPos);
         targets.SetUnitTarget(GetCaster());
-        GetHitUnit()->CastSpell(targets, GetEffectValue());
+        GetHitUnit()->CastSpell(std::move(targets), GetEffectValue());
     }
 
     void Register() override
@@ -1307,7 +1307,7 @@ class spell_pri_holy_word_sanctuary : public AuraScript
     void HandleDummyTick(AuraEffect const* aurEff)
     {
         if (DynamicObject* dyn = GetTarget()->GetDynObject(aurEff->GetId()))
-            GetTarget()->CastSpell({ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_PRIEST_HOLY_WORD_SANCTUARY, CastSpellExtraArgs(TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_DISALLOW_PROC_EVENTS)).SetTriggeringAura(aurEff));
+            GetTarget()->CastSpell(Position{ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_PRIEST_HOLY_WORD_SANCTUARY, CastSpellExtraArgs(TriggerCastFlags(TRIGGERED_FULL_MASK & ~TRIGGERED_DISALLOW_PROC_EVENTS)).SetTriggeringAura(aurEff));
     }
 
     void Register() override

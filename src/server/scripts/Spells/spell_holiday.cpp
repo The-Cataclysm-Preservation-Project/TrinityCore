@@ -1667,7 +1667,7 @@ class spell_darkmoon_island_ring_toss : public SpellScript
         if (target->GetExactDist2d(destination) <= 1.0f)
             caster->CastSpell(target, SPELL_RING_TOSS_HIT, true);
         else
-            caster->CastSpell({ destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ() }, SPELL_RING_TOSS_MISS, true);
+            caster->CastSpell(Position{ destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ() }, SPELL_RING_TOSS_MISS, true);
         _hasHit = true;
     }
 
@@ -1678,7 +1678,7 @@ class spell_darkmoon_island_ring_toss : public SpellScript
         if (!_hasHit)
         {
             Position destination = GetExplTargetDest()->GetPosition();
-            caster->CastSpell({destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ()} , SPELL_RING_TOSS_MISS, true);
+            caster->CastSpell(Position{destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ()} , SPELL_RING_TOSS_MISS, true);
         }
 
         if (!caster->GetPower(POWER_ALTERNATE_POWER))

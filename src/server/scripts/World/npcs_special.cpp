@@ -2273,7 +2273,7 @@ public:
             }
             else
                 //me->CastSpell(me, GetFireworkSpell(me->GetEntry()), true);
-                me->CastSpell({ me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() }, GetFireworkSpell(me->GetEntry()), true);
+                me->CastSpell(Position{ me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() }, GetFireworkSpell(me->GetEntry()), true);
         }
     };
 
@@ -2971,7 +2971,7 @@ enum MageOrb
                                  {
                                      Position explPos = me->GetPosition();
                                      float z = explPos.GetPositionZ() - me->GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
-                                     summoner->CastSpell({ explPos.GetPositionX(), explPos.GetPositionY(), z }, SPELL_FIRE_POWER_EXPLOSION, true);
+                                     summoner->CastSpell(Position{ explPos.GetPositionX(), explPos.GetPositionY(), z }, SPELL_FIRE_POWER_EXPLOSION, true);
                                      me->DespawnOrUnsummon();
                                  }
                      break;
@@ -2982,7 +2982,7 @@ enum MageOrb
                              {
                                  Position explPos = me->GetPosition();
                                  float z = explPos.GetPositionZ() - me->GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
-                                 summoner->CastSpell({ explPos.GetPositionX(), explPos.GetPositionY(), z }, SPELL_FIRE_POWER_EXPLOSION, true);
+                                 summoner->CastSpell(Position{ explPos.GetPositionX(), explPos.GetPositionY(), z }, SPELL_FIRE_POWER_EXPLOSION, true);
                                  me->DespawnOrUnsummon();
                              }
                      break;

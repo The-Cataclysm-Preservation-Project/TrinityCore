@@ -280,7 +280,7 @@ class spell_dk_death_and_decay : public AuraScript
     void HandleDummyTick(AuraEffect const* aurEff)
     {
         if (DynamicObject* dyn = GetTarget()->GetDynObject(aurEff->GetId()))
-            GetTarget()->CastSpell({ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_DK_DEATH_AND_DECAY_DAMAGE, aurEff);
+            GetTarget()->CastSpell(Position{ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_DK_DEATH_AND_DECAY_DAMAGE, aurEff);
     }
 
     void Register() override
@@ -400,7 +400,7 @@ class spell_dk_death_grip : public SpellScript
         if (Unit* target = GetHitUnit())
         {
             if (!target->HasAuraType(SPELL_AURA_DEFLECT_SPELLS)) // Deterrence
-                target->CastSpell({ pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ() }, damage, true);
+                target->CastSpell(Position{ pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ() }, damage, true);
         }
     }
 

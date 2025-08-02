@@ -963,7 +963,7 @@ class spell_mage_ring_of_frost : public AuraScript
     {
         if (ringOfFrost)
             if (GetMaxDuration() - (int32)ringOfFrost->GetTimer() >= sSpellMgr->GetSpellInfo(SPELL_MAGE_RING_OF_FROST_DUMMY)->GetDuration())
-                GetTarget()->CastSpell({ ringOfFrost->GetPositionX(), ringOfFrost->GetPositionY(), ringOfFrost->GetPositionZ() }, SPELL_MAGE_RING_OF_FROST_FREEZE, true);
+                GetTarget()->CastSpell(Position{ ringOfFrost->GetPositionX(), ringOfFrost->GetPositionY(), ringOfFrost->GetPositionZ() }, SPELL_MAGE_RING_OF_FROST_FREEZE, true);
     }
 
     void Apply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)

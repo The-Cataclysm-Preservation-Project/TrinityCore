@@ -1858,7 +1858,7 @@ class spell_q13086_cannons_target : public SpellScriptLoader
             void HandleEffectDummy(SpellEffIndex /*effIndex*/)
             {
                 if (WorldLocation const* pos = GetExplTargetDest())
-                    GetCaster()->CastSpell({ pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ() }, GetEffectValue(), true);
+                    GetCaster()->CastSpell(Position{ pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ() }, GetEffectValue(), true);
             }
 
             void Register() override

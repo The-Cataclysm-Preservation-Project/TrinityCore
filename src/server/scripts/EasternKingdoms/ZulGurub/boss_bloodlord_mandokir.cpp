@@ -186,7 +186,7 @@ struct boss_bloodlord_mandokir : public BossAI
                     float y = me->GetPositionY() + sin(angle + angleOffset) * (i * 6.0f);
                     float z = me->GetPositionZ();
                     angleOffset += 0.3f;
-                    me->CastSpell({ x, y, z }, SPELL_DEVASTATING_SLAM_DAMAGE, true);
+                    me->CastSpell(Position{ x, y, z }, SPELL_DEVASTATING_SLAM_DAMAGE, true);
                 }
             }
         }

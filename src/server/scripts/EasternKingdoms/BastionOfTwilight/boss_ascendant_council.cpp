@@ -784,7 +784,7 @@ struct npc_ignacious final : public ScriptedAI
                             float y = pos.GetPositionY() + sin(angle) * i;
                             float z = pos.GetPositionZ();
                             float floor = me->GetMapHeight(x, y, z);
-                            me->CastSpell({ x, y, floor }, SPELL_INFERNO_RUSH_SUMMON, true);
+                            me->CastSpell(Position{ x, y, floor }, SPELL_INFERNO_RUSH_SUMMON, true);
                         }
                     }
 
@@ -2383,7 +2383,7 @@ class spell_terrastra_eruption final : public SpellScript
                 float x = caster->GetPositionX() + cos(angle + (i * steps)) * dist;
                 float y = caster->GetPositionY() + sin(angle + (i * steps)) * dist;
                 float floor = caster->GetMap()->GetHeight(caster->GetPhaseShift(), x, y, z, true);
-                caster->CastSpell({ x, y, floor }, SPELL_ERUPTION_SUMMON, true);
+                caster->CastSpell(Position{ x, y, floor }, SPELL_ERUPTION_SUMMON, true);
             }
         }
     }

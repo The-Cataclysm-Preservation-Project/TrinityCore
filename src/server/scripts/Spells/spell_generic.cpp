@@ -4879,7 +4879,7 @@ class spell_gen_cauldron_of_battle : public SpellScript
             {
                 float radius = spell->Effects[EFFECT_0].CalcRadius(target) - target->GetCombatReach();
                 target->GetNearPoint(target, dest.m_positionX, dest.m_positionY, dest.m_positionZ, radius, target->GetOrientation());
-                target->CastSpell({ dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ() }, spellId);
+                target->CastSpell(Position{ dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ() }, spellId);
             }
         }
     }

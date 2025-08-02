@@ -726,7 +726,7 @@ class spell_azil_seismic_shard : public SpellScript
 
         target->ExitVehicle();
         if (DynamicObject* dynamicObject = GetCaster()->GetDynObject(SPELL_SEISMIC_SHARD_TARGETING))
-            target->CastSpell({ dynamicObject->GetPositionX(), dynamicObject->GetPositionY(), dynamicObject->GetPositionZ() }, SPELL_SEISMIC_SHARD_MISSLE, true);
+            target->CastSpell(Position{ dynamicObject->GetPositionX(), dynamicObject->GetPositionY(), dynamicObject->GetPositionZ() }, SPELL_SEISMIC_SHARD_MISSLE, true);
     }
 
     void Register() override

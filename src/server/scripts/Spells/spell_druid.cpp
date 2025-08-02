@@ -1107,7 +1107,7 @@ class spell_dru_solar_beam : public AuraScript
     void HandleEffectPeriodic(AuraEffect const* aurEff)
     {
         if (DynamicObject* dyn = GetTarget()->GetDynObject(aurEff->GetId()))
-            GetTarget()->CastSpell({ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_DRUID_SOLAR_BEAM_SILENCE, true);
+            GetTarget()->CastSpell(Position{ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_DRUID_SOLAR_BEAM_SILENCE, true);
     }
 
     void Register() override
@@ -1149,7 +1149,7 @@ class spell_dru_effloresence_aoe : public AuraScript
     {
         if (Unit* caster = GetCaster())
             if (DynamicObject* dyn = caster->GetDynObject(aurEff->GetId()))
-                caster->CastSpell({ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_DRUID_EFFLORESCENCE_HEAL, { aurEff, caster->GetGUID() });
+                caster->CastSpell(Position{ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_DRUID_EFFLORESCENCE_HEAL, { aurEff, caster->GetGUID() });
     }
 
     void Register() override

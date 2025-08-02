@@ -462,7 +462,7 @@ struct npc_asaad_unstable_grounding_field : public NullCreatureAI
                 {
                     float centerX = (_stormTargetPositions[0].GetPositionX() + _stormTargetPositions[1].GetPositionX() + _stormTargetPositions[2].GetPositionX()) / 3.f;
                     float centerY = (_stormTargetPositions[0].GetPositionY() + _stormTargetPositions[1].GetPositionY() + _stormTargetPositions[2].GetPositionY()) / 3.f;
-                    me->CastSpell({ centerX, centerY, TRIANGLE_TOP_Z }, SPELL_SUPREMACY_OF_THE_STORM_SUMMON);
+                    me->CastSpell(Position{ centerX, centerY, TRIANGLE_TOP_Z }, SPELL_SUPREMACY_OF_THE_STORM_SUMMON);
                     me->DespawnOrUnsummon(1s);
                     break;
                 }

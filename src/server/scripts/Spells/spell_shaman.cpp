@@ -1321,7 +1321,7 @@ class spell_sha_healing_rain : public AuraScript
     void HandleEffectPeriodic(AuraEffect const* aurEff)
     {
         if (DynamicObject* dyn = GetTarget()->GetDynObject(aurEff->GetId()))
-            GetTarget()->CastSpell({ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_SHAMAN_HEALING_RAIN_TRIGGERED, true);
+            GetTarget()->CastSpell(Position{ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_SHAMAN_HEALING_RAIN_TRIGGERED, true);
     }
 
     void Register() override
@@ -1658,7 +1658,7 @@ class spell_sha_earthquake : public AuraScript
     void HandleDummyTick(AuraEffect const* aurEff)
     {
         if (DynamicObject* dyn = GetTarget()->GetDynObject(aurEff->GetId()))
-            GetTarget()->CastSpell({ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_SHAMAN_EARTHQUAKE_DAMAGE, aurEff);
+            GetTarget()->CastSpell(Position{ dyn->GetPositionX(), dyn->GetPositionY(), dyn->GetPositionZ() }, SPELL_SHAMAN_EARTHQUAKE_DAMAGE, aurEff);
     }
 
     void Register() override

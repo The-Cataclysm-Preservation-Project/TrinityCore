@@ -286,7 +286,7 @@ class spell_bot_twilight_rupture : public SpellScript
                 destY -= 2.f * std::sin(currentAngle);
             }
 
-            caster->CastSpell({ destX, destY, destZ }, SPELL_TWILIGHT_RUPTURE_MISSILE);
+            caster->CastSpell(Position{ destX, destY, destZ }, SPELL_TWILIGHT_RUPTURE_MISSILE);
         }
     }
 

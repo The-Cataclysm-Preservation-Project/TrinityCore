@@ -291,7 +291,7 @@ struct boss_zanzil : public BossAI
 
                             Talk(SAY_ANNOUNCE_ZANZILI_BERSEKER);
                             Talk(SAY_ZANZILI_BERSEKER);
-                            me->CastSpell({ nearestPos.GetPositionX(), nearestPos.GetPositionY(), nearestPos.GetPositionZ() }, SPELL_ZANZILS_RESURRECTION_ELIXIR_BLUE);
+                            me->CastSpell(Position{ nearestPos.GetPositionX(), nearestPos.GetPositionY(), nearestPos.GetPositionZ() }, SPELL_ZANZILS_RESURRECTION_ELIXIR_BLUE);
                             events.ScheduleEvent(EVENT_RESPAWN_BERSERKER, 13s);
                             break;
                         }
@@ -310,7 +310,7 @@ struct boss_zanzil : public BossAI
 
                             Talk(SAY_ANNOUNCE_ZANZIL_ZOMBIES);
                             Talk(SAY_ZANZILI_ZOMBIES);
-                            me->CastSpell({ nearestPos.GetPositionX(), nearestPos.GetPositionY(), nearestPos.GetPositionZ() }, SPELL_ZANZILS_RESURRECTION_ELIXIR_RED);
+                            me->CastSpell(Position{ nearestPos.GetPositionX(), nearestPos.GetPositionY(), nearestPos.GetPositionZ() }, SPELL_ZANZILS_RESURRECTION_ELIXIR_RED);
                             events.ScheduleEvent(EVENT_RESPAWN_ZOMBIE_GROUP, 13s);
                             break;
                         }
@@ -498,7 +498,7 @@ class spell_zanzil_zanzils_resurrection_elixir : public AuraScript
         if (!object)
             return;
 
-        GetTarget()->CastSpell({ object->GetPositionX(), object->GetPositionY(), object->GetPositionZ() }, GetSpellInfo()->Effects[EFFECT_1].TriggerSpell, true);
+        GetTarget()->CastSpell(Position{ object->GetPositionX(), object->GetPositionY(), object->GetPositionZ() }, GetSpellInfo()->Effects[EFFECT_1].TriggerSpell, true);
     }
 
     void Register() override

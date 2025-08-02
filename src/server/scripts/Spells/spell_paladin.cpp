@@ -298,7 +298,7 @@ class spell_pal_consecration : public AuraScript
             return;
 
         if (Unit* caster = GetCaster())
-            caster->CastSpell({ castPos.GetPositionX(), castPos.GetPositionY(), castPos.GetPositionZ() }, SPELL_PALADIN_CONSECRATION_TRIGGERED, aurEff);
+            caster->CastSpell(Position{ castPos.GetPositionX(), castPos.GetPositionY(), castPos.GetPositionZ() }, SPELL_PALADIN_CONSECRATION_TRIGGERED, aurEff);
     }
 
     void Register() override
