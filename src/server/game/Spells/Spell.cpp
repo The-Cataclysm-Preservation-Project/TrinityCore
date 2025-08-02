@@ -8274,33 +8274,28 @@ SpellCastResult Spell::CanOpenLock(uint32 effIndex, uint32 lockId, SkillType& sk
     return SPELL_CAST_OK;
 }
 
-void Spell::SetSpellValue(SpellValueMod mod, int32 value)
+void Spell::SetSpellValue(CastSpellExtraArgsInit::SpellValueOverride const& value)
 {
-    switch (mod)
+    if (value.Type >= SPELLVALUE_BASE_POINT0 && value.Type < SPELLVALUE_BASE_POINT_END)
     {
-        case SPELLVALUE_BASE_POINT0:
-            m_spellValue->EffectBasePoints[0] = value;
-            m_spellValue->CustomBasePointsMask |= 1 << 0;
-            break;
-        case SPELLVALUE_BASE_POINT1:
-            m_spellValue->EffectBasePoints[1] = value;
-            m_spellValue->CustomBasePointsMask |= 1 << 1;
-            break;
-        case SPELLVALUE_BASE_POINT2:
-            m_spellValue->EffectBasePoints[2] = value;
-            m_spellValue->CustomBasePointsMask |= 1 << 2;
-            break;
+        m_spellValue->EffectBasePoints[value.Type - SPELLVALUE_BASE_POINT0] = value.Value.I;
+        m_spellValue->CustomBasePointsMask |= 1 << (value.Type - SPELLVALUE_BASE_POINT0);
+        return;
+    }
+
+    switch (value.Type)
+    {
         case SPELLVALUE_RADIUS_MOD:
-            m_spellValue->RadiusMod = (float)value / 10000;
+            m_spellValue->RadiusMod = (float)value.Value.I / 10000;
             break;
         case SPELLVALUE_MAX_TARGETS:
-            m_spellValue->MaxAffectedTargets = (uint32)value;
+            m_spellValue->MaxAffectedTargets = uint32(value.Value.I);
             break;
         case SPELLVALUE_AURA_STACK:
-            m_spellValue->AuraStackAmount = uint8(value);
+            m_spellValue->AuraStackAmount = uint8(value.Value.I);
             break;
         case SPELLVALUE_DURATION:
-            m_spellValue->Duration = value;
+            m_spellValue->Duration = value.Value.I;
             break;
         default:
             break;

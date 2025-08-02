@@ -647,7 +647,7 @@ class spell_azil_gravity_well_damage_nearby : public SpellScript
 {
     void SetRadiusMod()
     {
-        GetSpell()->SetSpellValue(SPELLVALUE_RADIUS_MOD, int32(GetCaster()->GetObjectScale() * 10000 * 2 / 3));
+        GetSpell()->SetSpellValue({ SPELLVALUE_RADIUS_MOD, int32(GetCaster()->GetObjectScale() * 10000 * 2 / 3) });
     }
 
     void FilterTargets(std::list<WorldObject*>& unitList)
@@ -694,7 +694,7 @@ class spell_azil_gravity_well_pull : public SpellScript
 {
     void SetRadiusMod()
     {
-        GetSpell()->SetSpellValue(SPELLVALUE_RADIUS_MOD, int32(GetCaster()->GetObjectScale() * 10000 * 2 / 3));
+        GetSpell()->SetSpellValue({ SPELLVALUE_RADIUS_MOD, int32(GetCaster()->GetObjectScale() * 10000 * 2 / 3)} );
     }
 
     void Register() override

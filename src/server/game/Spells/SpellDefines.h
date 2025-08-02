@@ -141,12 +141,15 @@ enum class SpellModOp : uint8
 
 constexpr uint8 MAX_SPELLMOD = 32;
 
-enum SpellValueMod : uint8
+enum SpellValueMod : int32
 {
     SPELLVALUE_BASE_POINT0,
     SPELLVALUE_BASE_POINT1,
     SPELLVALUE_BASE_POINT2,
-    SPELLVALUE_RADIUS_MOD,
+
+    SPELLVALUE_BASE_POINT_END,
+
+    SPELLVALUE_RADIUS_MOD = SPELLVALUE_BASE_POINT_END,
     SPELLVALUE_MAX_TARGETS,
     SPELLVALUE_AURA_STACK,
     SPELLVALUE_DURATION
@@ -204,20 +207,20 @@ struct CastSpellExtraArgsInit
     AuraEffect const* TriggeringAura = nullptr;
     ObjectGuid OriginalCaster = ObjectGuid::Empty;
 
-    struct
+    struct SpellValueOverride
     {
-        friend struct CastSpellExtraArgs;
-        friend class WorldObject;
+        SpellValueOverride(SpellValueMod mod, int32 val) : Type(mod) { Value.I = val; }
+        //SpellValueOverride(SpellValueModFloat mod, float val) : Type(mod) { Value.F = val; }
 
-    private:
-        void AddMod(SpellValueMod mod, int32 val) { data.push_back({ mod, val }); }
+        int32 Type;
+        union
+        {
+            float F;
+            int32 I;
+        } Value;
+    };
 
-        auto begin() const { return data.cbegin(); }
-        auto end() const { return data.cend(); }
-
-        std::vector<std::pair<SpellValueMod, int32>> data;
-    } SpellValueOverrides;
-
+    std::vector<SpellValueOverride> SpellValueOverrides;
     std::any CustomArg;
 };
 
@@ -231,7 +234,7 @@ struct TC_GAME_API CastSpellExtraArgs : public CastSpellExtraArgsInit
     CastSpellExtraArgs(AuraEffect const* eff) { TriggerFlags = TRIGGERED_FULL_MASK; SetTriggeringAura(eff); }
     CastSpellExtraArgs(ObjectGuid const& origCaster) { TriggerFlags = TRIGGERED_FULL_MASK; SetOriginalCaster(origCaster); }
     CastSpellExtraArgs(AuraEffect const* eff, ObjectGuid const& origCaster) { TriggerFlags = TRIGGERED_FULL_MASK; SetTriggeringAura(eff); SetOriginalCaster(origCaster); }
-    CastSpellExtraArgs(SpellValueMod mod, int32 val) { SpellValueOverrides.AddMod(mod, val); }
+    CastSpellExtraArgs(SpellValueMod mod, int32 val) { SpellValueOverrides.emplace_back(mod, val); }
     CastSpellExtraArgs(CastSpellExtraArgsInit&& init) : CastSpellExtraArgsInit(std::move(init)) { SetTriggeringSpell(TriggeringSpell); }
 
     CastSpellExtraArgs(CastSpellExtraArgs const& other);
@@ -247,7 +250,7 @@ struct TC_GAME_API CastSpellExtraArgs : public CastSpellExtraArgsInit
     CastSpellExtraArgs& SetTriggeringSpell(Spell const* triggeringSpell) { TriggeringSpell = triggeringSpell; return *this; }
     CastSpellExtraArgs& SetTriggeringAura(AuraEffect const* triggeringAura) { TriggeringAura = triggeringAura; return *this; }
     CastSpellExtraArgs& SetOriginalCaster(ObjectGuid const& guid) { OriginalCaster = guid; return *this; }
-    CastSpellExtraArgs& AddSpellMod(SpellValueMod mod, int32 val) { SpellValueOverrides.AddMod(mod, val); return *this; }
+    CastSpellExtraArgs& AddSpellMod(SpellValueMod mod, int32 val) { SpellValueOverrides.emplace_back(mod, val); return *this; }
     CastSpellExtraArgs& AddSpellBP0(int32 val) { return AddSpellMod(SPELLVALUE_BASE_POINT0, val); } // because i don't want to type SPELLVALUE_BASE_POINT0 300 times
     CastSpellExtraArgs& SetCustomArg(std::any customArg) { CustomArg = std::move(customArg); return *this; }
 };

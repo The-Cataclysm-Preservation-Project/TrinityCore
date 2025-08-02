@@ -25,6 +25,7 @@
 #include "Optional.h"
 #include "Position.h"
 #include "SharedDefines.h"
+#include "SpellDefines.h"
 #include <any>
 #include <memory>
 
@@ -69,7 +70,7 @@ enum LootType : uint8;
 enum SpellCastTargetFlags : uint32;
 enum SpellTargetCheckTypes : uint8;
 enum SpellTargetObjectTypes : uint8;
-enum SpellValueMod : uint8;
+enum SpellValueMod : int32;
 enum TriggerCastFlags : uint32;
 enum WeaponAttackType : uint8;
 
@@ -584,7 +585,7 @@ class TC_GAME_API Spell
 
         void CleanupTargetList();
 
-        void SetSpellValue(SpellValueMod mod, int32 value);
+        void SetSpellValue(CastSpellExtraArgsInit::SpellValueOverride const& value);
 
         Spell** m_selfContainer;                            // pointer to our spell container (if applicable)
 
