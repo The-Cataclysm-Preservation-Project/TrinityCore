@@ -7877,7 +7877,7 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff, Position const* lo
 
 bool Spell::IsTriggered() const
 {
-    return (_triggeredCastFlags & TRIGGERED_FULL_MASK) != 0;
+    return (_triggeredCastFlags & TRIGGERED_IS_TRIGGERED_MASK) != 0;
 }
 
 bool Spell::IsIgnoringCooldowns() const

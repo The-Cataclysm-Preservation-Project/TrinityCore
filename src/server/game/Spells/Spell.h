@@ -76,7 +76,7 @@ enum WeaponAttackType : uint8;
 constexpr float MAX_SPELL_RANGE_TOLERANCE = 3.0f;
 constexpr float TRAJECTORY_MISSILE_SIZE = 3.0f;
 
-enum SpellCastFlags
+enum SpellCastFlags : uint32
 {
     CAST_FLAG_NONE               = 0x00000000,
     CAST_FLAG_PENDING            = 0x00000001,              // aoe combat log?
@@ -89,7 +89,7 @@ enum SpellCastFlags
     CAST_FLAG_UNKNOWN_8          = 0x00000080,
     CAST_FLAG_UNKNOWN_9          = 0x00000100,
     CAST_FLAG_UNKNOWN_10         = 0x00000200,
-    CAST_FLAG_UNKNOWN_11         = 0x00000400,
+    CAST_FLAG_UNKNOWN_11         = 0x00000400,              // sorts missed targets before hit targets for chain visual
     CAST_FLAG_POWER_LEFT_SELF    = 0x00000800,
     CAST_FLAG_UNKNOWN_13         = 0x00001000,
     CAST_FLAG_UNKNOWN_14         = 0x00002000,
