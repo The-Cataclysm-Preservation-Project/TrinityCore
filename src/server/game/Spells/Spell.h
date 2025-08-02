@@ -259,12 +259,12 @@ struct SpellValue
 
 enum SpellState
 {
-    SPELL_STATE_NULL      = 0,
-    SPELL_STATE_PREPARING = 1,
-    SPELL_STATE_CASTING   = 2,
-    SPELL_STATE_FINISHED  = 3,
-    SPELL_STATE_IDLE      = 4,
-    SPELL_STATE_DELAYED   = 5
+    SPELL_STATE_NULL        = 0,
+    SPELL_STATE_PREPARING   = 1,
+    SPELL_STATE_LAUNCHED    = 2,
+    SPELL_STATE_CHANNELING  = 3,
+    SPELL_STATE_FINISHED    = 4,
+    SPELL_STATE_IDLE        = 5
 };
 
 enum SpellEffectHandleMode
@@ -494,8 +494,8 @@ class TC_GAME_API Spell
 
         void Delayed();
         void DelayedChannel();
-        uint32 getState() const { return m_spellState; }
-        void setState(uint32 state) { m_spellState = state; }
+        SpellState getState() const { return m_spellState; }
+        void setState(SpellState state) { m_spellState = state; }
 
         void DoCreateItem(uint32 i, uint32 itemtype);
 
@@ -822,7 +822,7 @@ class TC_GAME_API Spell
         SpellCastResult CanOpenLock(uint32 effIndex, uint32 lockid, SkillType& skillid, int32& reqSkillValue, int32& skillValue);
         // -------------------------------------------
 
-        uint32 m_spellState;
+        SpellState m_spellState;
         int32 m_timer;
 
         SpellEvent* _spellEvent;
