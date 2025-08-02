@@ -3757,6 +3757,8 @@ void Spell::_cast(bool skipCheck)
     // CAST SPELL
     SendSpellCooldown();
 
+    m_spellState = SPELL_STATE_LAUNCHED;
+
     HandleLaunchPhase();
 
     if (!m_spellInfo->HasAttribute(SPELL_ATTR7_RESET_SWING_TIMER_AT_SPELL_START) && IsAutoActionResetSpell())
@@ -3774,7 +3776,6 @@ void Spell::_cast(bool skipCheck)
 
         // Okay, maps created, now prepare flags
         m_immediateHandled = false;
-        m_spellState = SPELL_STATE_LAUNCHED;
         SetDelayStart(0);
 
         if (Unit* unitCaster = m_caster->ToUnit())

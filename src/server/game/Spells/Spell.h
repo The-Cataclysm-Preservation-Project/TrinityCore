@@ -220,6 +220,7 @@ class TC_GAME_API Spell
         void EffectLearnPetSpell(SpellEffIndex effIndex);
         void EffectWeaponDmg(SpellEffIndex effIndex);
         void EffectForceCast(SpellEffIndex effIndex);
+        void EffectForceCast2(SpellEffIndex effIndex);
         void EffectTriggerSpell(SpellEffIndex effIndex);
         void EffectTriggerMissileSpell(SpellEffIndex effIndex);
         void EffectThreat(SpellEffIndex effIndex);
