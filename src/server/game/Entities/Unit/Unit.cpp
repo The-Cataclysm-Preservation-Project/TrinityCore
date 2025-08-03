@@ -301,7 +301,7 @@ bool DispelableAura::RollDispel() const
 Unit::Unit(bool isWorldObject) :
     WorldObject(isWorldObject),  m_lastSanctuaryTime(0),
     LastCharmerGUID(), m_ControlledByPlayer(false), movespline(std::make_unique<Movement::MoveSpline>()),
-    m_procDeep(0),  m_removedAurasCount(0),
+    m_procDeep(0), m_procChainLength(0), m_removedAurasCount(0),
     m_interruptMask(SpellAuraInterruptFlags::None), m_interruptMask2(SpellAuraInterruptFlags2::None),
     m_charmer(nullptr), m_charmed(nullptr),
     i_motionMaster(std::make_unique<MotionMaster>(this)), m_vehicle(nullptr),
@@ -5108,6 +5108,13 @@ void Unit::SendSpellNonMeleeDamageLog(Unit* target, uint32 spellID, uint32 damag
 /*static*/ void Unit::ProcSkillsAndAuras(Unit* actor, Unit* actionTarget, ProcFlags typeMaskActor, ProcFlags typeMaskActionTarget,
     ProcFlagsSpellType spellTypeMask, ProcFlagsSpellPhase spellPhaseMask, ProcFlagsHit hitMask, Spell* spell, DamageInfo* damageInfo, HealInfo* healInfo)
 {
+    static constexpr int32 ProcChainHardLimit = 10;
+    if (spell && spell->GetProcChainLength() >= ProcChainHardLimit)
+    {
+        TC_LOG_ERROR("spells.aura.effect", "Unit::ProcSkillsAndAuras: Possible infinite proc loop detected, current triggering spell %u", spell->GetSpellInfo()->Id);
+        return;
+    }
+
     WeaponAttackType attType = damageInfo ? damageInfo->GetAttackType() : BASE_ATTACK;
     SpellInfo const* spellInfo = [&]() -> SpellInfo const*
     {

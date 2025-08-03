@@ -656,6 +656,7 @@ m_caster((info->HasAttribute(SPELL_ATTR6_ORIGINATE_FROM_CONTROLLER) && caster->G
     m_cast_count = 0;
     m_glyphIndex = 0;
     m_triggeredByAuraSpell  = nullptr;
+    m_procChainLength = caster->IsUnit() ? caster->ToUnit()->GetProcChainLength() : 0;
     unitCaster = nullptr;
     _spellAura = nullptr;
     _dynObjAura = nullptr;

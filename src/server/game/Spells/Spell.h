@@ -454,6 +454,8 @@ class TC_GAME_API Spell
 
         bool IsTriggeredByAura(SpellInfo const* auraSpellInfo) const { return (auraSpellInfo == m_triggeredByAuraSpell); }
 
+        int32 GetProcChainLength() const { return m_procChainLength; }
+
         bool IsDeletable() const { return !m_referencedFromCurrentSpell && !m_executedCurrently; }
         void SetReferencedFromCurrent(bool yes) { m_referencedFromCurrentSpell = yes; }
         bool IsInterruptable() const { return !m_executedCurrently; }
@@ -725,6 +727,7 @@ class TC_GAME_API Spell
         // we can't store original aura link to prevent access to deleted auras
         // and in same time need aura data and after aura deleting.
         SpellInfo const* m_triggeredByAuraSpell;
+        int32 m_procChainLength;
 
         uint8 m_auraScaleMask;
         std::unique_ptr<PathGenerator> m_preGeneratedPath;
