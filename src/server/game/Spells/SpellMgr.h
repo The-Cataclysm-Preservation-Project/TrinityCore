@@ -23,6 +23,7 @@
 #include "ConditionMgr.h"
 #include "Define.h"
 #include "Duration.h"
+#include "EnumFlag.h"
 #include "IteratorPair.h"
 #include "SharedDefines.h"
 #include "Util.h"
@@ -108,7 +109,7 @@ enum SpellLinkedType
 
 
 // Spell proc event related declarations (accessed using SpellMgr functions)
-enum ProcFlags
+enum ProcFlags: uint32
 {
     PROC_FLAG_NONE                              = 0x00000000,
 
@@ -194,6 +195,8 @@ enum ProcFlags
     REQ_SPELL_PHASE_PROC_FLAG_MASK             = SPELL_PROC_FLAG_MASK & DONE_HIT_PROC_FLAG_MASK
 };
 
+DEFINE_ENUM_FLAG(ProcFlags);
+
 constexpr uint32 MELEE_BASED_TRIGGER_MASK = PROC_FLAG_DEAL_MELEE_SWING |
                                   PROC_FLAG_TAKE_MELEE_SWING    |
                                   PROC_FLAG_DEAL_MELEE_ABILITY  |
@@ -203,7 +206,7 @@ constexpr uint32 MELEE_BASED_TRIGGER_MASK = PROC_FLAG_DEAL_MELEE_SWING |
                                   PROC_FLAG_DEAL_RANGED_ABILITY |
                                   PROC_FLAG_TAKE_RANGED_ABILITY;
 
-enum ProcFlagsSpellType
+enum ProcFlagsSpellType : uint32
 {
     PROC_SPELL_TYPE_NONE              = 0x0000000,
     PROC_SPELL_TYPE_DAMAGE            = 0x0000001, // damage type of spell
@@ -212,7 +215,9 @@ enum ProcFlagsSpellType
     PROC_SPELL_TYPE_MASK_ALL          = PROC_SPELL_TYPE_DAMAGE | PROC_SPELL_TYPE_HEAL | PROC_SPELL_TYPE_NO_DMG_HEAL
 };
 
-enum ProcFlagsSpellPhase
+DEFINE_ENUM_FLAG(ProcFlagsSpellType);
+
+enum ProcFlagsSpellPhase: uint32
 {
     PROC_SPELL_PHASE_NONE             = 0x0000000,
     PROC_SPELL_PHASE_CAST             = 0x0000001,
@@ -221,7 +226,9 @@ enum ProcFlagsSpellPhase
     PROC_SPELL_PHASE_MASK_ALL         = PROC_SPELL_PHASE_CAST | PROC_SPELL_PHASE_HIT | PROC_SPELL_PHASE_FINISH
 };
 
-enum ProcFlagsHit
+DEFINE_ENUM_FLAG(ProcFlagsSpellPhase);
+
+enum ProcFlagsHit: uint32
 {
     PROC_HIT_NONE                = 0x0000000, // no value - PROC_HIT_NORMAL | PROC_HIT_CRITICAL for TAKEN proc type, PROC_HIT_NORMAL | PROC_HIT_CRITICAL | PROC_HIT_ABSORB for DONE
     PROC_HIT_NORMAL              = 0x0000001, // non-critical hits
@@ -241,8 +248,11 @@ enum ProcFlagsHit
     PROC_HIT_MASK_ALL            = 0x0003FFF
 };
 
-enum ProcAttributes
+DEFINE_ENUM_FLAG(ProcFlagsHit);
+
+enum ProcAttributes : uint32
 {
+    PROC_ATTR_NONE                      = 0x0000000,
     PROC_ATTR_REQ_EXP_OR_HONOR          = 0x0000001, // requires proc target to give exp or honor for aura proc
     PROC_ATTR_TRIGGERED_CAN_PROC        = 0x0000002, // aura can proc even with triggered spells
     PROC_ATTR_REQ_MANA_COST             = 0x0000004, // requires triggering spell to have a mana cost for aura proc
@@ -253,21 +263,23 @@ enum ProcAttributes
     PROC_ATTR_CANT_PROC_FROM_ITEM_CAST  = 0x0000100, // do not allow aura proc if proc is caused by a spell casted by item
 };
 
+DEFINE_ENUM_FLAG(ProcAttributes);
+
 struct SpellProcEntry
 {
-    uint32 SchoolMask;      // if nonzero - bitmask for matching proc condition based on spell's school
-    uint32 SpellFamilyName; // if nonzero - for matching proc condition based on candidate spell's SpellFamilyName
-    flag96 SpellFamilyMask; // if nonzero - bitmask for matching proc condition based on candidate spell's SpellFamilyFlags
-    uint32 ProcFlags;       // if nonzero - owerwrite procFlags field for given Spell.dbc entry, bitmask for matching proc condition, see enum ProcFlags
-    uint32 SpellTypeMask;   // if nonzero - bitmask for matching proc condition based on candidate spell's damage/heal effects, see enum ProcFlagsSpellType
-    uint32 SpellPhaseMask;  // if nonzero - bitmask for matching phase of a spellcast on which proc occurs, see enum ProcFlagsSpellPhase
-    uint32 HitMask;         // if nonzero - bitmask for matching proc condition based on hit result, see enum ProcFlagsHit
-    uint32 AttributesMask;  // bitmask, see ProcAttributes
-    uint32 DisableEffectsMask;// bitmask
-    float ProcsPerMinute;   // if nonzero - chance to proc is equal to value * aura caster's weapon speed / 60
-    float Chance;           // if nonzero - owerwrite procChance field for given Spell.dbc entry, defines chance of proc to occur, not used if ProcsPerMinute set
-    Milliseconds Cooldown;  // if nonzero - cooldown in secs for aura proc, applied to aura
-    uint32 Charges;         // if nonzero - owerwrite procCharges field for given Spell.dbc entry, defines how many times proc can occur before aura remove, 0 - infinite
+    uint32 SchoolMask = 0;                                      // if nonzero - bitmask for matching proc condition based on spell's school
+    uint32 SpellFamilyName = 0;                                 // if nonzero - for matching proc condition based on candidate spell's SpellFamilyName
+    flag96 SpellFamilyMask;                                     // if nonzero - bitmask for matching proc condition based on candidate spell's SpellFamilyFlags
+    ProcFlags ProcFlags;                                        // if nonzero - owerwrite procFlags field for given Spell.dbc entry, bitmask for matching proc condition, see enum ProcFlags
+    ProcFlagsSpellType SpellTypeMask = PROC_SPELL_TYPE_NONE;    // if nonzero - bitmask for matching proc condition based on candidate spell's damage/heal effects, see enum ProcFlagsSpellType
+    ProcFlagsSpellPhase SpellPhaseMask = PROC_SPELL_PHASE_NONE; // if nonzero - bitmask for matching phase of a spellcast on which proc occurs, see enum ProcFlagsSpellPhase
+    ProcFlagsHit HitMask = PROC_HIT_NONE;                       // if nonzero - bitmask for matching proc condition based on hit result, see enum ProcFlagsHit
+    ProcAttributes AttributesMask = PROC_ATTR_NONE;             // bitmask, see ProcAttributes
+    uint32 DisableEffectsMask = 0;                              // bitmask
+    float ProcsPerMinute = 0.0f;                                // if nonzero - chance to proc is equal to value * aura caster's weapon speed / 60
+    float Chance = 0.0f;                                        // if nonzero - owerwrite procChance field for given Spell.dbc entry, defines chance of proc to occur, not used if ProcsPerMinute set
+    Milliseconds Cooldown = 0ms;                                // if nonzero - cooldown in secs for aura proc, applied to aura
+    uint32 Charges = 0;                                         // if nonzero - owerwrite procCharges field for given Spell.dbc entry, defines how many times proc can occur before aura remove, 0 - infinite
 };
 
 typedef std::unordered_map<uint32, SpellProcEntry> SpellProcMap;

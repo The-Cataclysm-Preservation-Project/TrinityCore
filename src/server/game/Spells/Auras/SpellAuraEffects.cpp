@@ -5841,10 +5841,10 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
     Unit::DealDamageMods(target, damage, &absorb);
 
     // Set trigger flag
-    uint32 procAttacker = PROC_FLAG_DEAL_PERIODIC;
-    uint32 procVictim = PROC_FLAG_TAKE_PERIODIC;
+    ProcFlags procAttacker = PROC_FLAG_DEAL_PERIODIC;
+    ProcFlags procVictim = PROC_FLAG_TAKE_PERIODIC;
 
-    uint32 hitMask = damageInfo.GetHitMask();
+    ProcFlagsHit hitMask = damageInfo.GetHitMask();
     if (damage)
     {
         hitMask |= crit ? PROC_HIT_CRITICAL : PROC_HIT_NORMAL;
@@ -5932,10 +5932,10 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
     damage = damageInfo.GetDamage();
 
     // Set trigger flag
-    uint32 procAttacker = PROC_FLAG_DEAL_PERIODIC;
-    uint32 procVictim = PROC_FLAG_TAKE_PERIODIC;
+    ProcFlags procAttacker = PROC_FLAG_DEAL_PERIODIC;
+    ProcFlags procVictim = PROC_FLAG_TAKE_PERIODIC;
 
-    uint32 hitMask = damageInfo.GetHitMask();
+    ProcFlagsHit hitMask = damageInfo.GetHitMask();
     if (damage)
     {
         hitMask |= crit ? PROC_HIT_CRITICAL : PROC_HIT_NORMAL;
@@ -6051,10 +6051,10 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
     if (GetAuraType() == SPELL_AURA_OBS_MOD_HEALTH)
         return;
 
-    uint32 procAttacker = PROC_FLAG_DEAL_PERIODIC;
-    uint32 procVictim = PROC_FLAG_TAKE_PERIODIC;
+    ProcFlags procAttacker = PROC_FLAG_DEAL_PERIODIC;
+    ProcFlags procVictim = PROC_FLAG_TAKE_PERIODIC;
 
-    uint32 hitMask = crit ? PROC_HIT_CRITICAL : PROC_HIT_NORMAL;
+    ProcFlagsHit hitMask = crit ? PROC_HIT_CRITICAL : PROC_HIT_NORMAL;
     // ignore item heals
     if (!haveCastItem)
         Unit::ProcSkillsAndAuras(caster, target, procAttacker, procVictim, PROC_SPELL_TYPE_HEAL, PROC_SPELL_PHASE_HIT, hitMask, nullptr, nullptr, &healInfo);
@@ -6225,11 +6225,11 @@ void AuraEffect::HandlePeriodicPowerBurnAuraTick(Unit* target, Unit* caster) con
     caster->SendSpellNonMeleeDamageLog(&damageInfo);
 
     // Set trigger flag
-    uint32 procAttacker = PROC_FLAG_DEAL_PERIODIC;
-    uint32 procVictim = PROC_FLAG_TAKE_PERIODIC;
+    ProcFlags procAttacker = PROC_FLAG_DEAL_PERIODIC;
+    ProcFlags procVictim = PROC_FLAG_TAKE_PERIODIC;
 
-    uint32 hitMask      = createProcHitMask(&damageInfo, SPELL_MISS_NONE);
-    uint32 spellTypeMask = PROC_SPELL_TYPE_NO_DMG_HEAL;
+    ProcFlagsHit hitMask      = createProcHitMask(&damageInfo, SPELL_MISS_NONE);
+    ProcFlagsSpellType spellTypeMask = PROC_SPELL_TYPE_NO_DMG_HEAL;
     if (damageInfo.damage)
     {
         procVictim |= PROC_FLAG_TAKE_ANY_DAMAGE;

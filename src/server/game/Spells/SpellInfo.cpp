@@ -983,7 +983,7 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry, SpellEffectEntry const** effe
 
     // SpellAuraOptionsEntry
     SpellAuraOptionsEntry const* _options = GetSpellAuraOptions();
-    ProcFlags = _options ? _options->ProcTypeMask : 0;
+    ProcFlags = _options ? ::ProcFlags(_options->ProcTypeMask) : PROC_FLAG_NONE;
     ProcChance = _options ? _options->ProcChance : 0;
     ProcCharges = _options ? _options->ProcCharges : 0;
     StackAmount = _options ? _options->CumulativeAura : 0;

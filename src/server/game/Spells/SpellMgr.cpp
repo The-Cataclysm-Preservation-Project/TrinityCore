@@ -1593,16 +1593,16 @@ void SpellMgr::LoadSpellProcs()
 
             SpellProcEntry baseProcEntry;
 
-            baseProcEntry.SchoolMask = fields[1].GetInt8();
+            baseProcEntry.SchoolMask = fields[1].GetUInt8();
             baseProcEntry.SpellFamilyName = fields[2].GetUInt16();
             baseProcEntry.SpellFamilyMask[0] = fields[3].GetUInt32();
             baseProcEntry.SpellFamilyMask[1] = fields[4].GetUInt32();
             baseProcEntry.SpellFamilyMask[2] = fields[5].GetUInt32();
-            baseProcEntry.ProcFlags = fields[6].GetUInt32();
-            baseProcEntry.SpellTypeMask = fields[7].GetUInt32();
-            baseProcEntry.SpellPhaseMask = fields[8].GetUInt32();
-            baseProcEntry.HitMask = fields[9].GetUInt32();
-            baseProcEntry.AttributesMask = fields[10].GetUInt32();
+            baseProcEntry.ProcFlags = ProcFlags(fields[6].GetUInt32());
+            baseProcEntry.SpellTypeMask = ProcFlagsSpellType(fields[7].GetUInt32());
+            baseProcEntry.SpellPhaseMask = ProcFlagsSpellPhase(fields[8].GetUInt32());
+            baseProcEntry.HitMask = ProcFlagsHit(fields[9].GetUInt32());
+            baseProcEntry.AttributesMask = ProcAttributes(fields[10].GetUInt32());
             baseProcEntry.DisableEffectsMask = fields[11].GetUInt32();
             baseProcEntry.ProcsPerMinute = fields[12].GetFloat();
             baseProcEntry.Chance = fields[13].GetFloat();
@@ -1621,7 +1621,7 @@ void SpellMgr::LoadSpellProcs()
 
                 // take defaults from dbcs
                 if (!procEntry.ProcFlags)
-                    procEntry.ProcFlags = spellInfo->ProcFlags;
+                    procEntry.ProcFlags = ProcFlags(spellInfo->ProcFlags);
                 if (!procEntry.Charges)
                     procEntry.Charges = spellInfo->ProcCharges;
                 if (procEntry.Chance == 0.f && procEntry.ProcsPerMinute == 0.f)
@@ -1700,7 +1700,7 @@ void SpellMgr::LoadSpellProcs()
     // Triggered always, even from triggered spells
     bool isAlwaysTriggeredAura[TOTAL_AURAS] = { };
     // SpellTypeMask to add to the proc
-    std::array<uint32, TOTAL_AURAS> spellTypeMask = { };
+    std::array<ProcFlagsSpellType, TOTAL_AURAS> spellTypeMask = { };
     spellTypeMask.fill(PROC_SPELL_TYPE_MASK_ALL);
 
     // List of auras that CAN trigger but may not exist in spell_proc
@@ -1787,7 +1787,7 @@ void SpellMgr::LoadSpellProcs()
             continue;
 
         bool addTriggerFlag = false;
-        uint32 procSpellTypeMask = PROC_SPELL_TYPE_NONE;
+        ProcFlagsSpellType procSpellTypeMask = PROC_SPELL_TYPE_NONE;
         uint32 nonProcMask = 0;
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
@@ -1887,9 +1887,9 @@ void SpellMgr::LoadSpellProcs()
             break;
         }
 
-        procEntry.AttributesMask  = 0;
+        procEntry.AttributesMask = PROC_ATTR_NONE;
         procEntry.DisableEffectsMask = nonProcMask;
-        if (spellInfo->ProcFlags & PROC_FLAG_KILL)
+        if ((spellInfo->ProcFlags & PROC_FLAG_KILL) != 0)
             procEntry.AttributesMask |= PROC_ATTR_REQ_EXP_OR_HONOR;
         if (addTriggerFlag)
             procEntry.AttributesMask |= PROC_ATTR_TRIGGERED_CAN_PROC;
@@ -5586,7 +5586,7 @@ void SpellMgr::LoadSpellInfoCorrections()
 
         // disable proc for magnet auras, they're handled differently
         if (spellInfo->HasAura(SPELL_AURA_SPELL_MAGNET))
-            spellInfo->ProcFlags = 0;
+            spellInfo->ProcFlags = PROC_FLAG_NONE;
 
         // due to the way spell system works, unit would change orientation in Spell::_cast
         if (spellInfo->HasAura(SPELL_AURA_CONTROL_VEHICLE))

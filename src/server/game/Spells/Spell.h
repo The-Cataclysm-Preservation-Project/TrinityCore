@@ -65,6 +65,8 @@ struct SummonPropertiesEntry;
 enum AuraType : uint32;
 enum CurrentSpellTypes : uint8;
 enum LootType : uint8;
+enum ProcFlags : uint32;
+enum ProcFlagsHit : uint32;
 enum SpellTargetCheckTypes : uint8;
 enum SpellTargetObjectTypes : uint8;
 enum SpellValueMod : int32;
@@ -554,9 +556,9 @@ class TC_GAME_API Spell
         // ******************************************
         // Spell trigger system
         // ******************************************
-        uint32 m_procAttacker;                // Attacker trigger flags
-        uint32 m_procVictim;                  // Victim   trigger flags
-        uint32 m_hitMask;
+        ProcFlags m_procAttacker;                // Attacker trigger flags
+        ProcFlags m_procVictim;                  // Victim   trigger flags
+        ProcFlagsHit m_hitMask;
         void   prepareDataForTriggerSystem();
 
         // *****************************************

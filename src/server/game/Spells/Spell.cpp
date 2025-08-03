@@ -650,7 +650,7 @@ m_caster((info->HasAttribute(SPELL_ATTR6_ORIGINATE_FROM_CONTROLLER) && caster->G
     m_healing = 0;
     m_procAttacker = PROC_FLAG_NONE;
     m_procVictim = PROC_FLAG_NONE;
-    m_hitMask = 0;
+    m_hitMask = PROC_HIT_NONE;
     focusObject = nullptr;
     m_cast_count = 0;
     m_glyphIndex = 0;
@@ -2250,11 +2250,11 @@ class ProcReflectDelayed : public BasicEvent
             if (!caster)
                 return true;
 
-            uint32 const typeMaskActor = PROC_FLAG_NONE;
-            uint32 const typeMaskActionTarget = PROC_FLAG_TAKE_HARMFUL_SPELL | PROC_FLAG_TAKE_HARMFUL_ABILITY;
-            uint32 const spellTypeMask = PROC_SPELL_TYPE_DAMAGE | PROC_SPELL_TYPE_NO_DMG_HEAL;
-            uint32 const spellPhaseMask = PROC_SPELL_PHASE_NONE;
-            uint32 const hitMask = PROC_HIT_REFLECT;
+            ProcFlags const typeMaskActor = PROC_FLAG_NONE;
+            ProcFlags const typeMaskActionTarget = PROC_FLAG_TAKE_HARMFUL_SPELL | PROC_FLAG_TAKE_HARMFUL_ABILITY;
+            ProcFlagsSpellType const spellTypeMask = PROC_SPELL_TYPE_DAMAGE | PROC_SPELL_TYPE_NO_DMG_HEAL;
+            ProcFlagsSpellPhase const spellPhaseMask = PROC_SPELL_PHASE_NONE;
+            ProcFlagsHit const hitMask = PROC_HIT_REFLECT;
 
             Unit::ProcSkillsAndAuras(caster, _victim, typeMaskActor, typeMaskActionTarget, spellTypeMask, spellPhaseMask, hitMask, nullptr, nullptr, nullptr);
             return true;
@@ -2651,10 +2651,10 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
     if (caster)
     {
         // Fill base trigger info
-        uint32 procAttacker = spell->m_procAttacker;
-        uint32 procVictim = spell->m_procVictim;
-        uint32 procSpellType = PROC_SPELL_TYPE_NONE;
-        uint32 hitMask = PROC_HIT_NONE;
+        ProcFlags procAttacker = spell->m_procAttacker;
+        ProcFlags procVictim = spell->m_procVictim;
+        ProcFlagsSpellType procSpellType = PROC_SPELL_TYPE_NONE;
+        ProcFlagsHit hitMask = PROC_HIT_NONE;
 
         // Spells with this flag cannot trigger if effect is cast on self
         bool const canEffectTrigger = spell->unitTarget->CanProc();
@@ -2716,6 +2716,8 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
                             procVictim |= PROC_FLAG_TAKE_HARMFUL_SPELL;
                         }
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -3820,7 +3822,7 @@ void Spell::_cast(bool skipCheck)
         return;
 
     // Handle procs on cast
-    uint32 procAttacker = m_procAttacker;
+    ProcFlags procAttacker = m_procAttacker;
     if (!procAttacker)
     {
         if (m_spellInfo->HasAttribute(SPELL_ATTR3_TREAT_AS_PERIODIC))
@@ -3841,7 +3843,7 @@ void Spell::_cast(bool skipCheck)
         }
     }
 
-    uint32 hitMask = m_hitMask;
+    ProcFlagsHit hitMask = m_hitMask;
     if (!(hitMask & PROC_HIT_CRITICAL))
         hitMask |= PROC_HIT_NORMAL;
 
@@ -4084,7 +4086,7 @@ void Spell::_handle_finish_phase()
     if (!m_originalCaster)
         return;
 
-    uint32 procAttacker = m_procAttacker;
+    ProcFlags procAttacker = m_procAttacker;
     if (!procAttacker)
     {
         if (m_spellInfo->HasAttribute(SPELL_ATTR3_TREAT_AS_PERIODIC))
