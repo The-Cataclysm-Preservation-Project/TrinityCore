@@ -9863,7 +9863,7 @@ void Unit::GetProcAurasTriggeredOnEvent(AuraApplicationProcContainer& aurasTrigg
                 if (SpellProcEntry const* procEntry = sSpellMgr->GetSpellProcEntry(aurApp->GetBase()->GetSpellInfo()->Id))
                 {
                     aurApp->GetBase()->PrepareProcChargeDrop(procEntry, eventInfo);
-                    aurApp->GetBase()->ConsumeProcCharges(procEntry);
+                    aurasTriggeringProc.emplace_back(0, aurApp);
                 }
             }
 
