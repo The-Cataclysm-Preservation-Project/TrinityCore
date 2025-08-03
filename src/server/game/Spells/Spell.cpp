@@ -8966,6 +8966,8 @@ CastSpellTargetArg::CastSpellTargetArg(WorldObject* target)
             Targets->SetGOTarget(goTarget);
         }
     }
+    else
+        Targets.emplace(); // nullptr is allowed
 }
 
 CastSpellExtraArgs::CastSpellExtraArgs() = default;
