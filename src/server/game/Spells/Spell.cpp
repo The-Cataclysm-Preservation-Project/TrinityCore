@@ -2656,7 +2656,6 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
         ProcFlags procAttacker = spell->m_procAttacker;
         ProcFlags procVictim = spell->m_procVictim;
         ProcFlagsSpellType procSpellType = PROC_SPELL_TYPE_NONE;
-        ProcFlagsHit hitMask = PROC_HIT_NONE;
 
         // Spells with this flag cannot trigger if effect is cast on self
         bool const canEffectTrigger = spell->unitTarget->CanProc();
@@ -2735,11 +2734,11 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
             uint32 addhealth = spell->m_healing;
             if (IsCrit)
             {
-                hitMask |= PROC_HIT_CRITICAL;
+                ProcHitMask |= PROC_HIT_CRITICAL;
                 addhealth = Unit::SpellCriticalHealingBonus(caster, addhealth);
             }
             else
-                hitMask |= PROC_HIT_NORMAL;
+                ProcHitMask |= PROC_HIT_NORMAL;
 
             healInfo = std::make_unique<HealInfo>(caster, spell->unitTarget, addhealth, spell->m_spellInfo, spell->m_spellInfo->GetSchoolMask());
             caster->HealBySpell(*healInfo, IsCrit);
@@ -2759,7 +2758,7 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
             // Check damage immunity
             if (spell->unitTarget->IsImmunedToDamage(spell->m_spellInfo))
             {
-                hitMask = PROC_HIT_IMMUNE;
+                ProcHitMask = PROC_HIT_IMMUNE;
                 spell->m_damage = 0;
 
                 // no packet found in sniffs
@@ -2777,7 +2776,7 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
 
                 caster->SendSpellNonMeleeDamageLog(&damageInfo);
 
-                hitMask |= createProcHitMask(&damageInfo, MissCondition);
+                ProcHitMask |= createProcHitMask(&damageInfo, MissCondition);
                 procVictim |= PROC_FLAG_TAKE_ANY_DAMAGE;
 
                 spell->m_damage = damageInfo.damage;
@@ -2787,7 +2786,7 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
             // Do triggers for unit
             if (canEffectTrigger)
             {
-                spellDamageInfo = std::make_unique<DamageInfo>(damageInfo, SPELL_DIRECT_DAMAGE, spell->m_attackType, hitMask);
+                spellDamageInfo = std::make_unique<DamageInfo>(damageInfo, SPELL_DIRECT_DAMAGE, spell->m_attackType, ProcHitMask);
                 procSpellType |= PROC_SPELL_TYPE_DAMAGE;
             }
         }
@@ -2797,11 +2796,11 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
         {
             // Fill base damage struct (unitTarget - is real spell target)
             SpellNonMeleeDamage damageInfo(caster, spell->unitTarget, spell->m_spellInfo->Id, spell->m_spellSchoolMask);
-            hitMask |= createProcHitMask(&damageInfo, MissCondition);
+            ProcHitMask |= createProcHitMask(&damageInfo, MissCondition);
             // Do triggers for unit
             if (canEffectTrigger)
             {
-                spellDamageInfo = std::make_unique<DamageInfo>(damageInfo, NODAMAGE, spell->m_attackType, hitMask);
+                spellDamageInfo = std::make_unique<DamageInfo>(damageInfo, NODAMAGE, spell->m_attackType, ProcHitMask);
                 procSpellType |= PROC_SPELL_TYPE_NO_DMG_HEAL;
             }
 
@@ -2817,7 +2816,7 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
         // Do triggers for unit
         if (canEffectTrigger)
         {
-            Unit::ProcSkillsAndAuras(caster, spell->unitTarget, procAttacker, procVictim, procSpellType, PROC_SPELL_PHASE_HIT, hitMask, spell, spellDamageInfo.get(), healInfo.get());
+            Unit::ProcSkillsAndAuras(caster, spell->unitTarget, procAttacker, procVictim, procSpellType, PROC_SPELL_PHASE_HIT, ProcHitMask, spell, spellDamageInfo.get(), healInfo.get());
 
             // item spells (spell hit of non-damage spell may also activate items, for example seal of corruption hidden hit)
             if (caster->GetTypeId() == TYPEID_PLAYER && (procSpellType & (PROC_SPELL_TYPE_DAMAGE | PROC_SPELL_TYPE_NO_DMG_HEAL)))
@@ -2829,7 +2828,7 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
         }
 
         // set hitmask for finish procs
-        spell->m_hitMask |= hitMask;
+        spell->m_hitMask |= ProcHitMask;
         spell->m_procSpellType |= procSpellType;
 
         // Do not take combo points on dodge and miss

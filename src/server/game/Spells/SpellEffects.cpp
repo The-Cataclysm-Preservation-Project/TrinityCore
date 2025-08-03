@@ -2204,7 +2204,7 @@ void Spell::EffectDispel(SpellEffIndex effIndex)
 
     CallScriptSuccessfulDispel(effIndex);
 
-    m_hitMask |= PROC_HIT_DISPEL;
+    std::ranges::find(m_UniqueTargetInfo, unitTarget->GetGUID(), &TargetInfo::TargetGUID)->ProcHitMask |= PROC_HIT_DISPEL;
 
     // On success dispel
     // Devour Magic
@@ -2987,7 +2987,7 @@ void Spell::EffectInterruptCast(SpellEffIndex effIndex)
                 int32 duration = m_spellInfo->GetDuration();
                 duration = unitTarget->ModSpellDuration(m_spellInfo, unitTarget, duration, false, 1 << effIndex);
                 unitTarget->GetSpellHistory()->LockSpellSchool(curSpellInfo->GetSchoolMask(), duration);
-                m_hitMask |= PROC_HIT_INTERRUPT;
+                std::ranges::find(m_UniqueTargetInfo, unitTarget->GetGUID(), &TargetInfo::TargetGUID)->ProcHitMask |= PROC_HIT_INTERRUPT;
 
                 ExecuteLogEffectInterruptCast(effIndex, unitTarget, curSpellInfo->Id);
                 unitTarget->InterruptSpell(CurrentSpellTypes(i), false);
@@ -4690,6 +4690,8 @@ void Spell::EffectDispelMechanic(SpellEffIndex effIndex)
 
     for (auto itr = dispel_list.begin(); itr != dispel_list.end(); ++itr)
         unitTarget->RemoveAura(itr->first, itr->second, 0, AuraRemoveFlags::ByEnemySpell);
+
+    std::ranges::find(m_UniqueTargetInfo, unitTarget->GetGUID(), &TargetInfo::TargetGUID)->ProcHitMask |= PROC_HIT_DISPEL;
 }
 
 void Spell::EffectResurrectPet(SpellEffIndex /*effIndex*/)
@@ -5223,6 +5225,8 @@ void Spell::EffectStealBeneficialBuff(SpellEffIndex effIndex)
         unitTarget->RemoveAurasDueToSpellBySteal(spellId, auraCaster, m_caster, stolenCharges);
     }
     m_caster->SendMessageToSet(&dataSuccess, true);
+
+    std::ranges::find(m_UniqueTargetInfo, unitTarget->GetGUID(), &TargetInfo::TargetGUID)->ProcHitMask |= PROC_HIT_DISPEL;
 }
 
 void Spell::EffectKillCreditPersonal(SpellEffIndex effIndex)
