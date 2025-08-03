@@ -67,6 +67,7 @@ enum CurrentSpellTypes : uint8;
 enum LootType : uint8;
 enum ProcFlags : uint32;
 enum ProcFlagsHit : uint32;
+enum ProcFlagsSpellType : uint32;
 enum SpellTargetCheckTypes : uint8;
 enum SpellTargetObjectTypes : uint8;
 enum SpellValueMod : int32;
@@ -559,6 +560,7 @@ class TC_GAME_API Spell
         ProcFlags m_procAttacker;                // Attacker trigger flags
         ProcFlags m_procVictim;                  // Victim   trigger flags
         ProcFlagsHit m_hitMask;
+        ProcFlagsSpellType m_procSpellType;   // for finish procs
         void   prepareDataForTriggerSystem();
 
         // *****************************************
