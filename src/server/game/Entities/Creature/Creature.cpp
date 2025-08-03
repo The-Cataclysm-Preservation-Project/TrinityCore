@@ -62,7 +62,8 @@
 VendorItemCount::VendorItemCount(uint32 _item, uint32 _count)
     : itemId(_item), count(_count), lastIncrementTime(GameTime::GetGameTime()) { }
 
-CreatureMovementData::CreatureMovementData() : HoverInitiallyEnabled(false), Random(CreatureRandomMovementType::Walk), InteractionPauseTimer(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER)) { }
+CreatureMovementData::CreatureMovementData() : HoverInitiallyEnabled(false), GravityInitiallyDisabled(false),
+    Random(CreatureRandomMovementType::Walk), InteractionPauseTimer(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER)) { }
 
 
 std::string CreatureMovementData::ToString() const
@@ -72,7 +73,8 @@ std::string CreatureMovementData::ToString() const
     std::ostringstream str;
     str << std::boolalpha
         << ", HoverInitiallyEnabled: " << HoverInitiallyEnabled
-        << "Random: " << RandomStates[AsUnderlyingType(Random)];
+        << ", GravityInitiallyDisabled: " << GravityInitiallyDisabled
+        << ", Random: " << RandomStates[AsUnderlyingType(Random)];
 
     str << ", InteractionPauseTimer: " << InteractionPauseTimer;
 
@@ -2667,7 +2669,8 @@ void Creature::GetRespawnPosition(float &x, float &y, float &z, float* ori, floa
 void Creature::InitializeMovementCapabilities()
 {
     SetHover(GetMovementTemplate().IsHoverInitiallyEnabled());
-    SetDisableGravity(IsFloating());
+    SetDisableGravity(IsFloating() || GetMovementTemplate().IsGravityInitiallyDisabled());
+    SetPlayHoverAnim(IsFloating());
     SetControlled(IsSessile(), UNIT_STATE_ROOT);
 
     if (IsSwimPrevented())

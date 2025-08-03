@@ -317,12 +317,14 @@ struct TC_GAME_API CreatureMovementData
     CreatureMovementData();
 
     bool HoverInitiallyEnabled;
+    bool GravityInitiallyDisabled;
     CreatureRandomMovementType Random;
     uint32 InteractionPauseTimer;
 
     CreatureRandomMovementType GetRandom() const { return Random; }
 
     bool IsHoverInitiallyEnabled() const { return HoverInitiallyEnabled; }
+    bool IsGravityInitiallyDisabled() const { return GravityInitiallyDisabled; }
 
     uint32 GetInteractionPauseTimer() const { return InteractionPauseTimer; }
 

@@ -422,11 +422,11 @@ void ObjectMgr::LoadCreatureTemplates()
                                              "family, trainer_class, type, type_flags, type_flags2, lootid, pickpocketloot, skinloot, resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, "
     //                                        47      48      49      50      51      52      53      54      55              56         57       58       59      60
                                              "spell1, spell2, spell3, spell4, spell5, spell6, spell7, spell8, PetSpellDataId, VehicleId, mingold, maxgold, AIName, MovementType, "
-    //                                        61                         62          63                         64           65              66                   67            68
-                                             "ctm.HoverInitiallyEnabled, ctm.Random, ctm.InteractionPauseTimer, HoverHeight, HealthModifier, HealthModifierExtra, ManaModifier, ManaModifierExtra, "
-    //                                        69             70              71                  72            73          74           75                    76
+    //                                        61                         62                            63          64                         65           66              67                   68            69
+                                             "ctm.HoverInitiallyEnabled, ctm.GravityInitiallyDisabled, ctm.Random, ctm.InteractionPauseTimer, HoverHeight, HealthModifier, HealthModifierExtra, ManaModifier, ManaModifierExtra, "
+    //                                        70             71              72                  73            74          75           76                    77
                                              "ArmorModifier, DamageModifier, ExperienceModifier, RacialLeader, movementId, RegenHealth, mechanic_immune_mask, spell_school_immune_mask, "
-    //                                        77           78           79            80            81            82            83
+    //                                        78           79           80            81            82            83            84
                                              "flags_extra, StaticFlags, StaticFlags2, StaticFlags3, StaticFlags4, StaticFlags5, ScriptName FROM creature_template ct LEFT JOIN creature_template_movement ctm ON ct.entry = ctm.CreatureId");
 
     if (!result)
@@ -519,29 +519,32 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields)
         creatureTemplate.Movement.HoverInitiallyEnabled = fields[61].GetBool();
 
     if (!fields[62].IsNull())
-        creatureTemplate.Movement.Random = static_cast<CreatureRandomMovementType>(fields[62].GetUInt8());
+        creatureTemplate.Movement.GravityInitiallyDisabled = fields[62].GetBool();
 
     if (!fields[63].IsNull())
-        creatureTemplate.Movement.InteractionPauseTimer = fields[63].GetUInt32();
+        creatureTemplate.Movement.Random = static_cast<CreatureRandomMovementType>(fields[63].GetUInt8());
 
-    creatureTemplate.HoverHeight    = fields[64].GetFloat();
-    creatureTemplate.ModHealth      = fields[65].GetFloat();
-    creatureTemplate.ModHealthExtra = fields[66].GetFloat();
-    creatureTemplate.ModMana        = fields[67].GetFloat();
-    creatureTemplate.ModManaExtra   = fields[68].GetFloat();
-    creatureTemplate.ModArmor       = fields[69].GetFloat();
-    creatureTemplate.ModDamage      = fields[70].GetFloat();
-    creatureTemplate.ModExperience  = fields[71].GetFloat();
+    if (!fields[64].IsNull())
+        creatureTemplate.Movement.InteractionPauseTimer = fields[64].GetUInt32();
 
-    creatureTemplate.RacialLeader          = fields[72].GetBool();
-    creatureTemplate.movementId            = fields[73].GetUInt32();
-    creatureTemplate.RegenHealth           = fields[74].GetBool();
-    creatureTemplate.MechanicImmuneMask    = fields[75].GetUInt32();
-    creatureTemplate.SpellSchoolImmuneMask = fields[76].GetUInt32();
-    creatureTemplate.flags_extra           = fields[77].GetUInt32();
-    creatureTemplate.StaticFlags = CreatureStaticFlagsHolder(CreatureStaticFlags(fields[78].GetUInt32()), CreatureStaticFlags2(fields[79].GetUInt32()),
-        CreatureStaticFlags3(fields[80].GetUInt32()), CreatureStaticFlags4(fields[81].GetUInt32()), CreatureStaticFlags5(fields[82].GetUInt32()));
-    creatureTemplate.ScriptID              = GetScriptId(fields[83].GetCString());
+    creatureTemplate.HoverHeight    = fields[65].GetFloat();
+    creatureTemplate.ModHealth      = fields[66].GetFloat();
+    creatureTemplate.ModHealthExtra = fields[67].GetFloat();
+    creatureTemplate.ModMana        = fields[68].GetFloat();
+    creatureTemplate.ModManaExtra   = fields[69].GetFloat();
+    creatureTemplate.ModArmor       = fields[70].GetFloat();
+    creatureTemplate.ModDamage      = fields[71].GetFloat();
+    creatureTemplate.ModExperience  = fields[72].GetFloat();
+
+    creatureTemplate.RacialLeader          = fields[73].GetBool();
+    creatureTemplate.movementId            = fields[74].GetUInt32();
+    creatureTemplate.RegenHealth           = fields[75].GetBool();
+    creatureTemplate.MechanicImmuneMask    = fields[76].GetUInt32();
+    creatureTemplate.SpellSchoolImmuneMask = fields[77].GetUInt32();
+    creatureTemplate.flags_extra           = fields[78].GetUInt32();
+    creatureTemplate.StaticFlags = CreatureStaticFlagsHolder(CreatureStaticFlags(fields[79].GetUInt32()), CreatureStaticFlags2(fields[80].GetUInt32()),
+        CreatureStaticFlags3(fields[81].GetUInt32()), CreatureStaticFlags4(fields[82].GetUInt32()), CreatureStaticFlags5(fields[83].GetUInt32()));
+    creatureTemplate.ScriptID              = GetScriptId(fields[84].GetCString());
 }
 
 void ObjectMgr::LoadCreatureTemplateModels()
@@ -1508,6 +1511,7 @@ void ObjectMgr::LoadCreatureMovementOverrides()
     QueryResult result = WorldDatabase.Query(
         "SELECT cmo.SpawnId,"
         "COALESCE(cmo.HoverInitiallyEnabled, ctm.HoverInitiallyEnabled),"
+        "COALESCE(cmo.GravityInitiallyDisabled, ctm.GravityInitiallyDisabled),"
         "COALESCE(cmo.Random, ctm.Random),"
         "COALESCE(cmo.InteractionPauseTimer, ctm.InteractionPauseTimer) "
         "FROM creature_movement_override AS cmo "
@@ -1534,8 +1538,10 @@ void ObjectMgr::LoadCreatureMovementOverrides()
         if (!fields[1].IsNull())
             movement.HoverInitiallyEnabled = fields[1].GetBool();
         if (!fields[2].IsNull())
-            movement.Random = static_cast<CreatureRandomMovementType>(fields[3].GetUInt8());
+            movement.HoverInitiallyEnabled = fields[2].GetBool();
         if (!fields[3].IsNull())
+            movement.Random = static_cast<CreatureRandomMovementType>(fields[3].GetUInt8());
+        if (!fields[4].IsNull())
             movement.InteractionPauseTimer = fields[4].GetUInt32();
 
         CheckCreatureMovement("creature_movement_override", spawnId, movement);
