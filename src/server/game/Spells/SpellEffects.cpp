@@ -2204,6 +2204,8 @@ void Spell::EffectDispel(SpellEffIndex effIndex)
 
     CallScriptSuccessfulDispel(effIndex);
 
+    m_hitMask |= PROC_HIT_DISPEL;
+
     // On success dispel
     // Devour Magic
     if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->GetCategory() == SPELLCATEGORY_DEVOUR_MAGIC)
