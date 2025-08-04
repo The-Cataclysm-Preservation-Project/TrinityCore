@@ -178,7 +178,7 @@ class spell_warr_charge : public SpellScript
 // 12809 - Concussion Blow
 class spell_warr_concussion_blow : public SpellScript
 {
-    void CalculateDamage(Unit* victim, int32& damage, int32& flatMod, float& pctMod)
+    void CalculateDamage(Unit* /*victim*/, int32& damage, int32& /*flatMod*/, float& /*pctMod*/)
     {
         damage = CalculatePct(GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK), GetSpellInfo()->Effects[EFFECT_2].CalcValue());
     }

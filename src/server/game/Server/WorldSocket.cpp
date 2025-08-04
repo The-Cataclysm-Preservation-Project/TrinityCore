@@ -729,7 +729,7 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
     sScriptMgr->OnAccountLogin(account.Id);
 
     _authed = true;
-    _worldSession = new WorldSession(account.Id, std::move(authSession->Account), account.Id, shared_from_this(), account.Security,
+    _worldSession = new WorldSession(account.Id, std::move(authSession->Account), shared_from_this(), account.Security,
         account.Expansion, mutetime, account.Locale, account.Recruiter, account.IsRecruiter);
     _worldSession->ReadAddonsInfo(authSession->AddonInfo);
 

@@ -46,14 +46,12 @@ void Archaeology::LoadSitesFromDB()
     if (!result)
         return;
 
-    uint32 count = 0;
     do {
         Field *fields = result->Fetch();
         uint32 site = fields[0].GetUInt8();
         uint16 type = fields[1].GetUInt16();
         uint8 finds = fields[2].GetUInt8();
         SetSite(site, type, finds);
-        count++;
     } while (result->NextRow());
 }
 
@@ -249,4 +247,3 @@ void Archaeology::RegenerateAllSites()
     for (uint32 i = 0; i < COUNT_CONT; i++)
         RegenerateContinent(Continent(i));
 }
-
