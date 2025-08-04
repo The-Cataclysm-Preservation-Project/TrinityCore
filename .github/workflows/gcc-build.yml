@@ -1,4 +1,4 @@
-name: GCC
+name: GCC PCH
 
 on:
   push:
@@ -31,5 +31,4 @@ jobs:
       run: |
         cd bin/check_install/bin
         ./authserver --version
-        ./bnetserver --version
         ./worldserver --version
