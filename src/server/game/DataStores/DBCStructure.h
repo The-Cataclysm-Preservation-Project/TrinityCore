@@ -1528,13 +1528,13 @@ struct SkillLineAbilityEntry
 struct SkillRaceClassInfoEntry
 {
     //uint32 ID;                                            // 0
-    uint32 SkillID;                                         // 1
-    uint32 RaceMask;                                        // 2
-    uint32 ClassMask;                                       // 3
-    uint32 Flags;                                           // 4
-    uint32 Availability;                                    // 5
-    uint32 MinLevel;                                        // 6
-    uint32 SkillTierID;                                     // 7
+    int32 SkillID;                                          // 1
+    int32 RaceMask;                                         // 2
+    int32 ClassMask;                                        // 3
+    int32 Flags;                                            // 4
+    int32 Availability;                                     // 5
+    int32 MinLevel;                                         // 6
+    int32 SkillTierID;                                      // 7
     //uint32 SkillCostIndex;                                // 8
 };
 

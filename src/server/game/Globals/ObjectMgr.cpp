@@ -7849,7 +7849,7 @@ void ObjectMgr::LoadQuestPOI()
             else
             {
                 // Some POIs can reference empty blobs according to sniff data
-                poiData.Blobs.emplace_back(blobIndex, objectiveIndex, mapID, worldMapAreaID, floor, priority, flags, std::move(std::vector<QuestPOIBlobPoint>()));
+                poiData.Blobs.emplace_back(blobIndex, objectiveIndex, mapID, worldMapAreaID, floor, priority, flags, std::vector<QuestPOIBlobPoint>());
             }
         }
 

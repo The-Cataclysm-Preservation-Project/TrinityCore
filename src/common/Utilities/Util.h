@@ -269,6 +269,16 @@ inline wchar_t wcharToLower(wchar_t wchar)
     return wchar;
 }
 
+struct CharToUpper
+{
+    char operator()(char c) const { return std::toupper(static_cast<unsigned char>(c)); }
+} inline constexpr charToUpper;
+
+struct CharToLower
+{
+    char operator()(char c) const { return std::tolower(static_cast<unsigned char>(c)); }
+} inline constexpr charToLower;
+
 TC_COMMON_API void wstrToUpper(std::wstring& str);
 TC_COMMON_API void wstrToLower(std::wstring& str);
 
@@ -325,6 +335,8 @@ TC_COMMON_API bool StringToBool(std::string const& str);
 TC_COMMON_API bool StringContainsStringI(std::string const& haystack, std::string const& needle);
 
 TC_COMMON_API float DegToRad(float degrees);
+
+TC_COMMON_API bool StringEqualI(std::string_view str1, std::string_view str2);
 
 template<class Container>
 std::string StringJoin(Container const& c, std::string delimiter)

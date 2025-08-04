@@ -483,7 +483,7 @@ void AuraEffect::GetApplicationList(Container& applicationContainer) const
 int32 AuraEffect::CalculateAmount(Unit* caster)
 {
     // default amount calculation
-    int32 amount = amount = m_spellInfo->Effects[m_effIndex].CalcValue(caster, &m_baseAmount, GetBase()->GetOwner()->ToUnit());;
+    int32 amount = m_spellInfo->Effects[m_effIndex].CalcValue(caster, &m_baseAmount, GetBase()->GetOwner()->ToUnit());;
 
     // check item enchant aura cast
     if (!amount && caster)
@@ -580,6 +580,8 @@ int32 AuraEffect::CalculateAmount(Unit* caster)
                     case 79063: // Blessing of Kings
                     case 90363: // Embrace of the Shale Spider
                         amount = resist / 2;
+                        break;
+                    default:
                         break;
                 }
                 break;
@@ -1419,6 +1421,8 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
                                 break;
                             case 33873:
                                 spellId3 = 47180;
+                                break;
+                            default:
                                 break;
                         }
                         target->CastSpell(target, spellId3, this);
@@ -2538,7 +2542,7 @@ void AuraEffect::HandleAuraModPacifyAndSilence(AuraApplication const* aurApp, ui
 
     Unit* target = aurApp->GetTarget();
 
-    // Vengeance of the Blue Flight (@todo REMOVE THIS!)
+    // Vengeance of the Blue Flight (@todo REMOVE THIS!)5402
     /// @workaround
     if (m_spellInfo->Id == 45839)
     {
@@ -4634,6 +4638,8 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                     if (caster)
                         target->GetMotionMaster()->MoveFall();
                     break;
+                default:
+                    break;
             }
         }
         // AT REMOVE
@@ -4662,6 +4668,8 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                     case 30099: finalSpelId = 30100; break;
                     case 30102: finalSpelId = 30103; break;
                     case 30105: finalSpelId = 30104; break;
+                    default:
+                        break;
                 }
 
                 if (finalSpelId)
@@ -4708,6 +4716,8 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         case 91604: // Restricted Flight Area
                             if (aurApp->GetRemoveMode().HasFlag(AuraRemoveFlags::Expired))
                                 target->CastSpell(target, 58601, true);
+                            break;
+                        default:
                             break;
                     }
                     break;
@@ -4793,7 +4803,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                 case 93806: // Darnassus Champion
                 case 93811: // Exodar Champion
                 case 93805: // Ironforge Champion
-                case 93795: // Sturmwind Champion
+                case 93795: // Stormwind Champion
                 {
                     if (!caster || caster->GetTypeId() != TYPEID_PLAYER)
                         break;
@@ -4825,7 +4835,9 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             case 93806: FactionID = 69; break; // Darnassus Champion
                             case 93811: FactionID = 930; break; // Exodar Champion
                             case 93805: FactionID = 47; break; // Ironforge Champion
-                            case 93795: FactionID = 72; break; // Sturmwind Champion
+                            case 93795: FactionID = 72; break; // Stormwind Champion
+                            default:
+                                break;
                         }
                     }
                     caster->ToPlayer()->SetChampioningFaction(FactionID);
@@ -4877,6 +4889,8 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         }
                     }
                     break;
+                default:
+                    break;
             }
 
             break;
@@ -4915,6 +4929,8 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
             //    break;
             break;
         }
+        default:
+            break;
     }
 }
 
@@ -5332,6 +5348,8 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
                         target->RemoveAura(64821);
                     }
                     break;
+                default:
+                    break;
             }
             break;
         case SPELLFAMILY_HUNTER:
@@ -5378,8 +5396,12 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
             switch (GetId())
             {
                 case 49016: // Hysteria
+                {
                     uint32 damage = uint32(target->CountPctFromMaxHealth(1));
                     Unit::DealDamage(target, target, damage, 0, NODAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+                    break;
+                }
+                default:
                     break;
             }
             // Blood of the North
@@ -5550,6 +5572,8 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) 
                     case 46736:
                         triggerSpellId = 46737;
                         break;
+                    default:
+                        break;
                 }
                 break;
             }
@@ -5565,6 +5589,8 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) 
                             target->RemoveAurasDueToSpell(28820);
                         return;
                     }
+                    default:
+                        break;
                 }
                 break;
             }
@@ -5663,6 +5689,8 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) 
                     caster->CastSpell(target, triggerSpellId, false);
                 return;
             }
+            default:
+                break;
         }
     }
 
@@ -5743,6 +5771,8 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
                 }
                 break;
             }
+            default:
+                break;
         }
     }
 

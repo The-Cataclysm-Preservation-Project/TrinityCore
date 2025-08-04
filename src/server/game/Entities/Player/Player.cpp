@@ -8103,7 +8103,7 @@ void Player::CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8
         Spell* spell = new Spell(this, spellInfo, TRIGGERED_NONE);
         spell->m_CastItem = item;
         spell->m_cast_count = castId;
-        spell->SetSpellValue({ SPELLVALUE_BASE_POINT0, learning_spell_id });
+        spell->SetSpellValue({ SPELLVALUE_BASE_POINT0, static_cast<int32>(learning_spell_id) });
         spell->prepare(targets);
         return;
     }
@@ -23351,7 +23351,7 @@ void Player::LearnSkillRewardedSpells(uint32 skillId, uint32 skillValue)
             continue;
 
         // need unlearn spell
-        if (int32(skillValue) < ability->MinSkillLineRank && ability->GetAcquireMethod() == SkillLineAbilityAcquireMethod::AutomaticSkillRank)
+        if (skillValue < ability->MinSkillLineRank && ability->GetAcquireMethod() == SkillLineAbilityAcquireMethod::AutomaticSkillRank)
             RemoveSpell(ability->Spell);
 
         // need learn

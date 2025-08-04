@@ -626,6 +626,11 @@ void Trinity::Impl::HexStrToByteArray(std::string_view str, uint8* out, size_t o
     }
 }
 
+bool StringEqualI(std::string_view a, std::string_view b)
+{
+    return std::ranges::equal(a, b, {}, charToLower, charToLower);
+}
+
 bool StringToBool(std::string const& str)
 {
     std::string lowerStr = str;
