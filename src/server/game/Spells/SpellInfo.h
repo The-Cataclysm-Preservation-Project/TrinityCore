@@ -45,6 +45,7 @@ struct SpellCastTimesEntry;
 struct Condition;
 
 enum ProcFlags: uint32;
+using ProcFlagsInit = ProcFlags;
 
 enum SpellTargetSelectionCategories
 {
@@ -353,7 +354,7 @@ class TC_GAME_API SpellInfo
         EnumFlag<SpellAuraInterruptFlags2> AuraInterruptFlags2 = SpellAuraInterruptFlags2::None;
         EnumFlag<SpellAuraInterruptFlags> ChannelInterruptFlags = SpellAuraInterruptFlags::None;
         EnumFlag<SpellAuraInterruptFlags2> ChannelInterruptFlags2 = SpellAuraInterruptFlags2::None;
-        ProcFlags ProcFlags;
+        ProcFlagsInit ProcFlags;
         uint32 ProcChance;
         uint32 ProcCharges;
         uint32 MaxLevel;

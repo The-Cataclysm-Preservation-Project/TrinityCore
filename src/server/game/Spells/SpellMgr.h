@@ -26,13 +26,13 @@
 #include "EnumFlag.h"
 #include "IteratorPair.h"
 #include "SharedDefines.h"
+#include "SpellInfo.h"
 #include "Util.h"
-
 #include <map>
 #include <set>
-#include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 class SpellInfo;
 class Player;
@@ -271,7 +271,7 @@ struct SpellProcEntry
     uint32 SchoolMask = 0;                                      // if nonzero - bitmask for matching proc condition based on spell's school
     uint32 SpellFamilyName = 0;                                 // if nonzero - for matching proc condition based on candidate spell's SpellFamilyName
     flag96 SpellFamilyMask;                                     // if nonzero - bitmask for matching proc condition based on candidate spell's SpellFamilyFlags
-    ProcFlags ProcFlags;                                        // if nonzero - owerwrite procFlags field for given Spell.dbc entry, bitmask for matching proc condition, see enum ProcFlags
+    ProcFlagsInit ProcFlags = PROC_FLAG_NONE;                   // if nonzero - owerwrite procFlags field for given Spell.dbc entry, bitmask for matching proc condition, see enum ProcFlags
     ProcFlagsSpellType SpellTypeMask = PROC_SPELL_TYPE_NONE;    // if nonzero - bitmask for matching proc condition based on candidate spell's damage/heal effects, see enum ProcFlagsSpellType
     ProcFlagsSpellPhase SpellPhaseMask = PROC_SPELL_PHASE_NONE; // if nonzero - bitmask for matching phase of a spellcast on which proc occurs, see enum ProcFlagsSpellPhase
     ProcFlagsHit HitMask = PROC_HIT_NONE;                       // if nonzero - bitmask for matching proc condition based on hit result, see enum ProcFlagsHit
