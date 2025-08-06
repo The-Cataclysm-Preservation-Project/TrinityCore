@@ -50,7 +50,7 @@ namespace Connection_Patcher
             h.UpdateData(data.data(), data.size());
             h.Finalize();
 
-            return Trinity::Impl::ByteArrayToHexStr(h.GetDigest().data(), h.GetDigest().size());
+            return ByteArrayToHexStr(h.GetDigest());
         }
     }
 }

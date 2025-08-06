@@ -16,6 +16,7 @@
  */
 
 #include "Helper.hpp"
+#include "CryptoHash.h"
 #include "IoContext.h"
 
 #include <boost/algorithm/string.hpp>
@@ -24,7 +25,6 @@
 #include <boost/beast.hpp>
 #include <fstream>
 #include <iostream>
-#include <SHA256.h>
 #include <stdexcept>
 #include <Util.h>
 
@@ -38,11 +38,11 @@ namespace ClientLauncher
     {
         std::string GetFileChecksum(std::vector<unsigned char> const& data)
         {
-            SHA256Hash h;
+            Trinity::Crypto::SHA256 h;
             h.UpdateData(data.data(), data.size());
             h.Finalize();
 
-            std::string checksum = ByteArrayToHexStr(h.GetDigest(), h.GetLength());
+            std::string checksum = ByteArrayToHexStr(h.GetDigest());
             boost::algorithm::to_lower(checksum);
             return checksum;
         }
