@@ -63,6 +63,7 @@ enum InventorySlot
 };
 
 struct AbstractPursuer;
+struct CharmInfo;
 struct FactionTemplateEntry;
 struct LiquidData;
 struct LiquidTypeEntry;
@@ -73,7 +74,6 @@ struct SpellValue;
 class Aura;
 class AuraApplication;
 class AuraEffect;
-class CharmInfo;
 class Creature;
 class DynamicObject;
 class GameClient;
