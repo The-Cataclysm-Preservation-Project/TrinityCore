@@ -56,15 +56,15 @@ void WardenMac::Init(WorldSession* pClient, SessionKey const& K)
     _inputCrypto.Init(_inputKey);
     _outputCrypto.Init(_outputKey);
     TC_LOG_DEBUG("warden", "Server side warden for client %u initializing...", pClient->GetAccountId());
-    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey, 16).c_str());
-    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey, 16).c_str());
-    TC_LOG_DEBUG("warden", "  Seed: %s", ByteArrayToHexStr(_seed, 16).c_str());
+    TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey).c_str());
+    TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey).c_str());
+    TC_LOG_DEBUG("warden", "  Seed: %s", ByteArrayToHexStr(_seed).c_str());
     TC_LOG_DEBUG("warden", "Loading Module...");
 
     _module = GetModuleForClient();
 
-    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key, 16).c_str());
-    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id, 16).c_str());
+    TC_LOG_DEBUG("warden", "Module Key: %s", ByteArrayToHexStr(_module->Key).c_str());
+    TC_LOG_DEBUG("warden", "Module ID: %s", ByteArrayToHexStr(_module->Id).c_str());
     RequestModule();
 }
 
@@ -236,30 +236,23 @@ void WardenMac::HandleData(ByteBuffer &buff)
     Trinity::Crypto::SHA1 sha1;
     sha1.UpdateData(str);
     uint32 magic = 0xFEEDFACE;                              // unsure
-    sha1.UpdateData(reinterpret_cast<uint8*>(magic), 4);
+    sha1.UpdateData((uint8*)&magic, 4);
     sha1.Finalize();
 
-    uint8 sha1Hash[20];
-    buff.read(sha1Hash, 20);
+    std::array<uint8, Trinity::Crypto::SHA1::DIGEST_LENGTH> sha1Hash;
+    buff.read(sha1Hash.data(), sha1Hash.size());
 
-    if (memcmp(sha1Hash, sha1.GetDigest().data(), 20) != 0)
+    if (sha1Hash != sha1.GetDigest())
     {
         TC_LOG_DEBUG("warden", "Handle data failed: SHA1 hash is wrong!");
         //found = true;
     }
 
-    EVP_MD_CTX* mdctx = EVP_MD_CTX_new();
-    EVP_DigestInit_ex(mdctx, EVP_md5(), nullptr);
-    EVP_DigestUpdate(mdctx, str.c_str(), str.size());
-    uint8 ourMD5Hash[16];
-    uint32 mg5DigestLength = EVP_MD_size(EVP_md5());
-    EVP_DigestFinal_ex(mdctx, ourMD5Hash, &mg5DigestLength);
-    EVP_MD_CTX_free(mdctx);
+    std::array<uint8, 16> ourMD5Hash = Trinity::Crypto::MD5::GetDigestOf(str);
+    std::array<uint8, 16> theirsMD5Hash;
+    buff.read(theirsMD5Hash);
 
-    uint8 theirsMD5Hash[16];
-    buff.read(theirsMD5Hash, 16);
-
-    if (memcmp(ourMD5Hash, theirsMD5Hash, 16) != 0)
+    if (ourMD5Hash != theirsMD5Hash)
     {
         TC_LOG_DEBUG("warden", "Handle data failed: MD5 hash is wrong!");
         //found = true;
