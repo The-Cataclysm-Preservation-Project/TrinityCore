@@ -34,7 +34,10 @@ class Group;
 class Quest;
 class Player;
 class SpellInfo;
+class SummonInfo;
 class WorldSession;
+
+struct SummonInfoArgs;
 
 enum MovementGeneratorType : uint8;
 
@@ -420,6 +423,13 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         void ResetNoNpcDamageBelowPctHealthValue() { _noNpcDamageBelowPctHealth = 0.f; }
         float GetNoNpcDamageBelowPctHealthValue() const { return _noNpcDamageBelowPctHealth; }
 
+        // Initializes the summon API for this creature which marks it as summon and will be treated accordingly
+        void InitializeSummonInfo(SummonInfoArgs const& args);
+        // Returns a pointer to the SummonInfo API, nullptr if the creature is not a summon
+        SummonInfo* GetSummonInfo() const;
+
+        bool IsSummon() const override;
+
     protected:
         bool CreateFromProto(ObjectGuid::LowType guidlow, uint32 entry, CreatureData const* data = nullptr, uint32 vehId = 0);
         bool InitEntry(uint32 entry, CreatureData const* data = nullptr);
@@ -510,6 +520,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         Optional<uint32> _defaultMountDisplayIdOverride;
         float _noNpcDamageBelowPctHealth;
+
+        // The Summon API which controls the behavior of summons
+        std::unique_ptr<SummonInfo> _summonInfo;
 };
 
 class TC_GAME_API AssistDelayEvent : public BasicEvent

@@ -87,6 +87,7 @@ class Spell;
 class SpellCastTargets;
 class SpellHistory;
 class SpellInfo;
+class SummonInfo;
 class Totem;
 class Transport;
 class TransportBase;
@@ -756,7 +757,7 @@ class TC_GAME_API Unit : public WorldObject
 
         uint32 HasUnitTypeMask(uint32 mask) const { return mask & m_unitTypeMask; }
         void AddUnitTypeMask(uint32 mask) { m_unitTypeMask |= mask; }
-        bool IsSummon() const   { return (m_unitTypeMask & UNIT_MASK_SUMMON) != 0; }
+        virtual bool IsSummon() const { return false; }
         bool IsMinion() const   { return (m_unitTypeMask & UNIT_MASK_MINION) != 0; }
         bool IsGuardian() const { return (m_unitTypeMask & UNIT_MASK_GUARDIAN) != 0; }
         bool IsPet() const      { return (m_unitTypeMask & UNIT_MASK_PET) != 0; }
@@ -1323,6 +1324,11 @@ class TC_GAME_API Unit : public WorldObject
         std::array<ObjectGuid, MAX_SUMMON_SLOT> m_SummonSlot;
         std::array<ObjectGuid, MAX_GAMEOBJECT_SLOT> m_ObjectSlot;
 
+        // Registers the SummonInfo API of a summoned creature to allow safely accessing it
+        void RegisterSummon(SummonInfo* summon);
+        // Unregisters the SummonInfo API of a summoned creature so it can no longer be accessed
+        void UnregisterSummon(SummonInfo* summon);
+
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM)); }
         void SetShapeshiftForm(ShapeshiftForm form);
 
@@ -1819,6 +1825,8 @@ class TC_GAME_API Unit : public WorldObject
         std::unordered_map<MovementChangeType, PlayerMovementPendingChange> m_pendingMovementChanges;
 
         /* Player Movement fields END*/
+
+        std::vector<SummonInfo*> _activeSummons;
 };
 
 namespace Trinity

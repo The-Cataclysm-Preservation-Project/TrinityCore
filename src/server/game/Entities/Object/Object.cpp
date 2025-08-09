@@ -46,6 +46,7 @@
 #include "SpellDefines.h"
 #include "SpellMgr.h"
 #include "StringConvert.h"
+#include "SummonInfoArgs.h"
 #include "TemporarySummon.h"
 #include "Totem.h"
 #include "Transport.h"
@@ -2085,6 +2086,22 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonCreatur
     // Inherit summoner's Phaseshift
     if (summonArgs.Summoner)
         PhasingHandler::InheritPhaseShift(summon, summonArgs.Summoner);
+
+    // Store special settings which have been extracted from spell effects/scripts
+    SummonInfoArgs args;
+    if (summonArgs.Summoner)
+        args.SummonerGUID = summonArgs.Summoner->GetGUID();
+    if (summonArgs.SummonProperties)
+        args.SummonPropertiesId = summonArgs.SummonProperties->ID;
+    if (summonArgs.SummonDuration)
+        args.Duration = Milliseconds(summonArgs.SummonDuration);
+    if (summonArgs.SummonSpellId)
+        args.SummonSpellId = summonArgs.SummonSpellId;
+    if (summonArgs.SummonHealth)
+        args.MaxHealth = summonArgs.SummonHealth;
+
+    // Initialize the SummonInfo API which marks the creature as Summon
+    summon->InitializeSummonInfo(args);
 
     TransportBase* transport = summonArgs.Summoner ? summonArgs.Summoner->GetTransport() : nullptr;
     if (transport)

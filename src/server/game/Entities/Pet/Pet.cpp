@@ -28,6 +28,8 @@
 #include "SpellHistory.h"
 #include "SpellAuras.h"
 #include "SpellAuraEffects.h"
+#include "SummonInfo.h"
+#include "SummonInfoArgs.h"
 #include "Unit.h"
 #include "Util.h"
 #include "Group.h"
@@ -42,6 +44,8 @@ Pet::Pet(Player* owner, PetType type) :
     m_declinedname(nullptr)
 {
     ASSERT(GetOwner());
+
+    InitializeSummonInfo({ .SummonerGUID = GetOwner()->GetGUID()});
 
     m_unitTypeMask |= UNIT_MASK_PET;
     if (type == HUNTER_PET)
@@ -69,6 +73,11 @@ void Pet::AddToWorld()
         ///- Register the pet for guid lookup
         GetMap()->GetObjectsStore().Insert<Pet>(GetGUID(), this);
         Unit::AddToWorld();
+
+        // SummonInfo should always be initialized for pets. Make sure that we will not go any further if this is no longer the case.
+        if (Unit* summoner = ASSERT_NOTNULL(GetSummonInfo())->GetUnitSummoner())
+            summoner->RegisterSummon(GetSummonInfo());
+
         AIM_Initialize();
     }
 
@@ -89,6 +98,10 @@ void Pet::RemoveFromWorld()
     ///- Remove the pet from the accessor
     if (IsInWorld())
     {
+        // SummonInfo should always be initialized for pets. Make sure that we will not go any further if this is no longer the case.
+        if (Unit* summoner = ASSERT_NOTNULL(GetSummonInfo())->GetUnitSummoner())
+            summoner->UnregisterSummon(GetSummonInfo());
+
         ///- Don't call the function for Creature, normal mobs + totems go in a different storage
         Unit::RemoveFromWorld();
         GetMap()->GetObjectsStore().Remove<Pet>(GetGUID());
