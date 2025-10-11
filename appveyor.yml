@@ -8,23 +8,23 @@ environment:
   MYSQL_ROOT_DIR: C:\mysql-8.0.43-winx64
   OPENSSL_ROOT_DIR: C:\OpenSSL-v30-Win64
 install:
-ps: >-
-  # Instalar Boost 1.78.0
-  $boostZip = "$($env:temp)\boost_1_78_0.zip"
-  Write-Host "Descargando Boost 1.78.0..." -ForegroundColor Cyan
-  (New-Object Net.WebClient).DownloadFile('https://archives.boost.io/release/1.78.0/source/boost_1_78_0.zip', $boostZip)
-  Write-Host "Descomprimiendo Boost..." -ForegroundColor Cyan
-  7z x $boostZip -o"C:\local" | Out-Null
-  Write-Host "Boost instalado en C:\local\boost_1_78_0" -ForegroundColor Cyan
+- ps: |
+    # Instalar Boost 1.78.0
+    $boostZip = "$($env:temp)\boost_1_78_0.zip"
+    Write-Host "Descargando Boost 1.78.0..." -ForegroundColor Cyan
+    (New-Object Net.WebClient).DownloadFile('https://archives.boost.io/release/1.78.0/source/boost_1_78_0.zip', $boostZip)
+    Write-Host "Descomprimiendo Boost..." -ForegroundColor Cyan
+    7z x $boostZip -o"C:\local" | Out-Null
+    Write-Host "Boost instalado en C:\local\boost_1_78_0" -ForegroundColor Cyan
 
-  # Instalar MySQL Server 8.0
-  Write-Host "Installing MySQL Server 8.0" -ForegroundColor Cyan
-  Write-Host "Downloading MySQL..."
-  $zipPath = "$($env:temp)\mysql-8.0.43-winx64.zip"
-  (New-Object Net.WebClient).DownloadFile('https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.43-winx64.zip', $zipPath)
-  Write-Host "Unpacking..."
-  7z x $zipPath -o"C:\" | Out-Null
-  Write-Host "MySQL Server 8.0 installed" -ForegroundColor Cyan
+    # Instalar MySQL Server 8.0
+    Write-Host "Installing MySQL Server 8.0" -ForegroundColor Cyan
+    Write-Host "Downloading MySQL..."
+    $zipPath = "$($env:temp)\mysql-8.0.43-winx64.zip"
+    (New-Object Net.WebClient).DownloadFile('https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.43-winx64.zip', $zipPath)
+    Write-Host "Unpacking..."
+    7z x $zipPath -o"C:\" | Out-Null
+    Write-Host "MySQL Server 8.0 installed" -ForegroundColor Cyan
 
 build_script:
 cmd: >-
