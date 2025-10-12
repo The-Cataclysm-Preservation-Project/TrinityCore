@@ -4,9 +4,17 @@ clone_depth: 1
 init:
 - ps: ''
 environment:
-  BOOST_ROOT: C:\Libraries\boost_1_85_0
+  BOOST_ROOT: C:\local\boost_1_78_0
   MYSQL_ROOT_DIR: C:\Program Files\MySQL\MySQL Server 8.0
   OPENSSL_ROOT_DIR: C:\OpenSSL-v32-Win64
+install:
+- ps: |
+    Write-Host "Descargando Boost 1.78.0..." -ForegroundColor Cyan
+    $boostZip = "$($env:temp)\boost_1_78_0.zip"
+    (New-Object Net.WebClient).DownloadFile('https://archives.boost.io/release/1.78.0/source/boost_1_78_0.zip', $boostZip)
+    Write-Host "Descomprimiendo Boost..." -ForegroundColor Cyan
+    7z x $boostZip -o"C:\local" | Out-Null
+    Write-Host "Boost instalado en C:\local\boost_1_78_0" -ForegroundColor Cyan
 build_script:
 - cmd: >-
     git config user.email "appveyor@build.bot" && git config user.name "AppVeyor"
