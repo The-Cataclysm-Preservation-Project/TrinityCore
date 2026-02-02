@@ -508,7 +508,7 @@ float Aura::CalcPeriodicCritChance(Unit const* caster) const
     if (!modOwner || !CanPeriodicTickCrit(modOwner))
         return 0.f;
 
-    float critChance = modOwner->SpellCritChanceDone(GetSpellInfo(), GetSpellInfo()->GetSchoolMask(), GetSpellInfo()->GetAttackType());
+    float critChance = modOwner->SpellCritChanceDone(GetSpellInfo(), GetSpellInfo()->GetSchoolMask(), GetSpellInfo()->GetAttackType(), true);
     return std::max(0.f, critChance);
 }
 
