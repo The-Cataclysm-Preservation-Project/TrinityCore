@@ -490,22 +490,18 @@ void Aura::_InitEffects(uint8 effMask, Unit* caster, int32 const* baseAmount)
     }
 }
 
-bool Aura::CanPeriodicTickCrit(Unit const* caster) const
+bool Aura::CanPeriodicTickCrit() const
 {
-    if (m_spellInfo->HasAttribute(SPELL_ATTR8_PERIODIC_CAN_CRIT))
-        return true;
-
     if (m_spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
         return false;
 
-    return caster->HasAuraTypeWithAffectMask(SPELL_AURA_ABILITY_PERIODIC_CRIT, GetSpellInfo());
-
+    return true;
 }
 
 float Aura::CalcPeriodicCritChance(Unit const* caster) const
 {
     Player* modOwner = caster->GetSpellModOwner();
-    if (!modOwner || !CanPeriodicTickCrit(modOwner))
+    if (!modOwner || !CanPeriodicTickCrit())
         return 0.f;
 
     float critChance = modOwner->SpellCritChanceDone(GetSpellInfo(), GetSpellInfo()->GetSchoolMask(), GetSpellInfo()->GetAttackType(), true);
