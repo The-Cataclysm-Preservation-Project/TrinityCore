@@ -479,8 +479,11 @@ static_assert((PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID & 1) == 0, "PLAYER
 
 constexpr uint8 PLAYER_BYTES_2_OVERRIDE_SPELLS_UINT16_OFFSET = PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID / 2;
 
-constexpr uint8 KNOWN_TITLES_SIZE = 4;
-constexpr uint32 MAX_TITLE_INDEX = KNOWN_TITLES_SIZE * sizeof(uint64); // 4 uint64 fields
+// PLAYER__FIELD_KNOWN_TITLES consists of 4 uint64 blocks (64 bits each).
+// Total available title bits = KNOWN_TITLES_SIZE * 64.
+constexpr uint32 KNOWN_TITLES_SIZE = 4;
+constexpr uint32 BITS_PER_TITLE_BLOCK = sizeof(uint64) * 8;
+constexpr uint32 MAX_TITLE_INDEX = KNOWN_TITLES_SIZE * BITS_PER_TITLE_BLOCK;
 
 // used in PLAYER_FIELD_BYTES values
 enum PlayerFieldByteFlags
