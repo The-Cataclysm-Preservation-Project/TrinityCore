@@ -300,7 +300,7 @@ class TC_GAME_API PackedGuid
 
     public:
         explicit PackedGuid() : _packedSize(1), _packedGuid() { }
-        explicit PackedGuid(ObjectGuid guid) { Set(guid); }
+        explicit PackedGuid(ObjectGuid guid) : _packedSize(1), _packedGuid() { Set(guid); }
 
         void Set(ObjectGuid guid);
 
