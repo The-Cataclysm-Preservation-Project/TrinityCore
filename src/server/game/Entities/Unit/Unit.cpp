@@ -7064,6 +7064,22 @@ float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo,
     return damage;
 }
 
+/*static*/ bool Unit::IsReducedPeriodicCritDamageSpell(SpellInfo const* spellInfo)
+{
+    if (!spellInfo) return false;
+
+    switch (spellInfo->Id)
+    {
+        case 1978:   // Hunter: Serpent Sting
+        case 3674:   // Hunter: Black Arrow
+        case 53301:  // Hunter: Explosive Shot (Not really sure, can not find that spell damage in sniff)
+        case 13812:  // Hunter: Explosive Trap
+            return true;
+        default:
+            return false;
+    }
+}
+
 int32 Unit::SpellHealingBonusDone(Unit* victim, SpellInfo const* spellProto, int32 healamount, DamageEffectType damagetype, uint8 effIndex, uint32 stack /*= 1*/, Spell* spell /*= nullptr*/, AuraEffect const* aurEff /*= nullptr*/) const
 {
     // For totems get healing bonus from owner (statue isn't totem in fact)
