@@ -7003,23 +7003,33 @@ float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo,
     return std::max(crit_chance, 0.0f);
 }
 
-/*static*/ uint32 Unit::SpellCriticalDamageBonus(Unit const* caster, SpellInfo const* spellProto, uint32 damage)
+/*static*/ uint32 Unit::SpellCriticalDamageBonus(Unit const* caster, SpellInfo const* spellProto, uint32 damage, bool isPeriodic /*= false*/)
 {
     // Calculate critical bonus
     int32 crit_bonus = damage;
     float crit_mod = 0.0f;
+    int32 extraCritBonus = 0;
 
-    switch (spellProto->DmgClass)
+    if (isPeriodic && IsReducedPeriodicCritDamageSpell(spellProto))
     {
-        case SPELL_DAMAGE_CLASS_MELEE:                      // for melee based spells is 100%
-        case SPELL_DAMAGE_CLASS_RANGED:
-            /// @todo write here full calculation for melee/ranged spells
-            crit_bonus += damage;
-            break;
-        default:
-            crit_bonus += damage / 2;                       // for spells is 50%
-            break;
+        extraCritBonus = damage / 2;
     }
+    else
+    {
+        switch (spellProto->DmgClass)
+        {
+            case SPELL_DAMAGE_CLASS_MELEE:          // for melee based spells is 100%
+            case SPELL_DAMAGE_CLASS_RANGED:
+                /// @todo write here full calculation for melee/ranged spells
+                extraCritBonus = damage;
+                break;
+            default:
+                extraCritBonus = damage / 2;        // for spells is 50%
+                break;
+        }
+    }
+
+    crit_bonus += extraCritBonus;
 
     if (caster)
     {

@@ -98,7 +98,7 @@ class TC_GAME_API AuraEffect
         // add/remove SPELL_AURA_MOD_SHAPESHIFT (36) linked auras
         void HandleShapeshiftBoosts(Unit* target, bool apply) const;
 
-        bool CanPeriodicTickCrit(Unit const* caster) const;
+        bool CanPeriodicTickCrit() const;
     private:
         Aura* const m_base;
 

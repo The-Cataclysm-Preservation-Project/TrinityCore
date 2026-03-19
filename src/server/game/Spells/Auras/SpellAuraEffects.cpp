@@ -1499,12 +1499,12 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
     }
 }
 
-bool AuraEffect::CanPeriodicTickCrit(Unit const* caster) const
+bool AuraEffect::CanPeriodicTickCrit() const
 {
-    if (m_spellInfo->HasAttribute(SPELL_ATTR8_PERIODIC_CAN_CRIT))
-        return true;
+    if (m_spellInfo->HasAttribute(SPELL_ATTR2_CANT_CRIT))
+        return false;
 
-    return caster && caster->HasAuraTypeWithAffectMask(SPELL_AURA_ABILITY_PERIODIC_CRIT, m_spellInfo);
+    return true;
 }
 
 /*********************************************************/
@@ -5833,11 +5833,11 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
 
     bool crit = false;
 
-    if (CanPeriodicTickCrit(caster))
+    if (CanPeriodicTickCrit())
         crit = roll_chance_f(GetCritChanceFor(caster, target));
 
     if (crit)
-        damage = Unit::SpellCriticalDamageBonus(caster, m_spellInfo, damage);
+        damage = Unit::SpellCriticalDamageBonus(caster, m_spellInfo, damage, true);
 
     uint32 unmitigatedDamage = damage;
 
@@ -5922,7 +5922,7 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
 
     bool crit = false;
 
-    if (CanPeriodicTickCrit(caster))
+    if (CanPeriodicTickCrit())
         crit = roll_chance_f(GetCritChanceFor(caster, target));
 
     if (crit)
@@ -6054,7 +6054,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
 
     bool crit = false;
 
-    if (CanPeriodicTickCrit(caster))
+    if (CanPeriodicTickCrit())
         crit = roll_chance_f(GetCritChanceFor(caster, target));
 
     if (crit)
