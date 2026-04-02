@@ -1793,6 +1793,7 @@ class spell_gen_feign_death_all_flags_uninteractible : public AuraScript
     void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
         target->SetImmuneToAll(true);
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT | UNIT_FLAG_NOT_SELECTABLE);
@@ -1804,6 +1805,7 @@ class spell_gen_feign_death_all_flags_uninteractible : public AuraScript
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
         target->SetImmuneToAll(false);
         target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT| UNIT_FLAG_NOT_SELECTABLE);
@@ -1825,6 +1827,7 @@ class spell_gen_feign_death_all_flags_no_uninteractible : public AuraScript
     void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG2_FEIGN_DEATH);
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
         target->SetImmuneToAll(true);
@@ -1836,6 +1839,7 @@ class spell_gen_feign_death_all_flags_no_uninteractible : public AuraScript
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
         target->SetImmuneToAll(false);
