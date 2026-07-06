@@ -949,10 +949,10 @@ void WorldSession::SendPetSlotUpdated(int32 petNumberA, int32 petSlotA, int32 pe
 {
     WorldPacket data(SMSG_PET_SLOT_UPDATED, 4 + 4 + 4 + 4);
 
+    data << int32(petSlotA);
     data << uint32(petNumberA);
-    data << uint32(petSlotA);
     data << uint32(petNumberB);
-    data << uint32(petSlotB);
+    data << int32(petSlotB);
 
     SendPacket(&data);
 }
