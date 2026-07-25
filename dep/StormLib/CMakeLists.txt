@@ -277,6 +277,8 @@ target_include_directories(storm
     ${CMAKE_SOURCE_DIR}/dep/zlib
     ${CMAKE_SOURCE_DIR}/dep/bzip2)
 
+target_compile_definitions(storm PUBLIC __STORMLIB_NO_STATIC_LINK__)
+
 target_link_libraries(storm
   PRIVATE
     trinity-dependency-interface
