@@ -98,7 +98,7 @@ void WorldSession::HandleQuestgiverHelloOpcode(WorldPackets::Quest::QuestGiverHe
     if (creature->AI()->GossipHello(_player))
         return;
 
-    _player->PrepareGossipMenu(creature, creature->GetCreatureTemplate()->GossipMenuId, true);
+    _player->PrepareGossipMenu(creature, _player->GetGossipMenuForSource(creature), true);
     _player->SendPreparedGossip(creature);
 }
 
@@ -227,7 +227,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPackets::Quest::QuestG
                 auto launchGossip = [&](WorldObject* worldObject)
                 {
                     _player->PlayerTalkClass->ClearMenus();
-                    _player->PrepareGossipMenu(worldObject, _player->GetDefaultGossipMenuForSource(worldObject), true);
+                    _player->PrepareGossipMenu(worldObject, _player->GetGossipMenuForSource(worldObject), true);
                     _player->SendPreparedGossip(worldObject);
                 };
 
