@@ -9182,6 +9182,17 @@ uint32 ObjectMgr::GetCreatureTrainerForGossipOption(uint32 creatureId, uint32 go
     if (itr != _creatureDefaultTrainers.end())
         return itr->second;
 
+    if (gossipMenuId)
+    {
+        GossipMenuItemsMapBounds gossipMenuItems = GetGossipMenuItemsMapBounds(gossipMenuId);
+        if (gossipMenuItems.first == gossipMenuItems.second)
+        {
+            itr = _creatureDefaultTrainers.find(std::make_tuple(creatureId, 0, gossipOptionId));
+            if (itr != _creatureDefaultTrainers.end())
+                return itr->second;
+        }
+    }
+
     return 0;
 }
 
