@@ -17168,6 +17168,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // must be before inventory (some items required reputation check)
     m_reputationMgr->LoadFromDB(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_REPUTATION));
 
+    // the player is not placed in the world yet, use the saved zone so items limited to a zone are not deleted on login
+    m_zoneId = fields[41].GetUInt16();
     _LoadInventory(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_INVENTORY), time_diff);
 
     if (IsVoidStorageUnlocked())
