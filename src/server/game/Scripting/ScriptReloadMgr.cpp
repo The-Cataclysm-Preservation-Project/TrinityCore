@@ -861,7 +861,7 @@ private:
 
         {
             boost::system::error_code code;
-            fs::copy_file(path, cache_path, fs::copy_options::none, code);
+            fs::copy_file(path, cache_path, code);
             if (code)
             {
                 TC_LOG_FATAL("scripts.hotswap", ">> Failed to create cache entry for module "
