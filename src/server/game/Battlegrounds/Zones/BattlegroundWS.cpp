@@ -644,12 +644,12 @@ void BattlegroundWS::HandleAreaTrigger(Player* player, uint32 trigger)
             //buff_guid = BgObjects[BG_WS_OBJECT_BERSERKBUFF_2];
             break;
         case 3646:                                          // Alliance Flag spawn
-            if (_flagState[TEAM_HORDE] && !_flagState[TEAM_ALLIANCE])
+            if (_flagState[TEAM_HORDE] && _flagState[TEAM_ALLIANCE] == BG_WS_FLAG_STATE_ON_BASE)
                 if (GetFlagPickerGUID(TEAM_HORDE) == player->GetGUID())
                     EventPlayerCapturedFlag(player);
             break;
         case 3647:                                          // Horde Flag spawn
-            if (_flagState[TEAM_ALLIANCE] && !_flagState[TEAM_HORDE])
+            if (_flagState[TEAM_ALLIANCE] && _flagState[TEAM_HORDE] == BG_WS_FLAG_STATE_ON_BASE)
                 if (GetFlagPickerGUID(TEAM_ALLIANCE) == player->GetGUID())
                     EventPlayerCapturedFlag(player);
             break;
