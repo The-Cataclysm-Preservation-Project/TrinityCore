@@ -132,6 +132,14 @@ variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, s
 /// Launch the Trinity server
 extern int main(int argc, char** argv)
 {
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    OSSL_PROVIDER* legacy = OSSL_PROVIDER_load(nullptr, "legacy");
+    if (!legacy) {
+        printf("ERROR: OpenSSL legacy provider could not be loaded. RC4 will not be available.\n");
+    } else {
+        printf("OpenSSL legacy provider loaded successfully.\n");
+    }
+#endif
     Trinity::Impl::CurrentServerProcessHolder::_type = SERVER_PROCESS_WORLDSERVER;
     signal(SIGABRT, &Trinity::AbortHandler);
 
