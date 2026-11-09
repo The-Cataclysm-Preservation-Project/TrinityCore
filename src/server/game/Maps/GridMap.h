@@ -18,10 +18,11 @@
 #ifndef TRINITY_GRID_MAP_H
 #define TRINITY_GRID_MAP_H
 
+#include <cstdio>
+
 #include "Define.h"
 #include "MapDefines.h"
 #include "Optional.h"
-#include <cstdio>
 
 struct LiquidData;
 enum ZLiquidStatus : uint32;

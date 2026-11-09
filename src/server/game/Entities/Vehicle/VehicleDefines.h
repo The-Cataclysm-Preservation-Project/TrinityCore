@@ -26,7 +26,7 @@ class Map;
 class WorldObject;
 struct VehicleSeatEntry;
 
-enum PowerType : uint32
+enum PowerDisplay : uint32
 {
     POWER_STEAM                                  = 61,
     POWER_PYRITE                                 = 41,

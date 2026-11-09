@@ -34,10 +34,7 @@ class Group;
 class Quest;
 class Player;
 class SpellInfo;
-class SummonInfo;
 class WorldSession;
-
-struct SummonInfoArgs;
 
 enum MovementGeneratorType : uint8;
 
@@ -197,13 +194,11 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         bool UpdateEntry(uint32 entry, CreatureData const* data = nullptr, bool updateLevel = true);
 
-        bool UpdateStats(Stats stat) override;
-        bool UpdateAllStats() override;
         void UpdateResistances(uint32 school) override;
         void UpdateArmor() override;
         void UpdateMaxHealth() override;
-        void UpdateMaxPower(Powers power) override;
-        uint32 GetPowerIndex(Powers power) const override;
+        void UpdateMaxPower(PowerType power) override;
+        uint32 GetPowerIndex(PowerType power) const override;
         void UpdateAttackPowerAndDamage(bool ranged = false) override;
         void CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bool addTotalPct, float& minDamage, float& maxDamage) const override;
 
@@ -416,19 +411,15 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool HasStaticFlag(CreatureStaticFlags4 flag) const { return _staticFlags.HasFlag(flag); }
         bool HasStaticFlag(CreatureStaticFlags5 flag) const { return _staticFlags.HasFlag(flag); }
 
+        uint32 GetGossipMenuId() const;
+        void SetGossipMenuId(uint32 gossipMenuId);
+
         CreatureMovementInfo const& GetCreatureMovementInfo() const { return _creatureMovementInfo; }
 
         // Sets the the max health percentage threshold at which uncontrolled/unowned creatures can no longer deal damage to the creature
         void SetNoNpcDamageBelowPctHealthValue(float value) { _noNpcDamageBelowPctHealth = std::clamp<float>(value, 0.f, 100.f); }
         void ResetNoNpcDamageBelowPctHealthValue() { _noNpcDamageBelowPctHealth = 0.f; }
         float GetNoNpcDamageBelowPctHealthValue() const { return _noNpcDamageBelowPctHealth; }
-
-        // Initializes the summon API for this creature which marks it as summon and will be treated accordingly
-        void InitializeSummonInfo(SummonInfoArgs const& args);
-        // Returns a pointer to the SummonInfo API, nullptr if the creature is not a summon
-        SummonInfo* GetSummonInfo() const;
-
-        bool IsSummon() const override;
 
     protected:
         bool CreateFromProto(ObjectGuid::LowType guidlow, uint32 entry, CreatureData const* data = nullptr, uint32 vehId = 0);
@@ -521,8 +512,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         Optional<uint32> _defaultMountDisplayIdOverride;
         float _noNpcDamageBelowPctHealth;
 
-        // The Summon API which controls the behavior of summons
-        std::unique_ptr<SummonInfo> _summonInfo;
+        uint32 _gossipMenuId;
 };
 
 class TC_GAME_API AssistDelayEvent : public BasicEvent

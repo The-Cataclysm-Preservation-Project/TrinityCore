@@ -2730,9 +2730,13 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
         std::unique_ptr<HealInfo> healInfo;
         if (spell->m_healing > 0)
         {
+            // SPELL_EFFECT_HEAL_PCT must never crit, even if other spell effects do crit. As of 4.3.4.15595,
+            // this spell effect does not share other healing effects in any spell so we can use this rule here
+            bool critPrevented = IsCrit && spell->m_spellInfo->HasEffect(SPELL_EFFECT_HEAL_PCT);
+
             hasHealing = true;
             uint32 addhealth = spell->m_healing;
-            if (IsCrit)
+            if (IsCrit && !critPrevented)
             {
                 ProcHitMask |= PROC_HIT_CRITICAL;
                 addhealth = Unit::SpellCriticalHealingBonus(caster, addhealth);
@@ -2741,7 +2745,7 @@ void Spell::TargetInfo::DoDamageAndTriggers(Spell* spell)
                 ProcHitMask |= PROC_HIT_NORMAL;
 
             healInfo = std::make_unique<HealInfo>(caster, spell->unitTarget, addhealth, spell->m_spellInfo, spell->m_spellInfo->GetSchoolMask());
-            caster->HealBySpell(*healInfo, IsCrit);
+            caster->HealBySpell(*healInfo, IsCrit && !critPrevented);
             spell->unitTarget->GetThreatManager().ForwardThreatForAssistingMe(caster, float(healInfo->GetEffectiveHeal()) * 0.5f, spell->m_spellInfo);
             spell->m_healing = healInfo->GetEffectiveHeal();
 
@@ -3710,9 +3714,10 @@ void Spell::_cast(bool skipCheck)
         return;
     }
 
-    if (m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST))
-        if (Unit* unitCaster = m_caster->ToUnit())
-            unitCaster->DismissPet();
+    if (Unit* unitCaster = m_caster->ToUnit())
+        if (m_spellInfo->HasAttribute(SPELL_ATTR1_DISMISS_PET_FIRST))
+            if (Creature* pet = ObjectAccessor::GetCreature(*m_caster, unitCaster->GetPetGUID()))
+                pet->DespawnOrUnsummon();
 
     PrepareTriggersExecutedOnHit();
 
@@ -4152,7 +4157,8 @@ void Spell::update(uint32 difftime)
         // if charmed by creature, trust the AI not to cheat and allow the cast to proceed
         // @todo this is a hack, "creature" movesplines don't differentiate turning/moving right now
         // however, checking what type of movement the spline is for every single spline would be really expensive
-        if (!m_caster->ToUnit()->IsControlledByPlayer())
+        Unit* unitCaster = m_caster->ToUnit();
+        if (!unitCaster->GetCharmerGUID().IsCreature() && (!unitCaster->IsControlledByPlayer() || unitCaster->GetTypeId() == TYPEID_PLAYER))
             cancel();
     }
 
@@ -4568,7 +4574,7 @@ void Spell::SendSpellStart()
     m_targets.Write(castData.Target);
 
     if (castFlags & CAST_FLAG_POWER_LEFT_SELF)
-        castData.RemainingPower = ASSERT_NOTNULL(m_caster->ToUnit())->GetPower(Powers(m_spellInfo->PowerType));
+        castData.RemainingPower = ASSERT_NOTNULL(m_caster->ToUnit())->GetPower(PowerType(m_spellInfo->PowerType));
 
     if (castFlags & CAST_FLAG_RUNE_LIST)                   // rune cooldowns list
     {
@@ -4688,7 +4694,7 @@ void Spell::SendSpellGo()
     }
 
     if (castFlags & CAST_FLAG_POWER_LEFT_SELF)
-        castData.RemainingPower = ASSERT_NOTNULL(m_caster->ToUnit())->GetPower((Powers)m_spellInfo->PowerType);
+        castData.RemainingPower = ASSERT_NOTNULL(m_caster->ToUnit())->GetPower((PowerType)m_spellInfo->PowerType);
 
     if (castFlags & CAST_FLAG_RUNE_LIST)                   // rune cooldowns list
     {
@@ -5224,27 +5230,31 @@ void Spell::TakeCastItem()
     bool expendable = false;
     bool withoutCharges = false;
 
-    for (uint8 i = 0; i < proto->Effects.size(); ++i)
+    for (uint32 i = 0; i < proto->Effects.size(); ++i)
     {
-        // item has limited charges
-        if (proto->Effects[i].Charges)
+        ItemEffect const& itemEffect = proto->Effects[i];
+        if (itemEffect.Trigger == ITEM_SPELLTRIGGER_ON_USE && itemEffect.SpellID > 0)
         {
-            if (proto->Effects[i].Charges < 0)
-                expendable = true;
-
-            int32 charges = m_CastItem->GetSpellCharges(i);
-
-            // item has charges left
-            if (charges)
+            // item has limited charges
+            if (itemEffect.Charges)
             {
-                (charges > 0) ? --charges : ++charges;  // abs(charges) less at 1 after use
-                if (proto->GetMaxStackSize() == 1)
-                    m_CastItem->SetSpellCharges(i, charges);
-                m_CastItem->SetState(ITEM_CHANGED, player);
-            }
+                if (itemEffect.Charges < 0)
+                    expendable = true;
 
-            // all charges used
-            withoutCharges = (charges == 0);
+                int32 charges = m_CastItem->GetSpellCharges(i);
+
+                // item has charges left for this slot
+                if (charges && itemEffect.SpellID == m_spellInfo->Id)
+                {
+                    (charges > 0) ? --charges : ++charges;  // abs(charges) less at 1 after use
+                    if (proto->GetMaxStackSize() == 1)
+                        m_CastItem->SetSpellCharges(i, charges);
+                    m_CastItem->SetState(ITEM_CHANGED, player);
+                }
+
+                // all charges used
+                withoutCharges = (charges == 0);
+            }
         }
     }
 
@@ -5280,7 +5290,7 @@ void Spell::TakePower()
             return;
     }
 
-    Powers powerType = Powers(m_spellInfo->PowerType);
+    PowerType powerType = PowerType(m_spellInfo->PowerType);
     if (unitCaster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->HasAttribute(SPELL_ATTR1_DISCOUNT_POWER_ON_MISS))
     {
         ObjectGuid targetGUID = m_targets.GetUnitTargetGUID();
@@ -6140,7 +6150,7 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                 // Can be area effect, Check only for players and not check if target - caster (spell can have multiply drain/burn effects)
                 if (m_caster->GetTypeId() == TYPEID_PLAYER)
                     if (Unit* target = m_targets.GetUnitTarget())
-                        if (target != m_caster && target->GetPowerType() != Powers(m_spellInfo->Effects[i].MiscValue))
+                        if (target != m_caster && target->GetPowerType() != PowerType(m_spellInfo->Effects[i].MiscValue))
                             return SPELL_FAILED_BAD_TARGETS;
                 break;
             }
@@ -7116,7 +7126,7 @@ SpellCastResult Spell::CheckPower() const
     }
 
     // Check power amount
-    Powers powerType = Powers(m_spellInfo->PowerType);
+    PowerType powerType = PowerType(m_spellInfo->PowerType);
     if (int32(unitCaster->GetPower(powerType)) < m_powerCost)
         return SPELL_FAILED_NO_POWER;
     else
@@ -7182,7 +7192,7 @@ SpellCastResult Spell::CheckItems(uint32* param1 /*= nullptr*/, uint32* param2 /
                         continue;
                     }
 
-                    Powers power = Powers(m_spellInfo->Effects[i].MiscValue);
+                    PowerType power = PowerType(m_spellInfo->Effects[i].MiscValue);
                     if (m_targets.GetUnitTarget()->GetPower(power) == m_targets.GetUnitTarget()->GetMaxPower(power))
                     {
                         failReason = SPELL_FAILED_ALREADY_AT_FULL_POWER;
@@ -7909,13 +7919,13 @@ bool Spell::IsChannelActive() const
 
 bool Spell::IsAutoActionResetSpell() const
 {
-    if (IsTriggered() || m_spellInfo->HasAttribute(SPELL_ATTR2_DO_NOT_RESET_COMBAT_TIMERS))
+    if (IsTriggered() || !m_spellInfo->InterruptFlags.HasFlag(SpellInterruptFlags::Combat) || m_spellInfo->HasAttribute(SPELL_ATTR2_DO_NOT_RESET_COMBAT_TIMERS))
         return false;
 
     if (!m_casttime && m_spellInfo->HasAttribute(SPELL_ATTR6_DOESNT_RESET_SWING_TIMER_IF_INSTANT))
         return false;
 
-    return m_casttime || m_spellInfo->IsRangedWeaponSpell();
+    return true;
 }
 
 bool Spell::IsPositive() const

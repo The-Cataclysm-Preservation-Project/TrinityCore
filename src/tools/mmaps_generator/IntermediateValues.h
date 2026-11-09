@@ -18,9 +18,8 @@
 #ifndef _INTERMEDIATE_VALUES_H
 #define _INTERMEDIATE_VALUES_H
 
-#include "PathCommon.h"
-#include "TerrainBuilder.h"
 #include "Recast.h"
+#include "TerrainBuilder.h"
 
 namespace MMAP
 {

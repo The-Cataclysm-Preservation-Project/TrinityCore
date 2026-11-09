@@ -895,13 +895,4 @@ DEFINE_ENUM_FLAG(CurrencyTypeFlags);
 
 constexpr uint8 MAX_QUEST_DIFFICULTY = 10;
 
-enum class TotemCategoryTypes : uint8
-{
-    // Shaman Totems
-    EarthTotem          = 2,
-    AirTotem            = 3,
-    FireTotem           = 4,
-    WaterTotem          = 5,
-};
-
 #endif

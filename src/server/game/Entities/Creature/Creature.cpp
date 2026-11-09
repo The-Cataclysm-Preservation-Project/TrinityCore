@@ -51,9 +51,7 @@
 #include "ScriptedGossip.h"
 #include "SpellAuraEffects.h"
 #include "SpellMgr.h"
-#include "SummonInfo.h"
 #include "TemporarySummon.h"
-#include "TotemPackets.h"
 #include "Transport.h"
 #include "Util.h"
 #include "Vehicle.h"
@@ -282,7 +280,7 @@ m_respawnDelay(300), m_corpseDelay(60), m_wanderDistance(0.0f), m_boundaryCheckT
 m_defaultMovementType(IDLE_MOTION_TYPE), m_spawnId(0), m_equipmentId(0), m_originalEquipmentId(0), m_AlreadyCallAssistance(false),
 m_AlreadySearchedAssistance(false), m_regenHealth(true), m_cannotReachTarget(false), m_cannotReachTimer(0), m_meleeDamageSchoolMask(SPELL_SCHOOL_MASK_NORMAL),
 m_originalEntry(0), m_homePosition(), m_transportHomePosition(), m_creatureInfo(nullptr), m_creatureData(nullptr), _waypointPathId(0), _currentWaypointNodeInfo(0, 0), _cyclicSplinePathId(0),
-m_formation(nullptr), m_triggerJustAppeared(true), m_respawnCompatibilityMode(false), _lastDamagedTime(0), _isMissingSwimmingFlagOutOfCombat(false), _noNpcDamageBelowPctHealth(0.f)
+m_formation(nullptr), m_triggerJustAppeared(true), m_respawnCompatibilityMode(false), _lastDamagedTime(0), _isMissingSwimmingFlagOutOfCombat(false), _noNpcDamageBelowPctHealth(0.f), _gossipMenuId(0)
 {
     m_valuesCount = UNIT_END;
 
@@ -318,13 +316,6 @@ void Creature::AddToWorld()
         if (IsVehicle())
             GetVehicleKit()->Install();
 
-        if (SummonInfo* summonInfo = GetSummonInfo())
-        {
-            // If the creature has been summoned, register it for the summoner
-            if (Unit* summoner = summonInfo->GetUnitSummoner())
-                summoner->RegisterSummon(summonInfo);
-        }
-
         if (GetZoneScript())
             GetZoneScript()->OnCreatureCreate(this);
     }
@@ -334,16 +325,6 @@ void Creature::RemoveFromWorld()
 {
     if (IsInWorld())
     {
-        // If the creature about to despawn, unregister it for the summoner
-        if (SummonInfo* summonInfo = GetSummonInfo())
-        {
-            // Perform cleanup actions if needed
-            summonInfo->HandlePreUnsummonActions();
-
-            if (Unit* summoner = summonInfo->GetUnitSummoner())
-                summoner->UnregisterSummon(summonInfo);
-        }
-
         if (GetZoneScript())
             GetZoneScript()->OnCreatureRemove(this);
 
@@ -604,10 +585,7 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
     if (!GetCreatureAddon())
         SetSheath(SHEATH_STATE_MELEE);
 
-    if (SummonInfo const* summonInfo = GetSummonInfo())
-        SetFaction(summonInfo->GetFactionId().value_or(cInfo->faction));
-    else
-        SetFaction(cInfo->faction);
+    SetFaction(cInfo->faction);
 
     uint32 npcflags = 0, unitFlags = 0, unitFlags2 = 0;
     ObjectMgr::ChooseCreatureFlags(cInfo, &npcflags, &unitFlags, &unitFlags2, _staticFlags, data);
@@ -653,7 +631,15 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
         SetStatFlatModifier(UNIT_MOD_RESISTANCE_ARCANE, BASE_VALUE, float(cInfo->resistance[SPELL_SCHOOL_ARCANE]));
 
         SetCanModifyStats(true);
-        UpdateAllStats();
+
+        UpdateMaxHealth();
+        UpdateAttackPowerAndDamage();
+        UpdateAttackPowerAndDamage(true);
+
+        for (uint8 i = POWER_MANA; i < MAX_POWERS; ++i)
+            UpdateMaxPower(PowerType(i));
+
+        UpdateAllResistances();
     }
 
     // checked and error show at loading templates
@@ -813,9 +799,6 @@ void Creature::Update(uint32 diff)
         case ALIVE:
         {
             Unit::Update(diff);
-
-            if (SummonInfo* summonInfo = GetSummonInfo())
-                summonInfo->UpdateRemainingDuration(Milliseconds(diff));
 
             // creature can be dead after Unit::Update call
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
@@ -1258,6 +1241,16 @@ Group* Creature::GetLootRecipientGroup() const
     return sGroupMgr->GetGroupByGUID(m_lootRecipientGroup);
 }
 
+uint32 Creature::GetGossipMenuId() const
+{
+    return _gossipMenuId;
+}
+
+void Creature::SetGossipMenuId(uint32 gossipMenuID)
+{
+    _gossipMenuId = gossipMenuID;
+}
+
 void Creature::SetLootRecipient(Unit* unit, bool withGroup)
 {
     // set the player whose group should receive the right
@@ -1428,22 +1421,12 @@ void Creature::SaveToDB(uint32 mapid, uint8 spawnMask)
 
 void Creature::SelectLevel()
 {
-    uint8 level = [&]() -> uint8
-    {
-        // Some summons override their default level selection
-        if (SummonInfo const* summonInfo = GetSummonInfo())
-            if (summonInfo->GetCreatureLevel().has_value())
-                return *summonInfo->GetCreatureLevel();
+    CreatureTemplate const* cInfo = GetCreatureTemplate();
 
-        CreatureTemplate const* cInfo = GetCreatureTemplate();
-
-        // level
-        uint8 minlevel = std::min(cInfo->maxlevel, cInfo->minlevel);
-        uint8 maxlevel = std::max(cInfo->maxlevel, cInfo->minlevel);
-
-        return minlevel == maxlevel ? minlevel : urand(minlevel, maxlevel);
-    }();
-
+    // level
+    uint8 minlevel = std::min(cInfo->maxlevel, cInfo->minlevel);
+    uint8 maxlevel = std::max(cInfo->maxlevel, cInfo->minlevel);
+    uint8 level = minlevel == maxlevel ? minlevel : urand(minlevel, maxlevel);
     SetLevel(level);
 }
 
@@ -1454,17 +1437,10 @@ void Creature::UpdateLevelDependantStats()
     CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(getLevel(), cInfo->unit_class);
 
     // health
-    uint32 health = [&]() -> uint32
-    {
-        // Some summons have their maximum health overridden by their summon spell effect values (e.g. player Shaman totems)
-        if (SummonInfo const* summonInfo = GetSummonInfo())
-            if (summonInfo->GetMaxHealth().has_value())
-                return *_summonInfo->GetMaxHealth();
+    float healthmod = _GetHealthMod(rank);
 
-        float healthmod = _GetHealthMod(rank);
-        uint32 basehp = stats->GenerateHealth(cInfo);
-        return uint32(basehp * healthmod);
-    }();
+    uint32 basehp = stats->GenerateHealth(cInfo);
+    uint32 health = uint32(basehp * healthmod);
 
     SetCreateHealth(health);
     SetMaxHealth(health);
@@ -1474,7 +1450,7 @@ void Creature::UpdateLevelDependantStats()
     SetStatFlatModifier(UNIT_MOD_HEALTH, BASE_VALUE, (float)health);
 
     // mana
-    Powers powerType = CalculateDisplayPowerType();
+    PowerType powerType = CalculateDisplayPowerType();
     SetCreateMana(stats->BaseMana);
     SetStatPctModifier(UnitMods(UNIT_MOD_POWER_START + AsUnderlyingType(powerType)), BASE_PCT, cInfo->ModMana * cInfo->ModManaExtra);
     RegisterPowerTypes();
@@ -2801,22 +2777,6 @@ void Creature::InitializeMovementSpeeds()
 
     if (_creatureMovementInfo.HasWalkSpeedOverriden)
         SetSpeed(MOVE_WALK, _creatureMovementInfo.WalkSpeed);
-}
-
-void Creature::InitializeSummonInfo(SummonInfoArgs const& args)
-{
-    ASSERT(_summonInfo == nullptr, "SummonInfo has already been initialized and must not be allocated again!");
-    _summonInfo = std::make_unique<SummonInfo>(this, args);
-}
-
-SummonInfo* Creature::GetSummonInfo() const
-{
-    return _summonInfo.get();
-}
-
-bool Creature::IsSummon() const
-{
-    return _summonInfo != nullptr;
 }
 
 void Creature::AllLootRemovedFromCorpse()

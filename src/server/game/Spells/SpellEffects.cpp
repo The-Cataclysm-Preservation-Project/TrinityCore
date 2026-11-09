@@ -15,22 +15,23 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Spell.h"
 #include "AccountMgr.h"
 #include "AreaTrigger.h"
 #include "Battleground.h"
 #include "CellImpl.h"
 #include "CharmInfo.h"
-#include "CombatLogPackets.h"
 #include "Common.h"
 #include "Creature.h"
 #include "CreatureAI.h"
+#include "CombatLogPackets.h"
 #include "DatabaseEnv.h"
 #include "DynamicObject.h"
 #include "Formulas.h"
-#include "GameClient.h"
 #include "GameEventSender.h"
 #include "GameObject.h"
 #include "GameObjectAI.h"
+#include "GameClient.h"
 #include "GossipDef.h"
 #include "GridNotifiers.h"
 #include "Group.h"
@@ -59,12 +60,10 @@
 #include "SharedDefines.h"
 #include "SkillExtraItems.h"
 #include "SocialMgr.h"
-#include "Spell.h"
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "SpellHistory.h"
 #include "SpellMgr.h"
-#include "SummonInfo.h"
 #include "TemporarySummon.h"
 #include "Totem.h"
 #include "Transport.h"
@@ -1056,7 +1055,7 @@ void Spell::EffectPowerDrain(SpellEffIndex effIndex)
     if (m_spellInfo->Effects[effIndex].MiscValue < 0 || m_spellInfo->Effects[effIndex].MiscValue >= int8(MAX_POWERS))
         return;
 
-    Powers powerType = Powers(m_spellInfo->Effects[effIndex].MiscValue);
+    PowerType powerType = PowerType(m_spellInfo->Effects[effIndex].MiscValue);
 
     if (!unitTarget || !unitTarget->IsAlive() || unitTarget->GetPowerType() != powerType || damage < 0)
         return;
@@ -1128,7 +1127,7 @@ void Spell::EffectPowerBurn(SpellEffIndex effIndex)
     if (m_spellInfo->Effects[effIndex].MiscValue < 0 || m_spellInfo->Effects[effIndex].MiscValue >= int8(MAX_POWERS))
         return;
 
-    Powers powerType = Powers(m_spellInfo->Effects[effIndex].MiscValue);
+    PowerType powerType = PowerType(m_spellInfo->Effects[effIndex].MiscValue);
 
     if (!unitTarget || !unitTarget->IsAlive() || unitTarget->GetPowerType() != powerType || damage < 0)
         return;
@@ -1520,6 +1519,10 @@ void Spell::EffectPersistentAA(SpellEffIndex effIndex)
     if (!unitCaster)
         return;
 
+    // Caster not in world, might be spell triggered from aura removal
+    if (!unitCaster->IsInWorld())
+        return;
+
     // only handle at last effect
     for (uint8 i = effIndex + 1; i < MAX_SPELL_EFFECTS; ++i)
         if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA)
@@ -1527,10 +1530,12 @@ void Spell::EffectPersistentAA(SpellEffIndex effIndex)
 
     ASSERT(!_dynObjAura);
 
-    float radius = m_spellInfo->Effects[effIndex].CalcRadius(unitCaster);
-    // Caster not in world, might be spell triggered from aura removal
-    if (!unitCaster->IsInWorld())
-        return;
+    float radius = 0.0f;
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (m_spellInfo->Effects[i].Effect == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+            radius = std::max(radius, m_spellInfo->Effects[i].CalcRadius(unitCaster));
+    }
 
     DynamicObject* dynObj = new DynamicObject(false);
     if (!dynObj->CreateDynamicObject(unitCaster->GetMap()->GenerateLowGuid<HighGuid::DynamicObject>(), unitCaster, m_spellInfo, *destTarget, radius, DYNAMIC_OBJECT_AREA_SPELL))
@@ -1571,7 +1576,7 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
     if (m_spellInfo->Effects[effIndex].MiscValue < 0 || m_spellInfo->Effects[effIndex].MiscValue >= int8(MAX_POWERS))
         return;
 
-    Powers power = Powers(m_spellInfo->Effects[effIndex].MiscValue);
+    PowerType power = PowerType(m_spellInfo->Effects[effIndex].MiscValue);
     if (unitTarget->GetMaxPower(power) == 0)
         return;
 
@@ -1632,7 +1637,7 @@ void Spell::EffectEnergizePct(SpellEffIndex effIndex)
     if (m_spellInfo->Effects[effIndex].MiscValue < 0 || m_spellInfo->Effects[effIndex].MiscValue >= int8(MAX_POWERS))
         return;
 
-    Powers power = Powers(m_spellInfo->Effects[effIndex].MiscValue);
+    PowerType power = PowerType(m_spellInfo->Effects[effIndex].MiscValue);
     uint32 maxPower = unitTarget->GetMaxPower(power);
     if (!maxPower)
         return;
@@ -2011,7 +2016,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
     SummonCreatureExtraArgs extraArgs;
     extraArgs.SummonProperties = properties;
     extraArgs.SummonDuration = duration;
-    extraArgs.Summoner = Object::ToUnit(caster);
+    extraArgs.Summoner = caster->IsUnit() ? caster->ToUnit() : nullptr;
     extraArgs.SummonSpellId = m_spellInfo->Id;
     extraArgs.PrivateObjectOwner = privateObjectOwner;
 
@@ -2078,6 +2083,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
                     caster->CastSpell(summon, VEHICLE_SPELL_RIDE_HARDCODED, CastSpellExtraArgs(true).AddSpellBP0(extraArgs.SeatNumber));
                 else if (extraArgs.RideSpell)
                     caster->CastSpell(summon, extraArgs.RideSpell, true);
+
             }
         }
     }
@@ -4755,8 +4761,6 @@ void Spell::EffectResurrectPet(SpellEffIndex /*effIndex*/)
     pet->SavePetToDB(PET_SAVE_CURRENT_STATE);
 }
 
-static constexpr uint32 SPELL_SHAMAN_TOTEMIC_RECALL_ENERGIZE = 39104;
-
 void Spell::EffectDestroyAllTotems(SpellEffIndex /*effIndex*/)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
@@ -4765,30 +4769,31 @@ void Spell::EffectDestroyAllTotems(SpellEffIndex /*effIndex*/)
     if (!unitCaster)
         return;
 
-    int32 manaToRefund = 0;
-    for (SummonPropertiesSlot slot : { SummonPropertiesSlot::Totem1, SummonPropertiesSlot::Totem2,
-        SummonPropertiesSlot::Totem3, SummonPropertiesSlot::Totem4})
+    int32 mana = 0;
+    for (uint8 slot = SUMMON_SLOT_TOTEM_FIRE; slot < MAX_TOTEM_SLOT; ++slot)
     {
-        SummonInfo* summonInfo = unitCaster->GetSummonInSlot(slot);
-        if (!summonInfo)
+        if (!unitCaster->m_SummonSlot[slot])
             continue;
 
-        uint32 summonSpellId = summonInfo->GetSummonedCreature()->GetUInt32Value(UNIT_CREATED_BY_SPELL);
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(summonSpellId);
-        if (!spellInfo->IsShamanTotemSpell())
-            continue;
-
-        manaToRefund += spellInfo->CalcPowerCost(unitCaster, spellInfo->GetSchoolMask());
-
-        summonInfo->GetSummonedCreature()->DespawnOrUnsummon();
+        Creature* totem = m_caster->GetMap()->GetCreature(unitCaster->m_SummonSlot[slot]);
+        if (totem && totem->IsTotem())
+        {
+            uint32 spell_id = totem->GetUInt32Value(UNIT_CREATED_BY_SPELL);
+            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spell_id);
+            if (spellInfo)
+            {
+                mana += spellInfo->ManaCost;
+                mana += int32(CalculatePct(unitCaster->GetCreateMana(), spellInfo->ManaCostPercentage));
+            }
+            totem->ToTotem()->UnSummon();
+        }
     }
-
-    ApplyPct(manaToRefund, damage);
-    if (manaToRefund)
+    ApplyPct(mana, damage);
+    if (mana)
     {
         CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
-        args.AddSpellMod(SPELLVALUE_BASE_POINT0, manaToRefund);
-        unitCaster->CastSpell(unitCaster, SPELL_SHAMAN_TOTEMIC_RECALL_ENERGIZE, args);
+        args.AddSpellMod(SPELLVALUE_BASE_POINT0, mana);
+        unitCaster->CastSpell(unitCaster, 39104, args);
     }
 }
 

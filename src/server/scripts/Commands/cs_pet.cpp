@@ -103,7 +103,7 @@ public:
         creatureTarget->DespawnOrUnsummon();
         creatureTarget->SetHealth(0); // just for nice GM-mode view
 
-        pet->SetCreatorGUID(player->GetGUID());
+        pet->SetGuidValue(UNIT_FIELD_CREATEDBY, player->GetGUID());
         pet->SetFaction(player->GetFaction());
 
         if (!pet->InitStatsForLevel(creatureTarget->getLevel()))

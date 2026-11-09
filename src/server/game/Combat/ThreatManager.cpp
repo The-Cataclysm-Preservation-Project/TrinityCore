@@ -192,6 +192,10 @@ void ThreatReference::HeapNotifyDecreased()
             if (tWho->GetSummonerGUID().IsPlayer())
                 return false;
 
+    // accessories are fully treated as components of the parent and cannot have threat
+    if (cWho->HasUnitTypeMask(UNIT_MASK_ACCESSORY))
+        return false;
+
     return true;
 }
 
@@ -381,18 +385,12 @@ void ThreatManager::AddThreat(Unit* target, float amount, SpellInfo const* spell
             return;
     }
 
-    // while riding a vehicle, all threat goes to the vehicle, not the pilot
-    if (Unit* vehicle = target->GetVehicleBase())
-    {
-        AddThreat(vehicle, amount, spell, ignoreModifiers, ignoreRedirects);
-        if (target->HasUnitTypeMask(UNIT_MASK_ACCESSORY)) // accessories are fully treated as components of the parent and cannot have threat
-            return;
-        amount = 0.0f;
-    }
-
     // if we cannot actually have a threat list, we instead just set combat state and avoid creating threat refs altogether
     if (!CanHaveThreatList())
     {
+        if (ignoreRedirects)
+            return;
+
         CombatManager& combatMgr = _owner->GetCombatManager();
         if (!combatMgr.SetInCombatWith(target))
             return;

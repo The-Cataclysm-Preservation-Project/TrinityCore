@@ -242,7 +242,7 @@ public:
     PvPDifficultyEntry const* GetBattlegroundBracketById(uint32 mapid, BattlegroundBracketId id);
     CharStartOutfitEntry const* GetCharStartOutfitEntry(uint8 race, uint8 class_, uint8 gender);
     CharSectionsEntry const* GetCharSectionEntry(uint8 race, CharSectionType genType, uint8 gender, uint8 type, uint8 color);
-    uint32 GetPowerIndexByClass(Powers power, uint32 classId);
+    uint32 GetPowerIndexByClass(PowerType power, uint32 classId);
     static bool IsInArea(uint32 objectAreaId, uint32 areaId);
     static LFGDungeonEntry const* GetLFGDungeon(uint32 mapId, Difficulty difficulty);
     std::vector<uint32> const* GetPhasesForGroup(uint32 group);
@@ -250,8 +250,8 @@ public:
     SkillRaceClassInfoEntry const* GetSkillRaceClassInfo(uint32 skill, uint8 race, uint8 class_);
     ResponseCodes ValidateName(std::wstring const& name, LocaleConstant locale);
     EmotesTextSoundEntry const* FindTextSoundEmoteFor(uint32 emote, uint32 race, uint32 gender);
-    static float GetBasePowerRegen(Powers powerType, bool isInCombat, uint32 powerBarId = 0);
-    static bool IsPowerTypeAffectedByHaste(Powers powerType);
+    static float GetBasePowerRegen(PowerType powerType, bool isInCombat, uint32 powerBarId = 0);
+    static bool IsPowerTypeAffectedByHaste(PowerType powerType);
     static float GetGtOCTRegenMPPerSpirit(uint8 classId, uint8 level);
 };
 

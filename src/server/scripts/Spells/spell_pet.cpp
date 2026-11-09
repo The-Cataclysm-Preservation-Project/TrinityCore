@@ -21,13 +21,14 @@
  * Scriptnames of files in this file should be prefixed with "spell_dk_".
  */
 
-#include "ScriptMgr.h"
 #include "ObjectMgr.h"
 #include "Pet.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "SpellAuraEffects.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "Stats.h"
 #include "Unit.h"
 
 namespace Spells::Pets
@@ -100,7 +101,7 @@ class spell_warl_pet_scaling_01 : public AuraScript
         {
             if (Player* owner = pet->GetOwner())
             {
-                float stamina = owner->GetStat(STAT_STAMINA) * 0.6496f;
+                float stamina = owner->GetStat(StatType::Stamina) * 0.6496f;
 
                 float staminaBonus = 0.0f;
                 switch (pet->GetEntry())
@@ -180,7 +181,7 @@ class spell_warl_pet_scaling_02 : public AuraScript
         {
             if (Player* owner = pet->GetOwner())
             {
-                float intellect = owner->GetStat(STAT_INTELLECT);
+                float intellect = owner->GetStat(StatType::Intellect);
                 float manaBonus = 0.0f;
                 switch (pet->GetEntry())
                 {
@@ -795,7 +796,7 @@ class spell_dk_pet_scaling_01 : public AuraScript
             if (AuraEffect const* aurEff = owner->GetDummyAuraEffect(SPELLFAMILY_DEATHKNIGHT, DEATH_KNIGHT_ICON_ID_GLYPH_OF_RAISE_DEAD, EFFECT_0))
                 percentage += aurEff->GetAmount();
 
-            amount = int32(CalculatePct(owner->GetStat(STAT_STAMINA), percentage));
+            amount = int32(CalculatePct(owner->GetStat(StatType::Stamina), percentage));
         }
     }
 
@@ -810,7 +811,7 @@ class spell_dk_pet_scaling_01 : public AuraScript
             if (AuraEffect const* aurEff = owner->GetDummyAuraEffect(SPELLFAMILY_DEATHKNIGHT, DEATH_KNIGHT_ICON_ID_GLYPH_OF_RAISE_DEAD, EFFECT_0))
                 percentage += aurEff->GetAmount();
 
-            amount = int32(CalculatePct(owner->GetStat(STAT_STAMINA), percentage));
+            amount = int32(CalculatePct(owner->GetStat(StatType::Stamina), percentage));
         }
     }
 
@@ -1030,7 +1031,7 @@ class spell_mage_water_elemental_scaling_01 : public AuraScript
         {
             if (Player* owner = pet->GetOwner())
             {
-                float stamina = CalculatePct(owner->GetStat(STAT_STAMINA), 30);
+                float stamina = CalculatePct(owner->GetStat(StatType::Stamina), 30);
                 float staminaBonus = stamina * 7.5f;
                 float maxHealthBonus = owner->CountPctFromMaxHealth(50);
 
@@ -1063,7 +1064,7 @@ class spell_mage_water_elemental_scaling_02 : public AuraScript
         {
             if (Player* owner = pet->GetOwner())
             {
-                float intellect = CalculatePct(owner->GetStat(STAT_INTELLECT), 30);
+                float intellect = CalculatePct(owner->GetStat(StatType::Intellect), 30);
                 float intellectBonus = intellect * 5.0f;
                 float maxManaBonus = owner->CountPctFromMaxPower(POWER_MANA, 50);
 

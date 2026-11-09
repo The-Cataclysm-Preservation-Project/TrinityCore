@@ -1189,17 +1189,29 @@ void WorldSession::HandleSetFactionInactiveOpcode(WorldPacket& recvData)
 void WorldSession::HandleShowingHelmOpcode(WorldPackets::Character::ShowingHelm& packet)
 {
     if (packet.ShowHelm)
+    {
+        _player->RemoveCharacterFlag(CHARACTER_FLAG_HIDE_HELM);
         _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_HELM);
+    }
     else
+    {
+        _player->AddCharacterFlag(CHARACTER_FLAG_HIDE_HELM);
         _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_HELM);
+    }
 }
 
 void WorldSession::HandleShowingCloakOpcode(WorldPackets::Character::ShowingCloak& packet)
 {
     if (packet.ShowCloak)
+    {
+        _player->RemoveCharacterFlag(CHARACTER_FLAG_HIDE_CLOAK);
         _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_CLOAK);
+    }
     else
+    {
+        _player->AddCharacterFlag(CHARACTER_FLAG_HIDE_CLOAK);
         _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_HIDE_CLOAK);
+    }
 }
 
 void WorldSession::HandleCharRenameOpcode(WorldPacket& recvData)

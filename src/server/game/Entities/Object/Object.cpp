@@ -38,16 +38,14 @@
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "OutdoorPvPMgr.h"
-#include "PathGenerator.h"
 #include "PhasingHandler.h"
+#include "PathGenerator.h"
 #include "Player.h"
 #include "ReputationMgr.h"
 #include "SpellAuraEffects.h"
 #include "SpellDefines.h"
 #include "SpellMgr.h"
 #include "StringConvert.h"
-#include "SummonInfo.h"
-#include "SummonInfoArgs.h"
 #include "TemporarySummon.h"
 #include "Totem.h"
 #include "Transport.h"
@@ -56,9 +54,9 @@
 #include "UpdateFieldFlags.h"
 #include "UpdateMask.h"
 #include "Util.h"
+#include "Vehicle.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
-#include "Vehicle.h"
 #include "WaypointMovementGenerator.h"
 #include "World.h"
 #include "WorldPacket.h"
@@ -2008,23 +2006,74 @@ void WorldObject::AddObjectToRemoveList()
 
 TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonCreatureExtraArgs const& summonArgs /*= { }*/)
 {
-    TempSummon* summon = new TempSummon(summonArgs.SummonProperties, summonArgs.Summoner, false);
+    uint32 mask = UNIT_MASK_SUMMON;
 
-    // Store special settings which have been extracted from spell effects/scripts
-    SummonInfoArgs args;
-    if (summonArgs.Summoner)
-        args.Summoner = summonArgs.Summoner;
     if (summonArgs.SummonProperties)
-        args.SummonPropertiesId = summonArgs.SummonProperties->ID;
-    if (summonArgs.SummonDuration)
-        args.Duration = Milliseconds(summonArgs.SummonDuration);
-    if (summonArgs.CreatureLevel > 0)
-        args.CreatureLevel = summonArgs.CreatureLevel;
-    if (summonArgs.SummonHealth)
-        args.MaxHealth = summonArgs.SummonHealth;
+    {
+        switch (summonArgs.SummonProperties->Control)
+        {
+            case SUMMON_CATEGORY_PET:
+                mask = UNIT_MASK_GUARDIAN;
+                break;
+            case SUMMON_CATEGORY_PUPPET:
+                mask = UNIT_MASK_PUPPET;
+                break;
+            case SUMMON_CATEGORY_VEHICLE:
+                mask = UNIT_MASK_MINION;
+                break;
+            case SUMMON_CATEGORY_WILD:
+            case SUMMON_CATEGORY_ALLY:
+            case SUMMON_CATEGORY_UNK:
+            {
+                switch (SummonTitle(summonArgs.SummonProperties->Title))
+                {
+                    case SummonTitle::Minion:
+                    case SummonTitle::Guardian:
+                    case SummonTitle::Runeblade:
+                        mask = UNIT_MASK_GUARDIAN;
+                        break;
+                    case SummonTitle::Totem:
+                    case SummonTitle::Lightwell:
+                        mask = UNIT_MASK_TOTEM;
+                        break;
+                    case SummonTitle::Vehicle:
+                    case SummonTitle::Mount:
+                        mask = UNIT_MASK_SUMMON;
+                        break;
+                    case SummonTitle::Companion:
+                        mask = UNIT_MASK_MINION;
+                        break;
+                    default:
+                        if (summonArgs.SummonProperties->Flags & 512) // Mirror Image, Summon Gargoyle
+                            mask = UNIT_MASK_GUARDIAN;
+                        break;
+                }
+                break;
+            }
+            default:
+                return nullptr;
+        }
+    }
 
-    // Initialize the SummonInfo API which marks the creature as Summon
-    summon->InitializeSummonInfo(args);
+    TempSummon* summon = nullptr;
+    switch (mask)
+    {
+        case UNIT_MASK_SUMMON:
+            summon = new TempSummon(summonArgs.SummonProperties, summonArgs.Summoner, false);
+            break;
+        case UNIT_MASK_GUARDIAN:
+            summon = new Guardian(summonArgs.SummonProperties, summonArgs.Summoner, false);
+            break;
+        case UNIT_MASK_PUPPET:
+            summon = new Puppet(summonArgs.SummonProperties, summonArgs.Summoner);
+            break;
+        case UNIT_MASK_TOTEM:
+            summon = new Totem(summonArgs.SummonProperties, summonArgs.Summoner);
+            break;
+        case UNIT_MASK_MINION:
+            summon = new Minion(summonArgs.SummonProperties, summonArgs.Summoner, false);
+            break;
+    }
 
     // Create creature entity
     if (!summon->Create(GenerateLowGuid<HighGuid::Unit>(), this, entry, pos, nullptr, summonArgs.VehicleRecID, true))
@@ -2036,8 +2085,6 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonCreatur
     // Inherit summoner's Phaseshift
     if (summonArgs.Summoner)
         PhasingHandler::InheritPhaseShift(summon, summonArgs.Summoner);
-
-    summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, summonArgs.SummonSpellId);
 
     TransportBase* transport = summonArgs.Summoner ? summonArgs.Summoner->GetTransport() : nullptr;
     if (transport)
@@ -2051,12 +2098,22 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonCreatur
         transport->AddPassenger(summon);
     }
 
-    SummonInfo* summonInfo = ASSERT_NOTNULL(summon->GetSummonInfo());
-
+    // Initialize tempsummon fields
+    summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, summonArgs.SummonSpellId);
     summon->SetHomePosition(pos);
-    summonInfo->HandlePreSummonActions();
     summon->InitStats(summonArgs.SummonDuration);
     summon->SetPrivateObjectOwner(summonArgs.PrivateObjectOwner);
+
+    // Handle health argument
+    if (summonArgs.SummonHealth)
+    {
+        summon->SetMaxHealth(summonArgs.SummonHealth);
+        summon->SetHealth(summonArgs.SummonHealth);
+    }
+
+    // Handle creature level argument
+    if (summonArgs.CreatureLevel)
+        summon->SetLevel(summonArgs.CreatureLevel);
 
     if (!AddToMap(summon->ToCreature()))
     {
@@ -2069,7 +2126,6 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonCreatur
     }
 
     summon->InitSummon();
-    summonInfo->HandlePostSummonActions();
 
     // call MoveInLineOfSight for nearby creatures
     Trinity::AIRelocationNotifier notifier(*summon);

@@ -28,8 +28,7 @@
 #include "SpellHistory.h"
 #include "SpellAuras.h"
 #include "SpellAuraEffects.h"
-#include "SummonInfo.h"
-#include "SummonInfoArgs.h"
+#include "Stats.h"
 #include "Unit.h"
 #include "Util.h"
 #include "Group.h"
@@ -41,15 +40,9 @@ constexpr float PET_XP_FACTOR = 0.05f;
 Pet::Pet(Player* owner, PetType type) :
     Guardian(nullptr, owner, true), m_usedTalentCount(0), m_removed(false),
     m_petType(type), m_duration(0), m_auraRaidUpdateMask(0), m_loading(false),
-    m_declinedname(nullptr), m_petSlot(0)
+    m_declinedname(nullptr)
 {
     ASSERT(GetOwner());
-
-    InitializeSummonInfo(
-    {
-        .Summoner = GetOwner(),
-        .CreatureLevel = GetOwner()->getLevel()
-    });
 
     m_unitTypeMask |= UNIT_MASK_PET;
     if (type == HUNTER_PET)
@@ -77,11 +70,6 @@ void Pet::AddToWorld()
         ///- Register the pet for guid lookup
         GetMap()->GetObjectsStore().Insert<Pet>(GetGUID(), this);
         Unit::AddToWorld();
-
-        // SummonInfo should always be initialized for pets. Make sure that we will not go any further if this is no longer the case.
-        if (Unit* summoner = ASSERT_NOTNULL(GetSummonInfo())->GetUnitSummoner())
-            summoner->RegisterSummon(GetSummonInfo());
-
         AIM_Initialize();
     }
 
@@ -102,10 +90,6 @@ void Pet::RemoveFromWorld()
     ///- Remove the pet from the accessor
     if (IsInWorld())
     {
-        // SummonInfo should always be initialized for pets. Make sure that we will not go any further if this is no longer the case.
-        if (Unit* summoner = ASSERT_NOTNULL(GetSummonInfo())->GetUnitSummoner())
-            summoner->UnregisterSummon(GetSummonInfo());
-
         ///- Don't call the function for Creature, normal mobs + totems go in a different storage
         Unit::RemoveFromWorld();
         GetMap()->GetObjectsStore().Remove<Pet>(GetGUID());
@@ -313,7 +297,6 @@ bool Pet::LoadPetData(Player* owner, uint32 petEntry, uint32 petnumber, bool cur
     }
 
     CleanupActionBar();                                     // remove unknown spells from action bar after load
-    UpdateAllStats();
     SetFullHealth();                                        // Set full health and mana after pet scaling auras has been applied
 
     if (IsHunterPet())
@@ -776,7 +759,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
         for (uint8 i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
             SetStatFlatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + i), BASE_VALUE, float(cinfo->resistance[i]));
 
-    Powers powerType = CalculateDisplayPowerType();
+    PowerType powerType = CalculateDisplayPowerType();
 
     // Health, mana, armor and resistance
     PetLevelInfo const* pInfo = sObjectMgr->GetPetLevelInfo(creature_ID, petlevel);
@@ -790,25 +773,27 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
         if (pInfo->armor > 0)
             SetStatFlatModifier(UNIT_MOD_ARMOR, BASE_VALUE, float(pInfo->armor));
 
-        for (uint8 stat = 0; stat < MAX_STATS; ++stat)
-            SetCreateStat(Stats(stat), float(pInfo->stats[stat]));
+        for (StatType stat : AllPrimaryStats)
+            GetStats().SetBaseStatValue(stat, pInfo->stats[AsUnderlyingType(stat)]);
     }
     else                                            // not exist in DB, use some default fake data
     {
         // remove elite bonuses included in DB values
         // remove elite bonuses included in DB values
-        CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(petlevel, cinfo->unit_class);
+        CreatureBaseStats const* baseStats = sObjectMgr->GetCreatureBaseStats(petlevel, cinfo->unit_class);
         float healthmod = _GetHealthMod(cinfo->rank);
-        uint32 basehp = stats->GenerateHealth(cinfo);
+        uint32 basehp = baseStats->GenerateHealth(cinfo);
         uint32 health = uint32(basehp * healthmod);
 
         SetCreateHealth(health);
-        SetCreateMana(stats->BaseMana);
-        SetCreateStat(STAT_STRENGTH, 22);
-        SetCreateStat(STAT_AGILITY, 22);
-        SetCreateStat(STAT_STAMINA, 25);
-        SetCreateStat(STAT_INTELLECT, 28);
-        SetCreateStat(STAT_SPIRIT, 27);
+        SetCreateMana(baseStats->BaseMana);
+
+        Stats& stats = GetStats();
+        stats.SetBaseStatValue(StatType::Strength, 22);
+        stats.SetBaseStatValue(StatType::Agility, 22);
+        stats.SetBaseStatValue(StatType::Stamina, 25);
+        stats.SetBaseStatValue(StatType::Intellect, 28);
+        stats.SetBaseStatValue(StatType::Spirit, 27);
 
         SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)));
         SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)));
@@ -914,7 +899,6 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * dmg_multiplier / 14);
 
                     SetStatFlatModifier(UNIT_MOD_ARMOR, BASE_VALUE, float(GetOwner()->GetArmor()) * 0.35f);  // Bonus Armor (35% of player armor)
-                    SetStatFlatModifier(UNIT_MOD_STAT_STAMINA, BASE_VALUE, float(GetOwner()->GetStat(STAT_STAMINA)) * 0.3f);  // Bonus Stamina (30% of player stamina)
                     if (!HasAura(58877))        // Spirit Hunt
                         AddAura(58877, this);
                     if (!HasAura(61783))        // Feral Pet Scaling
@@ -1014,8 +998,6 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
             break;
         }
     }
-
-    UpdateAllStats();
 
     SetFullHealth();
     SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
@@ -1893,7 +1875,7 @@ void Pet::CastPetAura(PetAura const* aura)
     args.TriggerFlags = TRIGGERED_FULL_MASK;
 
     if (auraId == 35696)                                      // Demonic Knowledge
-        args.AddSpellMod(SPELLVALUE_BASE_POINT0, CalculatePct(aura->GetDamage(), GetStat(STAT_STAMINA) + GetStat(STAT_INTELLECT)));
+        args.AddSpellMod(SPELLVALUE_BASE_POINT0, CalculatePct(aura->GetDamage(), GetStat(StatType::Stamina) + GetStat(StatType::Intellect)));
 
     CastSpell(this, auraId, args);
 }

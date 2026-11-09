@@ -79,7 +79,7 @@
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 #include "SpellPackets.h"
-#include "SummonInfo.h"
+#include "Stats.h"
 #include "TemporarySummon.h"
 #include "Totem.h"
 #include "Transport.h"
@@ -307,7 +307,8 @@ Unit::Unit(bool isWorldObject) :
     m_charmer(nullptr), m_charmed(nullptr),
     i_motionMaster(std::make_unique<MotionMaster>(this)), m_vehicle(nullptr),
     m_unitTypeMask(UNIT_MASK_NONE), m_isEngaged(false), m_combatManager(this), m_threatManager(this),
-    i_AI(nullptr), m_aiLocked(false), m_spellHistory(std::make_unique<SpellHistory>(this))
+    i_AI(nullptr), m_aiLocked(false), m_spellHistory(std::make_unique<SpellHistory>(this)),
+    _stats(std::make_unique<Stats>(this))
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -349,8 +350,6 @@ Unit::Unit(bool isWorldObject) :
         m_weaponDamage[i][MAXDAMAGE] = BASE_MAXDAMAGE;
     }
 
-    m_createStats.fill(0.0f);
-
     m_attacking = nullptr;
     m_modMeleeHitChance = 0.0f;
     m_modRangedHitChance = 0.0f;
@@ -379,8 +378,6 @@ Unit::Unit(bool isWorldObject) :
 
     _oldFactionId = 0;
     _isWalkingBeforeCharm = false;
-
-    _slottedSummons.resize(AsUnderlyingType(SummonPropertiesSlot::Max), nullptr);
 }
 
 ////////////////////////////////////////////////////////////
@@ -4810,82 +4807,6 @@ void Unit::UpdateResistanceBuffModsMod(SpellSchools school)
     SetFloatValue(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + AsUnderlyingType(school), modNeg);
 }
 
-void Unit::InitStatBuffMods()
-{
-    for (uint8 i = STAT_STRENGTH; i < MAX_STATS; ++i)
-        SetFloatValue(UNIT_FIELD_POSSTAT0+i, 0);
-    for (uint8 i = STAT_STRENGTH; i < MAX_STATS; ++i)
-        SetFloatValue(UNIT_FIELD_NEGSTAT0+i, 0);
-}
-
-void Unit::UpdateStatBuffMod(Stats stat)
-{
-    float modPos = 0.0f;
-    float modNeg = 0.0f;
-    float currentValue = 0.0f;
-    float previousValue = 0.0f;
-
-    UnitMods const unitMod = static_cast<UnitMods>(UNIT_MOD_STAT_START + AsUnderlyingType(stat));
-
-    // includes value from items and enchantments
-    float baseModValue = GetFlatModifierValue(unitMod, BASE_VALUE);
-    if (IsGuardian())
-        baseModValue = static_cast<Guardian*>(this)->GetBonusStatFromOwner(stat);
-
-    if (baseModValue >= 0.0f)
-        modPos = baseModValue;
-    else
-        modNeg = baseModValue;
-
-    previousValue = baseModValue;
-
-    // SPELL_AURA_MOD_PERCENT_STAT affects the base_value as well as the create stat
-    previousValue += GetCreateStat(stat);
-    float multiplier = GetTotalAuraMultiplier(SPELL_AURA_MOD_PERCENT_STAT, [stat](AuraEffect const* aurEff) -> bool
-    {
-        if (aurEff->GetMiscValue() == -1 || aurEff->GetMiscValue() == stat)
-            return true;
-        return false;
-    });
-
-    currentValue = previousValue * multiplier;
-    if (G3D::fuzzyGe(currentValue, previousValue))
-        modPos += currentValue - previousValue;
-    else
-        modNeg -= previousValue - currentValue;
-
-    // total_value offsets
-    previousValue += GetTotalAuraModifier(SPELL_AURA_MOD_STAT, [&](AuraEffect const* aurEff) -> bool
-    {
-        if (aurEff->GetMiscValue() < 0 || aurEff->GetMiscValue() == stat)
-        {
-            if (aurEff->GetAmount() > 0)
-                modPos += aurEff->GetAmount();
-            else
-                modNeg += aurEff->GetAmount();
-            return true;
-        }
-        return false;
-    });
-
-    // total_pct multiplier
-    multiplier = GetTotalAuraMultiplier(SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE, [stat](AuraEffect const* aurEff) -> bool
-    {
-        if (!aurEff->GetMiscValueB() || aurEff->GetMiscValueB() & (1 << stat))
-            return true;
-        return false;
-    });
-
-    currentValue = previousValue * multiplier;
-    if (G3D::fuzzyGe(currentValue, previousValue))
-        modPos += currentValue - previousValue;
-    else
-        modNeg -= previousValue - currentValue;
-
-    SetFloatValue(UNIT_FIELD_POSSTAT0 + AsUnderlyingType(stat), modPos);
-    SetFloatValue(UNIT_FIELD_NEGSTAT0 + AsUnderlyingType(stat), modNeg);
-}
-
 void Unit::_RegisterDynObject(DynamicObject* dynObj)
 {
     m_dynObj.push_back(dynObj);
@@ -5246,7 +5167,7 @@ void Unit::SendAttackStateUpdate(uint32 HitInfo, Unit* target, uint8 /*SwingType
     SendAttackStateUpdate(&dmgInfo);
 }
 
-void Unit::SetPowerType(Powers power)
+void Unit::SetPowerType(PowerType power)
 {
     if (GetPowerType() == power)
         return;
@@ -5295,9 +5216,9 @@ void Unit::SetPowerType(Powers power)
     }
 }
 
-Powers Unit::CalculateDisplayPowerType() const
+PowerType Unit::CalculateDisplayPowerType() const
 {
-    Powers displayPower = POWER_MANA;
+    PowerType displayPower = POWER_MANA;
     switch (GetShapeshiftForm())
     {
         case FORM_GHOUL:
@@ -5315,12 +5236,12 @@ Powers Unit::CalculateDisplayPowerType() const
         {
             ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(getClass());
             if (cEntry && cEntry->DisplayPower < MAX_POWERS)
-                displayPower = Powers(cEntry->DisplayPower);
+                displayPower = PowerType(cEntry->DisplayPower);
 
             if (Vehicle* vehicle = GetVehicleKit())
             {
                 if (PowerDisplayEntry const* powerDisplay = sPowerDisplayStore.LookupEntry(vehicle->GetVehicleInfo()->PowerDisplayID[0])) // To-do: 4.x has 3 power display id fields.
-                    displayPower = Powers(powerDisplay->ActualType);
+                    displayPower = PowerType(powerDisplay->ActualType);
                 else if (getClass() == CLASS_ROGUE)
                     displayPower = POWER_ENERGY;
             }
@@ -5726,16 +5647,6 @@ void Unit::SetOwnerGUID(ObjectGuid owner)
     RemoveFieldNotifyFlag(UF_FLAG_OWNER);
 }
 
-Unit* Unit::GetCreator() const
-{
-    return ObjectAccessor::GetUnit(*this, GetCreatorGUID());
-}
-
-Creature* Unit::GetCritter() const
-{
-    return ObjectAccessor::GetCreature(*this, GetCritterGUID());
-}
-
 Player* Unit::GetControllingPlayer() const
 {
     if (ObjectGuid guid = GetCharmerOrOwnerGUID())
@@ -6117,10 +6028,10 @@ void Unit::RemoveAllControlled()
         m_Controlled.erase(m_Controlled.begin());
         if (target->GetCharmerGUID() == GetGUID())
             target->RemoveCharmAuras();
-        else if (target->GetOwnerGUID() == GetGUID() && target->IsSummon())
+        else if (target->GetOwnerOrCreatorGUID() == GetGUID() && target->IsSummon())
             target->ToTempSummon()->UnSummon();
-        //else
-        //    TC_LOG_ERROR("entities.unit", "Unit %u is trying to release unit %u which is neither charmed nor owned by it", GetEntry(), target->GetEntry());
+        else
+            TC_LOG_ERROR("entities.unit", "Unit %u is trying to release unit %u which is neither charmed nor owned by it", GetEntry(), target->GetEntry());
     }
     if (GetPetGUID())
         TC_LOG_FATAL("entities.unit", "Unit %u is not able to release its pet %s", GetEntry(), GetPetGUID().ToString().c_str());
@@ -6280,7 +6191,7 @@ int32 Unit::HealBySpell(HealInfo& healInfo, bool critical /*= false*/)
     return healInfo.GetEffectiveHeal();
 }
 
-void Unit::SendEnergizeSpellLog(Unit* victim, uint32 spellId, int32 damage, Powers powerType)
+void Unit::SendEnergizeSpellLog(Unit* victim, uint32 spellId, int32 damage, PowerType powerType)
 {
     WorldPackets::CombatLog::SpellEnergizeLog packet;
     packet.TargetGUID = victim->GetGUID();
@@ -6292,13 +6203,13 @@ void Unit::SendEnergizeSpellLog(Unit* victim, uint32 spellId, int32 damage, Powe
     SendMessageToSet(packet.Write(), true);
 }
 
-void Unit::EnergizeBySpell(Unit* victim, uint32 spellId, int32 damage, Powers powerType)
+void Unit::EnergizeBySpell(Unit* victim, uint32 spellId, int32 damage, PowerType powerType)
 {
     if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
         EnergizeBySpell(victim, info, damage, powerType);
 }
 
-void Unit::EnergizeBySpell(Unit* victim, SpellInfo const* spellInfo, int32 damage, Powers powerType)
+void Unit::EnergizeBySpell(Unit* victim, SpellInfo const* spellInfo, int32 damage, PowerType powerType)
 {
     victim->ModifyPower(powerType, damage, false);
     victim->GetThreatManager().ForwardThreatForAssistingMe(this, float(damage) / 2, spellInfo, true);
@@ -6740,7 +6651,7 @@ int32 Unit::SpellBaseDamageBonusDone(SpellSchoolMask schoolMask, bool withSpellP
 
         // Check if we are ever using mana - PaperDollFrame.lua
         if (GetPowerIndex(POWER_MANA) != MAX_POWERS)
-            DoneAdvertisedBenefit += std::max(0, int32(GetStat(STAT_INTELLECT)) - 10);  // spellpower from intellect
+            DoneAdvertisedBenefit += std::max(0, int32(GetStat(StatType::Intellect)) - 10);  // spellpower from intellect
 
         // Spell Power bonus from SPELL_AURA_MOD_SPELL_POWER_PCT
         if (withSpellPowerPctMod)
@@ -6753,7 +6664,7 @@ int32 Unit::SpellBaseDamageBonusDone(SpellSchoolMask schoolMask, bool withSpellP
             if ((aurEff->GetMiscValue() & schoolMask) != 0)
             {
                 // stat used stored in miscValueB for this aura
-                Stats const usedStat = static_cast<Stats>(aurEff->GetMiscValueB());
+                StatType const usedStat = static_cast<StatType>(aurEff->GetMiscValueB());
                 DoneAdvertisedBenefit += static_cast<int32>(CalculatePct(GetStat(usedStat), aurEff->GetAmount()));
             }
         }
@@ -7016,7 +6927,7 @@ float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo,
     return std::max(crit_chance, 0.0f);
 }
 
-/*static*/ uint32 Unit::SpellCriticalDamageBonus(Unit const* caster, SpellInfo const* spellProto, uint32 damage)
+/*static*/ uint32 Unit::SpellCriticalDamageBonus(Unit const* caster, SpellInfo const* spellProto, uint32 damage, bool periodicDamage /*= false*/)
 {
     // Calculate critical bonus
     int32 crit_bonus = damage;
@@ -7024,13 +6935,21 @@ float Unit::SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo,
 
     switch (spellProto->DmgClass)
     {
-        case SPELL_DAMAGE_CLASS_MELEE:                      // for melee based spells is 100%
-        case SPELL_DAMAGE_CLASS_RANGED:
-            /// @todo write here full calculation for melee/ranged spells
+        // Spells which are either marked as ranged or melee damage, will deal 100% additional damage
+        case SPELL_DAMAGE_CLASS_MELEE:
             crit_bonus += damage;
             break;
+        case SPELL_DAMAGE_CLASS_RANGED:
+            // Ranged spells which have magic periodic damage effect on the other hand, only deal 50% damage, just like spells
+            // This is a very specific case that is currently only known for Hunter spells, such as Serpent Sting and Black Arrow
+            if (periodicDamage && (spellProto->GetSchoolMask() & SPELL_SCHOOL_MASK_MAGIC) != 0)
+                crit_bonus += damage / 2;
+            else
+                crit_bonus += damage;
+            break;
         default:
-            crit_bonus += damage / 2;                       // for spells is 50%
+            // Magic spells will simply deal 50% additional crit damage
+            crit_bonus += damage / 2;
             break;
     }
 
@@ -7320,7 +7239,7 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask, bool withSpell
 
         // Check if we are ever using mana - PaperDollFrame.lua
         if (GetPowerIndex(POWER_MANA) != MAX_POWERS)
-            advertisedBenefit += std::max(0, int32(GetStat(STAT_INTELLECT)) - 10);  // spellpower from intellect
+            advertisedBenefit += std::max(0, int32(GetStat(StatType::Intellect)) - 10);  // spellpower from intellect
 
         // Spell Power bonus from SPELL_AURA_MOD_SPELL_POWER_PCT
         if (withSpellPowerPctMod)
@@ -7331,7 +7250,7 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask, bool withSpell
         for (AuraEffectList::const_iterator i = mHealingDoneOfStatPercent.begin(); i != mHealingDoneOfStatPercent.end(); ++i)
         {
             // stat used dependent from misc value (stat index)
-            Stats usedStat = Stats((*i)->GetSpellInfo()->Effects[(*i)->GetEffIndex()].MiscValue);
+            StatType usedStat = StatType((*i)->GetSpellInfo()->Effects[(*i)->GetEffIndex()].MiscValue);
             advertisedBenefit += int32(CalculatePct(GetStat(usedStat), (*i)->GetAmount()));
         }
 
@@ -8211,7 +8130,7 @@ int32 Unit::GetHealthGain(int32 dVal)
 }
 
 // returns negative amount on power reduction
-int32 Unit::ModifyPower(Powers power, int32 dVal, bool withPowerUpdate /*= true*/)
+int32 Unit::ModifyPower(PowerType power, int32 dVal, bool withPowerUpdate /*= true*/)
 {
     int32 gain = 0;
 
@@ -8244,7 +8163,7 @@ int32 Unit::ModifyPower(Powers power, int32 dVal, bool withPowerUpdate /*= true*
 }
 
 // Based on client function
-float Unit::GetPowerRegen(Powers powerType, bool isInCombat) const
+float Unit::GetPowerRegen(PowerType powerType, bool isInCombat) const
 {
     uint32 powerSlot = MAX_POWERS;
     float totalRegeneration = 0.f;
@@ -8606,8 +8525,7 @@ void Unit::setDeathState(DeathState s)
         ExitVehicle();                                      // Exit vehicle before calling RemoveAllControlled
                                                             // vehicles use special type of charm that is not removed by the next function
                                                             // triggering an assert
-
-        DespawnSummonsOnSummonerDeath();
+        UnsummonAllTotems();
         RemoveAllControlled();
         RemoveAllAurasOnDeath();
     }
@@ -8651,8 +8569,9 @@ void Unit::AtEnterCombat()
     if (Spell* spell = m_currentSpells[CURRENT_GENERIC_SPELL])
         if (spell->getState() == SPELL_STATE_PREPARING
             && spell->m_spellInfo->HasAttribute(SPELL_ATTR0_NOT_IN_COMBAT_ONLY_PEACEFUL)
-            && spell->m_spellInfo->InterruptFlags.HasFlag(SpellInterruptFlags::Combat))
-            InterruptNonMeleeSpells(false);
+            && spell->m_spellInfo->InterruptFlags.HasFlag(SpellInterruptFlags::Combat)
+            && !spell->m_spellInfo->HasAura(SPELL_AURA_MOUNTED)) // for some reason mounts are not interrupted by entering combat even with both interrupt flag and attribute
+                InterruptSpell(CURRENT_GENERIC_SPELL, false, false);
 
     RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags::EnteringCombat);
     ProcSkillsAndAuras(this, nullptr, PROC_FLAG_ENTER_COMBAT, PROC_FLAG_NONE, PROC_SPELL_TYPE_MASK_ALL, PROC_SPELL_PHASE_NONE, PROC_HIT_NONE, nullptr, nullptr, nullptr);
@@ -8832,153 +8751,6 @@ uint32 Unit::GetCreatureTypeMask() const
     return (creatureType >= 1) ? (1 << (creatureType - 1)) : 0;
 }
 
-void Unit::RegisterSummon(SummonInfo* summon)
-{
-    if (!summon)
-        return;
-
-    SummonPropertiesSlot slot = summon->GetSummonSlot();
-
-    // Wild Summons usually don't need any tracking but some do have certain SummonPropertiesFlags which
-    // causes them to interact with the summoner in some way (e.g. despawning when the summoner died)
-    if (slot == SummonPropertiesSlot::None)
-    {
-        if (advstd::ranges::contains(_unslottedSummons, summon))
-            return;
-
-        _unslottedSummons.push_back(summon);
-        return;
-    }
-
-    uint8 targetSlot = AsUnderlyingType(slot);
-
-    // Another summon is occupying the slot. Unsummon that one first
-    if (SummonInfo* activeSummon = _slottedSummons[targetSlot])
-        activeSummon->GetSummonedCreature()->DespawnOrUnsummon();
-
-    _slottedSummons[targetSlot] = summon;
-}
-
-void Unit::UnregisterSummon(SummonInfo* summon)
-{
-    if (!summon)
-        return;
-
-    SummonPropertiesSlot slot = summon->GetSummonSlot();
-    if (slot == SummonPropertiesSlot::None)
-    {
-        std::erase(_unslottedSummons, summon);
-        return;
-    }
-
-    uint8 targetSlot = AsUnderlyingType(slot);
-    _slottedSummons[targetSlot] = nullptr;
-}
-
-void Unit::DespawnSummonsOnSummonerLogout()
-{
-    std::vector<SummonInfo*> unslottedSummons = _unslottedSummons;
-    for (SummonInfo* summon : unslottedSummons)
-        if (summon->DespawnsOnSummonerLogout())
-            summon->GetSummonedCreature()->DespawnOrUnsummon();
-
-    std::vector<SummonInfo*> slottedSummons = _slottedSummons;
-    for (SummonInfo* summon : slottedSummons)
-        if (summon && summon->DespawnsOnSummonerLogout())
-            summon->GetSummonedCreature()->DespawnOrUnsummon();
-}
-
-void Unit::DespawnSummonsOnSummonerDeath()
-{
-    std::vector<SummonInfo*> unslottedSummons = _unslottedSummons;
-    for (SummonInfo* summon : unslottedSummons)
-        if (summon->DespawnsOnSummonerDeath())
-            summon->GetSummonedCreature()->DespawnOrUnsummon();
-
-    std::vector<SummonInfo*> slottedSummons = _slottedSummons;
-    for (SummonInfo* summon : slottedSummons)
-        if (summon && summon->DespawnsOnSummonerDeath())
-            summon->GetSummonedCreature()->DespawnOrUnsummon();
-
-}
-
-void Unit::DismissPet()
-{
-    if (!GetMinionGUID())
-        return;
-
-    for (SummonInfo* summonInfo : GetSummonsByControlType(SummonPropertiesControl::Pet))
-        summonInfo->GetSummonedCreature()->DespawnOrUnsummon();
-}
-
-SummonInfo* Unit::GetSummonInSlot(SummonPropertiesSlot slot) const
-{
-    if (slot == SummonPropertiesSlot::None ||
-        slot == SummonPropertiesSlot::Max ||
-        slot == SummonPropertiesSlot::AnyAvailableTotem)
-        return nullptr;
-
-    return _slottedSummons[AsUnderlyingType(slot)];
-}
-
-std::vector<SummonInfo*> Unit::GetSummonsByCreatureId(uint32 creatureId)
-{
-    if (creatureId == 0)
-        return {};
-
-    std::vector<SummonInfo*> summons;
-
-
-    std::ranges::copy_if(_unslottedSummons, std::back_inserter(summons), [creatureId](SummonInfo const* summon)
-    {
-        return summon->GetSummonedCreature()->GetEntry() == creatureId;
-    });
-
-    std::ranges::copy_if(_slottedSummons, std::back_inserter(summons), [creatureId](SummonInfo const* summon)
-    {
-        return summon && summon->GetSummonedCreature()->GetEntry() == creatureId;
-    });
-
-    return summons;
-}
-
-std::vector<SummonInfo*> Unit::GetSummonsBySpellId(uint32 spellId)
-{
-    if (spellId == 0)
-        return {};
-
-    std::vector<SummonInfo*> summons;
-
-    std::ranges::copy_if(_unslottedSummons, std::back_inserter(summons), [spellId](SummonInfo const* summon)
-    {
-        return summon->GetSummonedCreature()->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spellId;
-    });
-
-    std::ranges::copy_if(_slottedSummons, std::back_inserter(summons), [spellId](SummonInfo const* summon)
-    {
-        return summon && summon->GetSummonedCreature()->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spellId;
-    });
-
-    return summons;
-}
-
-std::vector<SummonInfo*> Unit::GetSummonsByControlType(SummonPropertiesControl control)
-{
-    std::vector<SummonInfo*> summons;
-
-    std::ranges::copy_if(_unslottedSummons, std::back_inserter(summons), [control](SummonInfo const* summon)
-    {
-        return summon->GetControl() == control;
-    });
-
-    std::ranges::copy_if(_slottedSummons, std::back_inserter(summons), [control](SummonInfo const* summon)
-    {
-        return summon && summon->GetControl() == control;
-    });
-
-    return summons;
-}
-
 void Unit::SetShapeshiftForm(ShapeshiftForm form)
 {
     SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM, form);
@@ -9124,13 +8896,6 @@ void Unit::UpdateUnitMod(UnitMods unitMod)
 
     switch (unitMod)
     {
-        case UNIT_MOD_STAT_STRENGTH:
-        case UNIT_MOD_STAT_AGILITY:
-        case UNIT_MOD_STAT_STAMINA:
-        case UNIT_MOD_STAT_INTELLECT:
-        case UNIT_MOD_STAT_SPIRIT:
-            UpdateStats(GetStatByAuraGroup(unitMod));
-            break;
         case UNIT_MOD_ARMOR:
             UpdateArmor();
             break;
@@ -9253,19 +9018,6 @@ void Unit::UpdateAllDamagePctDoneMods()
         UpdateDamagePctDoneMods(WeaponAttackType(i));
 }
 
-float Unit::GetTotalStatValue(Stats stat) const
-{
-    UnitMods unitMod = UnitMods(UNIT_MOD_STAT_START + AsUnderlyingType(stat));
-
-    // value = ((base_value * base_pct) + total_value) * total_pct
-    float value  = GetFlatModifierValue(unitMod, BASE_VALUE) + GetCreateStat(stat);
-    value *= GetPctModifierValue(unitMod, BASE_PCT);
-    value += GetFlatModifierValue(unitMod, TOTAL_VALUE);
-    value *= GetPctModifierValue(unitMod, TOTAL_PCT);
-
-    return value;
-}
-
 float Unit::GetTotalAuraModValue(UnitMods unitMod) const
 {
     if (unitMod >= UNIT_MOD_END)
@@ -9302,26 +9054,7 @@ SpellSchools Unit::GetSpellSchoolByAuraGroup(UnitMods unitMod) const
     return school;
 }
 
-Stats Unit::GetStatByAuraGroup(UnitMods unitMod) const
-{
-    Stats stat = STAT_STRENGTH;
-
-    switch (unitMod)
-    {
-        case UNIT_MOD_STAT_STRENGTH:    stat = STAT_STRENGTH;      break;
-        case UNIT_MOD_STAT_AGILITY:     stat = STAT_AGILITY;       break;
-        case UNIT_MOD_STAT_STAMINA:     stat = STAT_STAMINA;       break;
-        case UNIT_MOD_STAT_INTELLECT:   stat = STAT_INTELLECT;     break;
-        case UNIT_MOD_STAT_SPIRIT:      stat = STAT_SPIRIT;        break;
-
-        default:
-            break;
-    }
-
-    return stat;
-}
-
-Powers Unit::GetPowerTypeByAuraGroup(UnitMods unitMod) const
+PowerType Unit::GetPowerTypeByAuraGroup(UnitMods unitMod) const
 {
     switch (unitMod)
     {
@@ -9447,7 +9180,7 @@ void Unit::SetMaxHealth(uint32 val)
         SetHealth(val);
 }
 
-int32 Unit::GetPower(Powers power) const
+int32 Unit::GetPower(PowerType power) const
 {
     uint32 powerIndex = GetPowerIndex(power);
     if (powerIndex == MAX_POWERS)
@@ -9456,7 +9189,7 @@ int32 Unit::GetPower(Powers power) const
     return GetUInt32Value(UNIT_FIELD_POWER1 + powerIndex);
 }
 
-int32 Unit::GetMaxPower(Powers power) const
+int32 Unit::GetMaxPower(PowerType power) const
 {
     uint32 powerIndex = GetPowerIndex(power);
     if (powerIndex == MAX_POWERS)
@@ -9465,7 +9198,7 @@ int32 Unit::GetMaxPower(Powers power) const
     return GetInt32Value(UNIT_FIELD_MAXPOWER1 + powerIndex);
 }
 
-void Unit::SetPower(Powers power, int32 val, bool withPowerUpdate /*= true*/)
+void Unit::SetPower(PowerType power, int32 val, bool withPowerUpdate /*= true*/)
 {
     uint32 powerIndex = GetPowerIndex(power);
     if (powerIndex == MAX_POWERS)
@@ -9502,7 +9235,7 @@ void Unit::SetPower(Powers power, int32 val, bool withPowerUpdate /*= true*/)
     }
 }
 
-void Unit::SetMaxPower(Powers power, int32 val)
+void Unit::SetMaxPower(PowerType power, int32 val)
 {
     uint32 powerIndex = GetPowerIndex(power);
     if (powerIndex == MAX_POWERS)
@@ -9531,7 +9264,7 @@ void Unit::SetMaxPower(Powers power, int32 val)
         SetPower(power, val);
 }
 
-void Unit::Regenerate(Powers powerType, uint32 diff)
+void Unit::Regenerate(PowerType powerType, uint32 diff)
 {
     uint32 maxValue = GetMaxPower(powerType);
     if (!maxValue)
@@ -9628,11 +9361,11 @@ void Unit::RegisterPowerTypes()
 {
     for (uint8 i = POWER_MANA; i < MAX_POWERS; ++i)
     {
-        uint32 powerIndex = GetPowerIndex(Powers(i));
+        uint32 powerIndex = GetPowerIndex(PowerType(i));
         if (powerIndex == MAX_POWERS || powerIndex == MAX_POWERS_PER_CLASS)
             continue;
 
-        _usedPowerTypes[powerIndex] = static_cast<Powers>(i);
+        _usedPowerTypes[powerIndex] = static_cast<PowerType>(i);
     }
 }
 
@@ -9744,7 +9477,7 @@ void Unit::RemoveFromWorld()
         RemoveAllDynObjects();
 
         ExitVehicle();  // Remove applied auras with SPELL_AURA_CONTROL_VEHICLE
-        DespawnSummonsOnSummonerLogout();
+        UnsummonAllTotems();
         RemoveAllControlled();
 
         RemoveAreaAurasDueToLeaveWorld();
@@ -9767,10 +9500,6 @@ void Unit::RemoveFromWorld()
                 ABORT();
             }
         }
-
-        // Clear all active summon references. If we are about to switch map instances, we want to make sure that we leave all summons behind so we won't do threadunsafe operations
-        _unslottedSummons.clear();
-        _slottedSummons.clear();
 
         WorldObject::RemoveFromWorld();
         m_duringRemoveFromWorld = false;
@@ -10600,7 +10329,7 @@ void Unit::ApplyHasteRegenMod(float val, bool apply)
 
     SetFloatValue(PLAYER_FIELD_MOD_HASTE_REGEN, amount);
 
-    for (Powers powerType : GetUsedPowerTypes())
+    for (PowerType powerType : GetUsedPowerTypes())
     {
         if (powerType == MAX_POWERS || GetPowerIndex(powerType) == MAX_POWERS)
             continue;
@@ -10891,7 +10620,6 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
     // this enables pet details window (Shift+P)
     pet->InitPetCreateSpells();
     //pet->InitLevelupSpellsForLevel();
-    pet->UpdateAllStats();
     pet->SetFullHealth();
     pet->CastSpell(pet, 99289, true); // Energize
     pet->SetReactState(REACT_ASSIST);
@@ -13901,10 +13629,8 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target)
                 fieldBuffer << uint32(m_floatValues[index] < 0 ? 0 : m_floatValues[index]);
             }
             // there are some float values which may be negative or can't get negative due to other checks
-            else if ((index >= UNIT_FIELD_NEGSTAT0   && index <= UNIT_FIELD_NEGSTAT4) ||
-                (index >= UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE  && index <= (UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + 6)) ||
-                (index >= UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE  && index <= (UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + 6)) ||
-                (index >= UNIT_FIELD_POSSTAT0   && index <= UNIT_FIELD_POSSTAT4))
+            else if ((index >= UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE  && index <= (UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + 6)) ||
+                (index >= UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE  && index <= (UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + 6)))
             {
                 fieldBuffer << uint32(m_floatValues[index]);
             }
@@ -14538,4 +14264,17 @@ void Unit::ProcessItemCast(PendingSpellCastRequest const& castRequest, SpellCast
 void Unit::SetGameClientMovingMe(GameClient* gameClientMovingMe)
 {
     _gameClientMovingMe = gameClientMovingMe;
+}
+
+Stats& Unit::GetStats() const
+{
+    return *_stats;
+}
+
+int32 Unit::GetStat(StatType statType) const
+{
+    if (statType < StatType::Strength)
+        return 0;
+
+    return GetInt32Value(UNIT_FIELD_STAT0 + AsUnderlyingType(statType));
 }

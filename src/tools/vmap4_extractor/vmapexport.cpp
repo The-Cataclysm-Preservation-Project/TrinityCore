@@ -46,7 +46,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <errno.h>
+#include <cerrno>
 
 //------------------------------------------------------------------------------
 // Defines
@@ -126,7 +126,7 @@ bool LoadLocaleMPQFile(int locale)
 
     if (!SFileOpenArchive(fileName.c_str(), 0, MPQ_OPEN_READ_ONLY, &LocaleMpq))
     {
-        if (GetLastError() != ERROR_PATH_NOT_FOUND)
+        if (SErrGetLastError() != ERROR_PATH_NOT_FOUND)
         {
             printf("\nLoading %s locale MPQs\n", Locales[locale]);
             printf("Cannot open archive %s\n", fileName.c_str());
@@ -158,7 +158,7 @@ bool LoadLocaleMPQFile(int locale)
 
         if (!SFileOpenPatchArchive(LocaleMpq, fileName.c_str(), prefix, 0))
         {
-            if (GetLastError() != ERROR_FILE_NOT_FOUND)
+            if (SErrGetLastError() != ERROR_FILE_NOT_FOUND)
                 printf("Cannot open patch archive %s\n", fileName.c_str());
             continue;
         }
@@ -176,7 +176,7 @@ void LoadCommonMPQFiles(uint32 build)
     printf("Loading common MPQ files\n");
     if (!SFileOpenArchive(filename.c_str(), 0, MPQ_OPEN_READ_ONLY, &WorldMpq))
     {
-        if (GetLastError() != ERROR_PATH_NOT_FOUND)
+        if (SErrGetLastError() != ERROR_PATH_NOT_FOUND)
             printf("Cannot open archive %s\n", filename.c_str());
         return;
     }
@@ -190,7 +190,7 @@ void LoadCommonMPQFiles(uint32 build)
         filename = Trinity::StringFormat("%s/Data/%s", input_path.string(), CONF_mpq_list[i]);
         if (!SFileOpenPatchArchive(WorldMpq, filename.c_str(), "", 0))
         {
-            if (GetLastError() != ERROR_PATH_NOT_FOUND)
+            if (SErrGetLastError() != ERROR_PATH_NOT_FOUND)
                 printf("Cannot open archive %s\n", filename.c_str());
             else
                 printf("Not found %s\n", filename.c_str());
@@ -222,7 +222,7 @@ void LoadCommonMPQFiles(uint32 build)
 
         if (!SFileOpenPatchArchive(WorldMpq, filename.c_str(), prefix, 0))
         {
-            if (GetLastError() != ERROR_PATH_NOT_FOUND)
+            if (SErrGetLastError() != ERROR_PATH_NOT_FOUND)
                 printf("Cannot open patch archive %s\n", filename.c_str());
             else
                 printf("Not found %s\n", filename.c_str());
@@ -521,7 +521,7 @@ int main(int argc, char ** argv)
         //Open MPQs
         if (!LoadLocaleMPQFile(i))
         {
-            if (GetLastError() != ERROR_PATH_NOT_FOUND)
+            if (SErrGetLastError() != ERROR_PATH_NOT_FOUND)
                 printf("Unable to load %s locale archives!\n", Locales[i]);
             continue;
         }

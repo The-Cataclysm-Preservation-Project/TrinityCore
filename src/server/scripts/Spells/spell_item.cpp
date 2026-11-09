@@ -21,20 +21,21 @@
  * Scriptnames of files in this file should be prefixed with "spell_item_".
  */
 
-#include "ScriptMgr.h"
 #include "Battleground.h"
-#include "CreatureAIImpl.h"
 #include "Containers.h"
+#include "CreatureAIImpl.h"
 #include "DBCStores.h"
 #include "Map.h"
 #include "ObjectMgr.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "SkillDiscovery.h"
 #include "SpellAuraEffects.h"
 #include "SpellHistory.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "Stats.h"
 
 namespace Spells::Items
 {
@@ -4213,8 +4214,8 @@ public:
             PreventDefaultAction();
 
             Unit* caster = eventInfo.GetActor();
-            float str = caster->GetStat(STAT_STRENGTH);
-            float agi = caster->GetStat(STAT_AGILITY);
+            float str = caster->GetStat(StatType::Strength);
+            float agi = caster->GetStat(StatType::Agility);
 
             switch (aurEff->GetId())
             {
@@ -4359,10 +4360,10 @@ public:
             PreventDefaultAction();
 
             Unit* caster = eventInfo.GetActor();
-            float str = caster->GetStat(STAT_STRENGTH);
-            float agi = caster->GetStat(STAT_AGILITY);
-            float intl = caster->GetStat(STAT_INTELLECT);
-            float spi = caster->GetStat(STAT_SPIRIT);
+            int32 str = caster->GetStat(StatType::Strength);
+            int32 agi = caster->GetStat(StatType::Agility);
+            int32 intl = caster->GetStat(StatType::Intellect);
+            int32 spi = caster->GetStat(StatType::Spirit);
             float stat = 0.0f;
 
             uint32 spellTrigger = SPELL_DARKMOON_CARD_STRENGTH;

@@ -497,7 +497,7 @@ void OpcodeTable::Initialize()
     DEFINE_HANDLER(CMSG_PETITION_SHOW_SIGNATURES,                         STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandlePetitionShowSignOpcode    );
     DEFINE_HANDLER(CMSG_PETITION_SIGN,                                    STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandlePetitionSignOpcode        );
     DEFINE_HANDLER(CMSG_PET_ABANDON,                                      STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandlePetAbandon                );
-    DEFINE_HANDLER(CMSG_PET_ACTION,                                       STATUS_LOGGEDIN,  PROCESS_THREADSAFE,   &WorldSession::HandlePetAction                 );
+    DEFINE_HANDLER(CMSG_PET_ACTION,                                       STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandlePetAction                 );
     DEFINE_HANDLER(CMSG_PET_CANCEL_AURA,                                  STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandlePetCancelAuraOpcode       );
     DEFINE_HANDLER(CMSG_PET_CAST_SPELL,                                   STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandlePetCastSpellOpcode        );
     DEFINE_HANDLER(CMSG_PET_LEARN_TALENT,                                 STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandlePetLearnTalent            );

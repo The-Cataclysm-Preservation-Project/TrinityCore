@@ -21,6 +21,7 @@
 #include "StormLib.h"
 #include "Define.h"
 #include <map>
+#include <memory>
 #include <string>
 
 #define FILE_FORMAT_VERSION    18

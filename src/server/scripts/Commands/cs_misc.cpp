@@ -1663,9 +1663,9 @@ public:
             areaId             = fields[7].GetUInt16();
             gender             = fields[8].GetUInt8();
             uint32 health      = fields[9].GetUInt32();
-            uint32 playerFlags = fields[10].GetUInt32();
+            uint32 characterFlags = fields[10].GetUInt32();
 
-            if (!health || playerFlags & PLAYER_FLAGS_GHOST)
+            if (!health || characterFlags & CHARACTER_FLAG_GHOST)
                 alive = handler->GetTrinityString(LANG_NO);
             else
                 alive = handler->GetTrinityString(LANG_YES);

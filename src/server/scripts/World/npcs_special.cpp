@@ -1973,9 +1973,11 @@ class npc_experience : public CreatureScript
                 switch (action)
                 {
                     case GOSSIP_ACTION_INFO_DEF + 1: // XP ON selected
+                        player->RemoveCharacterFlag(CHARACTER_FLAG_2_NO_XP_GAIN);
                         player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN); // turn on XP gain
                         break;
                     case GOSSIP_ACTION_INFO_DEF + 2: // XP OFF selected
+                        player->AddCharacterFlag(CHARACTER_FLAG_2_NO_XP_GAIN);
                         player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN); // turn off XP gain
                         break;
                 }

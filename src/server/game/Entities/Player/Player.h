@@ -22,6 +22,7 @@
 #include "CUFProfile.h"
 #include "DatabaseEnvFwd.h"
 #include "DBCEnums.h"
+#include "EnumFlag.h"
 #include "EquipmentSet.h"
 #include "GroupReference.h"
 #include "ItemDefines.h"
@@ -83,6 +84,8 @@ class ReputationMgr;
 class SpellCastTargets;
 class TradeData;
 
+enum CharacterFlags : int32;
+enum CharacterFlags2 : int32;
 enum InventoryType : uint8;
 enum ItemClass : uint8;
 enum LootError : uint8;
@@ -402,6 +405,7 @@ constexpr uint8 MAX_DRUNKEN = 4;
 
 enum PlayerFlags
 {
+    PLAYER_FLAGS_NONE                               = 0x00000000,
     PLAYER_FLAGS_GROUP_LEADER                       = 0x00000001,
     PLAYER_FLAGS_AFK                                = 0x00000002,
     PLAYER_FLAGS_DND                                = 0x00000004,
@@ -479,8 +483,9 @@ static_assert((PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID & 1) == 0, "PLAYER
 
 constexpr uint8 PLAYER_BYTES_2_OVERRIDE_SPELLS_UINT16_OFFSET = PLAYER_FIELD_BYTES_2_OFFSET_OVERRIDE_SPELLS_ID / 2;
 
+// KNOWN_TITLES is stored in 4 uint64 values, so we can represent 256 title bits (4 * 64).
 constexpr uint8 KNOWN_TITLES_SIZE = 4;
-constexpr uint32 MAX_TITLE_INDEX = KNOWN_TITLES_SIZE * sizeof(uint64); // 4 uint64 fields
+constexpr uint32 MAX_TITLE_INDEX = KNOWN_TITLES_SIZE * 64;
 
 // used in PLAYER_FIELD_BYTES values
 enum PlayerFieldByteFlags
@@ -1291,7 +1296,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         uint32 GetGossipTextId(uint32 menuId, WorldObject* source);
         uint32 GetGossipTextId(WorldObject* source);
-        static uint32 GetDefaultGossipMenuForSource(WorldObject* source);
+        uint32 GetGossipMenuForSource(WorldObject* source);
 
         /*********************************************************/
         /***                    QUEST SYSTEM                   ***/
@@ -1532,7 +1537,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void CharmSpellInitialize();
         void PossessSpellInitialize();
         void VehicleSpellInitialize();
-        void SendPetSpells(SummonInfo* summonInfo);
         void SendRemoveControlBar() const;
         bool HasSpell(uint32 spell) const override;
         bool HasActiveSpell(uint32 spell) const;            // show in spellbook
@@ -1738,14 +1742,12 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         float GetHealthBonusFromStamina();
         float GetManaBonusFromIntellect();
 
-        bool UpdateStats(Stats stat) override;
-        bool UpdateAllStats() override;
         void ApplySpellPenetrationBonus(int32 amount, bool apply);
         void UpdateResistances(uint32 school) override;
         void UpdateArmor() override;
         void UpdateMaxHealth() override;
-        void UpdateMaxPower(Powers power) override;
-        uint32 GetPowerIndex(Powers power) const override;
+        void UpdateMaxPower(PowerType power) override;
+        uint32 GetPowerIndex(PowerType power) const override;
         void UpdateAttackPowerAndDamage(bool ranged = false) override;
         void ApplySpellPowerBonus(int32 amount, bool apply);
         void UpdateSpellDamageAndHealingBonus();
@@ -2360,8 +2362,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         // Void Storage
         bool IsVoidStorageUnlocked() const { return HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_VOID_UNLOCKED); }
-        void UnlockVoidStorage() { SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_VOID_UNLOCKED); }
-        void LockVoidStorage() { RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_VOID_UNLOCKED); }
+        void UnlockVoidStorage();
+        void LockVoidStorage();
         uint8 GetNextVoidStorageFreeSlot() const;
         uint8 GetNumOfVoidStorageFreeSlots() const;
         uint8 AddVoidStorageItem(VoidStorageItem const& item);
@@ -2552,6 +2554,23 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         uint32 m_ExtraFlags;
 
+    private:
+        EnumFlag<CharacterFlags> _characterFlags;
+        EnumFlag<CharacterFlags2> _characterFlags2;
+    public:
+        EnumFlag<CharacterFlags> GetCharacterFlags() const { return _characterFlags; }
+        void AddCharacterFlag(CharacterFlags flag) { _characterFlags |= flag; }
+        void RemoveCharacterFlag(CharacterFlags flag) { _characterFlags &= ~flag; }
+        bool HasCharacterFlag(CharacterFlags flag) const { return _characterFlags.HasFlag(flag); }
+
+        EnumFlag<CharacterFlags2> GetCharacterFlags2() const { return _characterFlags2; }
+        void AddCharacterFlag(CharacterFlags2 flag) { _characterFlags2 |= flag; }
+        void RemoveCharacterFlag(CharacterFlags2 flag) { _characterFlags2 &= ~flag; }
+        bool HasCharacterFlag(CharacterFlags2 flag) const { return _characterFlags2.HasFlag(flag); }
+
+        void InitializePlayerFlags();
+
+    protected:
         QuestStatusMap m_QuestStatus;
         QuestStatusSaveMap m_QuestStatusSave;
 

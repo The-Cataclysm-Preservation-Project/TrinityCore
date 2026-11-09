@@ -41,12 +41,14 @@
 #include "SpellHistory.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "Stats.h"
 #include "ThreatManager.h"
 #include "Unit.h"
 #include "Util.h"
 #include "Vehicle.h"
 #include "Weather.h"
 #include "WorldPacket.h"
+
 #include <G3D/g3dmath.h>
 #include <numeric>
 
@@ -1499,14 +1501,6 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
     }
 }
 
-bool AuraEffect::CanPeriodicTickCrit(Unit const* caster) const
-{
-    if (m_spellInfo->HasAttribute(SPELL_ATTR8_PERIODIC_CAN_CRIT))
-        return true;
-
-    return caster && caster->HasAuraTypeWithAffectMask(SPELL_AURA_ABILITY_PERIODIC_CRIT, m_spellInfo);
-}
-
 /*********************************************************/
 /***               AURA EFFECT HANDLERS                ***/
 /*********************************************************/
@@ -1748,12 +1742,13 @@ void AuraEffect::HandleAuraGhost(AuraApplication const* aurApp, uint8 mode, bool
     if (!(mode & AURA_EFFECT_HANDLE_SEND_FOR_CLIENT_MASK))
         return;
 
-    Unit* target = aurApp->GetTarget();
-    if (target->GetTypeId() != TYPEID_PLAYER)
+    Player* target = Object::ToPlayer(aurApp->GetTarget());
+    if (!target)
         return;
 
     if (apply)
     {
+        target->AddCharacterFlag(CHARACTER_FLAG_GHOST);
         target->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
         target->m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_GHOST);
         target->m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_GHOST);
@@ -1763,6 +1758,7 @@ void AuraEffect::HandleAuraGhost(AuraApplication const* aurApp, uint8 mode, bool
         if (target->HasAuraType(SPELL_AURA_GHOST))
             return;
 
+        target->RemoveCharacterFlag(CHARACTER_FLAG_GHOST);
         target->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
         target->m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE);
         target->m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE);
@@ -1809,7 +1805,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
     Unit* target = aurApp->GetTarget();
 
     uint32 modelid = 0;
-    Powers PowerType = POWER_MANA;
+    PowerType PowerType = POWER_MANA;
     ShapeshiftForm form = ShapeshiftForm(GetMiscValue());
 
     switch (form)
@@ -3568,76 +3564,36 @@ void AuraEffect::HandleModTargetResistance(AuraApplication const* aurApp, uint8 
 /***           STAT           ***/
 /********************************/
 
-void AuraEffect::HandleAuraModStat(AuraApplication const* aurApp, uint8 mode, bool apply) const
+void AuraEffect::HandleAuraModStat(AuraApplication const* aurApp, uint8 mode, bool /*apply*/) const
 {
     if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))
         return;
 
-    if (GetMiscValue() < -2 || GetMiscValue() > 4)
+    StatType stat = static_cast<StatType>(GetMiscValue());
+    if (stat < StatType::AllPrimaryStats2 || stat >= StatType::Max)
     {
         TC_LOG_ERROR("spells", "WARNING: Spell %u effect %u has an unsupported misc value (%i) for SPELL_AURA_MOD_STAT ", GetId(), GetEffIndex(), GetMiscValue());
         return;
     }
 
     Unit* target = aurApp->GetTarget();
-    int32 spellGroupVal = target->GetHighestExclusiveSameEffectSpellGroupValue(this, SPELL_AURA_MOD_STAT, true, GetMiscValue());
-    if (abs(spellGroupVal) >= abs(GetAmount()))
-        return;
-
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i)
-    {
-        // -1 or -2 is all stats (misc < -2 checked in function beginning)
-        if (GetMiscValue() < 0 || GetMiscValue() == i)
-        {
-            if (spellGroupVal)
-            {
-                target->HandleStatFlatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_VALUE, float(spellGroupVal), !apply);
-                if (target->GetTypeId() == TYPEID_PLAYER || target->IsPet())
-                    target->UpdateStatBuffMod(Stats(i));
-            }
-
-            target->HandleStatFlatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_VALUE, float(GetAmount()), apply);
-            if (target->GetTypeId() == TYPEID_PLAYER || target->IsPet())
-                target->UpdateStatBuffMod(Stats(i));
-        }
-    }
+    target->GetStats().UpdateTotalStatModifier(stat);
 }
 
-void AuraEffect::HandleModPercentStat(AuraApplication const* aurApp, uint8 mode, bool apply) const
+void AuraEffect::HandleModPercentStat(AuraApplication const* aurApp, uint8 mode, bool /*apply*/) const
 {
     if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))
         return;
 
+    StatType stat = static_cast<StatType>(GetMiscValue());
+    if (stat < StatType::AllPrimaryStats2 || stat >= StatType::Max)
+    {
+        TC_LOG_ERROR("spells", "WARNING: Spell %u effect %u has an unsupported misc value (%i) for SPELL_AURA_MOD_PERCENT_STAT ", GetId(), GetEffIndex(), GetMiscValue());
+        return;
+    }
+
     Unit* target = aurApp->GetTarget();
-
-    if (GetMiscValue() < -1 || GetMiscValue() > 4)
-    {
-        TC_LOG_ERROR("spells", "WARNING: Misc Value for SPELL_AURA_MOD_PERCENT_STAT not valid");
-        return;
-    }
-
-    // only players have base stats
-    if (target->GetTypeId() != TYPEID_PLAYER)
-        return;
-
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i)
-    {
-        if (GetMiscValue() == i || GetMiscValue() == -1)
-        {
-            if (apply)
-                target->ApplyStatPctModifier(UnitMods(UNIT_MOD_STAT_START + i), BASE_PCT, float(GetAmount()));
-            else
-            {
-                float amount = target->GetTotalAuraMultiplier(SPELL_AURA_MOD_PERCENT_STAT, [i](AuraEffect const* aurEff) -> bool
-                {
-                    if (aurEff->GetMiscValue() == i || aurEff->GetMiscValue() == -1)
-                        return true;
-                    return false;
-                });
-                target->SetStatPctModifier(UnitMods(UNIT_MOD_STAT_START + i), BASE_PCT, amount);
-            }
-        }
-    }
+    target->GetStats().UpdateBaseStatMultiplier(stat);
 }
 
 void AuraEffect::HandleModSpellDamagePercentFromStat(AuraApplication const* aurApp, uint8 mode, bool /*apply*/) const
@@ -3719,48 +3675,15 @@ void AuraEffect::HandleModTotalPercentStat(AuraApplication const* aurApp, uint8 
     if (!(mode & (AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK | AURA_EFFECT_HANDLE_STAT)))
         return;
 
-    if (GetMiscValue() < -1 || GetMiscValue() > 4)
+    StatType stat = static_cast<StatType>(GetMiscValue());
+    if (stat < StatType::AllPrimaryStats2 || stat >= StatType::Max)
     {
-        TC_LOG_ERROR("spells", "WARNING: Misc Value for SPELL_AURA_MOD_PERCENT_STAT not valid");
+        TC_LOG_ERROR("spells", "WARNING: Spell %u effect %u has an unsupported misc value (%i) for SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE ", GetId(), GetEffIndex(), GetMiscValue());
         return;
     }
 
     Unit* target = aurApp->GetTarget();
-
-    // save current health state
-    float healthPct = target->GetHealthPct();
-    bool zeroHealth = !target->IsAlive();
-
-    // players in corpse state may mean two different states:
-    /// 1. player just died but did not release (in this case health == 0)
-    /// 2. player is corpse running (ie ghost) (in this case health == 1)
-    if (target->getDeathState() == CORPSE)
-        zeroHealth = (target->GetHealth() == 0);
-
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i)
-    {
-        if ((GetMiscValueB() & 1 << i) || !GetMiscValueB()) // affect the same stats
-        {
-            float amount = target->GetTotalAuraMultiplier(SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE, [i](AuraEffect const* aurEff) -> bool
-            {
-                if ((aurEff->GetMiscValueB() & 1 << i) || aurEff->GetMiscValueB() == -1)
-                    return true;
-                return false;
-            });
-
-            if (target->GetPctModifierValue(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT) == amount)
-                continue;
-
-            target->SetStatPctModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT, amount);
-            if (target->GetTypeId() == TYPEID_PLAYER || target->IsPet())
-                target->UpdateStatBuffMod(Stats(i));
-        }
-    }
-
-    // recalculate current HP/MP after applying aura modifications (only for spells with SPELL_ATTR0_IS_ABILITY 0x00000010 flag)
-    // this check is total bullshit i think
-    if (((GetMiscValueB() & 1 << STAT_STAMINA) || GetMiscValueB() == - 1) && m_spellInfo->HasAttribute(SPELL_ATTR0_IS_ABILITY))
-        target->SetHealth(std::max<uint32>(CalculatePct(target->GetMaxHealth(), healthPct), (zeroHealth ? 0 : 1)));
+    target->GetStats().UpdateTotalStatMultiplier(stat);
 }
 
 void AuraEffect::HandleAuraModResistenceOfStatPercent(AuraApplication const* aurApp, uint8 mode, bool /*apply*/) const
@@ -3808,7 +3731,7 @@ void AuraEffect::HandleModPowerRegen(AuraApplication const* aurApp, uint8 mode, 
         return;
 
     // Update power regen values
-    aurApp->GetTarget()->UpdatePowerRegeneration(Powers(GetMiscValue()));
+    aurApp->GetTarget()->UpdatePowerRegeneration(PowerType(GetMiscValue()));
 }
 
 void AuraEffect::HandleModPowerRegenPCT(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -3902,7 +3825,7 @@ void AuraEffect::HandleAuraModIncreaseEnergy(AuraApplication const* aurApp, uint
         return;
 
     Unit* target = aurApp->GetTarget();
-    Powers powerType = Powers(GetMiscValue());
+    PowerType powerType = PowerType(GetMiscValue());
     UnitMods unitMod = UnitMods(UNIT_MOD_POWER_START + AsUnderlyingType(powerType));
 
     target->HandleStatFlatModifier(unitMod, TOTAL_VALUE, float(GetAmount()), apply);
@@ -3915,7 +3838,7 @@ void AuraEffect::HandleAuraModIncreaseEnergyPercent(AuraApplication const* aurAp
 
     Unit* target = aurApp->GetTarget();
 
-    Powers powerType = Powers(GetMiscValue());
+    PowerType powerType = PowerType(GetMiscValue());
     UnitMods unitMod = UnitMods(UNIT_MOD_POWER_START + AsUnderlyingType(powerType));
 
     // Save old powers for further calculation
@@ -5833,11 +5756,11 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
 
     bool crit = false;
 
-    if (CanPeriodicTickCrit(caster))
+    if (GetBase()->CanPeriodicTickCrit())
         crit = roll_chance_f(GetCritChanceFor(caster, target));
 
     if (crit)
-        damage = Unit::SpellCriticalDamageBonus(caster, m_spellInfo, damage);
+        damage = Unit::SpellCriticalDamageBonus(caster, m_spellInfo, damage, true);
 
     uint32 unmitigatedDamage = damage;
 
@@ -5922,11 +5845,11 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
 
     bool crit = false;
 
-    if (CanPeriodicTickCrit(caster))
+    if (GetBase()->CanPeriodicTickCrit())
         crit = roll_chance_f(GetCritChanceFor(caster, target));
 
     if (crit)
-        damage = Unit::SpellCriticalDamageBonus(caster, m_spellInfo, damage);
+        damage = Unit::SpellCriticalDamageBonus(caster, m_spellInfo, damage, true);
 
     uint32 unmitigatedDamage = damage;
 
@@ -6054,7 +5977,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
 
     bool crit = false;
 
-    if (CanPeriodicTickCrit(caster))
+    if (GetBase()->CanPeriodicTickCrit())
         crit = roll_chance_f(GetCritChanceFor(caster, target));
 
     if (crit)
@@ -6092,7 +6015,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
 
 void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster) const
 {
-    Powers powerType = Powers(GetMiscValue());
+    PowerType powerType = PowerType(GetMiscValue());
 
     if (!caster || !caster->IsAlive() || !target->IsAlive() || target->GetPowerType() != powerType)
         return;
@@ -6160,11 +6083,11 @@ void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster) con
 
 void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster) const
 {
-    Powers powerType;
+    PowerType powerType;
     if (GetMiscValue() == POWER_ALL)
         powerType = target->GetPowerType();
     else
-        powerType = Powers(GetMiscValue());
+        powerType = PowerType(GetMiscValue());
 
     if (!target->IsAlive() || !target->GetMaxPower(powerType))
         return;
@@ -6195,7 +6118,7 @@ void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster) const
 
 void AuraEffect::HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster) const
 {
-    Powers powerType = Powers(GetMiscValue());
+    PowerType powerType = PowerType(GetMiscValue());
     if (!target->IsAlive() || !target->GetMaxPower(powerType))
         return;
 
@@ -6226,7 +6149,7 @@ void AuraEffect::HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster) cons
 
 void AuraEffect::HandlePeriodicPowerBurnAuraTick(Unit* target, Unit* caster) const
 {
-    Powers powerType = Powers(GetMiscValue());
+    PowerType powerType = PowerType(GetMiscValue());
 
     if (!caster || !target->IsAlive() || target->GetPowerType() != powerType)
         return;
@@ -6455,7 +6378,7 @@ void AuraEffect::HandleProcOnPowerAmountAuraProc(AuraApplication* aurApp, ProcEv
     Unit* triggerTarget = eventInfo.GetProcTarget();
 
     int32 powerAmountRequired = GetAmount();
-    Powers powerRequired = Powers(GetMiscValue());
+    PowerType powerRequired = PowerType(GetMiscValue());
 
     if (!powerRequired || !powerAmountRequired)
     {

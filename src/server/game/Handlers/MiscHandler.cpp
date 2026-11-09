@@ -408,33 +408,27 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recvData*/)
 
 void WorldSession::HandleTogglePvP(WorldPacket& recvData)
 {
-    // this opcode can be used in two ways: Either set explicit new status or toggle old status
+    bool enablePvp = !_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP);
+    // If a byte is sent, we want a specific state
     if (recvData.size() == 1)
-    {
-        bool newPvPStatus;
-        recvData >> newPvPStatus;
-        GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP, newPvPStatus);
-        GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER, !newPvPStatus);
-    }
-    else
-    {
-        GetPlayer()->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP);
-        GetPlayer()->ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER);
-    }
+        recvData >> enablePvp;
 
-    if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP))
+    if (enablePvp)
     {
+        _player->AddCharacterFlag(CHARACTER_FLAG_PVP_DESIRED);
+        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP);
+        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER);
         if (!GetPlayer()->IsPvP() || GetPlayer()->pvpInfo.EndTimer)
             GetPlayer()->UpdatePvP(true, true);
     }
     else
     {
+        _player->RemoveCharacterFlag(CHARACTER_FLAG_PVP_DESIRED);
+        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP);
+        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER);
         if (!GetPlayer()->pvpInfo.IsHostile && GetPlayer()->IsPvP())
             GetPlayer()->pvpInfo.EndTimer = GameTime::GetGameTime();     // start toggle-off
     }
-
-    //if (OutdoorPvP* pvp = _player->GetOutdoorPvP())
-    //    pvp->HandlePlayerActivityChanged(_player);
 }
 
 void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recvData)

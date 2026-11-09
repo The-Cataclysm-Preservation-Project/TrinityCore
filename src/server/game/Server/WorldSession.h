@@ -193,12 +193,6 @@ namespace WorldPackets
         class TrainerBuySpell;
     }
 
-    namespace Pet
-    {
-        class DismissCritter;
-        class PetAction;
-    }
-
     namespace Party
     {
         class SetEveryoneIsAssistant;
@@ -1065,8 +1059,9 @@ class TC_GAME_API WorldSession
         void HandleTutorialReset(WorldPacket& recvData);
 
         //Pet
-        void HandlePetAction(WorldPackets::Pet::PetAction& packet);
+        void HandlePetAction(WorldPacket& recvData);
         void HandlePetStopAttack(WorldPacket& recvData);
+        void HandlePetActionHelper(Unit* pet, ObjectGuid guid1, uint32 spellid, uint16 flag, ObjectGuid guid2, float x, float y, float z);
         void HandlePetNameQuery(WorldPacket& recvData);
         void HandlePetSetAction(WorldPacket& recvData);
         void HandlePetAbandon(WorldPacket& recvData);
@@ -1080,7 +1075,7 @@ class TC_GAME_API WorldSession
         void HandleSetActionBarToggles(WorldPacket& recvData);
 
         void HandleTotemDestroyed(WorldPackets::Totem::TotemDestroyed& packet);
-        void HandleDismissCritter(WorldPackets::Pet::DismissCritter& packet);
+        void HandleDismissCritter(WorldPacket& recvData);
 
         //Battleground
         void HandleBattlemasterHelloOpcode(WorldPacket& recvData);

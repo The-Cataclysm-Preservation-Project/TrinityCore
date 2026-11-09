@@ -18,14 +18,15 @@
 #ifndef __UNIT_H
 #define __UNIT_H
 
-#include "Object.h"
 #include "CombatManager.h"
+#include "Object.h"
 #include "SpellAuraDefines.h"
 #include "SpellDefines.h"
 #include "ThreatManager.h"
 #include "Timer.h"
 #include "UnitDefines.h"
 #include "Util.h"
+
 #include <array>
 #include <forward_list>
 #include <map>
@@ -87,7 +88,7 @@ class Spell;
 class SpellCastTargets;
 class SpellHistory;
 class SpellInfo;
-class SummonInfo;
+class Stats;
 class Totem;
 class Transport;
 class TransportBase;
@@ -103,8 +104,7 @@ enum ProcFlagsSpellType : uint32;
 enum ZLiquidStatus : uint32;
 enum CharmType : uint8;
 
-enum class SummonPropertiesControl : uint8;
-enum class SummonPropertiesSlot: int8;
+enum class StatType : int8;
 
 namespace Movement
 {
@@ -165,11 +165,6 @@ enum WeaponDamageRange
 
 enum UnitMods
 {
-    UNIT_MOD_STAT_STRENGTH,                                 // UNIT_MOD_STAT_STRENGTH..UNIT_MOD_STAT_SPIRIT must be in existed order, it's accessed by index values of Stats enum.
-    UNIT_MOD_STAT_AGILITY,
-    UNIT_MOD_STAT_STAMINA,
-    UNIT_MOD_STAT_INTELLECT,
-    UNIT_MOD_STAT_SPIRIT,
     UNIT_MOD_HEALTH,
     UNIT_MOD_MANA,                                          // UNIT_MOD_MANA..UNIT_MOD_RUNIC_POWER must be in existed order, it's accessed by index values of Powers enum.
     UNIT_MOD_RAGE,
@@ -196,8 +191,6 @@ enum UnitMods
     UNIT_MOD_DAMAGE_RANGED,
     UNIT_MOD_END,
     // synonyms
-    UNIT_MOD_STAT_START = UNIT_MOD_STAT_STRENGTH,
-    UNIT_MOD_STAT_END = UNIT_MOD_STAT_SPIRIT + 1,
     UNIT_MOD_RESISTANCE_START = UNIT_MOD_ARMOR,
     UNIT_MOD_RESISTANCE_END = UNIT_MOD_RESISTANCE_ARCANE + 1,
     UNIT_MOD_POWER_START = UNIT_MOD_MANA,
@@ -760,7 +753,7 @@ class TC_GAME_API Unit : public WorldObject
 
         uint32 HasUnitTypeMask(uint32 mask) const { return mask & m_unitTypeMask; }
         void AddUnitTypeMask(uint32 mask) { m_unitTypeMask |= mask; }
-        virtual bool IsSummon() const { return false; }
+        bool IsSummon() const   { return (m_unitTypeMask & UNIT_MASK_SUMMON) != 0; }
         bool IsMinion() const   { return (m_unitTypeMask & UNIT_MASK_MINION) != 0; }
         bool IsGuardian() const { return (m_unitTypeMask & UNIT_MASK_GUARDIAN) != 0; }
         bool IsPet() const      { return (m_unitTypeMask & UNIT_MASK_PET) != 0; }
@@ -778,8 +771,6 @@ class TC_GAME_API Unit : public WorldObject
         uint32 getClassMask() const { return 1 << (getClass()-1); }
         uint8 getGender() const { return GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_GENDER); }
 
-        float GetStat(Stats stat) const { return float(GetUInt32Value(UNIT_FIELD_STAT0 + AsUnderlyingType(stat))); }
-        void SetStat(Stats stat, int32 val) { SetStatInt32Value(UNIT_FIELD_STAT0 + AsUnderlyingType(stat), val); }
         uint32 GetArmor() const { return GetResistance(SPELL_SCHOOL_NORMAL); }
         void SetArmor(int32 val) { SetResistance(SPELL_SCHOOL_NORMAL, val); }
 
@@ -806,26 +797,26 @@ class TC_GAME_API Unit : public WorldObject
         int32 ModifyHealth(int32 val);
         int32 GetHealthGain(int32 dVal);
 
-        Powers GetPowerType() const { return Powers(GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_POWER_TYPE)); }
-        void SetPowerType(Powers power);
-        Powers CalculateDisplayPowerType() const;
+        PowerType GetPowerType() const { return PowerType(GetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_POWER_TYPE)); }
+        void SetPowerType(PowerType power);
+        PowerType CalculateDisplayPowerType() const;
         void UpdateDisplayPower();
-        int32 GetPower(Powers power) const;
-        int32 GetMinPower(Powers power) const { return power == POWER_ECLIPSE ? -100 : 0; }
-        int32 GetMaxPower(Powers power) const;
-        int32 CountPctFromMaxPower(Powers power, int32 pct) const { return CalculatePct(GetMaxPower(power), pct); }
-        void SetPower(Powers power, int32 val, bool withPowerUpdate = true);
-        void SetMaxPower(Powers power, int32 val);
+        int32 GetPower(PowerType power) const;
+        int32 GetMinPower(PowerType power) const { return power == POWER_ECLIPSE ? -100 : 0; }
+        int32 GetMaxPower(PowerType power) const;
+        int32 CountPctFromMaxPower(PowerType power, int32 pct) const { return CalculatePct(GetMaxPower(power), pct); }
+        void SetPower(PowerType power, int32 val, bool withPowerUpdate = true);
+        void SetMaxPower(PowerType power, int32 val);
         void SetPowerBarID(uint32 id) { _powerBarId = id; }
-        void Regenerate(Powers powerType, uint32 diff);
-        void UpdatePowerRegeneration(Powers powerType);
+        void Regenerate(PowerType powerType, uint32 diff);
+        void UpdatePowerRegeneration(PowerType powerType);
         void RegisterPowerTypes();
 
-        inline void SetFullPower(Powers power) { SetPower(power, GetMaxPower(power)); }
+        inline void SetFullPower(PowerType power) { SetPower(power, GetMaxPower(power)); }
 
         // returns the change in power
-        int32 ModifyPower(Powers power, int32 val, bool withPowerUpdate = true);
-        float GetPowerRegen(Powers powerType, bool isInCombat) const;
+        int32 ModifyPower(PowerType power, int32 val, bool withPowerUpdate = true);
+        float GetPowerRegen(PowerType powerType, bool isInCombat) const;
 
         virtual void RegenerateHealth() { }
 
@@ -1014,9 +1005,9 @@ class TC_GAME_API Unit : public WorldObject
 
         void SendHealSpellLog(HealInfo& healInfo, bool critical = false);
         int32 HealBySpell(HealInfo& healInfo, bool critical = false);
-        void SendEnergizeSpellLog(Unit* victim, uint32 spellId, int32 damage, Powers powerType);
-        void EnergizeBySpell(Unit* victim, uint32 spellId, int32 damage, Powers powerType);
-        void EnergizeBySpell(Unit* victim, SpellInfo const* spellInfo, int32 damage, Powers powerType);
+        void SendEnergizeSpellLog(Unit* victim, uint32 spellId, int32 damage, PowerType powerType);
+        void EnergizeBySpell(Unit* victim, uint32 spellId, int32 damage, PowerType powerType);
+        void EnergizeBySpell(Unit* victim, SpellInfo const* spellInfo, int32 damage, PowerType powerType);
 
         Aura* AddAura(uint32 spellId, Unit* target);
         Aura* AddAura(SpellInfo const* spellInfo, uint8 effMask, Unit* target);
@@ -1081,21 +1072,14 @@ class TC_GAME_API Unit : public WorldObject
 
         ObjectGuid GetOwnerGUID() const override { return GetGuidValue(UNIT_FIELD_SUMMONEDBY); }
         void SetOwnerGUID(ObjectGuid owner);
-
         ObjectGuid GetCreatorGUID() const { return GetGuidValue(UNIT_FIELD_CREATEDBY); }
         void SetCreatorGUID(ObjectGuid creator) { SetGuidValue(UNIT_FIELD_CREATEDBY, creator); }
-        Unit* GetCreator() const;
-
         ObjectGuid GetMinionGUID() const { return GetGuidValue(UNIT_FIELD_SUMMON); }
         void SetMinionGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_SUMMON, guid); }
-
-        ObjectGuid GetPetGUID() const { return m_SummonSlot[SUMMON_SLOT_PET]; }
         void SetPetGUID(ObjectGuid guid) { m_SummonSlot[SUMMON_SLOT_PET] = guid; }
-
-        ObjectGuid GetCritterGUID() const { return GetGuidValue(UNIT_FIELD_CRITTER); }
+        ObjectGuid GetPetGUID() const { return m_SummonSlot[SUMMON_SLOT_PET]; }
         void SetCritterGUID(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_CRITTER, guid); }
-        Creature* GetCritter() const;
-
+        ObjectGuid GetCritterGUID() const { return GetGuidValue(UNIT_FIELD_CRITTER); }
         ObjectGuid GetOwnerOrCreatorGUID() const { return GetOwnerGUID() ? GetOwnerGUID() : GetCreatorGUID(); }
 
         ObjectGuid GetCharmerGUID() const { return GetGuidValue(UNIT_FIELD_CHARMEDBY); }
@@ -1291,17 +1275,11 @@ class TC_GAME_API Unit : public WorldObject
         int32 GetMaxNegativeAuraModifierByAffectMask(AuraType auraType, SpellInfo const* affectedSpell) const;
 
         void UpdateResistanceBuffModsMod(SpellSchools school);
-        void InitStatBuffMods();
-        void UpdateStatBuffMod(Stats stat);
-        void SetCreateStat(Stats stat, float val) { m_createStats[stat] = val; }
         void SetCreateHealth(uint32 val) { SetUInt32Value(UNIT_FIELD_BASE_HEALTH, val); }
         uint32 GetCreateHealth() const { return GetUInt32Value(UNIT_FIELD_BASE_HEALTH); }
         void SetCreateMana(uint32 val) { SetUInt32Value(UNIT_FIELD_BASE_MANA, val); }
         uint32 GetCreateMana() const { return GetUInt32Value(UNIT_FIELD_BASE_MANA); }
-        int32 GetCreatePowerValue(Powers power) const;
-        float GetPosStat(Stats stat) const { return GetFloatValue(UNIT_FIELD_POSSTAT0 + AsUnderlyingType(stat)); }
-        float GetNegStat(Stats stat) const { return GetFloatValue(UNIT_FIELD_NEGSTAT0 + AsUnderlyingType(stat)); }
-        float GetCreateStat(Stats stat) const { return m_createStats[stat]; }
+        int32 GetCreatePowerValue(PowerType power) const;
 
         ObjectGuid GetChannelObjectGuid() const { return GetGuidValue(UNIT_FIELD_CHANNEL_OBJECT); }
         void SetChannelObjectGuid(ObjectGuid guid) { SetGuidValue(UNIT_FIELD_CHANNEL_OBJECT, guid); }
@@ -1333,26 +1311,6 @@ class TC_GAME_API Unit : public WorldObject
 
         std::array<ObjectGuid, MAX_SUMMON_SLOT> m_SummonSlot;
         std::array<ObjectGuid, MAX_GAMEOBJECT_SLOT> m_ObjectSlot;
-
-        // Registers the SummonInfo API of a summoned creature to allow to safely access it
-        void RegisterSummon(SummonInfo* summon);
-        // Unregisters the SummonInfo API of a summoned creature so it can no longer be accessed
-        void UnregisterSummon(SummonInfo* summon);
-        // Despawns all summons that should despawn when the summoner logs out or despawns
-        void DespawnSummonsOnSummonerLogout();
-        // Despawns all summons that should despawn when the summoner dies
-        void DespawnSummonsOnSummonerDeath();
-        // Dismisses the currently active pet summon(s) (class pets and summons which are considered pets)
-        void DismissPet();
-
-        // Returns the currently active summon that is the summoner's specified summon slot
-        SummonInfo* GetSummonInSlot(SummonPropertiesSlot slot) const;
-        // Returns a vector with all currently active summons with the specified creature Id
-        std::vector<SummonInfo*> GetSummonsByCreatureId(uint32 creatureId);
-        // Returns a vector with all currently active summons which have been created by the specified spell Id
-        std::vector<SummonInfo*> GetSummonsBySpellId(uint32 spellId);
-        // Returns a vector with all currently active summons which are being controlled in a specific way
-        std::vector<SummonInfo*> GetSummonsByControlType(SummonPropertiesControl control);
 
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHAPESHIFT_FORM)); }
         void SetShapeshiftForm(ShapeshiftForm form);
@@ -1391,21 +1349,17 @@ class TC_GAME_API Unit : public WorldObject
         void UpdateDamagePctDoneMods(WeaponAttackType attackType);
         void UpdateAllDamagePctDoneMods();
 
-        float GetTotalStatValue(Stats stat) const;
         float GetTotalAuraModValue(UnitMods unitMod) const;
         SpellSchools GetSpellSchoolByAuraGroup(UnitMods unitMod) const;
-        Stats GetStatByAuraGroup(UnitMods unitMod) const;
-        Powers GetPowerTypeByAuraGroup(UnitMods unitMod) const;
+        PowerType GetPowerTypeByAuraGroup(UnitMods unitMod) const;
         bool CanModifyStats() const { return m_canModifyStats; }
         void SetCanModifyStats(bool modifyStats) { m_canModifyStats = modifyStats; }
-        virtual bool UpdateStats(Stats stat) = 0;
-        virtual bool UpdateAllStats() = 0;
         virtual void UpdateResistances(uint32 school) = 0;
         virtual void UpdateAllResistances();
         virtual void UpdateArmor() = 0;
         virtual void UpdateMaxHealth() = 0;
-        virtual void UpdateMaxPower(Powers power) = 0;
-        virtual uint32 GetPowerIndex(Powers power) const = 0;
+        virtual void UpdateMaxPower(PowerType power) = 0;
+        virtual uint32 GetPowerIndex(PowerType power) const = 0;
         virtual void UpdateAttackPowerAndDamage(bool ranged = false) = 0;
         virtual void UpdateDamagePhysical(WeaponAttackType attType);
         float GetTotalAttackPowerValue(WeaponAttackType attType) const;
@@ -1489,7 +1443,7 @@ class TC_GAME_API Unit : public WorldObject
         bool IsBlockCritical() const;
         float SpellCritChanceDone(SpellInfo const* spellInfo, SpellSchoolMask schoolMask, WeaponAttackType attackType = BASE_ATTACK, bool isPeriodic = false) const;
         float SpellCritChanceTaken(Unit const* caster, SpellInfo const* spellInfo, SpellSchoolMask schoolMask, float doneChance, WeaponAttackType attackType = BASE_ATTACK, bool isPeriodic = false) const;
-        static uint32 SpellCriticalDamageBonus(Unit const* caster, SpellInfo const* spellProto, uint32 damage);
+        static uint32 SpellCriticalDamageBonus(Unit const* caster, SpellInfo const* spellProto, uint32 damage, bool periodicDamage = false);
         static uint32 SpellCriticalHealingBonus(Unit const* caster, uint32 damage);
 
         uint32 GetCastingTimeForBonus(SpellInfo const* spellProto, DamageEffectType damagetype, uint32 CastingTime) const;
@@ -1696,8 +1650,6 @@ class TC_GAME_API Unit : public WorldObject
 
         void _UpdateAutoRepeatSpell();
 
-        std::array<float, MAX_STATS>  m_createStats;
-
         AttackerSet m_attackers;
         Unit* m_attacking;
 
@@ -1758,10 +1710,10 @@ class TC_GAME_API Unit : public WorldObject
         int32 _powerUpdateTimer;
         int32 _healthRegenerationTimer;
         std::array<float, MAX_POWERS_PER_CLASS> _powerFraction;
-        std::array<Powers, MAX_POWERS_PER_CLASS> _usedPowerTypes;
+        std::array<PowerType, MAX_POWERS_PER_CLASS> _usedPowerTypes;
     public:
         // Returns an array that contains information about which power type is used at which power index. MAX_POWERS implies that a power at given index is not used.
-        std::array<Powers, MAX_POWERS_PER_CLASS> const& GetUsedPowerTypes() const { return _usedPowerTypes; }
+        std::array<PowerType, MAX_POWERS_PER_CLASS> const& GetUsedPowerTypes() const { return _usedPowerTypes; }
 
     protected:
 
@@ -1851,9 +1803,11 @@ class TC_GAME_API Unit : public WorldObject
 
         /* Player Movement fields END*/
 
-        // SummonInfo slot handling
-        std::vector<SummonInfo*> _unslottedSummons;
-        std::vector<SummonInfo*> _slottedSummons;
+    private:
+        std::unique_ptr<Stats> _stats;
+    public:
+        Stats& GetStats() const;
+        int32 GetStat(StatType statType) const;
 };
 
 namespace Trinity
@@ -1862,7 +1816,7 @@ namespace Trinity
     class PowerPctOrderPred
     {
         public:
-            PowerPctOrderPred(Powers power, bool ascending = true) : _power(power), _ascending(ascending) { }
+            PowerPctOrderPred(PowerType power, bool ascending = true) : _power(power), _ascending(ascending) { }
 
             bool operator()(WorldObject const* objA, WorldObject const* objB) const
             {
@@ -1881,7 +1835,7 @@ namespace Trinity
             }
 
         private:
-            Powers const _power;
+            PowerType const _power;
             bool const _ascending;
     };
 

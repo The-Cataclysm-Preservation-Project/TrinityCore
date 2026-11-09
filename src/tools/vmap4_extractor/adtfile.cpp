@@ -17,7 +17,6 @@
 
 #include "vmapexport.h"
 #include "adtfile.h"
-#include <algorithm>
 #include <cstdio>
 #include "Errors.h"
 

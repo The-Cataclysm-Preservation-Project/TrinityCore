@@ -157,11 +157,17 @@ protected:
 
 #ifdef TC_SOCKET_USE_IOCP
         MessageBuffer& buffer = _writeQueue.front();
-        _socket.async_write_some(boost::asio::buffer(buffer.GetReadPointer(), buffer.GetActiveSize()), std::bind(&Socket<T>::WriteHandler,
-            this->shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+        _socket.async_write_some(boost::asio::buffer(buffer.GetReadPointer(), buffer.GetActiveSize()),
+            [self = this->shared_from_this()](boost::system::error_code const& error, std::size_t transferedBytes)
+            {
+                self->WriteHandler(error, transferedBytes);
+            });
 #else
-        _socket.async_write_some(boost::asio::null_buffers(), std::bind(&Socket<T>::WriteHandlerWrapper,
-            this->shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+        _socket.async_wait(boost::asio::socket_base::wait_type::wait_write,
+            [self = this->shared_from_this()](boost::system::error_code const& error)
+            {
+                self->WriteHandlerWrapper(error);
+            });
 #endif
 
         return false;
@@ -211,7 +217,7 @@ private:
 
 #else
 
-    void WriteHandlerWrapper(boost::system::error_code /*error*/, std::size_t /*transferedBytes*/)
+    void WriteHandlerWrapper(boost::system::error_code const& /*error*/)
     {
         _isWritingAsync = false;
         HandleQueue();

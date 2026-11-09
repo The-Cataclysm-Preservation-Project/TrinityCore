@@ -569,7 +569,7 @@ void WorldPackets::Party::SetRole::Read()
     _worldPacket.ReadByteSeq(ChangedUnit[3]);
     _worldPacket.ReadByteSeq(ChangedUnit[0]);
     _worldPacket.ReadByteSeq(ChangedUnit[5]);
-    _worldPacket.ReadByteSeq(ChangedUnit[3]);
+    _worldPacket.ReadByteSeq(ChangedUnit[2]);
     _worldPacket.ReadByteSeq(ChangedUnit[7]);
 }
 
@@ -600,7 +600,7 @@ WorldPacket const* WorldPackets::Party::RoleChangedInform::Write()
 
     _worldPacket << uint32(NewRole);
 
-    _worldPacket.WriteByteSeq(ChangedUnit[6]);
+    _worldPacket.WriteByteSeq(ChangedUnit[5]);
     _worldPacket.WriteByteSeq(ChangedUnit[2]);
     _worldPacket.WriteByteSeq(From[0]);
     _worldPacket.WriteByteSeq(From[4]);

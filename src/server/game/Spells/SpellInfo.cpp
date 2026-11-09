@@ -674,7 +674,7 @@ float SpellEffectInfo::CalcRadius(WorldObject* caster /*= nullptr*/, SpellTarget
     if (target.GetTarget() == TARGET_DEST_CASTER_RANDOM ||
         target.GetTarget() == TARGET_DEST_TARGET_RANDOM ||
         target.GetTarget() == TARGET_DEST_DEST_RANDOM)
-        radius += (entry->RadiusMax - radius) * rand_norm();
+        radius += (entry->RadiusMax - radius) * std::sqrt(rand_norm());
     else if (radius == 0.0f)
         radius = entry->RadiusMax;
 
@@ -3416,25 +3416,6 @@ float SpellInfo::CalculateScaledCoefficient(Unit const* caster, float coefficien
 
     return coefficient *= GetSpellScalingMultiplier(caster->getLevel());
 }
-bool SpellInfo::IsShamanTotemSpell() const
-{
-    for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
-    {
-        TotemCategoryTypes type = static_cast<TotemCategoryTypes>(TotemCategory[i]);
-        switch (type)
-        {
-            case TotemCategoryTypes::EarthTotem:
-            case TotemCategoryTypes::AirTotem:
-            case TotemCategoryTypes::FireTotem:
-            case TotemCategoryTypes::WaterTotem:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    return false;
-}
 
 float SpellInfo::GetMinRange(bool positive) const
 {
@@ -3673,7 +3654,7 @@ int32 SpellInfo::CalcPowerCost(WorldObject const* caster, SpellSchoolMask school
             return unitCaster->GetHealth();
         // Else drain all power
         if (PowerType < MAX_POWERS)
-            return unitCaster->GetPower(Powers(PowerType));
+            return unitCaster->GetPower(static_cast<::PowerType>(PowerType));
 
         TC_LOG_ERROR("spells", "SpellInfo::CalcPowerCost: Unknown power type '%d' in spell %d", PowerType, Id);
         return 0;
@@ -3712,7 +3693,7 @@ int32 SpellInfo::CalcPowerCost(WorldObject const* caster, SpellSchoolMask school
                 case POWER_RAGE:
                 case POWER_FOCUS:
                 case POWER_ENERGY:
-                    ressource = unitCaster->GetMaxPower(Powers(PowerType));
+                    ressource = unitCaster->GetMaxPower(static_cast<::PowerType>(PowerType));
                     break;
                 case POWER_RUNE:
                 case POWER_RUNIC_POWER:

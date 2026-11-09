@@ -119,12 +119,19 @@ class TC_GAME_API Guardian : public Minion
         bool InitStatsForLevel(uint8 level);
         void InitSummon() override;
 
+        void UpdateResistances(uint32 school) override;
+        void UpdateArmor() override;
+        void UpdateMaxHealth() override;
+        void UpdateMaxPower(PowerType power) override;
+        void UpdateAttackPowerAndDamage(bool ranged = false) override;
+        void UpdateDamagePhysical(WeaponAttackType attType) override;
+
         int32 GetBonusDamage() const { return m_bonusSpellDamage; }
-        float GetBonusStatFromOwner(Stats stat) const { return m_statFromOwner[stat]; }
+        float GetBonusStatFromOwner(StatType stat) const { return m_statFromOwner[AsUnderlyingType(stat)]; }
         void SetBonusDamage(int32 damage);
     protected:
         int32   m_bonusSpellDamage;
-        float   m_statFromOwner[MAX_STATS];
+        float   m_statFromOwner[5];
 };
 
 class TC_GAME_API Puppet : public Minion

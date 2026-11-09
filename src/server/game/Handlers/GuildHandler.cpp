@@ -635,7 +635,16 @@ void WorldSession::HandleAutoDeclineGuildInvites(WorldPacket& recvPacket)
     uint8 enable;
     recvPacket >> enable;
 
-    GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enable != 0);
+    if (enable)
+    {
+        _player->AddCharacterFlag(CHARACTER_FLAG_2_AUTO_DECLINE_GUILD);
+        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD);
+    }
+    else
+    {
+        _player->RemoveCharacterFlag(CHARACTER_FLAG_2_AUTO_DECLINE_GUILD);
+        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD);
+    }
 }
 
 void WorldSession::HandleRequestGuildRewardsList(WorldPackets::Guild::RequestGuildRewardsList& /*packet*/)

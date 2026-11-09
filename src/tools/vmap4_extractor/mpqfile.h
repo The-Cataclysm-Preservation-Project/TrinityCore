@@ -8,6 +8,7 @@
 
 #include "StormLib.h"
 #include "Define.h"
+#include <memory>
 
 #ifdef _WIN32
 #include <Windows.h>    // mainly only HANDLE definition is required

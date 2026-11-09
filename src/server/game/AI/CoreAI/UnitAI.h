@@ -103,12 +103,12 @@ struct TC_GAME_API NonTankTargetSelector
 struct TC_GAME_API PowerUsersSelector
 {
     public:
-        PowerUsersSelector(Unit const* unit, Powers power, float dist, bool playerOnly) : _me(unit), _power(power), _dist(dist), _playerOnly(playerOnly) { }
+        PowerUsersSelector(Unit const* unit, PowerType power, float dist, bool playerOnly) : _me(unit), _power(power), _dist(dist), _playerOnly(playerOnly) { }
         bool operator()(Unit const* target) const;
 
     private:
         Unit const* _me;
-        Powers const _power;
+        PowerType const _power;
         float const _dist;
         bool const _playerOnly;
 };

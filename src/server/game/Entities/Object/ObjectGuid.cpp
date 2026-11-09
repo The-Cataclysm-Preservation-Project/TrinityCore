@@ -86,6 +86,7 @@ ObjectGuid ObjectGuid::MapSpecific(HighGuid type, uint32 entry, LowType counter)
 void PackedGuid::Set(ObjectGuid guid)
 {
     _packedSize = 1;
+    _packedGuid = { };
     uint64 raw = guid.GetRawValue();
     for (uint8 i = 0; i < 8; ++i)
     {

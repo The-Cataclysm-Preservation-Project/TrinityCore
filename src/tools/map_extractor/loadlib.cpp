@@ -37,7 +37,7 @@ bool ChunkedFile::loadFile(HANDLE mpq, std::string const& fileName, bool log)
 {
     free();
     HANDLE file;
-    if (!SFileOpenFileEx(mpq, fileName.c_str(), SFILE_OPEN_PATCHED_FILE, &file))
+    if (!SFileOpenFileEx(mpq, fileName.c_str(), SFILE_OPEN_FROM_MPQ, &file))
     {
         if (log)
             printf("No such file %s\n", fileName.c_str());

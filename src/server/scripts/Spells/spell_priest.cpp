@@ -132,7 +132,7 @@ enum MiscSpells
 class PowerCheck
 {
     public:
-        explicit PowerCheck(Powers const power) : _power(power) { }
+        explicit PowerCheck(PowerType const power) : _power(power) { }
 
         bool operator()(WorldObject* obj) const
         {
@@ -143,7 +143,7 @@ class PowerCheck
         }
 
     private:
-        Powers const _power;
+        PowerType const _power;
 };
 
 class RaidCheck

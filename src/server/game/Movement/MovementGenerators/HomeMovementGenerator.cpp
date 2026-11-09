@@ -21,7 +21,6 @@
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
 #include "PathGenerator.h"
-#include "SummonInfo.h"
 #include "Vehicle.h"
 
 template<class T>
@@ -82,21 +81,6 @@ void HomeMovementGenerator<Creature>::DoFinalize(Creature* owner)
 {
     if (_arrived)
     {
-        // Creature controlled summons may persist for the remainder of a combat interaction.
-        // However, they do despawn upon reaching home when the summoner is either dead or gone
-        if (SummonInfo* summonInfo = owner->GetSummonInfo())
-        {
-            if (summonInfo->IsControlledBySummoner())
-            {
-                Unit* summoner = summonInfo->GetUnitSummoner();
-                if (!summoner || !summoner->IsAlive())
-                {
-                    owner->DespawnOrUnsummon();
-                    return;
-                }
-            }
-        }
-
         if (owner->IsStateRestoredOnEvade())
         {
             owner->ClearUnitState(UNIT_STATE_EVADE);

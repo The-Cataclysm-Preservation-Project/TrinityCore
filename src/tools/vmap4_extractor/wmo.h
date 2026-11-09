@@ -18,12 +18,12 @@
 #ifndef WMO_H
 #define WMO_H
 
+#include "vec3d.h"
 #include "mpqfile.h"
+#include <memory>
 #include <string>
 #include <unordered_set>
-#include <memory>
 #include <vector>
-#include "vec3d.h"
 
 // MOPY flags
 enum MopyFlags

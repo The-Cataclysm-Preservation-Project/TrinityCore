@@ -184,6 +184,8 @@ namespace MMAP
 
             bool shouldSkipMap(uint32 mapID) const;
             bool isTransportMap(uint32 mapID) const;
+            bool isDevMap(uint32 mapID) const;
+            bool isBattlegroundMap(uint32 mapID) const;
             bool isContinentMap(uint32 mapID) const;
 
             rcConfig GetMapSpecificConfig(uint32 mapID, float bmin[3], float bmax[3], const TileConfig &tileConfig) const;
@@ -191,12 +193,14 @@ namespace MMAP
             uint32 percentageDone(uint32 totalTiles, uint32 totalTilesDone) const;
             uint32 currentPercentageDone() const;
 
+            void ParseOffMeshConnectionsFile(char const* offMeshFilePath);
+
             TerrainBuilder* m_terrainBuilder;
             TileList m_tiles;
 
             bool m_debugOutput;
 
-            char const* m_offMeshFilePath;
+            std::vector<OffMeshData> m_offMeshConnections;
             unsigned int m_threads;
             bool m_skipContinents;
             bool m_skipJunkMaps;

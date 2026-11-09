@@ -53,28 +53,23 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     if (ObjectGuid::LowType guildId = fields[16].GetUInt32())
         GuildGUID = ObjectGuid::Create<HighGuid::Guild>(guildId);
 
-    uint32 playerFlags  = fields[17].GetUInt32();
-    uint32 atLoginFlags = fields[18].GetUInt16();
-
-    if (playerFlags & PLAYER_FLAGS_RESTING)
-        Flags |= CHARACTER_FLAG_RESTING;
+    Flags  = fields[17].GetUInt32();
+    Flags2 = fields[18].GetUInt32();
+    uint32 atLoginFlags = fields[19].GetUInt16();
 
     if (atLoginFlags & AT_LOGIN_RESET_TALENTS)
         Flags |= CHARACTER_FLAG_RESET_TALENTS_ON_LOGIN;
 
     if (atLoginFlags & AT_LOGIN_RESURRECT)
-        playerFlags &= ~PLAYER_FLAGS_GHOST;
-
-    if (playerFlags & PLAYER_FLAGS_GHOST)
-        Flags |= CHARACTER_FLAG_GHOST;
+        Flags &= ~CHARACTER_FLAG_GHOST;
 
     if (atLoginFlags & AT_LOGIN_RENAME)
         Flags |= CHARACTER_FLAG_RENAME;
 
-    if (fields[23].GetUInt32())
+    if (fields[24].GetUInt32())
         Flags |= CHARACTER_FLAG_LOCKED_BY_BILLING;
 
-    if (sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED) && !fields[22].GetString().empty())
+    if (sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED) && !fields[23].GetString().empty())
         Flags |= CHARACTER_FLAG_DECLINED;
 
     if (atLoginFlags & AT_LOGIN_CUSTOMIZE)
@@ -84,36 +79,21 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     else if (atLoginFlags & AT_LOGIN_CHANGE_RACE)
         Flags2 = CHARACTER_FLAG_2_RACE_CHANGE;
 
-    if (playerFlags & PLAYER_FLAGS_NO_XP_GAIN)
-        Flags2 |= CHARACTER_FLAG_2_NO_XP_GAIN;
-
-    if (playerFlags & PLAYER_FLAGS_LOW_LEVEL_RAID_ENABLED)
-        Flags2 |= CHARACTER_FLAG_2_LOW_LEVEL_RAID_ENABLED;
-
-    if (playerFlags & PLAYER_FLAGS_AUTO_DECLINE_GUILD)
-        Flags2 |= CHARACTER_FLAG_2_AUTO_DECLINE_GUILD;
-
     FirstLogin = (atLoginFlags & AT_LOGIN_FIRST) != 0;
 
-    if (playerFlags & PLAYER_FLAGS_HIDE_HELM)
-        Flags |= CHARACTER_FLAG_HIDE_HELM;
-
-    if (playerFlags & PLAYER_FLAGS_HIDE_CLOAK)
-        Flags |= CHARACTER_FLAG_HIDE_CLOAK;
-
     // show pet at selection character in character list only for non-ghost character
-    if (!(playerFlags & PLAYER_FLAGS_GHOST) && (ClassID == CLASS_WARLOCK || ClassID == CLASS_HUNTER || ClassID == CLASS_DEATH_KNIGHT))
+    if (!(Flags & CHARACTER_FLAG_GHOST) && (ClassID == CLASS_WARLOCK || ClassID == CLASS_HUNTER || ClassID == CLASS_DEATH_KNIGHT))
     {
-        if (CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(fields[19].GetUInt32()))
+        if (CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(fields[20].GetUInt32()))
         {
-            PetCreatureDisplayID = fields[20].GetUInt32();
-            PetExperienceLevel = fields[21].GetUInt16();
+            PetCreatureDisplayID = fields[21].GetUInt32();
+            PetExperienceLevel = fields[22].GetUInt16();
             PetCreatureFamilyID = creatureInfo->family;
         }
     }
 
-    std::vector<std::string_view> equipment = Trinity::Tokenize(fields[22].GetStringView(), ' ', false);
-    ListPosition = fields[24].GetUInt8();
+    std::vector<std::string_view> equipment = Trinity::Tokenize(fields[23].GetStringView(), ' ', false);
+    ListPosition = fields[25].GetUInt8();
 
     for (uint8 slot = 0; slot < INVENTORY_SLOT_BAG_END; ++slot)
     {

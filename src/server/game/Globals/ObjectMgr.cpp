@@ -55,6 +55,7 @@
 #include "SpellAuras.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "Stats.h"
 #include "StringConvert.h"
 #include "TemporarySummon.h"
 #include "TerrainMgr.h"
@@ -412,21 +413,21 @@ void ObjectMgr::LoadCreatureTemplates()
 {
     uint32 oldMSTime = getMSTime();
 
-    //                                               0      1                   2                   3                   4            5            6         7         8
+    //                                                      0      1                   2                   3                   4            5            6         7         8
     QueryResult result = WorldDatabase.Query("SELECT entry, difficulty_entry_1, difficulty_entry_2, difficulty_entry_3, KillCredit1, KillCredit2, modelid1, modelid2, modelid3, "
-    //                                        9         10    11          12       13        14              15        16        17                      18       19       20       21          22
-                                             "modelid4, name, femaleName, subname, IconName, gossip_menu_id, minlevel, maxlevel, HealthScalingExpansion, exp_unk, faction, npcflag, speed_walk, speed_run, "
-    //                                        23      24     25         26              27               28            29             30          31          32
+    //                                        9          10      11          12       13        14        15     16     		    17       18       19       20           21
+                                             "modelid4, name, femaleName, subname, IconName, minlevel, maxlevel, HealthScalingExpansion, exp_unk, faction, npcflag, speed_walk, speed_run, "
+    //                                        22      23       24           25              26               27            28             29          30          31
                                              "scale, `rank`, dmgschool, BaseAttackTime, RangeAttackTime, BaseVariance, RangeVariance, unit_class, unit_flags, unit_flags2, "
-    //                                        33      34             35     36         37           38      39              40        41           42           43           44           45           46
+    //                                        32      33               34      35          36         37           38         39          40           41           42           43           44           45
                                              "family, trainer_class, type, type_flags, type_flags2, lootid, pickpocketloot, skinloot, resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, "
-    //                                        47      48      49      50      51      52      53      54      55              56         57       58       59      60
+    //                                        46       47      48       49      50      51      52      53      54              55         56       57       58      59
                                              "spell1, spell2, spell3, spell4, spell5, spell6, spell7, spell8, PetSpellDataId, VehicleId, mingold, maxgold, AIName, MovementType, "
-    //                                        61                         62                            63          64                         65           66              67                   68            69
+    //                                        60            	                   61                     62                 63                  64              65               66                67              68
                                              "ctm.HoverInitiallyEnabled, ctm.GravityInitiallyDisabled, ctm.Random, ctm.InteractionPauseTimer, HoverHeight, HealthModifier, HealthModifierExtra, ManaModifier, ManaModifierExtra, "
-    //                                        70             71              72                  73            74          75           76                    77
+    //                                        69                  70               71                 72            73           74               75                    76
                                              "ArmorModifier, DamageModifier, ExperienceModifier, RacialLeader, movementId, RegenHealth, mechanic_immune_mask, spell_school_immune_mask, "
-    //                                        78           79           80            81            82            83            84
+    //                                        77             78           79            80            81            82            83
                                              "flags_extra, StaticFlags, StaticFlags2, StaticFlags3, StaticFlags4, StaticFlags5, ScriptName FROM creature_template ct LEFT JOIN creature_template_movement ctm ON ct.entry = ctm.CreatureId");
 
     if (!result)
@@ -467,84 +468,77 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields)
     for (uint8 i = 0; i < MAX_KILL_CREDIT; ++i)
         creatureTemplate.KillCredit[i] = fields[4 + i].GetUInt32();
 
-    //creatureTemplate.Modelid1          = fields[6].GetUInt32();
-    //creatureTemplate.Modelid2          = fields[7].GetUInt32();
-    //creatureTemplate.Modelid3          = fields[8].GetUInt32();
-    //creatureTemplate.Modelid4          = fields[9].GetUInt32();
-    creatureTemplate.Name              = fields[10].GetString();
-    creatureTemplate.FemaleName        = fields[11].GetString();
-    creatureTemplate.Title             = fields[12].GetString();
-    creatureTemplate.IconName          = fields[13].GetString();
-    creatureTemplate.GossipMenuId      = fields[14].GetUInt32();
-    creatureTemplate.minlevel          = fields[15].GetUInt8();
-    creatureTemplate.maxlevel          = fields[16].GetUInt8();
-    creatureTemplate.HealthScalingExpansion = fields[17].GetInt32();
-    creatureTemplate.expansionUnknown  = uint32(fields[18].GetUInt16());
-    creatureTemplate.faction           = uint32(fields[19].GetUInt16());
-    creatureTemplate.npcflag           = fields[20].GetUInt32();
-    creatureTemplate.speed_walk        = fields[21].GetFloat();
-    creatureTemplate.speed_run         = fields[22].GetFloat();
-    creatureTemplate.scale             = fields[23].GetFloat();
-    creatureTemplate.rank              = uint32(fields[24].GetUInt8());
-    creatureTemplate.dmgschool         = uint32(fields[25].GetInt8());
-    creatureTemplate.BaseAttackTime    = fields[26].GetUInt32();
-    creatureTemplate.RangeAttackTime   = fields[27].GetUInt32();
-    creatureTemplate.BaseVariance      = fields[28].GetFloat();
-    creatureTemplate.RangeVariance     = fields[29].GetFloat();
-    creatureTemplate.unit_class        = uint32(fields[30].GetUInt8());
-    creatureTemplate.unit_flags        = fields[31].GetUInt32();
-    creatureTemplate.unit_flags2       = fields[32].GetUInt32();
-    creatureTemplate.family            = CreatureFamily(uint32(fields[33].GetUInt8()));
-    creatureTemplate.trainer_class      = fields[34].GetUInt32();
-    creatureTemplate.type              = uint32(fields[35].GetUInt8());
-    creatureTemplate.type_flags        = fields[36].GetUInt32();
-    creatureTemplate.type_flags2       = fields[37].GetUInt32();
-    creatureTemplate.lootid            = fields[38].GetUInt32();
-    creatureTemplate.pickpocketLootId  = fields[39].GetUInt32();
-    creatureTemplate.SkinLootId        = fields[40].GetUInt32();
+    creatureTemplate.Name                   = fields[10].GetString();
+    creatureTemplate.FemaleName             = fields[11].GetString();
+    creatureTemplate.Title                  = fields[12].GetString();
+    creatureTemplate.IconName               = fields[13].GetString();
+    creatureTemplate.minlevel               = fields[14].GetUInt8();
+    creatureTemplate.maxlevel               = fields[15].GetUInt8();
+    creatureTemplate.HealthScalingExpansion = fields[16].GetInt32();
+    creatureTemplate.expansionUnknown       = uint32(fields[17].GetInt16());
+    creatureTemplate.faction                = uint32(fields[18].GetUInt16());
+    creatureTemplate.npcflag                = fields[19].GetUInt32();
+    creatureTemplate.speed_walk             = fields[20].GetFloat();
+    creatureTemplate.speed_run              = fields[21].GetFloat();
+    creatureTemplate.scale                  = fields[22].GetFloat();
+    creatureTemplate.rank                   = uint32(fields[23].GetUInt8());
+    creatureTemplate.dmgschool              = uint32(fields[24].GetInt8());
+    creatureTemplate.BaseAttackTime         = fields[25].GetUInt32();
+    creatureTemplate.RangeAttackTime        = fields[26].GetUInt32();
+    creatureTemplate.BaseVariance           = fields[27].GetFloat();
+    creatureTemplate.RangeVariance          = fields[28].GetFloat();
+    creatureTemplate.unit_class             = uint32(fields[29].GetUInt8());
+    creatureTemplate.unit_flags             = fields[30].GetUInt32();
+    creatureTemplate.unit_flags2            = fields[31].GetUInt32();
+    creatureTemplate.family                 = CreatureFamily(uint32(fields[32].GetUInt8()));
+    creatureTemplate.trainer_class          = fields[33].GetUInt32();
+    creatureTemplate.type                   = uint32(fields[34].GetUInt8());
+    creatureTemplate.type_flags             = fields[35].GetUInt32();
+    creatureTemplate.type_flags2            = fields[36].GetUInt32();
+    creatureTemplate.lootid                 = fields[37].GetUInt32();
+    creatureTemplate.pickpocketLootId       = fields[38].GetUInt32();
+    creatureTemplate.SkinLootId             = fields[39].GetUInt32();
 
     for (uint8 i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
-        creatureTemplate.resistance[i] = fields[41 + i - 1].GetInt16();
+        creatureTemplate.resistance[i]      = fields[40 + i - 1].GetInt16();
 
     for (uint8 i = 0; i < MAX_CREATURE_SPELLS; ++i)
-        creatureTemplate.spells[i] = fields[47 + i].GetUInt32();
+        creatureTemplate.spells[i]          = fields[46 + i].GetUInt32();
 
-    creatureTemplate.PetSpellDataId = fields[55].GetUInt32();
-    creatureTemplate.VehicleId      = fields[56].GetUInt32();
-    creatureTemplate.mingold        = fields[57].GetUInt32();
-    creatureTemplate.maxgold        = fields[58].GetUInt32();
-    creatureTemplate.AIName         = fields[59].GetString();
-    creatureTemplate.MovementType   = uint32(fields[60].GetUInt8());
+    creatureTemplate.PetSpellDataId         = fields[54].GetUInt32();
+    creatureTemplate.VehicleId              = fields[55].GetUInt32();
+    creatureTemplate.mingold                = fields[56].GetUInt32();
+    creatureTemplate.maxgold                = fields[57].GetUInt32();
+    creatureTemplate.AIName                 = fields[58].GetString();
+    creatureTemplate.MovementType           = uint32(fields[59].GetUInt8());
+    if (!fields[60].IsNull())
+        creatureTemplate.Movement.HoverInitiallyEnabled = fields[60].GetBool();
+
     if (!fields[61].IsNull())
-        creatureTemplate.Movement.HoverInitiallyEnabled = fields[61].GetBool();
-
+        creatureTemplate.Movement.GravityInitiallyDisabled = fields[61].GetBool();
     if (!fields[62].IsNull())
-        creatureTemplate.Movement.GravityInitiallyDisabled = fields[62].GetBool();
+        creatureTemplate.Movement.Random = static_cast<CreatureRandomMovementType>(fields[62].GetUInt8());
 
     if (!fields[63].IsNull())
-        creatureTemplate.Movement.Random = static_cast<CreatureRandomMovementType>(fields[63].GetUInt8());
+        creatureTemplate.Movement.InteractionPauseTimer = fields[63].GetUInt32();
+    creatureTemplate.HoverHeight            = fields[64].GetFloat();
+    creatureTemplate.ModHealth              = fields[65].GetFloat();
+    creatureTemplate.ModHealthExtra         = fields[66].GetFloat();
+    creatureTemplate.ModMana                = fields[67].GetFloat();
+    creatureTemplate.ModManaExtra           = fields[68].GetFloat();
+    creatureTemplate.ModArmor               = fields[69].GetFloat();
+    creatureTemplate.ModDamage              = fields[70].GetFloat();
+    creatureTemplate.ModExperience          = fields[71].GetFloat();
 
-    if (!fields[64].IsNull())
-        creatureTemplate.Movement.InteractionPauseTimer = fields[64].GetUInt32();
-
-    creatureTemplate.HoverHeight    = fields[65].GetFloat();
-    creatureTemplate.ModHealth      = fields[66].GetFloat();
-    creatureTemplate.ModHealthExtra = fields[67].GetFloat();
-    creatureTemplate.ModMana        = fields[68].GetFloat();
-    creatureTemplate.ModManaExtra   = fields[69].GetFloat();
-    creatureTemplate.ModArmor       = fields[70].GetFloat();
-    creatureTemplate.ModDamage      = fields[71].GetFloat();
-    creatureTemplate.ModExperience  = fields[72].GetFloat();
-
-    creatureTemplate.RacialLeader          = fields[73].GetBool();
-    creatureTemplate.movementId            = fields[74].GetUInt32();
-    creatureTemplate.RegenHealth           = fields[75].GetBool();
-    creatureTemplate.MechanicImmuneMask    = fields[76].GetUInt32();
-    creatureTemplate.SpellSchoolImmuneMask = fields[77].GetUInt32();
-    creatureTemplate.flags_extra           = fields[78].GetUInt32();
-    creatureTemplate.StaticFlags = CreatureStaticFlagsHolder(CreatureStaticFlags(fields[79].GetUInt32()), CreatureStaticFlags2(fields[80].GetUInt32()),
-        CreatureStaticFlags3(fields[81].GetUInt32()), CreatureStaticFlags4(fields[82].GetUInt32()), CreatureStaticFlags5(fields[83].GetUInt32()));
-    creatureTemplate.ScriptID              = GetScriptId(fields[84].GetCString());
+    creatureTemplate.RacialLeader           = fields[72].GetBool();
+    creatureTemplate.movementId             = fields[73].GetUInt32();
+    creatureTemplate.RegenHealth            = fields[74].GetBool();
+    creatureTemplate.MechanicImmuneMask     = fields[75].GetUInt32();
+    creatureTemplate.SpellSchoolImmuneMask  = fields[76].GetUInt32();
+    creatureTemplate.flags_extra            = fields[77].GetUInt32();
+    creatureTemplate.StaticFlags            = CreatureStaticFlagsHolder(CreatureStaticFlags(fields[78].GetUInt32()), CreatureStaticFlags2(fields[79].GetUInt32()),
+        CreatureStaticFlags3(fields[80].GetUInt32()), CreatureStaticFlags4(fields[81].GetUInt32()), CreatureStaticFlags5(fields[82].GetUInt32()));
+    creatureTemplate.ScriptID               = GetScriptId(fields[83].GetCString());
 }
 
 void ObjectMgr::LoadCreatureTemplateModels()
@@ -600,6 +594,52 @@ void ObjectMgr::LoadCreatureTemplateModels()
     } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded %u creature template models in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+}
+
+void ObjectMgr::LoadCreatureTemplateGossip()
+{
+    uint32 oldMSTime = getMSTime();
+
+    //                                               0           1
+    QueryResult result = WorldDatabase.Query("SELECT CreatureID, MenuID FROM creature_template_gossip");
+
+    if (!result)
+    {
+        TC_LOG_INFO("server.loading", ">> Loaded 0 creature template gossip definitions. DB table `creature_template_gossip` is empty.");
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 creatureID = fields[0].GetUInt32();
+        uint32 menuID = fields[1].GetUInt32();
+
+        CreatureTemplateContainer::iterator itr = _creatureTemplateStore.find(creatureID);
+        if (itr == _creatureTemplateStore.end())
+        {
+            TC_LOG_ERROR("sql.sql", "creature_template_gossip has gossip definitions for creature %u but this creature doesn't exist", creatureID);
+            continue;
+        }
+
+        GossipMenusMapBounds menuBounds = sObjectMgr->GetGossipMenusMapBounds(menuID);
+        if (menuBounds.first == menuBounds.second)
+        {
+            TC_LOG_ERROR("sql.sql", "creature_template_gossip has gossip definitions for menu id %u but this menu doesn't exist", menuID);
+            continue;
+        }
+
+        CreatureTemplate& creatureTemplate = itr->second;
+        creatureTemplate.GossipMenuIds.push_back(menuID);
+
+        ++count;
+
+    } while (result->NextRow());
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u creature template gossip menus in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::LoadCreatureTemplateAddons()
@@ -1128,6 +1168,11 @@ void ObjectMgr::CheckCreatureTemplate(CreatureTemplate const* cInfo)
     }
 
     const_cast<CreatureTemplate*>(cInfo)->ModDamage *= Creature::_GetDamageMod(cInfo->rank);
+
+    if (!cInfo->GossipMenuIds.empty() && !(cInfo->npcflag & UNIT_NPC_FLAG_GOSSIP))
+        TC_LOG_INFO("sql.sql", "Creature (Entry: %u) has assigned gossip menu, but npcflag does not include UNIT_NPC_FLAG_GOSSIP.", cInfo->Entry);
+    else if (cInfo->GossipMenuIds.empty() && cInfo->npcflag & UNIT_NPC_FLAG_GOSSIP)
+        TC_LOG_INFO("sql.sql", "Creature (Entry: %u) has npcflag UNIT_NPC_FLAG_GOSSIP, but gossip menu is unassigned.", cInfo->Entry);
 }
 
 void ObjectMgr::CheckCreatureMovement(char const* table, uint64 id, CreatureMovementData& creatureMovement)
@@ -3282,10 +3327,9 @@ void ObjectMgr::LoadPetLevelInfo()
         pLevelInfo->mana   = fields[3].GetUInt16();
         pLevelInfo->armor  = fields[9].GetUInt32();
 
-        for (int i = 0; i < MAX_STATS; i++)
-        {
-            pLevelInfo->stats[i] = fields[i+4].GetUInt16();
-        }
+
+        for (StatType stat : AllPrimaryStats)
+            pLevelInfo->stats[AsUnderlyingType(stat)] = fields[AsUnderlyingType(stat) + 4].GetUInt16();
 
         ++count;
     }
@@ -3705,7 +3749,7 @@ void ObjectMgr::LoadPlayerInfo()
     {
         struct RaceStats
         {
-            std::array<int16, MAX_STATS> StatModifier = { };
+            std::array<int16, AsUnderlyingType(StatType::Max)> StatModifier = { };
         };
 
         std::array<RaceStats, MAX_RACES> raceStatModifiers = { };
@@ -3732,8 +3776,8 @@ void ObjectMgr::LoadPlayerInfo()
                 continue;
             }
 
-            for (uint8 i = 0; i < MAX_STATS; ++i)
-                raceStatModifiers[current_race].StatModifier[i] = fields[i + 1].GetInt16();
+            for (StatType stat : AllPrimaryStats)
+                raceStatModifiers[current_race].StatModifier[AsUnderlyingType(stat)] = fields[AsUnderlyingType(stat) + 1].GetInt16();
 
         } while (raceStatsResult->NextRow());
 
@@ -3781,8 +3825,8 @@ void ObjectMgr::LoadPlayerInfo()
                         playerInfo->levelInfo = std::make_unique<PlayerLevelInfo[]>(sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
 
                     PlayerLevelInfo& levelInfo = playerInfo->levelInfo[current_level - 1];
-                    for (uint8 i = 0; i < MAX_STATS; i++)
-                        levelInfo.stats[i] = fields[i + 2].GetUInt16() + raceStatModifiers[race].StatModifier[i];
+                    for (StatType stat : AllPrimaryStats)
+                        levelInfo.stats[AsUnderlyingType(stat)] = fields[AsUnderlyingType(stat) + 2].GetUInt16() + raceStatModifiers[race].StatModifier[AsUnderlyingType(stat)];
                 }
             }
 
@@ -3940,73 +3984,73 @@ void ObjectMgr::BuildPlayerLevelInfo(uint8 race, uint8 _class, uint8 level, Play
     // base data (last known level)
     *info = ASSERT_NOTNULL(Trinity::Containers::MapGetValuePtr(_playerInfo, { Races(race), Classes(_class) }))->levelInfo[sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL) - 1];
 
-    // if conversion from uint32 to uint8 causes unexpected behaviour, change lvl to uint32
+    // if conversion from uint32 to uint8 causes unexpected behavior, change lvl to uint32
     for (uint8 lvl = sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL)-1; lvl < level; ++lvl)
     {
         switch (_class)
         {
             case CLASS_WARRIOR:
-                info->stats[STAT_STRENGTH]  += (lvl > 23 ? 2: (lvl > 1  ? 1: 0));
-                info->stats[STAT_STAMINA]   += (lvl > 23 ? 2: (lvl > 1  ? 1: 0));
-                info->stats[STAT_AGILITY]   += (lvl > 36 ? 1: (lvl > 6 && (lvl%2) ? 1: 0));
-                info->stats[STAT_INTELLECT] += (lvl > 9 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_SPIRIT]    += (lvl > 9 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 23 ? 2: (lvl > 1  ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 23 ? 2: (lvl > 1  ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 36 ? 1: (lvl > 6 && (lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 9 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 9 && !(lvl%2) ? 1: 0);
                 break;
             case CLASS_PALADIN:
-                info->stats[STAT_STRENGTH]  += (lvl > 3  ? 1: 0);
-                info->stats[STAT_STAMINA]   += (lvl > 33 ? 2: (lvl > 1 ? 1: 0));
-                info->stats[STAT_AGILITY]   += (lvl > 38 ? 1: (lvl > 7 && !(lvl%2) ? 1: 0));
-                info->stats[STAT_INTELLECT] += (lvl > 6 && (lvl%2) ? 1: 0);
-                info->stats[STAT_SPIRIT]    += (lvl > 7 ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 3  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 33 ? 2: (lvl > 1 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 38 ? 1: (lvl > 7 && !(lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 6 && (lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 7 ? 1: 0);
                 break;
             case CLASS_HUNTER:
-                info->stats[STAT_STRENGTH]  += (lvl > 4  ? 1: 0);
-                info->stats[STAT_STAMINA]   += (lvl > 4  ? 1: 0);
-                info->stats[STAT_AGILITY]   += (lvl > 33 ? 2: (lvl > 1 ? 1: 0));
-                info->stats[STAT_INTELLECT] += (lvl > 8 && (lvl%2) ? 1: 0);
-                info->stats[STAT_SPIRIT]    += (lvl > 38 ? 1: (lvl > 9 && !(lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 4  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 4  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 33 ? 2: (lvl > 1 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 8 && (lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 38 ? 1: (lvl > 9 && !(lvl%2) ? 1: 0));
                 break;
             case CLASS_ROGUE:
-                info->stats[STAT_STRENGTH]  += (lvl > 5  ? 1: 0);
-                info->stats[STAT_STAMINA]   += (lvl > 4  ? 1: 0);
-                info->stats[STAT_AGILITY]   += (lvl > 16 ? 2: (lvl > 1 ? 1: 0));
-                info->stats[STAT_INTELLECT] += (lvl > 8 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_SPIRIT]    += (lvl > 38 ? 1: (lvl > 9 && !(lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 5  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 4  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 16 ? 2: (lvl > 1 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 8 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 38 ? 1: (lvl > 9 && !(lvl%2) ? 1: 0));
                 break;
             case CLASS_PRIEST:
-                info->stats[STAT_STRENGTH]  += (lvl > 9 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_STAMINA]   += (lvl > 5  ? 1: 0);
-                info->stats[STAT_AGILITY]   += (lvl > 38 ? 1: (lvl > 8 && (lvl%2) ? 1: 0));
-                info->stats[STAT_INTELLECT] += (lvl > 22 ? 2: (lvl > 1 ? 1: 0));
-                info->stats[STAT_SPIRIT]    += (lvl > 3  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 9 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 5  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 38 ? 1: (lvl > 8 && (lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 22 ? 2: (lvl > 1 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 3  ? 1: 0);
                 break;
             case CLASS_SHAMAN:
-                info->stats[STAT_STRENGTH]  += (lvl > 34 ? 1: (lvl > 6 && (lvl%2) ? 1: 0));
-                info->stats[STAT_STAMINA]   += (lvl > 4 ? 1: 0);
-                info->stats[STAT_AGILITY]   += (lvl > 7 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_INTELLECT] += (lvl > 5 ? 1: 0);
-                info->stats[STAT_SPIRIT]    += (lvl > 4 ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 34 ? 1: (lvl > 6 && (lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 4 ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 7 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 5 ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 4 ? 1: 0);
                 break;
             case CLASS_MAGE:
-                info->stats[STAT_STRENGTH]  += (lvl > 9 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_STAMINA]   += (lvl > 5  ? 1: 0);
-                info->stats[STAT_AGILITY]   += (lvl > 9 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_INTELLECT] += (lvl > 24 ? 2: (lvl > 1 ? 1: 0));
-                info->stats[STAT_SPIRIT]    += (lvl > 33 ? 2: (lvl > 2 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 9 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 5  ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 9 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 24 ? 2: (lvl > 1 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 33 ? 2: (lvl > 2 ? 1: 0));
                 break;
             case CLASS_WARLOCK:
-                info->stats[STAT_STRENGTH]  += (lvl > 9 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_STAMINA]   += (lvl > 38 ? 2: (lvl > 3 ? 1: 0));
-                info->stats[STAT_AGILITY]   += (lvl > 9 && !(lvl%2) ? 1: 0);
-                info->stats[STAT_INTELLECT] += (lvl > 33 ? 2: (lvl > 2 ? 1: 0));
-                info->stats[STAT_SPIRIT]    += (lvl > 38 ? 2: (lvl > 3 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 9 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 38 ? 2: (lvl > 3 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 9 && !(lvl%2) ? 1: 0);
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 33 ? 2: (lvl > 2 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 38 ? 2: (lvl > 3 ? 1: 0));
                 break;
             case CLASS_DRUID:
-                info->stats[STAT_STRENGTH]  += (lvl > 38 ? 2: (lvl > 6 && (lvl%2) ? 1: 0));
-                info->stats[STAT_STAMINA]   += (lvl > 32 ? 2: (lvl > 4 ? 1: 0));
-                info->stats[STAT_AGILITY]   += (lvl > 38 ? 2: (lvl > 8 && (lvl%2) ? 1: 0));
-                info->stats[STAT_INTELLECT] += (lvl > 38 ? 3: (lvl > 4 ? 1: 0));
-                info->stats[STAT_SPIRIT]    += (lvl > 38 ? 3: (lvl > 5 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Strength)]  += (lvl > 38 ? 2: (lvl > 6 && (lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Stamina)]   += (lvl > 32 ? 2: (lvl > 4 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Agility)]   += (lvl > 38 ? 2: (lvl > 8 && (lvl%2) ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Intellect)] += (lvl > 38 ? 3: (lvl > 4 ? 1: 0));
+                info->stats[AsUnderlyingType(StatType::Spirit)]    += (lvl > 38 ? 3: (lvl > 5 ? 1: 0));
         }
     }
 }

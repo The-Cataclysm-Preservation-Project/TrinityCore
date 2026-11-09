@@ -22,10 +22,10 @@
  * Scriptnames of files in this file should be prefixed with "spell_gen_"
  */
 
-#include "ScriptMgr.h"
 #include "Battleground.h"
 #include "CellImpl.h"
 #include "Containers.h"
+#include "CreatureAIImpl.h"
 #include "DBCStores.h"
 #include "GameTime.h"
 #include "GridNotifiersImpl.h"
@@ -36,13 +36,14 @@
 #include "ObjectAccessor.h"
 #include "Pet.h"
 #include "ReputationMgr.h"
+#include "ScriptMgr.h"
 #include "SkillDiscovery.h"
 #include "SpellAuraEffects.h"
 #include "SpellHistory.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "Stats.h"
 #include "Vehicle.h"
-#include "CreatureAIImpl.h"
 
 namespace Spells::Generic
 {
@@ -1793,6 +1794,7 @@ class spell_gen_feign_death_all_flags_uninteractible : public AuraScript
     void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
         target->SetImmuneToAll(true);
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT | UNIT_FLAG_NOT_SELECTABLE);
@@ -1804,6 +1806,7 @@ class spell_gen_feign_death_all_flags_uninteractible : public AuraScript
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
         target->SetImmuneToAll(false);
         target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT| UNIT_FLAG_NOT_SELECTABLE);
@@ -1825,6 +1828,7 @@ class spell_gen_feign_death_all_flags_no_uninteractible : public AuraScript
     void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG2_FEIGN_DEATH);
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
         target->SetImmuneToAll(true);
@@ -1836,6 +1840,7 @@ class spell_gen_feign_death_all_flags_no_uninteractible : public AuraScript
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
+        target->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
         target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
         target->SetImmuneToAll(false);
@@ -4384,7 +4389,7 @@ class spell_gen_vengeance : public AuraScript
 
         if (!caster->GetAura(SPELL_VENGEANCE_TRIGGERED, caster->GetGUID()))
         {
-            uint32 healthCap = CalculatePct(caster->GetCreateHealth(), 10) + caster->GetStat(STAT_STAMINA);
+            uint32 healthCap = CalculatePct(caster->GetCreateHealth(), 10) + caster->GetStat(StatType::Stamina);
             uint32 damageBonus = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), 33);
             int32 bp = std::min<int32>(damageBonus, healthCap);
             caster->CastSpell(caster, SPELL_VENGEANCE_TRIGGERED, CastSpellExtraArgs(true).AddSpellBP0(bp).AddSpellMod(SPELLVALUE_BASE_POINT1, bp).AddSpellMod(SPELLVALUE_BASE_POINT2, bp));
@@ -4444,7 +4449,7 @@ class spell_gen_vengeance_triggered : public AuraScript
             }
         }
 
-        uint32 healthCap = CalculatePct(target->GetCreateHealth(), 10) + target->GetStat(STAT_STAMINA);
+        uint32 healthCap = CalculatePct(target->GetCreateHealth(), 10) + target->GetStat(StatType::Stamina);
         damageLastTwoSeconds = std::min<int32>(healthCap, CalculatePct(damageLastTwoSeconds, 33));
         if (damageLastTwoSeconds)
             target->CastSpell(target, SPELL_VENGEANCE_TRIGGERED, CastSpellExtraArgs(true).AddSpellBP0(damageLastTwoSeconds).AddSpellMod(SPELLVALUE_BASE_POINT1, damageLastTwoSeconds).AddSpellMod(SPELLVALUE_BASE_POINT2, damageLastTwoSeconds));

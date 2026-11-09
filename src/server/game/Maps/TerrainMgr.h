@@ -18,18 +18,19 @@
 #ifndef TERRAIN_MGR_H
 #define TERRAIN_MGR_H
 
-#include "Define.h"
-#include "Duration.h"
-#include "GridDefines.h"
-#include "MapDefines.h"
-#include "Position.h"
-#include "Timer.h"
 #include <atomic>
 #include <bitset>
 #include <memory>
 #include <mutex>
 #include <unordered_map>
 #include <vector>
+
+#include "Define.h"
+#include "Duration.h"
+#include "GridDefines.h"
+#include "MapDefines.h"
+#include "Position.h"
+#include "Timer.h"
 
 class DynamicMapTree;
 class GridMap;

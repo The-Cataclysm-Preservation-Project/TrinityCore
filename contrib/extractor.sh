@@ -75,10 +75,10 @@ $MAPEXTRACTOR
 
 echo "-- Extraction complete, copying dbc, gt and maps files"
 cp -r dbc gt maps ${DATA_DIR}
-if [[ -d ${CLIENT_DIR}/cameras ]]
+if [[ -d ${CLIENT_DIR}/Cameras ]]
 then
 	echo "-- Camera files found, copying"
-	cp -r cameras ${DATA_DIR}
+	cp -r Cameras ${DATA_DIR}
 fi
 
 echo "-- Done"
@@ -129,14 +129,14 @@ echo
 echo "Cleaning up extracted client files (copied server files are not removed)"
 echo
 echo "Deleting the following directories from ${CLIENT_DIR}"
-echo "-- Buildings, cameras, dbc, gt, maps, mmaps, vmaps"
+echo "-- Buildings, Cameras, dbc, gt, maps, mmaps, vmaps"
 echo
 echo "Enter y to continue or anything else to cancel"
 read a
 if [[ ${a} = "y" ]]
 then
 	cd ${CLIENT_DIR}
-	rm -fr Buildings cameras dbc gt maps mmaps vmaps
+	rm -fr Buildings Cameras dbc gt maps mmaps vmaps
 	echo "Done"
 fi
 }

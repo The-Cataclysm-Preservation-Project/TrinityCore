@@ -22,7 +22,7 @@ ALTER TABLE `quest_poi_points`
     DROP INDEX `questId_id`,
     ADD  KEY `questId_id` (`QuestID`);
 
-INSERT INTO `quest_poi`(`QuestID`,`BlobIndex`,`Idx1`,`ObjectiveIndex`,`MapID`,`WorldMapAreaID`,`Floor`,`Priority`,`Flags`,`VerifiedBuild`) values
+INSERT INTO `quest_poi`(`QuestID`,`BlobIndex`,`Idx1`,`ObjectiveIndex`,`MapID`,`WorldMapAreaID`,`Floor`,`Priority`,`Flags`,`VerifiedBuild`) VALUES
 (1,0,0,-1,0,23,0,0,1,0),
 (2,0,0,-1,1,43,0,0,1,0),
 (5,0,0,-1,0,34,0,0,1,0),
@@ -29552,13 +29552,7 @@ INSERT INTO `quest_poi`(`QuestID`,`BlobIndex`,`Idx1`,`ObjectiveIndex`,`MapID`,`W
 (30173,0,0,0,556,689,0,0,7,0),
 (30173,1,1,5,556,259,0,0,7,60192);
 
-UNLOCK TABLES;
-
-/*Data for the table `quest_poi_points` */
-
-LOCK TABLES `quest_poi_points` WRITE;
-
-insert  into `quest_poi_points`(`QuestID`,`Idx1`,`Idx2`,`X`,`Y`,`VerifiedBuild`) values
+INSERT INTO `quest_poi_points`(`QuestID`,`Idx1`,`Idx2`,`X`,`Y`,`VerifiedBuild`) VALUES
 (1,0,0,2148,-5252,60192),
 (2,0,0,2172,-1169,60192),
 (5,0,0,-10499,-1158,60192),

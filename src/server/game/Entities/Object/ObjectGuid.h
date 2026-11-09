@@ -299,8 +299,8 @@ class TC_GAME_API PackedGuid
     friend TC_GAME_API ByteBuffer& operator<<(ByteBuffer& buf, PackedGuid const& guid);
 
     public:
-        explicit PackedGuid() : _packedSize(1), _packedGuid() { }
-        explicit PackedGuid(ObjectGuid guid) { Set(guid); }
+        explicit PackedGuid() : _packedSize(1), _packedGuid({}) { }
+        explicit PackedGuid(ObjectGuid guid) : _packedSize(1), _packedGuid({}) { Set(guid); }
 
         void Set(ObjectGuid guid);
 
