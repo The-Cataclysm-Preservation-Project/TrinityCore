@@ -5,9 +5,9 @@
 
 4.3.4 (master) |
 :------------: |
-[![AppVeyor Status](https://ci.appveyor.com/api/projects/status/github/The-Cataclysm-Preservation-Project/TrinityCore?branch=master&svg=true)](https://ci.appveyor.com/project/Ovahlord/trinitycore) |
-[![master GCC Build status](https://github.com/The-Cataclysm-Preservation-Project/TrinityCore/actions/workflows/gcc-build.yml/badge.svg?branch=master&event=push)](https://github.com/The-Cataclysm-Preservation-Project/TrinityCore/actions?query=workflow%3AGCC+branch%3Amaster+event%3Apush) |
-[![master clang Build status](https://github.com/The-Cataclysm-Preservation-Project/TrinityCore/actions/workflows/clang-build.yml/badge.svg?branch=master&event=push)](https://github.com/The-Cataclysm-Preservation-Project/TrinityCore/actions?query=workflow%3ACLANG+branch%3Amaster+event%3Apush) |
+[![Build status](https://ci.appveyor.com/api/projects/status/u7b5qi208wulxd3q/branch/master?svg=true)](https://ci.appveyor.com/project/rodrigoangeloni/trinitycorecata/branch/master) |
+[![master GCC Build status](https://github.com/rodrigoangeloni/TrinityCoreCata/actions/workflows/gcc-build.yml/badge.svg?branch=master&event=push)](https://github.com/rodrigoangeloni/TrinityCoreCata/actions?query=workflow%3AGCC+branch%3Amaster+event%3Apush) |
+[![master clang Build status](https://github.com/rodrigoangeloni/TrinityCoreCata/actions/workflows/clang-build.yml/badge.svg?branch=master&event=push)](https://github.com/rodrigoangeloni/TrinityCoreCata/actions?query=workflow%3ACLANG+branch%3Amaster+event%3Apush) |
 
 ## Introduction
 
@@ -29,8 +29,8 @@ website at [TrinityCore.org](https://www.trinitycore.org).
 ## Install
 
 Detailed installation guides are available in the [wiki](https://www.trinitycore.info/display/tc/Installation+Guide) for
-Windows, Linux and Mac OSX.  
-You can get database from  
+Windows, Linux and Mac OSX.
+You can get database from
 https://github.com/The-Cataclysm-Preservation-Project/TrinityCore/releases
 
 
